@@ -1,4 +1,4 @@
-# healthflare
+# Health Flare
 
 A new Flutter project.
 

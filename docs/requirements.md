@@ -1,4 +1,4 @@
-# Healthflare — Product Requirements
+# Health Flare — Product Requirements
 
 **Version:** 0.1
 **Date:** 2026-02-17
@@ -8,7 +8,7 @@
 
 ## 1. Purpose and Vision
 
-Healthflare is a chronic illness tracking application. Its purpose is to make it easy for a person to record and review their own health data, or the health data of one or more dependants (such as a child, parent, or partner). The app is designed to be straightforward to use day-to-day and to produce useful summaries that can be shared with medical providers.
+Health Flare is a chronic illness tracking application. Its purpose is to make it easy for a person to record and review their own health data, or the health data of one or more dependants (such as a child, parent, or partner). The app is designed to be straightforward to use day-to-day and to produce useful summaries that can be shared with medical providers.
 
 The app is not a medical device and does not provide diagnoses or clinical recommendations. It is a personal health journal with structure.
 
@@ -28,7 +28,7 @@ A named person whose health data is being recorded. The primary user may be thei
 
 ## 3. Platforms
 
-Healthflare must run on:
+Health Flare must run on:
 - iOS
 - Android
 - Web (browser)
@@ -189,7 +189,59 @@ When a user first opens the app or creates a new profile, they are guided clearl
 
 ---
 
-## 12. Out of Scope for MVP
+## 12. Onboarding
+
+Onboarding is a first-class experience. It sets the tone for the entire relationship between the user and the app. It must be warm and encouraging — not clinical, not corporate. The user should finish onboarding feeling like Health Flare is on their side.
+
+### 12.1 Trigger
+
+Onboarding is shown exactly once: when the app is launched for the very first time and no profiles exist. It is never shown again after a profile has been created. It must not be skippable — the app cannot function without at least one profile.
+
+### 12.2 Structure: One Screen, Three Zones
+
+Onboarding is presented as a single, scrollable (or paged) screen divided into three zones. There is no multi-step wizard. The goal is minimal friction.
+
+**Zone 1 — Purpose and welcome**
+- Communicates what Health Flare is and who it is for in plain, human language.
+- Reinforces that the app is a companion on a health journey, not a replacement for professional care.
+- Warm, encouraging tone. No jargon.
+
+**Zone 2 — Privacy and data promise**
+- A single clear headline commitment: all data stays on this device.
+- Followed by 3–4 concise supporting statements (e.g. no accounts required, no cloud uploads, data only leaves if the user explicitly exports it).
+- A visible "Learn more" option expands a plain-English explanation of the full data model for users who want to understand it in depth. This expanded view is written for a non-technical audience but is detailed enough to satisfy a technically minded one.
+
+**Zone 3 — Profile creation**
+- Directly below the privacy section, the user creates their first profile without navigating away.
+- The form asks for a name (required), date of birth (optional), and avatar (optional).
+- A clear, encouraging call-to-action button completes onboarding and enters the app.
+
+### 12.3 Post-Setup: First-Log Prompt
+
+Immediately after the first profile is created, the user is taken into the app and shown a focused prompt asking them to log their first entry. This is not a tutorial — it is an action. The prompt:
+- Briefly explains why logging regularly is valuable (habit formation, pattern detection).
+- Offers a choice of what to log first: a symptom, a vital, a meal, or a medication.
+- Tapping any option opens the relevant quick-entry form.
+- The user can dismiss the prompt and explore freely if they prefer.
+
+The first-log prompt appears only once per profile, immediately after creation.
+
+### 12.4 Tone and Language Principles
+
+All onboarding copy must follow these principles:
+- **No medical jargon.** Write as if explaining to a smart friend, not a patient.
+- **No fear language.** Avoid words like "warning", "risk", "danger", "failure".
+- **Encouragement over instruction.** "Let's get started" beats "You must complete this step."
+- **Honest and specific about privacy.** Vague promises ("we care about your privacy") are not acceptable. Every privacy claim must be specific and verifiable.
+- **Short sentences.** If a sentence needs a comma, consider splitting it.
+
+### 12.5 Accessibility
+
+Onboarding must meet WCAG 2.1 AA contrast and text size requirements. All interactive elements must be reachable via keyboard (desktop/web) and screen reader compatible. No information must be conveyed by colour alone.
+
+---
+
+## 13. Out of Scope for MVP
 
 The following are explicitly out of scope for the first release but should not be architected against:
 
@@ -204,7 +256,7 @@ The following are explicitly out of scope for the first release but should not b
 
 ---
 
-## 13. Glossary
+## 14. Glossary
 
 | Term | Definition |
 |---|---|
