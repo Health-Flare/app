@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/providers/onboarding_provider.dart';
+import '../../../core/providers/profile_provider.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../models/profile.dart';
 import '../widgets/onboarding_welcome_zone.dart';
 import '../widgets/onboarding_privacy_zone.dart';
 import '../widgets/onboarding_profile_zone.dart';
@@ -23,13 +25,14 @@ class OnboardingScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      // SafeArea handled per-zone so the hero gradient can bleed to the top.
-      body: _OnboardingBody(),
+      body: const _OnboardingBody(),
     );
   }
 }
 
 class _OnboardingBody extends ConsumerStatefulWidget {
+  const _OnboardingBody();
+
   @override
   ConsumerState<_OnboardingBody> createState() => _OnboardingBodyState();
 }
@@ -54,15 +57,20 @@ class _OnboardingBodyState extends ConsumerState<_OnboardingBody> {
 
     setState(() => _isSubmitting = true);
 
-    // dateOfBirth is available here for when the Isar profile save is wired up.
-    // ignore: unused_local_variable
-    final dob = dateOfBirth;
+    // Create the first profile and register it with the provider.
+    // TODO: replace ProfileIdGenerator with Isar auto-id when DB is wired up.
+    final profile = Profile(
+      id: ProfileIdGenerator.next(),
+      name: _nameController.text.trim(),
+      dateOfBirth: dateOfBirth,
+    );
 
-    // TODO: persist the profile to Isar once the data layer is ready.
-    // For now we simulate a short async save.
+    // Simulate a short async save — swap for Isar write later.
     await Future<void>.delayed(const Duration(milliseconds: 300));
-
     if (!mounted) return;
+
+    // Add to the profile list and make it the active profile.
+    ref.read(profileListProvider.notifier).add(profile);
 
     // Mark onboarding complete — the router will redirect to the dashboard.
     ref.read(onboardingProvider.notifier).markComplete();
@@ -77,14 +85,10 @@ class _OnboardingBodyState extends ConsumerState<_OnboardingBody> {
       controller: _scrollController,
       slivers: [
         // Zone 1 — Welcome
-        SliverToBoxAdapter(
-          child: OnboardingWelcomeZone(),
-        ),
+        const SliverToBoxAdapter(child: OnboardingWelcomeZone()),
 
         // Zone 2 — Privacy
-        SliverToBoxAdapter(
-          child: OnboardingPrivacyZone(),
-        ),
+        const SliverToBoxAdapter(child: OnboardingPrivacyZone()),
 
         // Zone 3 — Profile creation
         SliverToBoxAdapter(
