@@ -1,11 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/providers/profile_provider.dart';
 import '../../core/router/app_router.dart';
+import '../profiles/widgets/profile_avatar.dart';
+import '../profiles/widgets/profile_switcher_sheet.dart';
 
 /// Persistent shell wrapping all tab destinations.
-/// Provides the [NavigationBar] and keeps it alive across route changes.
-class AppShell extends StatelessWidget {
+///
+/// Provides:
+///   • [NavigationBar] for the 5 main sections
+///   • A persistent profile avatar button at the top-right, accessible
+///     from every screen, that opens the [ProfileSwitcherSheet].
+class AppShell extends ConsumerWidget {
   const AppShell({super.key, required this.child});
 
   final Widget child;
@@ -50,9 +58,46 @@ class AppShell extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final activeProfile = ref.watch(activeProfileDataProvider);
+
     return Scaffold(
-      body: child,
+      // The individual tab screens each supply their own AppBar. The shell
+      // injects the persistent profile button via an overlay so it appears
+      // on every screen without each screen needing to know about it.
+      body: Stack(
+        children: [
+          child,
+          // Persistent profile indicator — top-right, always visible.
+          Positioned(
+            top: MediaQuery.of(context).padding.top + 8,
+            right: 8,
+            child: Semantics(
+              button: true,
+              label: activeProfile != null
+                  ? 'Switch profile. Current: ${activeProfile.name}'
+                  : 'Switch profile',
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () => showProfileSwitcher(context),
+                  borderRadius: BorderRadius.circular(24),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: activeProfile != null
+                        ? ProfileAvatar(
+                            profile: activeProfile,
+                            radius: 18,
+                            showBorder: false,
+                          )
+                        : const _DefaultProfileButton(),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex(context),
         onDestinationSelected: (index) =>
@@ -67,6 +112,23 @@ class AppShell extends StatelessWidget {
             )
             .toList(),
       ),
+    );
+  }
+}
+
+/// Fallback button when no profile exists (should not normally be visible
+/// after onboarding, but guards against edge cases).
+class _DefaultProfileButton extends StatelessWidget {
+  const _DefaultProfileButton();
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return CircleAvatar(
+      radius: 18,
+      backgroundColor: cs.surfaceContainerHighest,
+      child: Icon(Icons.person_outline_rounded,
+          size: 20, color: cs.onSurfaceVariant),
     );
   }
 }
