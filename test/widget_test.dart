@@ -1,30 +1,88 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:healthflare/main.dart';
+import 'package:healthflare/core/providers/onboarding_provider.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  group('Onboarding flow', () {
+    testWidgets(
+      'shows onboarding screen when no profile exists',
+      (tester) async {
+        await tester.pumpWidget(
+          const ProviderScope(child: HealthFlareApp()),
+        );
+        await tester.pumpAndSettle();
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+        // Zone 1 welcome headline should be visible
+        expect(find.text('Your health story,\nin your hands.'), findsOneWidget);
+      },
+    );
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    testWidgets(
+      'CTA button is disabled when name field is empty',
+      (tester) async {
+        await tester.pumpWidget(
+          const ProviderScope(child: HealthFlareApp()),
+        );
+        await tester.pumpAndSettle();
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+        final ctaButton = find.widgetWithText(
+          ElevatedButton,
+          'Create profile and get started  →',
+        );
+        expect(ctaButton, findsOneWidget);
+
+        final button = tester.widget<ElevatedButton>(ctaButton);
+        expect(button.onPressed, isNull);
+      },
+    );
+
+    testWidgets(
+      'CTA button enables once a name is entered',
+      (tester) async {
+        await tester.pumpWidget(
+          const ProviderScope(child: HealthFlareApp()),
+        );
+        await tester.pumpAndSettle();
+
+        await tester.enterText(find.byType(TextFormField).first, 'Sarah');
+        await tester.pump();
+
+        final ctaButton = find.widgetWithText(
+          ElevatedButton,
+          'Create profile and get started  →',
+        );
+        final button = tester.widget<ElevatedButton>(ctaButton);
+        expect(button.onPressed, isNotNull);
+      },
+    );
+
+    testWidgets(
+      'skips onboarding when already complete',
+      (tester) async {
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              // Simulate onboarding already done
+              onboardingProvider.overrideWith(() {
+                final notifier = OnboardingNotifier();
+                return notifier..markAlreadyComplete();
+              }),
+            ],
+            child: const HealthFlareApp(),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // Should land on the dashboard, not onboarding
+        expect(find.text('Health Flare'), findsWidgets);
+        expect(
+          find.text('Your health story,\nin your hands.'),
+          findsNothing,
+        );
+      },
+    );
   });
 }
