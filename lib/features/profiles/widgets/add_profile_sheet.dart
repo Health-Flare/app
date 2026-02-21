@@ -78,29 +78,24 @@ class _AddProfileSheetState extends ConsumerState<AddProfileSheet> {
     if (_isSaving) return;
     setState(() => _isSaving = true);
 
-    // Simulate async save — replace with Isar write when DB is wired up.
-    await Future<void>.delayed(const Duration(milliseconds: 200));
-    if (!mounted) return;
-
     final listNotifier = ref.read(profileListProvider.notifier);
 
     if (_isEditMode) {
-      // Update existing profile
+      // Update existing profile and persist to the database.
       final updated = widget.existing!.copyWith(
         name: _nameController.text.trim(),
         dateOfBirth: _dateOfBirth,
         clearDateOfBirth: _dateOfBirth == null,
       );
-      listNotifier.update(updated);
+      await listNotifier.update(updated);
     } else {
-      // Add new profile
-      final profile = Profile(
-        id: ProfileIdGenerator.next(),
+      // Add new profile. Isar assigns the id and makes it active.
+      await listNotifier.add(
         name: _nameController.text.trim(),
         dateOfBirth: _dateOfBirth,
       );
-      listNotifier.add(profile);
     }
+    if (!mounted) return;
 
     if (mounted) Navigator.of(context).pop();
   }
@@ -136,7 +131,7 @@ class _AddProfileSheetState extends ConsumerState<AddProfileSheet> {
 
     if (confirmed != true || !mounted) return;
 
-    ref.read(profileListProvider.notifier).remove(profile.id);
+    await ref.read(profileListProvider.notifier).remove(profile.id);
     if (mounted) Navigator.of(context).pop();
   }
 
