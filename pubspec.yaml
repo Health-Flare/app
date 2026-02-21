@@ -22,8 +22,8 @@ dependencies:
   go_router: ^14.8.1
 
   # Local database
-  isar: ^3.1.0+1
-  isar_flutter_libs: ^3.1.0+1
+  isar_community: ^3.3.0
+  isar_community_flutter_libs: ^3.3.0
   path_provider: ^2.1.5
 
   # Image picker (avatar + meal photos)
@@ -31,6 +31,9 @@ dependencies:
 
   # Google Fonts (Inter for body, used via flutter-safe network or bundled)
   google_fonts: ^6.2.1
+
+  # Date formatting (used in journal entry list and detail views)
+  intl: ^0.19.0
 
 dev_dependencies:
   flutter_test:
@@ -40,7 +43,10 @@ dev_dependencies:
   # Code generation
   build_runner: ^2.4.13
   riverpod_generator: ^2.4.0
-  isar_generator: ^3.1.0+1
+  # NOTE: isar_community_generator conflicts with riverpod_generator due to
+  # incompatible analyzer version constraints. Isar generated files are produced
+  # using a separate minimal project (scripts/isar_codegen/) and committed.
+  # See scripts/isar_codegen/README.md for how to regenerate them.
 
 flutter:
   uses-material-design: true
