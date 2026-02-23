@@ -20,8 +20,8 @@ class OnboardingWelcomeZone extends StatelessWidget {
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            AppColors.teal,
-            AppColors.tealDark,
+            AppColors.primaryAction,
+            AppColors.secondaryAction,
           ],
         ),
       ),
