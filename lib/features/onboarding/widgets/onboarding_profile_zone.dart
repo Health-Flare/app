@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../../core/theme/app_colors.dart';
 
@@ -14,17 +17,22 @@ class OnboardingProfileZone extends StatefulWidget {
     super.key,
     required this.formKey,
     required this.nameController,
+    required this.nameFocusNode,
     required this.isSubmitting,
     required this.onSubmit,
   });
 
   final GlobalKey<FormState> formKey;
   final TextEditingController nameController;
+
+  /// Focus node for the name field. Owned by the parent so that focus can be
+  /// requested without causing a scroll jump on initial load.
+  final FocusNode nameFocusNode;
   final bool isSubmitting;
 
   /// Called when the user taps the CTA. Receives the optional date of birth
-  /// selected in this zone so the caller can include it when saving the profile.
-  final void Function(DateTime? dateOfBirth) onSubmit;
+  /// and avatar file path selected in this zone.
+  final void Function(DateTime? dateOfBirth, String? avatarPath) onSubmit;
 
   @override
   State<OnboardingProfileZone> createState() => _OnboardingProfileZoneState();
@@ -36,6 +44,9 @@ class _OnboardingProfileZoneState extends State<OnboardingProfileZone> {
 
   // Holds the picked date of birth so it can be displayed and submitted.
   DateTime? _dateOfBirth;
+
+  // Holds the path of the picked avatar image.
+  String? _avatarPath;
 
   // Read-only controller that shows the formatted date in the DOB field.
   final _dobController = TextEditingController();
@@ -110,7 +121,7 @@ class _OnboardingProfileZoneState extends State<OnboardingProfileZone> {
               label: 'Profile name, required',
               child: TextFormField(
                 controller: widget.nameController,
-                autofocus: true,
+                focusNode: widget.nameFocusNode,
                 textCapitalization: TextCapitalization.words,
                 textInputAction: TextInputAction.next,
                 decoration: const InputDecoration(
@@ -144,7 +155,9 @@ class _OnboardingProfileZoneState extends State<OnboardingProfileZone> {
             const SizedBox(height: 20),
 
             // Avatar / photo field
-            _AvatarPicker(),
+            _AvatarPicker(
+              onChanged: (path) => setState(() => _avatarPath = path),
+            ),
 
             const SizedBox(height: 40),
 
@@ -153,7 +166,7 @@ class _OnboardingProfileZoneState extends State<OnboardingProfileZone> {
               label: 'Create profile and get started',
               child: ElevatedButton(
                 onPressed: (_hasName && !widget.isSubmitting)
-                    ? () => widget.onSubmit(_dateOfBirth)
+                    ? () => widget.onSubmit(_dateOfBirth, _avatarPath)
                     : null,
                 child: widget.isSubmitting
                     ? const SizedBox(
@@ -199,17 +212,33 @@ class _OnboardingProfileZoneState extends State<OnboardingProfileZone> {
 
 /// Inline avatar picker widget.
 ///
-/// Shows a circular placeholder that the user can tap to select a photo.
-/// In MVP the picked image is held in local state only — persisting to the
-/// profile record is wired up when the Isar data layer is added.
+/// Shows a circular placeholder (or the picked image) that the user can tap
+/// to select a photo from the library or take a new one with the camera.
+/// Calls [onChanged] with the local file path whenever a new image is picked.
 class _AvatarPicker extends StatefulWidget {
+  const _AvatarPicker({required this.onChanged});
+
+  final ValueChanged<String?> onChanged;
+
   @override
   State<_AvatarPicker> createState() => _AvatarPickerState();
 }
 
 class _AvatarPickerState extends State<_AvatarPicker> {
-  // ignore: unused_field — will be used when image_picker is wired up
-  Object? _pickedImage;
+  final _picker = ImagePicker();
+  XFile? _pickedFile;
+
+  Future<void> _pick(ImageSource source) async {
+    final file = await _picker.pickImage(
+      source: source,
+      maxWidth: 512,
+      maxHeight: 512,
+      imageQuality: 85,
+    );
+    if (file == null) return;
+    setState(() => _pickedFile = file);
+    widget.onChanged(file.path);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -237,12 +266,17 @@ class _AvatarPickerState extends State<_AvatarPicker> {
             child: CircleAvatar(
               radius: 44,
               backgroundColor: cs.surfaceContainerHighest,
-              child: Icon(
-                Icons.add_a_photo_outlined,
-                size: 28,
-                color: cs.onSurfaceVariant,
-                semanticLabel: '',
-              ),
+              backgroundImage: _pickedFile != null
+                  ? FileImage(File(_pickedFile!.path))
+                  : null,
+              child: _pickedFile == null
+                  ? Icon(
+                      Icons.add_a_photo_outlined,
+                      size: 28,
+                      color: cs.onSurfaceVariant,
+                      semanticLabel: '',
+                    )
+                  : null,
             ),
           ),
         ),
@@ -266,7 +300,7 @@ class _AvatarPickerState extends State<_AvatarPicker> {
                 title: const Text('Take a photo'),
                 onTap: () {
                   Navigator.pop(ctx);
-                  // TODO: wire up image_picker camera source
+                  _pick(ImageSource.camera);
                 },
               ),
               ListTile(
@@ -274,7 +308,7 @@ class _AvatarPickerState extends State<_AvatarPicker> {
                 title: const Text('Choose from library'),
                 onTap: () {
                   Navigator.pop(ctx);
-                  // TODO: wire up image_picker gallery source
+                  _pick(ImageSource.gallery);
                 },
               ),
               ListTile(
