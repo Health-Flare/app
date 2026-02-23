@@ -1,6 +1,6 @@
 import 'package:isar_community/isar.dart';
 
-import '../../models/profile.dart';
+import 'package:health_flare/models/profile.dart';
 
 part 'profile_isar.g.dart';
 

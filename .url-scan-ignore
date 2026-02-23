@@ -1,0 +1,15 @@
+# .url-scan-ignore
+#
+# Whitelist for scripts/check_urls.sh.
+# Each non-blank, non-comment line is a grep -E pattern that suppresses a
+# specific false positive in the URL scan.
+#
+# Format:
+#   <grep -E pattern>   # Justification: <why this URL is acceptable>
+#
+# Rules:
+#   - Every entry MUST have an inline justification comment.
+#   - Patterns should be as specific as possible (avoid broad wildcards).
+#   - Reviewed as part of any PR that adds a new entry.
+#
+# Currently no whitelisted patterns — the codebase is clean.

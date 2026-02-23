@@ -2,11 +2,11 @@ import 'package:flutter/foundation.dart';
 import 'package:isar_community/isar.dart';
 import 'package:path_provider/path_provider.dart';
 
-import '../../models/profile.dart';
-import '../models/journal_entry_isar.dart';
-import '../models/profile_isar.dart';
-import 'app_settings.dart';
-import 'migration_runner.dart';
+import 'package:health_flare/models/profile.dart';
+import 'package:health_flare/data/models/journal_entry_isar.dart';
+import 'package:health_flare/data/models/profile_isar.dart';
+import 'package:health_flare/data/database/app_settings.dart';
+import 'package:health_flare/data/database/migration_runner.dart';
 
 /// Startup data read before [runApp] so providers have real values on
 /// the first frame — avoids blank-frame flashes from async loads.

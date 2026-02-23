@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../core/providers/profile_provider.dart';
-import '../../core/router/app_router.dart';
-import '../profiles/widgets/profile_avatar.dart';
-import '../profiles/widgets/profile_switcher_sheet.dart';
+import 'package:health_flare/core/providers/profile_provider.dart';
+import 'package:health_flare/core/router/app_router.dart';
+import 'package:health_flare/features/profiles/widgets/profile_avatar.dart';
+import 'package:health_flare/features/profiles/widgets/profile_switcher_sheet.dart';
 
 /// Persistent shell wrapping all tab destinations.
 ///
