@@ -1,11 +1,11 @@
 {
-    "name": "healthflare",
-    "short_name": "healthflare",
+    "name": "Health Flare",
+    "short_name": "health flare",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "An application to make tracking Chronic Illnesses easier.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
