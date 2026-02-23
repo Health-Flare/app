@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../../../core/theme/app_colors.dart';
+import 'package:health_flare/core/theme/app_colors.dart';
 
 /// Zone 3 — Profile creation form (inline, no navigation away).
 ///

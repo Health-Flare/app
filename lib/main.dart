@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'core/providers/database_provider.dart';
-import 'core/providers/profile_provider.dart';
-import 'core/router/app_router.dart';
-import 'core/theme/app_theme.dart';
-import 'data/database/app_database.dart';
+import 'package:health_flare/core/providers/database_provider.dart';
+import 'package:health_flare/core/providers/profile_provider.dart';
+import 'package:health_flare/core/router/app_router.dart';
+import 'package:health_flare/core/theme/app_theme.dart';
+import 'package:health_flare/data/database/app_database.dart';
 
 void main() async {
   // Required before any async work that touches Flutter bindings.

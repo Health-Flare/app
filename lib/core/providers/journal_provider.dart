@@ -1,10 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar_community/isar.dart';
 
-import '../../data/models/journal_entry_isar.dart';
-import '../../models/journal_entry.dart';
-import 'database_provider.dart';
-import 'profile_provider.dart';
+import 'package:health_flare/data/models/journal_entry_isar.dart';
+import 'package:health_flare/models/journal_entry.dart';
+import 'package:health_flare/core/providers/database_provider.dart';
+import 'package:health_flare/core/providers/profile_provider.dart';
 
 // ---------------------------------------------------------------------------
 // Journal entry list — all entries across all profiles

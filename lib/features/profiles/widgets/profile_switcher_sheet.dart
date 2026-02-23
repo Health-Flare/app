@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../core/providers/profile_provider.dart';
-import '../../../models/profile.dart';
-import 'profile_avatar.dart';
-import 'add_profile_sheet.dart';
+import 'package:health_flare/core/providers/profile_provider.dart';
+import 'package:health_flare/models/profile.dart';
+import 'package:health_flare/features/profiles/widgets/profile_avatar.dart';
+import 'package:health_flare/features/profiles/widgets/add_profile_sheet.dart';
 
 /// Modal bottom sheet — profile switcher.
 ///

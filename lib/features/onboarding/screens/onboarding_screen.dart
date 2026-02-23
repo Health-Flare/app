@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../core/providers/onboarding_provider.dart';
-import '../../../core/providers/profile_provider.dart';
-import '../../../core/theme/app_colors.dart';
-import '../widgets/onboarding_welcome_zone.dart';
-import '../widgets/onboarding_privacy_zone.dart';
-import '../widgets/onboarding_profile_zone.dart';
+import 'package:health_flare/core/providers/onboarding_provider.dart';
+import 'package:health_flare/core/providers/profile_provider.dart';
+import 'package:health_flare/core/theme/app_colors.dart';
+import 'package:health_flare/features/onboarding/widgets/onboarding_welcome_zone.dart';
+import 'package:health_flare/features/onboarding/widgets/onboarding_privacy_zone.dart';
+import 'package:health_flare/features/onboarding/widgets/onboarding_profile_zone.dart';
 
 /// Onboarding screen — shown exactly once on first launch.
 ///
@@ -22,9 +22,9 @@ class OnboardingScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Scaffold(
-      backgroundColor: AppColors.surface,
-      body: const _OnboardingBody(),
+    return const Scaffold(
+      backgroundColor: AppColors.background,
+      body: _OnboardingBody(),
     );
   }
 }

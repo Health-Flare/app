@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../features/journal/screens/journal_composer_screen.dart';
-import '../../features/journal/screens/journal_detail_screen.dart';
-import '../../features/journal/screens/journal_list_screen.dart';
-import '../../features/onboarding/screens/onboarding_screen.dart';
-import '../../features/shell/app_shell.dart';
-import '../../features/dashboard/dashboard_screen.dart';
-import '../providers/onboarding_provider.dart';
+import 'package:health_flare/features/journal/screens/journal_composer_screen.dart';
+import 'package:health_flare/features/journal/screens/journal_detail_screen.dart';
+import 'package:health_flare/features/journal/screens/journal_list_screen.dart';
+import 'package:health_flare/features/onboarding/screens/onboarding_screen.dart';
+import 'package:health_flare/features/shell/app_shell.dart';
+import 'package:health_flare/features/dashboard/dashboard_screen.dart';
+import 'package:health_flare/core/providers/onboarding_provider.dart';
 
 // ---------------------------------------------------------------------------
 // Route names — use these constants everywhere instead of raw strings.

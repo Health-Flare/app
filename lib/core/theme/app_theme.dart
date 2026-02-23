@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'app_colors.dart';
-import 'app_text_styles.dart';
+import 'package:health_flare/core/theme/app_colors.dart';
+import 'package:health_flare/core/theme/app_text_styles.dart';
 
 /// HealthFlare Design System — Theme v1.0
 ///
@@ -140,8 +140,8 @@ abstract final class AppTheme {
         outlinedButtonTheme: _outlinedButtonTheme(_darkColorScheme),
         textButtonTheme: _textButtonTheme(_darkColorScheme),
         navigationBarTheme: _navigationBarTheme(_darkColorScheme),
-        dividerTheme: DividerThemeData(
-          color: AppColors.deepDusk.withAlpha(128),
+        dividerTheme: const DividerThemeData(
+          color: AppColors.grey700,
           space: 1,
           thickness: 1,
         ),
