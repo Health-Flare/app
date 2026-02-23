@@ -12,7 +12,7 @@ Feature: Onboarding
     Given the app has been installed and launched for the first time
     And no profiles exist on this device
     When the app loads
-    Then I am shown the onboarding screen
+    Then I am shown the top of the onboarding screen
     And I am not shown any log screens, dashboard, or navigation
 
   Scenario: Onboarding is not shown if a profile already exists

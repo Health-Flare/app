@@ -40,17 +40,30 @@ class _OnboardingBodyState extends ConsumerState<_OnboardingBody> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _scrollController = ScrollController();
+  final _nameFocusNode = FocusNode();
 
   bool _isSubmitting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Ensure the screen always starts at the very top, even on devices where
+    // the system tries to scroll to a focused field during the first frame.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _scrollController.jumpTo(0);
+    });
+  }
 
   @override
   void dispose() {
     _nameController.dispose();
     _scrollController.dispose();
+    _nameFocusNode.dispose();
     super.dispose();
   }
 
-  Future<void> _submit(DateTime? dateOfBirth) async {
+  Future<void> _submit(DateTime? dateOfBirth, String? avatarPath) async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
     if (_isSubmitting) return;
 
@@ -61,6 +74,7 @@ class _OnboardingBodyState extends ConsumerState<_OnboardingBody> {
     await ref.read(profileListProvider.notifier).add(
           name: _nameController.text.trim(),
           dateOfBirth: dateOfBirth,
+          avatarPath: avatarPath,
         );
     if (!mounted) return;
 
@@ -88,6 +102,7 @@ class _OnboardingBodyState extends ConsumerState<_OnboardingBody> {
           child: OnboardingProfileZone(
             formKey: _formKey,
             nameController: _nameController,
+            nameFocusNode: _nameFocusNode,
             isSubmitting: _isSubmitting,
             onSubmit: _submit,
           ),

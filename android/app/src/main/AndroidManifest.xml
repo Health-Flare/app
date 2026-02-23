@@ -1,4 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Camera permission for taking profile photos (declared; image_picker
+         handles runtime requests on Android 10 and below). -->
+    <uses-permission android:name="android.permission.CAMERA"/>
     <application
         android:label="Health Flare"
         android:name="${applicationName}"
