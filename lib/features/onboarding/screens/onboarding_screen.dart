@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/providers/onboarding_provider.dart';
 import '../../../core/providers/profile_provider.dart';
 import '../../../core/theme/app_colors.dart';
-import '../../../models/profile.dart';
 import '../widgets/onboarding_welcome_zone.dart';
 import '../widgets/onboarding_privacy_zone.dart';
 import '../widgets/onboarding_profile_zone.dart';
@@ -57,22 +56,16 @@ class _OnboardingBodyState extends ConsumerState<_OnboardingBody> {
 
     setState(() => _isSubmitting = true);
 
-    // Create the first profile and register it with the provider.
-    // TODO: replace ProfileIdGenerator with Isar auto-id when DB is wired up.
-    final profile = Profile(
-      id: ProfileIdGenerator.next(),
-      name: _nameController.text.trim(),
-      dateOfBirth: dateOfBirth,
-    );
-
-    // Simulate a short async save — swap for Isar write later.
-    await Future<void>.delayed(const Duration(milliseconds: 300));
+    // Create the first profile and persist it to the database.
+    // Isar assigns the id; the notifier makes it the active profile.
+    await ref.read(profileListProvider.notifier).add(
+          name: _nameController.text.trim(),
+          dateOfBirth: dateOfBirth,
+        );
     if (!mounted) return;
 
-    // Add to the profile list and make it the active profile.
-    ref.read(profileListProvider.notifier).add(profile);
-
-    // Mark onboarding complete — the router will redirect to the dashboard.
+    // onboardingProvider derives its state from profileListProvider,
+    // so no explicit markComplete() call is needed. Kept for clarity.
     ref.read(onboardingProvider.notifier).markComplete();
 
     // Trigger the first-log prompt on the dashboard.
