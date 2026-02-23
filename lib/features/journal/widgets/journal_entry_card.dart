@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../../../models/journal_entry.dart';
+import 'package:health_flare/models/journal_entry.dart';
 
 /// A single journal entry row in the [JournalListScreen].
 ///

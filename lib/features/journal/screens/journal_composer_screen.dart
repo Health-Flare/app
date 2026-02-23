@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
-import '../../../core/providers/journal_provider.dart';
-import '../../../core/providers/profile_provider.dart';
-import '../../../models/journal_entry.dart';
-import '../widgets/journal_enrichment_bar.dart';
+import 'package:health_flare/core/providers/journal_provider.dart';
+import 'package:health_flare/core/providers/profile_provider.dart';
+import 'package:health_flare/models/journal_entry.dart';
+import 'package:health_flare/features/journal/widgets/journal_enrichment_bar.dart';
 
 /// Full-screen journal entry composer — used for both creating a new entry
 /// and editing an existing one.

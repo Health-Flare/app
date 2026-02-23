@@ -1,4 +1,4 @@
-name: healthflare
+name: health_flare
 description: "Health Flare — a chronic illness tracking companion."
 publish_to: 'none'
 
@@ -29,9 +29,6 @@ dependencies:
   # Image picker (avatar + meal photos)
   image_picker: ^1.1.2
 
-  # Google Fonts (Inter for body, used via flutter-safe network or bundled)
-  google_fonts: ^6.2.1
-
   # Date formatting (used in journal entry list and detail views)
   intl: ^0.19.0
 
@@ -50,3 +47,48 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  fonts:
+    - family: Fraunces
+      fonts:
+        - asset: assets/fonts/Fraunces-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Fraunces-MediumItalic.ttf
+          weight: 500
+          style: italic
+        - asset: assets/fonts/Fraunces-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Fraunces-SemiBoldItalic.ttf
+          weight: 600
+          style: italic
+
+    - family: DMSans
+      fonts:
+        - asset: assets/fonts/DMSans-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/DMSans-Italic.ttf
+          weight: 400
+          style: italic
+        - asset: assets/fonts/DMSans-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/DMSans-MediumItalic.ttf
+          weight: 500
+          style: italic
+        - asset: assets/fonts/DMSans-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/DMSans-SemiBoldItalic.ttf
+          weight: 600
+          style: italic
+
+    - family: DMMono
+      fonts:
+        - asset: assets/fonts/DMMono-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/DMMono-Italic.ttf
+          weight: 400
+          style: italic
+        - asset: assets/fonts/DMMono-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/DMMono-MediumItalic.ttf
+          weight: 500
+          style: italic

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../../models/journal_entry.dart';
-import 'journal_energy_sheet.dart';
-import 'journal_mood_sheet.dart';
+import 'package:health_flare/models/journal_entry.dart';
+import 'package:health_flare/features/journal/widgets/journal_energy_sheet.dart';
+import 'package:health_flare/features/journal/widgets/journal_mood_sheet.dart';
 
 /// A row of optional enrichment chips pinned above the keyboard in the
 /// journal composer.

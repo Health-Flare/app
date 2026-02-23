@@ -1,6 +1,6 @@
 import 'package:isar_community/isar.dart';
 
-import 'app_settings.dart';
+import 'package:health_flare/data/database/app_settings.dart';
 
 /// Runs any pending data migrations after the Isar database is opened.
 ///

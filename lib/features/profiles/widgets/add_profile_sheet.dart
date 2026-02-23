@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../core/providers/profile_provider.dart';
-import '../../../models/profile.dart';
-import 'profile_avatar.dart';
+import 'package:health_flare/core/providers/profile_provider.dart';
+import 'package:health_flare/models/profile.dart';
+import 'package:health_flare/features/profiles/widgets/profile_avatar.dart';
 
 /// Modal bottom sheet for adding a new profile or editing an existing one.
 ///

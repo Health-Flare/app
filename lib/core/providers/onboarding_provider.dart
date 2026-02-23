@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'profile_provider.dart';
+import 'package:health_flare/core/providers/profile_provider.dart';
 
 /// Tracks whether the user has completed onboarding.
 ///

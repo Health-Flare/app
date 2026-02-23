@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/theme/app_colors.dart';
+import 'package:health_flare/core/theme/app_colors.dart';
 
 /// Zone 2 — Privacy & data promise.
 ///

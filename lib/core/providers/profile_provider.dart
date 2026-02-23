@@ -1,11 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar_community/isar.dart';
 
-import '../../data/database/app_settings.dart';
-import '../../data/models/journal_entry_isar.dart';
-import '../../data/models/profile_isar.dart';
-import '../../models/profile.dart';
-import 'database_provider.dart';
+import 'package:health_flare/data/database/app_settings.dart';
+import 'package:health_flare/data/models/journal_entry_isar.dart';
+import 'package:health_flare/data/models/profile_isar.dart';
+import 'package:health_flare/models/profile.dart';
+import 'package:health_flare/core/providers/database_provider.dart';
 
 // ---------------------------------------------------------------------------
 // Helpers — AppSettings access

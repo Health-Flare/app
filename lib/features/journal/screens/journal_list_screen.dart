@@ -3,12 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
-import '../../../core/providers/journal_provider.dart';
-import '../../../core/providers/profile_provider.dart';
-import '../../../core/router/app_router.dart';
-import '../../../models/journal_entry.dart';
-import '../widgets/journal_empty_state.dart';
-import '../widgets/journal_entry_card.dart';
+import 'package:health_flare/core/providers/journal_provider.dart';
+import 'package:health_flare/core/providers/profile_provider.dart';
+import 'package:health_flare/core/router/app_router.dart';
+import 'package:health_flare/models/journal_entry.dart';
+import 'package:health_flare/features/journal/widgets/journal_empty_state.dart';
+import 'package:health_flare/features/journal/widgets/journal_entry_card.dart';
 
 /// The journal tab — shows all journal entries for the active profile,
 /// grouped by month in reverse chronological order, with optional search.
@@ -101,7 +101,7 @@ class _JournalListScreenState extends ConsumerState<JournalListScreen> {
         ],
       ),
       body: !hasEntries
-          ? JournalEmptyState(isSearch: false)
+          ? const JournalEmptyState(isSearch: false)
           : entries.isEmpty && searchQuery.isNotEmpty
               ? JournalEmptyState(
                   isSearch: true,
