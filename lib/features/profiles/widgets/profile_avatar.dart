@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 
-import '../../../models/profile.dart';
+import 'package:health_flare/models/profile.dart';
 
 /// Reusable circular avatar for a [Profile].
 ///

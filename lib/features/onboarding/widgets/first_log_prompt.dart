@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../core/providers/onboarding_provider.dart';
-import '../../../core/router/app_router.dart';
+import 'package:health_flare/core/providers/onboarding_provider.dart';
+import 'package:health_flare/core/router/app_router.dart';
 
 /// First-log prompt — shown once, immediately after the first profile
 /// is created, over the dashboard.
@@ -58,8 +58,8 @@ class FirstLogPrompt extends ConsumerWidget {
 
             // Body
             Text(
-              "The best way to spot patterns is to start logging now, while "
-              "the day is fresh. What would you like to record first?",
+              'The best way to spot patterns is to start logging now, while '
+              'the day is fresh. What would you like to record first?',
               style: tt.bodyMedium?.copyWith(
                 color: cs.onSurfaceVariant,
                 height: 1.5,
@@ -137,7 +137,7 @@ class FirstLogPrompt extends ConsumerWidget {
             Center(
               child: Semantics(
                 button: true,
-                label: "Skip for now, explore the app on my own",
+                label: 'Skip for now, explore the app on my own',
                 child: TextButton(
                   onPressed: () {
                     ref.read(firstLogPromptProvider.notifier).dismiss();

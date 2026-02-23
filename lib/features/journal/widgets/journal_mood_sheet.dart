@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../models/journal_entry.dart';
+import 'package:health_flare/models/journal_entry.dart';
 
 /// Bottom sheet for picking a mood value.
 ///

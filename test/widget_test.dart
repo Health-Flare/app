@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:healthflare/main.dart';
-import 'package:healthflare/core/providers/onboarding_provider.dart';
+import 'package:health_flare/main.dart';
+import 'package:health_flare/core/providers/onboarding_provider.dart';
 
 void main() {
   group('Onboarding flow', () {

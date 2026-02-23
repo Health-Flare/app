@@ -1,6 +1,6 @@
 import 'package:isar_community/isar.dart';
 
-import '../../models/journal_entry.dart';
+import 'package:health_flare/models/journal_entry.dart';
 
 part 'journal_entry_isar.g.dart';
 
