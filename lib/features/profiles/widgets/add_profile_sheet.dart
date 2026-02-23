@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../../core/providers/profile_provider.dart';
 import '../../../models/profile.dart';
@@ -27,7 +30,10 @@ class _AddProfileSheetState extends ConsumerState<AddProfileSheet> {
   final _dobController = TextEditingController();
 
   DateTime? _dateOfBirth;
+  String? _avatarPath;
   bool _isSaving = false;
+
+  final _picker = ImagePicker();
 
   bool get _isEditMode => widget.existing != null;
 
@@ -42,6 +48,7 @@ class _AddProfileSheetState extends ConsumerState<AddProfileSheet> {
       _dateOfBirth = existing!.dateOfBirth;
       _dobController.text = _formatDate(_dateOfBirth!);
     }
+    _avatarPath = existing?.avatarPath;
   }
 
   @override
@@ -73,6 +80,17 @@ class _AddProfileSheetState extends ConsumerState<AddProfileSheet> {
     });
   }
 
+  Future<void> _pickAvatar(ImageSource source) async {
+    final file = await _picker.pickImage(
+      source: source,
+      maxWidth: 512,
+      maxHeight: 512,
+      imageQuality: 85,
+    );
+    if (file == null || !mounted) return;
+    setState(() => _avatarPath = file.path);
+  }
+
   Future<void> _save() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
     if (_isSaving) return;
@@ -85,6 +103,7 @@ class _AddProfileSheetState extends ConsumerState<AddProfileSheet> {
       final updated = widget.existing!.copyWith(
         name: _nameController.text.trim(),
         dateOfBirth: _dateOfBirth,
+        avatarPath: _avatarPath,
         clearDateOfBirth: _dateOfBirth == null,
       );
       await listNotifier.update(updated);
@@ -93,6 +112,7 @@ class _AddProfileSheetState extends ConsumerState<AddProfileSheet> {
       await listNotifier.add(
         name: _nameController.text.trim(),
         dateOfBirth: _dateOfBirth,
+        avatarPath: _avatarPath,
       );
     }
     if (!mounted) return;
@@ -139,14 +159,15 @@ class _AddProfileSheetState extends ConsumerState<AddProfileSheet> {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final tt = Theme.of(context).textTheme;
-    // Build a temporary profile for the avatar preview
+    // Build a temporary profile for the avatar preview.
+    // _avatarPath takes precedence — it reflects any newly picked image.
     final previewProfile = Profile(
       id: widget.existing?.id ?? 0,
       name: _nameController.text.trim().isEmpty
           ? '?'
           : _nameController.text.trim(),
       dateOfBirth: _dateOfBirth,
-      avatarPath: widget.existing?.avatarPath,
+      avatarPath: _avatarPath,
     );
 
     return Padding(
@@ -327,7 +348,7 @@ class _AddProfileSheetState extends ConsumerState<AddProfileSheet> {
               title: const Text('Take a photo'),
               onTap: () {
                 Navigator.pop(ctx);
-                // TODO: wire up image_picker camera source
+                _pickAvatar(ImageSource.camera);
               },
             ),
             ListTile(
@@ -335,7 +356,7 @@ class _AddProfileSheetState extends ConsumerState<AddProfileSheet> {
               title: const Text('Choose from library'),
               onTap: () {
                 Navigator.pop(ctx);
-                // TODO: wire up image_picker gallery source
+                _pickAvatar(ImageSource.gallery);
               },
             ),
             ListTile(
