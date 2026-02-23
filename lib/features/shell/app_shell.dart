@@ -44,16 +44,22 @@ class AppShell extends ConsumerWidget {
       selectedIcon: Icons.restaurant_rounded,
     ),
     (
-      route: AppRoutes.reports,
-      label: 'Reports',
-      icon: Icons.summarize_outlined,
-      selectedIcon: Icons.summarize_rounded,
+      route: AppRoutes.journal,
+      label: 'Journal',
+      icon: Icons.book_outlined,
+      selectedIcon: Icons.book_rounded,
     ),
   ];
 
   int _currentIndex(BuildContext context) {
     final location = GoRouterState.of(context).matchedLocation;
-    final index = _destinations.indexWhere((d) => d.route == location);
+    // Use prefix match so sub-routes (e.g. /journal/new, /journal/1/edit)
+    // keep the parent tab highlighted.
+    final index = _destinations.indexWhere(
+      (d) => d.route == '/'
+          ? location == '/'
+          : location == d.route || location.startsWith('${d.route}/'),
+    );
     return index < 0 ? 0 : index;
   }
 

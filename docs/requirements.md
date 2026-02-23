@@ -147,57 +147,98 @@ The user can view a chronological list of past meal entries for the active profi
 
 ---
 
-## 10. Reports and Data Export
+## 10. Journaling
 
-### 10.1 Report Scope
+### 10.1 Purpose
+
+A journal entry is an unstructured, timestamped personal narrative tied to a profile. It captures the qualitative experience of living with chronic illness — the texture of a day, concerns to raise with a doctor, observations that do not fit a field. Journal entries complement the structured data plane (symptoms, vitals, medications, meals) rather than replacing it.
+
+### 10.2 Creating a Journal Entry
+
+The user can write a journal entry for the active profile. The only required field is the body text. Every other field is optional enrichment.
+
+A journal entry includes:
+- Body text (required, free-form, no length limit enforced by the model)
+- Date and time (set automatically at the moment of saving; not shown as an editable field)
+- Title (optional, displayed as a heading in the list and detail views)
+- Mood (optional, 5-point scale: Great / Okay / Not great / Rough / Terrible)
+- Energy level (optional, numeric 1–5; 1 = exhausted, 5 = good energy)
+
+### 10.3 Composer Design
+
+The journal composer is optimised for low friction. When opened, the body text field is focused and the keyboard is raised immediately. The Save action is accessible without scrolling. The user can capture a thought in under 10 seconds.
+
+Optional enrichment fields (mood, energy) are always visible but unobtrusive. They do not block saving.
+
+### 10.4 Editing a Journal Entry
+
+The user can edit any journal entry. Editing updates an "edited at" timestamp but preserves the original "created at" timestamp. The edit view pre-fills all fields from the original entry.
+
+### 10.5 Viewing and Searching Journal Entries
+
+The user can view all journal entries for the active profile in reverse chronological order, grouped by month. The user can search entries by keyword. Search matches the body text and title. The user can tap any entry to read the full text.
+
+Body text in the detail view is selectable so the user can copy passages to share with a doctor or paste into other apps.
+
+### 10.6 Deleting a Journal Entry
+
+The user can delete any journal entry after an explicit confirmation. Deletion is permanent.
+
+---
+
+## 11. Reports and Data Export
+
+### 11.1 Report Scope
 The user can generate a report for the active profile. The user selects:
 - Date range (e.g. last 7 days, last 30 days, custom range)
 - Which data types to include (symptoms, vitals, medications, meals — any combination)
 
-### 10.2 Report Content
+### 11.2 Report Content
 A report contains a readable summary of the selected data, organised chronologically. Where relevant, it highlights patterns (e.g. meals followed by symptoms). Reports are intended to be useful for a doctor or specialist appointment.
 
-### 10.3 PDF Export
+### 11.3 PDF Export
 The user can export the report as a PDF. The PDF is formatted for easy reading and printing.
 
-### 10.4 Share Sheet
+### 11.4 Share Sheet
 The user can share the report (PDF or CSV) using the native OS share sheet, allowing them to send it via email, messages, AirDrop, or any installed app.
 
-### 10.5 CSV Export
+### 11.5 CSV Export
 The user can export raw data as a CSV file. Each data type (symptoms, vitals, medications, meals) is exported as a separate CSV or a multi-sheet file. This is intended for users who want to process or visualise their data in a spreadsheet.
 
 ---
 
-## 11. Navigation and General UX
+## 12. Navigation and General UX
 
-### 11.1 Primary Navigation
-The app has a clear primary navigation structure giving access to:
-- The current profile's dashboard / summary view
-- Symptom and vitals log
-- Medications
-- Meal log
-- Reports
+### 12.1 Primary Navigation
+The app has a clear primary navigation structure with five tabs:
+- Dashboard — the current profile's summary view
+- Symptoms — symptom and vitals log
+- Medications — medication and dose tracking
+- Meals — meal log
+- Journal — freeform personal journal
 
-### 11.2 Quick Entry
-The user should be able to log a new symptom, vital, dose, or meal within a minimal number of taps from any screen. Speed of entry is important — the app must not be cumbersome to use during a moment of need.
+Reports is accessible via an icon button in the Dashboard app bar. It does not occupy a primary navigation slot because it is used infrequently (typically before a doctor appointment) rather than daily.
 
-### 11.3 Profile Switcher
+### 12.2 Quick Entry
+The user should be able to log a new symptom, vital, dose, meal, or journal entry within a minimal number of taps from any screen. Speed of entry is important — the app must not be cumbersome to use during a moment of need.
+
+### 12.3 Profile Switcher
 Profile switching is accessible from a persistent location (e.g. top of the screen or a settings panel). The active profile name is always visible.
 
-### 11.4 Empty States
+### 12.4 Empty States
 When a user first opens the app or creates a new profile, they are guided clearly on what to do first. Empty screens must not feel broken.
 
 ---
 
-## 12. Onboarding
+## 13. Onboarding
 
 Onboarding is a first-class experience. It sets the tone for the entire relationship between the user and the app. It must be warm and encouraging — not clinical, not corporate. The user should finish onboarding feeling like Health Flare is on their side.
 
-### 12.1 Trigger
+### 13.1 Trigger
 
 Onboarding is shown exactly once: when the app is launched for the very first time and no profiles exist. It is never shown again after a profile has been created. It must not be skippable — the app cannot function without at least one profile.
 
-### 12.2 Structure: One Screen, Three Zones
+### 13.2 Structure: One Screen, Three Zones
 
 Onboarding is presented as a single, scrollable (or paged) screen divided into three zones. There is no multi-step wizard. The goal is minimal friction.
 
@@ -216,7 +257,7 @@ Onboarding is presented as a single, scrollable (or paged) screen divided into t
 - The form asks for a name (required), date of birth (optional), and avatar (optional).
 - A clear, encouraging call-to-action button completes onboarding and enters the app.
 
-### 12.3 Post-Setup: First-Log Prompt
+### 13.3 Post-Setup: First-Log Prompt
 
 Immediately after the first profile is created, the user is taken into the app and shown a focused prompt asking them to log their first entry. This is not a tutorial — it is an action. The prompt:
 - Briefly explains why logging regularly is valuable (habit formation, pattern detection).
@@ -226,7 +267,7 @@ Immediately after the first profile is created, the user is taken into the app a
 
 The first-log prompt appears only once per profile, immediately after creation.
 
-### 12.4 Tone and Language Principles
+### 13.4 Tone and Language Principles
 
 All onboarding copy must follow these principles:
 - **No medical jargon.** Write as if explaining to a smart friend, not a patient.
@@ -235,13 +276,13 @@ All onboarding copy must follow these principles:
 - **Honest and specific about privacy.** Vague promises ("we care about your privacy") are not acceptable. Every privacy claim must be specific and verifiable.
 - **Short sentences.** If a sentence needs a comma, consider splitting it.
 
-### 12.5 Accessibility
+### 13.5 Accessibility
 
 Onboarding must meet WCAG 2.1 AA contrast and text size requirements. All interactive elements must be reachable via keyboard (desktop/web) and screen reader compatible. No information must be conveyed by colour alone.
 
 ---
 
-## 13. Out of Scope for MVP
+## 14. Out of Scope for MVP
 
 The following are explicitly out of scope for the first release but should not be architected against:
 
@@ -256,7 +297,7 @@ The following are explicitly out of scope for the first release but should not b
 
 ---
 
-## 14. Glossary
+## 15. Glossary
 
 | Term | Definition |
 |---|---|
@@ -268,3 +309,4 @@ The following are explicitly out of scope for the first release but should not b
 | Dose log | A record that a medication dose was taken, skipped, or missed |
 | Reaction | A symptom or response that follows a meal, flagged by the user as a potential food trigger |
 | Report | A formatted summary of health data over a chosen time range |
+| Journal entry | A freeform, timestamped personal narrative for a profile. Body text is the only required field. |

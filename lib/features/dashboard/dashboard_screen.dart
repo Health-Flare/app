@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../core/providers/profile_provider.dart';
+import '../../core/router/app_router.dart';
 
 /// Dashboard — the home tab.
 ///
@@ -44,6 +46,13 @@ class DashboardScreen extends ConsumerWidget {
         // (the shell overlay covers this, but explicit access here gives
         // a larger tap target on the Dashboard specifically).
         actions: [
+          // Reports — moved here from the bottom nav to free up that slot
+          // for the Journal tab, which is accessed more frequently.
+          IconButton(
+            icon: const Icon(Icons.summarize_rounded),
+            tooltip: 'Reports',
+            onPressed: () => context.go(AppRoutes.reports),
+          ),
           // Leave space for the shell overlay avatar (top-right corner).
           // Padding prevents the title from underlapping the avatar.
           const SizedBox(width: 56),

@@ -1,14 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'core/providers/database_provider.dart';
+import 'core/providers/profile_provider.dart';
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
+import 'data/database/app_database.dart';
 
-void main() {
+void main() async {
+  // Required before any async work that touches Flutter bindings.
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Open the database and run migrations. Completes before any UI is shown.
+  final isar = await IsarService.open();
+
+  // Pre-load startup data before runApp so providers have real values on the
+  // first frame. This eliminates the async race where activeProfileProvider
+  // starts as null and the journal list filters to empty.
+  final startup = await IsarService.readStartupData(isar);
+
   runApp(
-    // ProviderScope is required at the root for Riverpod to function.
-    const ProviderScope(
-      child: HealthFlareApp(),
+    ProviderScope(
+      overrides: [
+        isarProvider.overrideWithValue(isar),
+        // Seed providers with persisted values so the first frame is correct.
+        profileListProvider.overrideWith(
+          () => ProfileListNotifier()..preload(startup.profiles),
+        ),
+        activeProfileProvider.overrideWith(
+          () => ActiveProfileNotifier()..preload(startup.activeProfileId),
+        ),
+      ],
+      child: const HealthFlareApp(),
     ),
   );
 }
