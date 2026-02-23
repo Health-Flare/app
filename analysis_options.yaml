@@ -1,28 +1,71 @@
-# This file configures the analyzer, which statically analyzes Dart code to
-# check for errors, warnings, and lints.
+# Dart/Flutter static analysis configuration for Health Flare.
 #
-# The issues identified by the analyzer are surfaced in the UI of Dart-enabled
-# IDEs (https://dart.dev/tools#ides-and-editors). The analyzer can also be
-# invoked from the command line by running `flutter analyze`.
+# Extends the flutter_lints baseline and adds stricter rules aligned with
+# docs/features/developer-experience.feature.
+#
+# Rule documentation: https://dart.dev/lints
 
-# The following line activates a set of recommended lints for Flutter apps,
-# packages, and plugins designed to encourage good coding practices.
 include: package:flutter_lints/flutter.yaml
 
-linter:
-  # The lint rules applied to this project can be customized in the
-  # section below to disable rules from the `package:flutter_lints/flutter.yaml`
-  # included above or to enable additional rules. A list of all available lints
-  # and their documentation is published at https://dart.dev/lints.
-  #
-  # Instead of disabling a lint rule for the entire project in the
-  # section below, it can also be suppressed for a single line of code
-  # or a specific dart file by using the `// ignore: name_of_lint` and
-  # `// ignore_for_file: name_of_lint` syntax on the line or in the file
-  # producing the lint.
-  rules:
-    # avoid_print: false  # Uncomment to disable the `avoid_print` rule
-    # prefer_single_quotes: true  # Uncomment to enable the `prefer_single_quotes` rule
+analyzer:
+  errors:
+    # Treat these as errors so the pipeline fails, not just warns.
+    avoid_dynamic_calls: error
+    cancel_subscriptions: error
+    close_sinks: error
+    unawaited_futures: error
 
-# Additional information about this file can be found at
-# https://dart.dev/guides/language/analysis-options
+  exclude:
+    # Exclude generated files from analysis.
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+    - "scripts/**"
+
+linter:
+  rules:
+    # ── Correctness ──────────────────────────────────────────────────────────
+
+    # Require every future to be awaited or explicitly unawaited().
+    # Prevents silent fire-and-forget async bugs.
+    unawaited_futures: true
+
+    # Disallow dynamic method calls — forces proper typing.
+    avoid_dynamic_calls: true
+
+    # Require stream subscriptions to be cancelled in dispose().
+    cancel_subscriptions: true
+
+    # Require sinks to be closed.
+    close_sinks: true
+
+    # No print() calls in production code — use a logger instead.
+    avoid_print: true
+
+    # ── Style & consistency ───────────────────────────────────────────────────
+
+    # Use package: imports everywhere — no relative imports in lib/.
+    always_use_package_imports: true
+
+    # Single quotes for strings (except where the string contains a single quote).
+    prefer_single_quotes: true
+
+    # Trailing commas on multi-line argument/parameter lists — improves diffs.
+    require_trailing_commas: true
+
+    # Replace unnecessary lambdas with tear-offs.
+    unnecessary_lambdas: true
+
+    # ── Declarations ─────────────────────────────────────────────────────────
+
+    # All public API members must have doc comments.
+    public_member_api_docs: false  # Aspirational — enable when coverage improves.
+
+    # Prefer const constructors wherever possible.
+    prefer_const_constructors: true
+    prefer_const_declarations: true
+    prefer_const_literals_to_create_immutables: true
+
+    # ── Null safety ───────────────────────────────────────────────────────────
+
+    # Prefer using ?? and ?. over explicit null checks where idiomatic.
+    prefer_null_aware_operators: true
