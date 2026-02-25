@@ -117,8 +117,8 @@ class JournalEntryListNotifier extends Notifier<List<JournalEntry>> {
 
 final journalEntryListProvider =
     NotifierProvider<JournalEntryListNotifier, List<JournalEntry>>(
-  JournalEntryListNotifier.new,
-);
+      JournalEntryListNotifier.new,
+    );
 
 // ---------------------------------------------------------------------------
 // Active profile's journal entries
@@ -131,9 +131,7 @@ final activeProfileJournalProvider = Provider<List<JournalEntry>>((ref) {
   final profileId = ref.watch(activeProfileProvider);
   if (profileId == null) return [];
   final entries = ref.watch(journalEntryListProvider);
-  return entries
-      .where((e) => e.profileId == profileId)
-      .toList()
+  return entries.where((e) => e.profileId == profileId).toList()
     ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
 });
 
@@ -170,10 +168,7 @@ final filteredJournalProvider = Provider<List<JournalEntry>>((ref) {
 ///
 /// Reset to [JournalComposerState.empty] when the composer closes.
 class JournalComposerState {
-  const JournalComposerState({
-    this.mood,
-    this.energyLevel,
-  });
+  const JournalComposerState({this.mood, this.energyLevel});
 
   final JournalMood? mood;
   final int? energyLevel;
@@ -193,5 +188,6 @@ class JournalComposerState {
   }
 }
 
-final journalComposerStateProvider =
-    StateProvider<JournalComposerState>((ref) => JournalComposerState.empty);
+final journalComposerStateProvider = StateProvider<JournalComposerState>(
+  (ref) => JournalComposerState.empty,
+);

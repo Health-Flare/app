@@ -39,16 +39,21 @@ abstract final class AppTheme {
   static const double radiusXl = 28; // Large feature cards, hero elements
   static const double radiusFull = 9999; // Pills, toggles, avatar circles
 
-  static const BorderRadius borderRadiusSm =
-      BorderRadius.all(Radius.circular(radiusSm));
-  static const BorderRadius borderRadiusMd =
-      BorderRadius.all(Radius.circular(radiusMd));
-  static const BorderRadius borderRadiusLg =
-      BorderRadius.all(Radius.circular(radiusLg));
-  static const BorderRadius borderRadiusXl =
-      BorderRadius.all(Radius.circular(radiusXl));
-  static const BorderRadius borderRadiusFull =
-      BorderRadius.all(Radius.circular(radiusFull));
+  static const BorderRadius borderRadiusSm = BorderRadius.all(
+    Radius.circular(radiusSm),
+  );
+  static const BorderRadius borderRadiusMd = BorderRadius.all(
+    Radius.circular(radiusMd),
+  );
+  static const BorderRadius borderRadiusLg = BorderRadius.all(
+    Radius.circular(radiusLg),
+  );
+  static const BorderRadius borderRadiusXl = BorderRadius.all(
+    Radius.circular(radiusXl),
+  );
+  static const BorderRadius borderRadiusFull = BorderRadius.all(
+    Radius.circular(radiusFull),
+  );
 
   // ---------------------------------------------------------------------------
   // Shadow Tokens (warm-toned)
@@ -77,11 +82,11 @@ abstract final class AppTheme {
 
   /// Focus ring (amber).
   static BoxShadow get shadowFocus => BoxShadow(
-        offset: Offset.zero,
-        blurRadius: 0,
-        spreadRadius: 3,
-        color: AppColors.flareAmber.withAlpha(89), // ~35% opacity
-      );
+    offset: Offset.zero,
+    blurRadius: 0,
+    spreadRadius: 3,
+    color: AppColors.flareAmber.withAlpha(89), // ~35% opacity
+  );
 
   // ---------------------------------------------------------------------------
   // Animation Durations
@@ -105,48 +110,48 @@ abstract final class AppTheme {
   // ---------------------------------------------------------------------------
 
   static ThemeData get light => ThemeData(
-        useMaterial3: true,
-        colorScheme: _lightColorScheme,
-        textTheme: AppTextStyles.textTheme,
-        scaffoldBackgroundColor: AppColors.softCloud,
-        appBarTheme: _appBarTheme(_lightColorScheme),
-        cardTheme: _cardTheme,
-        inputDecorationTheme: _inputDecorationTheme(_lightColorScheme),
-        elevatedButtonTheme: _elevatedButtonTheme(_lightColorScheme),
-        outlinedButtonTheme: _outlinedButtonTheme(_lightColorScheme),
-        textButtonTheme: _textButtonTheme(_lightColorScheme),
-        navigationBarTheme: _navigationBarTheme(_lightColorScheme),
-        dividerTheme: const DividerThemeData(
-          color: AppColors.warmLinen,
-          space: 1,
-          thickness: 1,
-        ),
-        chipTheme: _chipTheme(_lightColorScheme),
-      );
+    useMaterial3: true,
+    colorScheme: _lightColorScheme,
+    textTheme: AppTextStyles.textTheme,
+    scaffoldBackgroundColor: AppColors.softCloud,
+    appBarTheme: _appBarTheme(_lightColorScheme),
+    cardTheme: _cardTheme,
+    inputDecorationTheme: _inputDecorationTheme(_lightColorScheme),
+    elevatedButtonTheme: _elevatedButtonTheme(_lightColorScheme),
+    outlinedButtonTheme: _outlinedButtonTheme(_lightColorScheme),
+    textButtonTheme: _textButtonTheme(_lightColorScheme),
+    navigationBarTheme: _navigationBarTheme(_lightColorScheme),
+    dividerTheme: const DividerThemeData(
+      color: AppColors.warmLinen,
+      space: 1,
+      thickness: 1,
+    ),
+    chipTheme: _chipTheme(_lightColorScheme),
+  );
 
   // ---------------------------------------------------------------------------
   // Dark Theme (v2 scope — placeholder)
   // ---------------------------------------------------------------------------
 
   static ThemeData get dark => ThemeData(
-        useMaterial3: true,
-        colorScheme: _darkColorScheme,
-        textTheme: AppTextStyles.textTheme,
-        scaffoldBackgroundColor: AppColors.darkBackground,
-        appBarTheme: _appBarTheme(_darkColorScheme),
-        cardTheme: _cardTheme,
-        inputDecorationTheme: _inputDecorationTheme(_darkColorScheme),
-        elevatedButtonTheme: _elevatedButtonTheme(_darkColorScheme),
-        outlinedButtonTheme: _outlinedButtonTheme(_darkColorScheme),
-        textButtonTheme: _textButtonTheme(_darkColorScheme),
-        navigationBarTheme: _navigationBarTheme(_darkColorScheme),
-        dividerTheme: const DividerThemeData(
-          color: AppColors.grey700,
-          space: 1,
-          thickness: 1,
-        ),
-        chipTheme: _chipTheme(_darkColorScheme),
-      );
+    useMaterial3: true,
+    colorScheme: _darkColorScheme,
+    textTheme: AppTextStyles.textTheme,
+    scaffoldBackgroundColor: AppColors.darkBackground,
+    appBarTheme: _appBarTheme(_darkColorScheme),
+    cardTheme: _cardTheme,
+    inputDecorationTheme: _inputDecorationTheme(_darkColorScheme),
+    elevatedButtonTheme: _elevatedButtonTheme(_darkColorScheme),
+    outlinedButtonTheme: _outlinedButtonTheme(_darkColorScheme),
+    textButtonTheme: _textButtonTheme(_darkColorScheme),
+    navigationBarTheme: _navigationBarTheme(_darkColorScheme),
+    dividerTheme: const DividerThemeData(
+      color: AppColors.warmLinen,
+      space: 1,
+      thickness: 1,
+    ),
+    chipTheme: _chipTheme(_darkColorScheme),
+  );
 
   // ---------------------------------------------------------------------------
   // Colour Schemes
@@ -235,22 +240,20 @@ abstract final class AppTheme {
   // ---------------------------------------------------------------------------
 
   static AppBarTheme _appBarTheme(ColorScheme cs) => AppBarTheme(
-        backgroundColor: cs.surface,
-        foregroundColor: cs.onSurface,
-        elevation: 0,
-        scrolledUnderElevation: 1,
-        centerTitle: false,
-        titleTextStyle: AppTextStyles.headingSm.copyWith(
-          color: cs.onSurface,
-          fontWeight: FontWeight.w700,
-        ),
-      );
+    backgroundColor: cs.surface,
+    foregroundColor: cs.onSurface,
+    elevation: 0,
+    scrolledUnderElevation: 1,
+    centerTitle: false,
+    titleTextStyle: AppTextStyles.headingSm.copyWith(
+      color: cs.onSurface,
+      fontWeight: FontWeight.w700,
+    ),
+  );
 
   static const CardThemeData _cardTheme = CardThemeData(
     elevation: 0,
-    shape: RoundedRectangleBorder(
-      borderRadius: borderRadiusLg,
-    ),
+    shape: RoundedRectangleBorder(borderRadius: borderRadiusLg),
     margin: EdgeInsets.zero,
     clipBehavior: Clip.antiAlias,
   );
@@ -263,15 +266,15 @@ abstract final class AppTheme {
           horizontal: space4,
           vertical: 14,
         ),
-        border: OutlineInputBorder(
+        border: const OutlineInputBorder(
           borderRadius: borderRadiusMd,
           borderSide: BorderSide(color: AppColors.warmLinen, width: 1.5),
         ),
-        enabledBorder: OutlineInputBorder(
+        enabledBorder: const OutlineInputBorder(
           borderRadius: borderRadiusMd,
           borderSide: BorderSide(color: AppColors.warmLinen, width: 1.5),
         ),
-        focusedBorder: OutlineInputBorder(
+        focusedBorder: const OutlineInputBorder(
           borderRadius: borderRadiusMd,
           borderSide: BorderSide(color: AppColors.flareAmber, width: 1.5),
         ),
@@ -286,7 +289,7 @@ abstract final class AppTheme {
         labelStyle: AppTextStyles.caption.copyWith(
           color: cs.onSurface.withAlpha(179), // 70% opacity
         ),
-        floatingLabelStyle: TextStyle(color: AppColors.flareAmber),
+        floatingLabelStyle: const TextStyle(color: AppColors.flareAmber),
         hintStyle: AppTextStyles.bodyMd.copyWith(
           color: cs.onSurfaceVariant.withAlpha(153),
         ),
@@ -303,9 +306,7 @@ abstract final class AppTheme {
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           minimumSize: const Size(double.infinity, 48),
-          shape: const RoundedRectangleBorder(
-            borderRadius: borderRadiusMd,
-          ),
+          shape: const RoundedRectangleBorder(borderRadius: borderRadiusMd),
           textStyle: AppTextStyles.button,
         ),
       );
@@ -315,12 +316,10 @@ abstract final class AppTheme {
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.deepDusk,
           backgroundColor: AppColors.sunrisePeach,
-          side: BorderSide(color: AppColors.warmLinen),
+          side: const BorderSide(color: AppColors.warmLinen),
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           minimumSize: const Size(double.infinity, 48),
-          shape: const RoundedRectangleBorder(
-            borderRadius: borderRadiusMd,
-          ),
+          shape: const RoundedRectangleBorder(borderRadius: borderRadiusMd),
           textStyle: AppTextStyles.button,
         ),
       );
@@ -329,7 +328,10 @@ abstract final class AppTheme {
       TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: AppColors.deepDusk,
-          padding: const EdgeInsets.symmetric(horizontal: space2, vertical: space1),
+          padding: const EdgeInsets.symmetric(
+            horizontal: space2,
+            vertical: space1,
+          ),
           minimumSize: const Size(44, 44),
           textStyle: AppTextStyles.button,
         ),
@@ -341,12 +343,12 @@ abstract final class AppTheme {
         indicatorColor: AppColors.flareAmber.withAlpha(30),
         iconTheme: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
-            return IconThemeData(color: AppColors.flareAmber, size: 24);
+            return const IconThemeData(color: AppColors.flareAmber, size: 24);
           }
           return IconThemeData(color: cs.onSurfaceVariant, size: 24);
         }),
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
-          final base = AppTextStyles.caption;
+          const base = AppTextStyles.caption;
           if (states.contains(WidgetState.selected)) {
             return base.copyWith(
               color: AppColors.flareAmber,
@@ -362,13 +364,11 @@ abstract final class AppTheme {
       );
 
   static ChipThemeData _chipTheme(ColorScheme cs) => ChipThemeData(
-        backgroundColor: cs.surfaceContainerHighest,
-        selectedColor: AppColors.flareAmber.withAlpha(30),
-        labelStyle: AppTextStyles.label,
-        side: BorderSide.none,
-        shape: const RoundedRectangleBorder(
-          borderRadius: borderRadiusSm,
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: space3, vertical: radiusSm),
-      );
+    backgroundColor: cs.surfaceContainerHighest,
+    selectedColor: AppColors.flareAmber.withAlpha(30),
+    labelStyle: AppTextStyles.label,
+    side: BorderSide.none,
+    shape: const RoundedRectangleBorder(borderRadius: borderRadiusSm),
+    padding: const EdgeInsets.symmetric(horizontal: space3, vertical: radiusSm),
+  );
 }

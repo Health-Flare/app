@@ -103,11 +103,8 @@ class _JournalListScreenState extends ConsumerState<JournalListScreen> {
       body: !hasEntries
           ? const JournalEmptyState(isSearch: false)
           : entries.isEmpty && searchQuery.isNotEmpty
-              ? JournalEmptyState(
-                  isSearch: true,
-                  onClearSearch: _closeSearch,
-                )
-              : _GroupedEntryList(entries: entries),
+          ? JournalEmptyState(isSearch: true, onClearSearch: _closeSearch)
+          : _GroupedEntryList(entries: entries),
       floatingActionButton: FloatingActionButton(
         onPressed: () => context.push(AppRoutes.journalNew),
         tooltip: 'New journal entry',

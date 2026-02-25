@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
@@ -41,9 +39,7 @@ class _AddProfileSheetState extends ConsumerState<AddProfileSheet> {
   void initState() {
     super.initState();
     final existing = widget.existing;
-    _nameController = TextEditingController(
-      text: existing?.name ?? '',
-    );
+    _nameController = TextEditingController(text: existing?.name ?? '');
     if (existing?.dateOfBirth != null) {
       _dateOfBirth = existing!.dateOfBirth;
       _dobController.text = _formatDate(_dateOfBirth!);
@@ -233,7 +229,9 @@ class _AddProfileSheetState extends ConsumerState<AddProfileSheet> {
                                   color: cs.primary,
                                   shape: BoxShape.circle,
                                   border: Border.all(
-                                      color: cs.surface, width: 2),
+                                    color: cs.surface,
+                                    width: 2,
+                                  ),
                                 ),
                                 child: Icon(
                                   Icons.camera_alt_rounded,
@@ -259,8 +257,10 @@ class _AddProfileSheetState extends ConsumerState<AddProfileSheet> {
                     // Delete button (edit mode only)
                     if (_isEditMode)
                       IconButton(
-                        icon: Icon(Icons.delete_outline_rounded,
-                            color: cs.error),
+                        icon: Icon(
+                          Icons.delete_outline_rounded,
+                          color: cs.error,
+                        ),
                         tooltip: 'Remove profile',
                         onPressed: _deleteProfile,
                       ),

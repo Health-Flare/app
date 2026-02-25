@@ -39,7 +39,9 @@ class Profile {
     final parts = name.trim().split(RegExp(r'\s+'));
     if (parts.isEmpty) return '?';
     if (parts.length == 1) {
-      return parts.first.substring(0, parts.first.length.clamp(1, 2)).toUpperCase();
+      return parts.first
+          .substring(0, parts.first.length.clamp(1, 2))
+          .toUpperCase();
     }
     return '${parts.first[0]}${parts.last[0]}'.toUpperCase();
   }

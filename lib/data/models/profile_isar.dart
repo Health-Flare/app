@@ -25,11 +25,11 @@ class ProfileIsar {
 
   /// Convert to the immutable domain class used by the UI.
   Profile toDomain() => Profile(
-        id: id,
-        name: name,
-        dateOfBirth: dateOfBirth,
-        avatarPath: avatarPath,
-      );
+    id: id,
+    name: name,
+    dateOfBirth: dateOfBirth,
+    avatarPath: avatarPath,
+  );
 
   /// Construct from a domain [Profile] for writing to Isar.
   static ProfileIsar fromDomain(Profile p) => ProfileIsar()

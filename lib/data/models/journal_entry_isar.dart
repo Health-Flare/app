@@ -19,11 +19,8 @@ class JournalSnapshotIsar {
 
   // ── Conversion ────────────────────────────────────────────────────────────
 
-  JournalSnapshot toDomain() => JournalSnapshot(
-        body: body,
-        title: title,
-        savedAt: savedAt,
-      );
+  JournalSnapshot toDomain() =>
+      JournalSnapshot(body: body, title: title, savedAt: savedAt);
 
   static JournalSnapshotIsar fromDomain(JournalSnapshot s) =>
       JournalSnapshotIsar()
@@ -65,13 +62,13 @@ class JournalEntryIsar {
   // ── Conversion ────────────────────────────────────────────────────────────
 
   JournalEntry toDomain() => JournalEntry(
-        id: id,
-        profileId: profileId,
-        createdAt: createdAt,
-        snapshots: snapshots.map((s) => s.toDomain()).toList(),
-        mood: mood,
-        energyLevel: energyLevel,
-      );
+    id: id,
+    profileId: profileId,
+    createdAt: createdAt,
+    snapshots: snapshots.map((s) => s.toDomain()).toList(),
+    mood: mood,
+    energyLevel: energyLevel,
+  );
 
   static JournalEntryIsar fromDomain(JournalEntry e) => JournalEntryIsar()
     ..id = e.id

@@ -153,9 +153,7 @@ class _ProfileTile extends StatelessWidget {
           ? '${profile.name}, currently active profile'
           : profile.name,
       child: Material(
-        color: isActive
-            ? cs.primary.withAlpha(15)
-            : Colors.transparent,
+        color: isActive ? cs.primary.withAlpha(15) : Colors.transparent,
         borderRadius: BorderRadius.circular(14),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
@@ -192,8 +190,9 @@ class _ProfileTile extends StatelessWidget {
                         const SizedBox(height: 2),
                         Text(
                           profile.ageLabel!,
-                          style: tt.bodySmall
-                              ?.copyWith(color: cs.onSurfaceVariant),
+                          style: tt.bodySmall?.copyWith(
+                            color: cs.onSurfaceVariant,
+                          ),
                         ),
                       ],
                     ],

@@ -35,8 +35,7 @@ class JournalComposerScreen extends ConsumerStatefulWidget {
       _JournalComposerScreenState();
 }
 
-class _JournalComposerScreenState
-    extends ConsumerState<JournalComposerScreen> {
+class _JournalComposerScreenState extends ConsumerState<JournalComposerScreen> {
   final _bodyController = TextEditingController();
   final _titleController = TextEditingController();
   bool _titleVisible = false;
@@ -76,8 +75,7 @@ class _JournalComposerScreenState
 
     if (widget.entryId != null) {
       _entryId = widget.entryId;
-      final entry =
-          ref.read(journalEntryListProvider.notifier).byId(_entryId!);
+      final entry = ref.read(journalEntryListProvider.notifier).byId(_entryId!);
       if (entry != null) {
         _bodyController.text = entry.body;
         _lastSavedBody = entry.body;
@@ -88,8 +86,9 @@ class _JournalComposerScreenState
           _titleVisible = true;
         }
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          ref.read(journalComposerStateProvider.notifier).state =
-              JournalComposerState(
+          ref
+              .read(journalComposerStateProvider.notifier)
+              .state = JournalComposerState(
             mood: entry.moodValue,
             energyLevel: entry.energyLevel,
           );
@@ -151,7 +150,9 @@ class _JournalComposerScreenState
 
     if (_entryId == null) {
       // First save in create mode — Isar assigns the id.
-      _entryId = await ref.read(journalEntryListProvider.notifier).add(
+      _entryId = await ref
+          .read(journalEntryListProvider.notifier)
+          .add(
             profileId: profileId,
             createdAt: now,
             firstSnapshot: snapshot,
@@ -178,8 +179,9 @@ class _JournalComposerScreenState
 
     // After the Isar write, the watchLazy fires and _reload() updates state.
     // Read the freshly-loaded entry from the in-memory cache.
-    final restored =
-        ref.read(journalEntryListProvider.notifier).byId(_entryId!);
+    final restored = ref
+        .read(journalEntryListProvider.notifier)
+        .byId(_entryId!);
     if (restored == null) return;
 
     // Pause listener while restoring to avoid triggering another autosave.
@@ -271,12 +273,11 @@ class _JournalComposerScreenState
                   style: tt.labelSmall?.copyWith(color: cs.onSurfaceVariant),
                 )
               : _hasContent
-                  ? Text(
-                      'Saving…',
-                      style: tt.labelSmall
-                          ?.copyWith(color: cs.onSurfaceVariant),
-                    )
-                  : null,
+              ? Text(
+                  'Saving…',
+                  style: tt.labelSmall?.copyWith(color: cs.onSurfaceVariant),
+                )
+              : null,
           actions: [
             if (canUndo)
               Tooltip(
@@ -307,10 +308,12 @@ class _JournalComposerScreenState
                         decoration: InputDecoration(
                           hintText: 'Title (optional)',
                           border: InputBorder.none,
-                          hintStyle: tt.titleMedium
-                              ?.copyWith(color: cs.onSurfaceVariant),
-                          contentPadding:
-                              const EdgeInsets.symmetric(vertical: 8),
+                          hintStyle: tt.titleMedium?.copyWith(
+                            color: cs.onSurfaceVariant,
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            vertical: 8,
+                          ),
                         ),
                       )
                     else
@@ -336,10 +339,10 @@ class _JournalComposerScreenState
                       decoration: InputDecoration(
                         hintText: _hintText(),
                         border: InputBorder.none,
-                        hintStyle: tt.bodyLarge
-                            ?.copyWith(color: cs.onSurfaceVariant),
-                        contentPadding:
-                            const EdgeInsets.symmetric(vertical: 8),
+                        hintStyle: tt.bodyLarge?.copyWith(
+                          color: cs.onSurfaceVariant,
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(vertical: 8),
                       ),
                     ),
                   ],

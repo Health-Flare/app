@@ -11,10 +11,7 @@ import 'package:health_flare/data/database/migration_runner.dart';
 /// Startup data read before [runApp] so providers have real values on
 /// the first frame — avoids blank-frame flashes from async loads.
 class StartupData {
-  const StartupData({
-    required this.profiles,
-    required this.activeProfileId,
-  });
+  const StartupData({required this.profiles, required this.activeProfileId});
 
   final List<Profile> profiles;
   final int? activeProfileId;
@@ -41,11 +38,7 @@ class IsarService {
     }
 
     final isar = await Isar.open(
-      [
-        ProfileIsarSchema,
-        JournalEntryIsarSchema,
-        AppSettingsSchema,
-      ],
+      [ProfileIsarSchema, JournalEntryIsarSchema, AppSettingsSchema],
       directory: directory ?? '',
       name: 'healthflare',
     );

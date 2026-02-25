@@ -47,8 +47,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
   ref.onDispose(notifier.dispose);
 
   return GoRouter(
-    initialLocation:
-        ref.read(onboardingProvider) ? AppRoutes.home : AppRoutes.onboarding,
+    initialLocation: ref.read(onboardingProvider)
+        ? AppRoutes.home
+        : AppRoutes.onboarding,
     refreshListenable: notifier,
     redirect: (context, state) {
       final onboardingDone = ref.read(onboardingProvider);
@@ -91,30 +92,26 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: AppRoutes.symptoms,
             name: 'symptoms',
-            builder: (context, state) => const _PlaceholderScreen(
-              title: 'Symptoms & Vitals',
-            ),
+            builder: (context, state) =>
+                const _PlaceholderScreen(title: 'Symptoms & Vitals'),
           ),
           GoRoute(
             path: AppRoutes.medications,
             name: 'medications',
-            builder: (context, state) => const _PlaceholderScreen(
-              title: 'Medications',
-            ),
+            builder: (context, state) =>
+                const _PlaceholderScreen(title: 'Medications'),
           ),
           GoRoute(
             path: AppRoutes.meals,
             name: 'meals',
-            builder: (context, state) => const _PlaceholderScreen(
-              title: 'Meals',
-            ),
+            builder: (context, state) =>
+                const _PlaceholderScreen(title: 'Meals'),
           ),
           GoRoute(
             path: AppRoutes.reports,
             name: 'reports',
-            builder: (context, state) => const _PlaceholderScreen(
-              title: 'Reports',
-            ),
+            builder: (context, state) =>
+                const _PlaceholderScreen(title: 'Reports'),
           ),
           GoRoute(
             path: AppRoutes.journal,
@@ -167,9 +164,9 @@ class _PlaceholderScreen extends StatelessWidget {
       body: Center(
         child: Text(
           'Coming soon',
-          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: cs.onSurfaceVariant,
-              ),
+          style: Theme.of(
+            context,
+          ).textTheme.bodyLarge?.copyWith(color: cs.onSurfaceVariant),
         ),
       ),
     );
