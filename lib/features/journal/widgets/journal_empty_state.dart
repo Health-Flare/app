@@ -56,11 +56,7 @@ class JournalEmptyState extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.edit_note_rounded,
-              size: 64,
-              color: cs.primary,
-            ),
+            Icon(Icons.edit_note_rounded, size: 64, color: cs.primary),
             const SizedBox(height: 24),
             Text(
               'Nothing written yet.',

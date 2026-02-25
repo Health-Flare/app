@@ -98,10 +98,7 @@ class JournalDetailScreen extends ConsumerWidget {
             // Body — SelectableText so users can copy to share with doctor
             SelectableText(
               entry.body,
-              style: tt.bodyLarge?.copyWith(
-                color: cs.onSurface,
-                height: 1.6,
-              ),
+              style: tt.bodyLarge?.copyWith(color: cs.onSurface, height: 1.6),
             ),
 
             // Last-saved timestamp (shown when the entry has been edited after creation)

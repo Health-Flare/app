@@ -18,9 +18,7 @@ class DashboardScreen extends ConsumerWidget {
     final cs = Theme.of(context).colorScheme;
     final tt = Theme.of(context).textTheme;
 
-    final title = activeProfile != null
-        ? activeProfile.name
-        : 'Health Flare';
+    final title = activeProfile != null ? activeProfile.name : 'Health Flare';
 
     return Scaffold(
       appBar: AppBar(
@@ -36,10 +34,7 @@ class DashboardScreen extends ConsumerWidget {
                 letterSpacing: 0.5,
               ),
             ),
-            Text(
-              title,
-              style: tt.titleMedium?.copyWith(color: cs.onSurface),
-            ),
+            Text(title, style: tt.titleMedium?.copyWith(color: cs.onSurface)),
           ],
         ),
         // Profile switcher also accessible from the app bar icon
@@ -64,11 +59,7 @@ class DashboardScreen extends ConsumerWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                Icons.favorite_outline_rounded,
-                size: 64,
-                color: cs.primary,
-              ),
+              Icon(Icons.favorite_outline_rounded, size: 64, color: cs.primary),
               const SizedBox(height: 24),
               Text(
                 'Nothing logged yet.',

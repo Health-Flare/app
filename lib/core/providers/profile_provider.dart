@@ -134,8 +134,8 @@ class ProfileListNotifier extends Notifier<List<Profile>> {
 
 final profileListProvider =
     NotifierProvider<ProfileListNotifier, List<Profile>>(
-  ProfileListNotifier.new,
-);
+      ProfileListNotifier.new,
+    );
 
 // ---------------------------------------------------------------------------
 // Active profile id
@@ -180,8 +180,9 @@ class ActiveProfileNotifier extends Notifier<int?> {
   }
 }
 
-final activeProfileProvider =
-    NotifierProvider<ActiveProfileNotifier, int?>(ActiveProfileNotifier.new);
+final activeProfileProvider = NotifierProvider<ActiveProfileNotifier, int?>(
+  ActiveProfileNotifier.new,
+);
 
 // ---------------------------------------------------------------------------
 // Derived: the active Profile object

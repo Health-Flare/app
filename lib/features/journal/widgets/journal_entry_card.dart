@@ -11,11 +11,7 @@ import 'package:health_flare/models/journal_entry.dart';
 /// - Up to two lines of body snippet
 /// - Energy level dots if set
 class JournalEntryCard extends StatelessWidget {
-  const JournalEntryCard({
-    super.key,
-    required this.entry,
-    required this.onTap,
-  });
+  const JournalEntryCard({super.key, required this.entry, required this.onTap});
 
   final JournalEntry entry;
   final VoidCallback onTap;
@@ -46,9 +42,7 @@ class JournalEntryCard extends StatelessWidget {
                   Text(
                     '${_dateFormat.format(entry.createdAt)}  '
                     '${_timeFormat.format(entry.createdAt)}',
-                    style: tt.labelSmall?.copyWith(
-                      color: cs.onSurfaceVariant,
-                    ),
+                    style: tt.labelSmall?.copyWith(color: cs.onSurfaceVariant),
                   ),
                   const Spacer(),
                   if (mood != null)
@@ -93,9 +87,7 @@ class JournalEntryCard extends StatelessWidget {
                           height: 8,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: i < energy
-                                ? cs.primary
-                                : cs.outlineVariant,
+                            color: i < energy ? cs.primary : cs.outlineVariant,
                           ),
                         ),
                       );
@@ -116,7 +108,10 @@ class JournalEntryCard extends StatelessWidget {
       return entry.body.trim().isNotEmpty;
     }
     // No title set — the first line is the display title. Show additional lines.
-    final lines = entry.body.split('\n').where((l) => l.trim().isNotEmpty).toList();
+    final lines = entry.body
+        .split('\n')
+        .where((l) => l.trim().isNotEmpty)
+        .toList();
     return lines.length > 1;
   }
 
@@ -126,7 +121,10 @@ class JournalEntryCard extends StatelessWidget {
       return entry.body.trim();
     }
     // Skip the first non-empty line (used as title) and return the rest
-    final lines = entry.body.split('\n').where((l) => l.trim().isNotEmpty).toList();
+    final lines = entry.body
+        .split('\n')
+        .where((l) => l.trim().isNotEmpty)
+        .toList();
     if (lines.length <= 1) return '';
     return lines.skip(1).join(' ');
   }

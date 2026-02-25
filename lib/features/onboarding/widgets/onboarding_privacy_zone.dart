@@ -86,9 +86,7 @@ class _OnboardingPrivacyZoneState extends State<OnboardingPrivacyZone>
               Expanded(
                 child: Text(
                   'Everything stays on this device.',
-                  style: tt.headlineSmall?.copyWith(
-                    color: cs.onSurface,
-                  ),
+                  style: tt.headlineSmall?.copyWith(color: cs.onSurface),
                 ),
               ),
             ],
@@ -135,10 +133,7 @@ class _OnboardingPrivacyZoneState extends State<OnboardingPrivacyZone>
             axisAlignment: -1,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 20),
-                _ExpandedPrivacyDetail(),
-              ],
+              children: [const SizedBox(height: 20), _ExpandedPrivacyDetail()],
             ),
           ),
         ],
@@ -167,7 +162,9 @@ class _OnboardingPrivacyZoneState extends State<OnboardingPrivacyZone>
       ),
     ];
 
-    return facts.map((f) => _PrivacyFactRow(icon: f.icon, text: f.text)).toList();
+    return facts
+        .map((f) => _PrivacyFactRow(icon: f.icon, text: f.text))
+        .toList();
   }
 }
 
@@ -191,10 +188,7 @@ class _PrivacyFactRow extends StatelessWidget {
           Expanded(
             child: Text(
               text,
-              style: tt.bodyMedium?.copyWith(
-                color: cs.onSurface,
-                height: 1.5,
-              ),
+              style: tt.bodyMedium?.copyWith(color: cs.onSurface, height: 1.5),
             ),
           ),
         ],
@@ -249,16 +243,18 @@ class _ExpandedPrivacyDetail extends StatelessWidget {
             style: tt.titleSmall?.copyWith(color: cs.onSurface),
           ),
           const SizedBox(height: 16),
-          ...paragraphs.expand((p) => [
-                Text(
-                  p,
-                  style: tt.bodyMedium?.copyWith(
-                    color: cs.onSurfaceVariant,
-                    height: 1.6,
-                  ),
+          ...paragraphs.expand(
+            (p) => [
+              Text(
+                p,
+                style: tt.bodyMedium?.copyWith(
+                  color: cs.onSurfaceVariant,
+                  height: 1.6,
                 ),
-                const SizedBox(height: 12),
-              ]),
+              ),
+              const SizedBox(height: 12),
+            ],
+          ),
         ],
       ),
     );

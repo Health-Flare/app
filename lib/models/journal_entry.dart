@@ -7,11 +7,7 @@
 /// When the Isar data layer is added, snapshots will be stored as an
 /// embedded list (Isar supports embedded objects) or a related collection.
 class JournalSnapshot {
-  JournalSnapshot({
-    required this.body,
-    required this.savedAt,
-    this.title,
-  });
+  JournalSnapshot({required this.body, required this.savedAt, this.title});
 
   /// The body text at the time of this save.
   final String body;
@@ -85,19 +81,16 @@ class JournalEntry {
   /// True if the entry has been edited (more than one snapshot exists, or
   /// the single snapshot's savedAt differs from createdAt).
   bool get wasEdited =>
-      snapshots.length > 1 ||
-      snapshots.first.savedAt != createdAt;
+      snapshots.length > 1 || snapshots.first.savedAt != createdAt;
 
   /// Returns the mood as a typed enum, or null if none was set.
-  JournalMood? get moodValue =>
-      mood != null ? JournalMood.values[mood!] : null;
+  JournalMood? get moodValue => mood != null ? JournalMood.values[mood!] : null;
 
   /// Returns the first non-empty line of [body], truncated to 80 characters.
   String get previewText {
-    final first = body.split('\n').firstWhere(
-      (l) => l.trim().isNotEmpty,
-      orElse: () => '',
-    );
+    final first = body
+        .split('\n')
+        .firstWhere((l) => l.trim().isNotEmpty, orElse: () => '');
     if (first.length <= 80) return first;
     return '${first.substring(0, 77)}…';
   }
@@ -160,8 +153,7 @@ class JournalEntry {
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is JournalEntry && other.id == id);
+      identical(this, other) || (other is JournalEntry && other.id == id);
 
   @override
   int get hashCode => id.hashCode;
@@ -179,31 +171,41 @@ class JournalEntry {
 ///
 /// Stored as the enum index (int) for Isar compatibility.
 enum JournalMood {
-  great,     // index 0
-  okay,      // index 1
-  notGreat,  // index 2
-  rough,     // index 3
-  terrible,  // index 4
+  great, // index 0
+  okay, // index 1
+  notGreat, // index 2
+  rough, // index 3
+  terrible, // index 4
 }
 
 extension JournalMoodDisplay on JournalMood {
   String get emoji {
     switch (this) {
-      case JournalMood.great:    return '😊';
-      case JournalMood.okay:     return '🙂';
-      case JournalMood.notGreat: return '😐';
-      case JournalMood.rough:    return '😔';
-      case JournalMood.terrible: return '😞';
+      case JournalMood.great:
+        return '😊';
+      case JournalMood.okay:
+        return '🙂';
+      case JournalMood.notGreat:
+        return '😐';
+      case JournalMood.rough:
+        return '😔';
+      case JournalMood.terrible:
+        return '😞';
     }
   }
 
   String get label {
     switch (this) {
-      case JournalMood.great:    return 'Great';
-      case JournalMood.okay:     return 'Okay';
-      case JournalMood.notGreat: return 'Not great';
-      case JournalMood.rough:    return 'Rough';
-      case JournalMood.terrible: return 'Terrible';
+      case JournalMood.great:
+        return 'Great';
+      case JournalMood.okay:
+        return 'Okay';
+      case JournalMood.notGreat:
+        return 'Not great';
+      case JournalMood.rough:
+        return 'Rough';
+      case JournalMood.terrible:
+        return 'Terrible';
     }
   }
 }

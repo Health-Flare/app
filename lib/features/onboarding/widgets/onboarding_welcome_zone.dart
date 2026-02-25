@@ -24,13 +24,10 @@ class _OnboardingWelcomeZoneState extends State<OnboardingWelcomeZone>
       vsync: this,
       duration: const Duration(milliseconds: 900),
     )..repeat(reverse: true);
-    _bounceAnimation = Tween<Offset>(
-      begin: Offset.zero,
-      end: const Offset(0, 0.35),
-    ).animate(CurvedAnimation(
-      parent: _bounceController,
-      curve: Curves.easeInOut,
-    ));
+    _bounceAnimation =
+        Tween<Offset>(begin: Offset.zero, end: const Offset(0, 0.35)).animate(
+          CurvedAnimation(parent: _bounceController, curve: Curves.easeInOut),
+        );
   }
 
   @override
@@ -50,10 +47,7 @@ class _OnboardingWelcomeZoneState extends State<OnboardingWelcomeZone>
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [
-            AppColors.primaryAction,
-            AppColors.secondaryAction,
-          ],
+          colors: [AppColors.primaryAction, AppColors.secondaryAction],
         ),
       ),
       child: SafeArea(

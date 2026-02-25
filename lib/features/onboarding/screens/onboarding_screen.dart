@@ -71,7 +71,9 @@ class _OnboardingBodyState extends ConsumerState<_OnboardingBody> {
 
     // Create the first profile and persist it to the database.
     // Isar assigns the id; the notifier makes it the active profile.
-    await ref.read(profileListProvider.notifier).add(
+    await ref
+        .read(profileListProvider.notifier)
+        .add(
           name: _nameController.text.trim(),
           dateOfBirth: dateOfBirth,
           avatarPath: avatarPath,

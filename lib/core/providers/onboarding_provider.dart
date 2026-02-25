@@ -22,8 +22,9 @@ class OnboardingNotifier extends Notifier<bool> {
   void markAlreadyComplete() {}
 }
 
-final onboardingProvider =
-    NotifierProvider<OnboardingNotifier, bool>(OnboardingNotifier.new);
+final onboardingProvider = NotifierProvider<OnboardingNotifier, bool>(
+  OnboardingNotifier.new,
+);
 
 /// Tracks whether the first-log prompt has been shown for the current session.
 /// Shown once per profile creation, dismissed permanently after first interaction.
@@ -35,5 +36,6 @@ class FirstLogPromptNotifier extends Notifier<bool> {
   void dismiss() => state = false;
 }
 
-final firstLogPromptProvider =
-    NotifierProvider<FirstLogPromptNotifier, bool>(FirstLogPromptNotifier.new);
+final firstLogPromptProvider = NotifierProvider<FirstLogPromptNotifier, bool>(
+  FirstLogPromptNotifier.new,
+);

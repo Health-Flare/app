@@ -81,7 +81,8 @@ class FirstLogPrompt extends ConsumerWidget {
                   emoji: '🩺',
                   label: 'A symptom',
                   sublabel: 'How are you feeling right now?',
-                  semanticsLabel: 'Log a symptom — how are you feeling right now?',
+                  semanticsLabel:
+                      'Log a symptom — how are you feeling right now?',
                   onTap: () {
                     ref.read(firstLogPromptProvider.notifier).dismiss();
                     Navigator.of(context).pop();
@@ -193,9 +194,7 @@ class _LogOptionCard extends StatelessWidget {
                 const Spacer(),
                 Text(
                   label,
-                  style: tt.titleSmall?.copyWith(
-                    color: cs.onSurface,
-                  ),
+                  style: tt.titleSmall?.copyWith(color: cs.onSurface),
                 ),
                 const SizedBox(height: 2),
                 Text(

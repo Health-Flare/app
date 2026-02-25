@@ -61,7 +61,9 @@ class JournalEnergySheet extends StatelessWidget {
                       duration: const Duration(milliseconds: 150),
                       width: 56,
                       padding: const EdgeInsets.symmetric(
-                          vertical: 12, horizontal: 8),
+                        vertical: 12,
+                        horizontal: 8,
+                      ),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(12),
                         color: isSelected

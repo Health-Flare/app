@@ -31,10 +31,8 @@ class JournalEnrichmentBar extends StatelessWidget {
   void _showMoodSheet(BuildContext context) {
     showModalBottomSheet<void>(
       context: context,
-      builder: (_) => JournalMoodSheet(
-        currentMood: mood,
-        onSelected: onMoodChanged,
-      ),
+      builder: (_) =>
+          JournalMoodSheet(currentMood: mood, onSelected: onMoodChanged),
     );
   }
 
@@ -55,9 +53,7 @@ class JournalEnrichmentBar extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: cs.surface,
-        border: Border(
-          top: BorderSide(color: cs.outlineVariant, width: 0.5),
-        ),
+        border: Border(top: BorderSide(color: cs.outlineVariant, width: 0.5)),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(

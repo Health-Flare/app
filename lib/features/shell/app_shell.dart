@@ -133,8 +133,11 @@ class _DefaultProfileButton extends StatelessWidget {
     return CircleAvatar(
       radius: 18,
       backgroundColor: cs.surfaceContainerHighest,
-      child: Icon(Icons.person_outline_rounded,
-          size: 20, color: cs.onSurfaceVariant),
+      child: Icon(
+        Icons.person_outline_rounded,
+        size: 20,
+        color: cs.onSurfaceVariant,
+      ),
     );
   }
 }
