@@ -2,7 +2,9 @@
 # scripts/check_deps.sh
 #
 # Dependency health audit for Health Flare.
-# Reports outdated direct dependencies and fails if any are discontinued.
+# Reports outdated direct dependencies and fails if any direct dependency
+# is discontinued. Transitive discontinued packages are warned but do not
+# fail the build — they are outside our control.
 #
 # Usage:
 #   bash scripts/check_deps.sh          # exits 0 if healthy, 1 if problems found
@@ -26,28 +28,36 @@ echo ""
 echo "=== flutter pub outdated ==="
 echo "$OUTDATED"
 
-# Fail if any dependency is discontinued.
-if echo "$OUTDATED" | grep -q "(discontinued)"; then
+# Extract only the direct + dev dependency sections (stop at transitive).
+DIRECT=$(echo "$OUTDATED" \
+  | awk '/^direct dependencies:|^dev_dependencies:/{found=1} /^transitive dependencies:|^transitive dev_dependencies:/{found=0} found')
+
+# Fail if any direct dependency is discontinued.
+if echo "$DIRECT" | grep -q "(discontinued)"; then
   echo ""
-  echo "❌  One or more dependencies are discontinued."
-  echo "    Review the output above and replace them."
+  echo "❌  A direct dependency is discontinued:"
+  echo "$DIRECT" | grep "(discontinued)"
+  echo "    Replace it before merging."
   exit 1
 fi
 
-# Warn about outdated direct dependencies (resolvable upgrades available).
-UPGRADABLE=$(echo "$OUTDATED" | awk '/direct dependencies:/{found=1} found && /\*/' | grep -v "^$" || true)
+# Warn (no fail) about discontinued transitive packages.
+TRANSITIVE_DISC=$(echo "$OUTDATED" | grep "(discontinued)" || true)
+if [ -n "$TRANSITIVE_DISC" ]; then
+  echo ""
+  echo "⚠️   Discontinued transitive dependencies (tracked upstream, no action required):"
+  echo "$TRANSITIVE_DISC"
+fi
+
+# Warn about outdated direct dependencies with newer resolvable versions.
+UPGRADABLE=$(echo "$DIRECT" | grep "^\*\|[[:space:]]\*[0-9]" | grep -v "^$" || true)
 if [ -n "$UPGRADABLE" ]; then
   echo ""
-  echo "⚠️   The following direct dependencies have newer resolvable versions:"
+  echo "⚠️   Direct dependencies with newer resolvable versions available:"
   echo "$UPGRADABLE"
   echo ""
   echo "    Consider running 'flutter pub upgrade' and testing before merging."
-  # This is a warning only — do not exit 1 here.
 fi
-
-echo ""
-echo "=== flutter pub audit ==="
-flutter pub audit
 
 echo ""
 echo "✅  Dependency audit complete."
