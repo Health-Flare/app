@@ -1,7 +1,7 @@
 # Health Flare
 
 
-[<img src="assets/images/HealthFlare Banner Light.png">](assets/images/HealthFlare Banner Light.png)
+<img src="assets/images/HealthFlare Banner Light.png">
 
 **A calm, private health companion for people living with chronic illness.**
 
