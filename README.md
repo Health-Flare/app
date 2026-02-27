@@ -1,5 +1,8 @@
 # Health Flare
 
+
+[<img src="assets/images/HealthFlare Banner Light.png">](assets/images/HealthFlare Banner Light.png)
+
 **A calm, private health companion for people living with chronic illness.**
 
 Health Flare makes it easy to record and review your own health data — or the health data of someone you care for. Log symptoms, vitals, medications, meals, and journal entries in one place, then walk into your next appointment with a clear, organised picture of how you've really been feeling.
