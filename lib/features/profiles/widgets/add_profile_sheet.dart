@@ -155,6 +155,7 @@ class _AddProfileSheetState extends ConsumerState<AddProfileSheet> {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final tt = Theme.of(context).textTheme;
+    final profileCount = ref.watch(profileListProvider).length;
     // Build a temporary profile for the avatar preview.
     // _avatarPath takes precedence — it reflects any newly picked image.
     final previewProfile = Profile(
@@ -254,8 +255,8 @@ class _AddProfileSheetState extends ConsumerState<AddProfileSheet> {
                       ),
                     ),
 
-                    // Delete button (edit mode only)
-                    if (_isEditMode)
+                    // Delete button (edit mode only, hidden when only profile)
+                    if (_isEditMode && profileCount > 1)
                       IconButton(
                         icon: Icon(
                           Icons.delete_outline_rounded,
