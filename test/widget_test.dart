@@ -1,70 +1,122 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:health_flare/main.dart';
+import 'package:health_flare/core/providers/condition_provider.dart';
 import 'package:health_flare/core/providers/onboarding_provider.dart';
+import 'package:health_flare/core/providers/profile_provider.dart';
+import 'package:health_flare/models/condition.dart';
+import 'package:health_flare/models/profile.dart';
+import 'package:health_flare/models/symptom.dart';
+import 'package:health_flare/models/user_condition.dart';
+import 'package:health_flare/models/user_symptom.dart';
+
+// ---------------------------------------------------------------------------
+// Fake notifiers — skip Isar by overriding build()
+// ---------------------------------------------------------------------------
+
+class _FakeProfileList extends ProfileListNotifier {
+  final List<Profile> _profiles;
+  _FakeProfileList([this._profiles = const []]);
+
+  @override
+  List<Profile> build() => _profiles;
+}
+
+class _FakeActiveProfile extends ActiveProfileNotifier {
+  final int? _id;
+  _FakeActiveProfile([this._id]);
+
+  @override
+  int? build() => _id;
+}
+
+class _FakeConditionCatalog extends ConditionCatalogNotifier {
+  @override
+  List<Condition> build() => [];
+}
+
+class _FakeSymptomCatalog extends SymptomCatalogNotifier {
+  @override
+  List<Symptom> build() => [];
+}
+
+class _FakeUserConditions extends UserConditionListNotifier {
+  @override
+  List<UserCondition> build() => [];
+}
+
+class _FakeUserSymptoms extends UserSymptomListNotifier {
+  @override
+  List<UserSymptom> build() => [];
+}
+
+class _FakeFirstLogPrompt extends FirstLogPromptNotifier {
+  @override
+  bool build() => false;
+}
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+/// All overrides needed to run HealthFlareApp without a real Isar DB.
+List<Override> _appOverrides({
+  List<Profile> profiles = const [],
+  int? activeProfileId,
+}) => [
+  profileListProvider.overrideWith(() => _FakeProfileList(profiles)),
+  activeProfileProvider.overrideWith(() => _FakeActiveProfile(activeProfileId)),
+  conditionCatalogProvider.overrideWith(_FakeConditionCatalog.new),
+  symptomCatalogProvider.overrideWith(_FakeSymptomCatalog.new),
+  userConditionListProvider.overrideWith(_FakeUserConditions.new),
+  userSymptomListProvider.overrideWith(_FakeUserSymptoms.new),
+  firstLogPromptProvider.overrideWith(_FakeFirstLogPrompt.new),
+];
+
+// ---------------------------------------------------------------------------
+// Tests — routing / app-level behaviour
+//
+// Form-level tests (CTA enabled/disabled, whitespace validation) are in
+// test/widget/onboarding_validation_test.dart, which pumps OnboardingProfileZone
+// directly and avoids the off-screen scroll issue in the full app.
+// ---------------------------------------------------------------------------
 
 void main() {
-  group('Onboarding flow', () {
+  group('App routing', () {
     testWidgets('shows onboarding screen when no profile exists', (
       tester,
     ) async {
-      await tester.pumpWidget(const ProviderScope(child: HealthFlareApp()));
-      await tester.pumpAndSettle();
-
-      // Zone 1 welcome headline should be visible
-      expect(find.text('Your health story,\nin your hands.'), findsOneWidget);
-    });
-
-    testWidgets('CTA button is disabled when name field is empty', (
-      tester,
-    ) async {
-      await tester.pumpWidget(const ProviderScope(child: HealthFlareApp()));
-      await tester.pumpAndSettle();
-
-      final ctaButton = find.widgetWithText(
-        ElevatedButton,
-        'Create profile and get started  →',
-      );
-      expect(ctaButton, findsOneWidget);
-
-      final button = tester.widget<ElevatedButton>(ctaButton);
-      expect(button.onPressed, isNull);
-    });
-
-    testWidgets('CTA button enables once a name is entered', (tester) async {
-      await tester.pumpWidget(const ProviderScope(child: HealthFlareApp()));
-      await tester.pumpAndSettle();
-
-      await tester.enterText(find.byType(TextFormField).first, 'Sarah');
-      await tester.pump();
-
-      final ctaButton = find.widgetWithText(
-        ElevatedButton,
-        'Create profile and get started  →',
-      );
-      final button = tester.widget<ElevatedButton>(ctaButton);
-      expect(button.onPressed, isNotNull);
-    });
-
-    testWidgets('skips onboarding when already complete', (tester) async {
       await tester.pumpWidget(
         ProviderScope(
-          overrides: [
-            // Simulate onboarding already done
-            onboardingProvider.overrideWith(() {
-              final notifier = OnboardingNotifier();
-              return notifier..markAlreadyComplete();
-            }),
-          ],
+          overrides: _appOverrides(),
           child: const HealthFlareApp(),
         ),
       );
-      await tester.pumpAndSettle();
+      // One pump handles post-frame callbacks. The repeating welcome animation
+      // means pumpAndSettle never settles — use pump(Duration) instead.
+      await tester.pump(const Duration(milliseconds: 100));
 
-      // Should land on the dashboard, not onboarding
-      expect(find.text('Health Flare'), findsWidgets);
+      expect(find.text('Your health story,\nin your hands.'), findsOneWidget);
+    });
+
+    testWidgets('skips onboarding and shows dashboard when profile exists', (
+      tester,
+    ) async {
+      final profile = Profile(id: 1, name: 'Sarah');
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: _appOverrides(
+            profiles: [profile],
+            activeProfileId: profile.id,
+          ),
+          child: const HealthFlareApp(),
+        ),
+      );
+      await tester.pump(const Duration(milliseconds: 100));
+
+      // Onboarding welcome text must not appear.
       expect(find.text('Your health story,\nin your hands.'), findsNothing);
     });
   });

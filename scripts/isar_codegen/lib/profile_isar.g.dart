@@ -27,8 +27,13 @@ const ProfileIsarSchema = CollectionSchema(
       name: r'dateOfBirth',
       type: IsarType.dateTime,
     ),
-    r'name': PropertySchema(
+    r'firstLogShown': PropertySchema(
       id: 2,
+      name: r'firstLogShown',
+      type: IsarType.bool,
+    ),
+    r'name': PropertySchema(
+      id: 3,
       name: r'name',
       type: IsarType.string,
     )
@@ -71,7 +76,8 @@ void _profileIsarSerialize(
 ) {
   writer.writeString(offsets[0], object.avatarPath);
   writer.writeDateTime(offsets[1], object.dateOfBirth);
-  writer.writeString(offsets[2], object.name);
+  writer.writeBool(offsets[2], object.firstLogShown);
+  writer.writeString(offsets[3], object.name);
 }
 
 ProfileIsar _profileIsarDeserialize(
@@ -83,8 +89,9 @@ ProfileIsar _profileIsarDeserialize(
   final object = ProfileIsar();
   object.avatarPath = reader.readStringOrNull(offsets[0]);
   object.dateOfBirth = reader.readDateTimeOrNull(offsets[1]);
+  object.firstLogShown = reader.readBool(offsets[2]);
   object.id = id;
-  object.name = reader.readString(offsets[2]);
+  object.name = reader.readString(offsets[3]);
   return object;
 }
 
@@ -100,6 +107,8 @@ P _profileIsarDeserializeProp<P>(
     case 1:
       return (reader.readDateTimeOrNull(offset)) as P;
     case 2:
+      return (reader.readBool(offset)) as P;
+    case 3:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -427,6 +436,16 @@ extension ProfileIsarQueryFilter
     });
   }
 
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
+      firstLogShownEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'firstLogShown',
+        value: value,
+      ));
+    });
+  }
+
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition> idEqualTo(
       Id value) {
     return QueryBuilder.apply(this, (query) {
@@ -644,6 +663,19 @@ extension ProfileIsarQuerySortBy
     });
   }
 
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy> sortByFirstLogShown() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'firstLogShown', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy>
+      sortByFirstLogShownDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'firstLogShown', Sort.desc);
+    });
+  }
+
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy> sortByName() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'name', Sort.asc);
@@ -680,6 +712,19 @@ extension ProfileIsarQuerySortThenBy
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy> thenByDateOfBirthDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'dateOfBirth', Sort.desc);
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy> thenByFirstLogShown() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'firstLogShown', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy>
+      thenByFirstLogShownDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'firstLogShown', Sort.desc);
     });
   }
 
@@ -723,6 +768,12 @@ extension ProfileIsarQueryWhereDistinct
     });
   }
 
+  QueryBuilder<ProfileIsar, ProfileIsar, QDistinct> distinctByFirstLogShown() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'firstLogShown');
+    });
+  }
+
   QueryBuilder<ProfileIsar, ProfileIsar, QDistinct> distinctByName(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -748,6 +799,12 @@ extension ProfileIsarQueryProperty
   QueryBuilder<ProfileIsar, DateTime?, QQueryOperations> dateOfBirthProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'dateOfBirth');
+    });
+  }
+
+  QueryBuilder<ProfileIsar, bool, QQueryOperations> firstLogShownProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'firstLogShown');
     });
   }
 

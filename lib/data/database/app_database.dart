@@ -3,8 +3,12 @@ import 'package:isar_community/isar.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'package:health_flare/models/profile.dart';
+import 'package:health_flare/data/models/condition_isar.dart';
 import 'package:health_flare/data/models/journal_entry_isar.dart';
 import 'package:health_flare/data/models/profile_isar.dart';
+import 'package:health_flare/data/models/symptom_isar.dart';
+import 'package:health_flare/data/models/user_condition_isar.dart';
+import 'package:health_flare/data/models/user_symptom_isar.dart';
 import 'package:health_flare/data/database/app_settings.dart';
 import 'package:health_flare/data/database/migration_runner.dart';
 
@@ -38,7 +42,15 @@ class IsarService {
     }
 
     final isar = await Isar.open(
-      [ProfileIsarSchema, JournalEntryIsarSchema, AppSettingsSchema],
+      [
+        ProfileIsarSchema,
+        JournalEntryIsarSchema,
+        AppSettingsSchema,
+        ConditionIsarSchema,
+        UserConditionIsarSchema,
+        SymptomIsarSchema,
+        UserSymptomIsarSchema,
+      ],
       directory: directory ?? '',
       name: 'healthflare',
     );

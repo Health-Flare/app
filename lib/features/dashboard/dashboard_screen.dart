@@ -2,27 +2,73 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:health_flare/core/providers/onboarding_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/core/router/app_router.dart';
+import 'package:health_flare/features/onboarding/widgets/first_log_prompt.dart';
 
 /// Dashboard — the home tab.
 ///
 /// Shows the active profile name in the app bar. All data sections
 /// will be scoped to the active profile once the data layer is wired up.
-class DashboardScreen extends ConsumerWidget {
+///
+/// Also owns the first-log prompt trigger: when [firstLogPromptProvider]
+/// becomes true (new profile created, not yet shown), it displays
+/// [FirstLogPrompt] as a modal bottom sheet once per profile.
+class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends ConsumerState<DashboardScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Check the provider state after the first frame is fully built.
+    // Handles the case where firstLogPromptProvider is already true before
+    // this widget mounts (async check in FirstLogPromptNotifier.build).
+    WidgetsBinding.instance.addPostFrameCallback((_) => _maybeShowFirstLog());
+  }
+
+  /// Shows [FirstLogPrompt] if [firstLogPromptProvider] is currently true.
+  ///
+  /// Marks the prompt as shown *before* displaying it so that any subsequent
+  /// route change or swipe-dismiss cannot trigger a second display.
+  Future<void> _maybeShowFirstLog() async {
+    if (!mounted) return;
+    if (!ref.read(firstLogPromptProvider)) return;
+
+    // Persist immediately — prevents re-show on swipe-dismiss or hot-restart.
+    await ref.read(firstLogPromptProvider.notifier).markShown();
+    if (!mounted) return;
+
+    final profile = ref.read(activeProfileDataProvider);
+    await showFirstLogPrompt(context, profileName: profile?.name ?? '');
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final activeProfile = ref.watch(activeProfileDataProvider);
     final cs = Theme.of(context).colorScheme;
     final tt = Theme.of(context).textTheme;
+
+    // Listen for subsequent transitions to true — handles the case where the
+    // active profile changes while on another tab (new profile created from
+    // profile switcher), then the user navigates back to the dashboard.
+    ref.listen<bool>(firstLogPromptProvider, (prev, next) {
+      if (next && !(prev ?? false)) {
+        WidgetsBinding.instance.addPostFrameCallback(
+          (_) => _maybeShowFirstLog(),
+        );
+      }
+    });
 
     final title = activeProfile != null ? activeProfile.name : 'Health Flare';
 
     return Scaffold(
       appBar: AppBar(
-        // Show profile name as the page title when a profile is active.
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
@@ -37,19 +83,13 @@ class DashboardScreen extends ConsumerWidget {
             Text(title, style: tt.titleMedium?.copyWith(color: cs.onSurface)),
           ],
         ),
-        // Profile switcher also accessible from the app bar icon
-        // (the shell overlay covers this, but explicit access here gives
-        // a larger tap target on the Dashboard specifically).
         actions: [
-          // Reports — moved here from the bottom nav to free up that slot
-          // for the Journal tab, which is accessed more frequently.
           IconButton(
             icon: const Icon(Icons.summarize_rounded),
             tooltip: 'Reports',
             onPressed: () => context.go(AppRoutes.reports),
           ),
           // Leave space for the shell overlay avatar (top-right corner).
-          // Padding prevents the title from underlapping the avatar.
           const SizedBox(width: 56),
         ],
       ),

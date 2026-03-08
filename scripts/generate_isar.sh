@@ -24,8 +24,12 @@ echo "→ Running isar_community_generator..."
 (cd "$CODEGEN_DIR" && dart run build_runner build --delete-conflicting-outputs)
 
 echo "→ Copying generated files to main project..."
-cp "$CODEGEN_DIR/lib/app_settings.g.dart"      "$REPO_ROOT/lib/data/database/app_settings.g.dart"
-cp "$CODEGEN_DIR/lib/profile_isar.g.dart"      "$REPO_ROOT/lib/data/models/profile_isar.g.dart"
-cp "$CODEGEN_DIR/lib/journal_entry_isar.g.dart" "$REPO_ROOT/lib/data/models/journal_entry_isar.g.dart"
+cp "$CODEGEN_DIR/lib/app_settings.g.dart"         "$REPO_ROOT/lib/data/database/app_settings.g.dart"
+cp "$CODEGEN_DIR/lib/profile_isar.g.dart"         "$REPO_ROOT/lib/data/models/profile_isar.g.dart"
+cp "$CODEGEN_DIR/lib/journal_entry_isar.g.dart"   "$REPO_ROOT/lib/data/models/journal_entry_isar.g.dart"
+cp "$CODEGEN_DIR/lib/condition_isar.g.dart"       "$REPO_ROOT/lib/data/models/condition_isar.g.dart"
+cp "$CODEGEN_DIR/lib/user_condition_isar.g.dart"  "$REPO_ROOT/lib/data/models/user_condition_isar.g.dart"
+cp "$CODEGEN_DIR/lib/symptom_isar.g.dart"         "$REPO_ROOT/lib/data/models/symptom_isar.g.dart"
+cp "$CODEGEN_DIR/lib/user_symptom_isar.g.dart"    "$REPO_ROOT/lib/data/models/user_symptom_isar.g.dart"
 
 echo "✓ Done. Generated files written to lib/data/."

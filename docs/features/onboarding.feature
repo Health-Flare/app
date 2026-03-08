@@ -89,6 +89,7 @@ Feature: Onboarding
     And the form contains a required name field
     And the form contains an optional date of birth field
     And the form contains an optional avatar or photo field
+    And the form contains an optional illness selector
     And there is a clearly labelled primary action button to complete setup
 
   Scenario: Complete onboarding with a name only
@@ -122,6 +123,19 @@ Feature: Onboarding
     Then the name input field has focus
     And on devices with a software keyboard the keyboard is visible
 
+  Scenario: Profile name containing only whitespace is rejected
+    Given I am on the onboarding screen
+    When I enter "   " in the name field
+    Then the primary action button remains disabled
+    And no profile is created
+
+  Scenario: Photo library access denied shows a helpful inline message
+    Given I am on the onboarding screen
+    When I tap the avatar field
+    And I deny photo library permission
+    Then a brief message explains that photo access was not granted
+    And the profile creation form remains usable without a photo
+
   # ---------------------------------------------------------------------------
   # Post-setup: first-log prompt
   # ---------------------------------------------------------------------------
@@ -133,20 +147,205 @@ Feature: Onboarding
     And the prompt is warm and encouraging in tone
     And the prompt briefly explains why logging regularly helps identify patterns over time
 
-  Scenario: First-log prompt offers four entry options
+  Scenario: First-log prompt offers five entry options
     Given the first-log prompt is visible
-    Then I can see four options:
-      | Option      |
-      | A symptom   |
-      | A vital     |
-      | A meal      |
-      | A medication|
+    Then I can see five options:
+      | Option        |
+      | An illness    |
+      | A symptom     |
+      | A vital       |
+      | A meal        |
+      | A medication  |
 
   Scenario: Tapping a first-log option opens the relevant entry form
     Given the first-log prompt is visible
     When I tap "A symptom"
     Then the new symptom entry form opens
     And when I save it I am returned to the dashboard
+
+  Scenario: Tapping "An illness" from the first-log prompt opens the illness entry form
+    Given the first-log prompt is visible
+    When I tap "An illness"
+    Then the first-log prompt closes
+    And the illness entry screen opens full-screen
+    And I can see a search bar at the top
+    And I can see a scrollable list of conditions below the search bar
+
+  # ---------------------------------------------------------------------------
+  # Illness entry screen — search and filter
+  # ---------------------------------------------------------------------------
+
+  Scenario: Condition list is shown in alphabetical order on the illness screen
+    Given the illness entry screen is open
+    And the search bar is empty
+    Then all conditions are listed in alphabetical order
+    And no conditions are pre-selected
+
+  Scenario: Typing in the search bar filters the condition list live
+    Given the illness entry screen is open
+    When I type "arth" in the search bar
+    Then the condition list updates immediately to show only conditions that contain "arth"
+    And conditions whose names begin with "arth" appear before conditions that merely contain "arth"
+    And within each group the conditions remain in alphabetical order
+
+  Scenario: Clearing the search bar restores the full alphabetical list
+    Given I have typed "arth" in the illness search bar
+    When I clear the search bar
+    Then the full condition list is shown in alphabetical order again
+
+  Scenario: Search is case-insensitive
+    Given the illness entry screen is open
+    When I type "CROHN" in the search bar
+    Then the condition list shows "Crohn's disease" as a result
+    And the match is not affected by the capitalisation I entered
+
+  # ---------------------------------------------------------------------------
+  # Illness entry screen — selecting one or more conditions
+  # ---------------------------------------------------------------------------
+
+  Scenario: Tapping a condition marks it as selected
+    Given the illness entry screen is open
+    When I tap "Arthritis" in the condition list
+    Then "Arthritis" is marked as selected with a filled check indicator
+    And "Arthritis" appears as a removable chip above the condition list
+
+  Scenario: Multiple conditions can be selected simultaneously
+    Given the illness entry screen is open
+    When I tap "Arthritis" in the condition list
+    And I tap "Fibromyalgia" in the condition list
+    Then both "Arthritis" and "Fibromyalgia" are marked as selected
+    And both appear as removable chips above the condition list
+
+  Scenario: Tapping the remove icon on a selected chip deselects the condition
+    Given I have selected "Arthritis" on the illness entry screen
+    When I tap the remove icon on the "Arthritis" chip
+    Then "Arthritis" is no longer marked as selected in the list
+    And the "Arthritis" chip is removed from the chip row
+
+  Scenario: Already-tracked conditions are excluded from the selectable list
+    Given the active profile is already tracking "Crohn's disease"
+    When I open the illness entry screen
+    Then "Crohn's disease" does not appear in the selectable condition list
+    And I cannot add it a second time
+
+  # ---------------------------------------------------------------------------
+  # Illness entry screen — custom condition entry
+  # ---------------------------------------------------------------------------
+
+  Scenario: Custom condition search text containing only whitespace shows no Add option
+    Given the illness entry screen is open
+    When I type "   " in the search bar
+    Then the "Add custom" option is not shown
+
+  Scenario: Searching for an exact catalogue match suppresses the Add custom option
+    Given the illness entry screen is open
+    When I type "ARTHRITIS" in the search bar
+    And "Arthritis" exists in the condition catalogue
+    Then the "Add custom" option is not shown
+    And "Arthritis" appears in the filtered results
+
+  Scenario: An "Add custom" option appears when no condition matches the search
+    Given the illness entry screen is open
+    When I type "Myalgic encephalomyelitis" in the search bar
+    And no existing condition exactly matches "Myalgic encephalomyelitis"
+    Then I see an option to add "Myalgic encephalomyelitis" as a custom illness
+
+  Scenario: Tapping "Add custom" creates and selects the custom condition
+    Given no condition matches my search text on the illness entry screen
+    When I tap the "Add custom" option for my search text
+    Then a new condition with that name is created in the catalogue with global = false
+    And the new condition is immediately selected
+    And it appears as a chip in the selected chips row
+    And the search bar is cleared
+
+  # ---------------------------------------------------------------------------
+  # Illness entry screen — common symptom quick-add
+  # ---------------------------------------------------------------------------
+
+  Scenario: The symptom quick-add section appears after at least one condition is selected
+    Given the illness entry screen is open
+    And no conditions are selected
+    Then the symptom quick-add section is not visible
+    When I select "Arthritis"
+    Then a "Common Symptoms" section becomes visible below the condition list
+    And I can see a descriptive label explaining that I can tap chips to add symptoms to track
+
+  Scenario: All catalogue symptoms are shown as tappable chips in the quick-add section
+    Given I have selected at least one condition on the illness entry screen
+    Then I can see the full symptom catalogue presented as filter chips
+    And the chips are arranged in a wrapping grid layout
+    And the chips are listed in alphabetical order
+
+  Scenario: The symptom chip list is filtered by the same search bar
+    Given I have selected at least one condition on the illness entry screen
+    When I type "pain" in the search bar
+    Then the condition list filters to conditions containing "pain"
+    And the symptom chip section also filters to symptoms containing "pain"
+
+  Scenario: Tapping a symptom chip marks it as added
+    Given the symptom quick-add section is visible
+    When I tap the "Fatigue" chip
+    Then the "Fatigue" chip is shown in its selected/added state
+    And a checkmark or filled style indicates it has been chosen
+
+  Scenario: Tapping a selected symptom chip removes it from the pending selection
+    Given I have tapped "Fatigue" and it is in its selected state
+    When I tap the "Fatigue" chip again
+    Then the "Fatigue" chip returns to its unselected state
+    And it will not be saved when I tap Done
+
+  Scenario: Already-tracked symptoms are shown as added and cannot be removed on this screen
+    Given the active profile is already tracking "Joint pain"
+    And the symptom quick-add section is visible
+    Then the "Joint pain" chip is shown in its added state
+    And tapping the "Joint pain" chip has no effect
+
+  Scenario: Symptom quick-add section remains visible with multiple conditions selected
+    Given I have selected "Arthritis" and "Lupus" on the illness entry screen
+    Then the symptom quick-add section is visible
+    And all catalogue symptoms are shown regardless of which conditions are selected
+
+  # ---------------------------------------------------------------------------
+  # Illness entry screen — saving and navigation
+  # ---------------------------------------------------------------------------
+
+  Scenario: Done button is enabled only when at least one condition or symptom is pending
+    Given the illness entry screen is open
+    And I have not selected any condition or symptom
+    Then the "Done" button is disabled
+
+  Scenario: Selecting a condition enables the Done button
+    Given the illness entry screen is open
+    When I tap "Arthritis"
+    Then the "Done" button becomes enabled
+
+  Scenario: Tapping Done saves all selected conditions to the active profile
+    Given I have selected "Arthritis" and "Fibromyalgia" on the illness entry screen
+    When I tap "Done"
+    Then a UserCondition record is created for "Arthritis" linked to the active profile
+    And a UserCondition record is created for "Fibromyalgia" linked to the active profile
+    And I am returned to the dashboard
+
+  Scenario: Tapping Done saves all selected symptoms to the active profile
+    Given I have selected "Arthritis" on the illness entry screen
+    And I have tapped the "Fatigue" and "Joint pain" symptom chips
+    When I tap "Done"
+    Then a UserSymptom record is created for "Fatigue" linked to the active profile
+    And a UserSymptom record is created for "Joint pain" linked to the active profile
+    And I am returned to the dashboard
+
+  Scenario: Tapping Done with both conditions and symptoms selected saves all
+    Given I have selected "Lupus" and tapped the "Fatigue" and "Rash" chips
+    When I tap "Done"
+    Then "Lupus" is saved as a tracked condition for the active profile
+    And "Fatigue" and "Rash" are saved as tracked symptoms for the active profile
+    And I am returned to the dashboard
+
+  Scenario: Navigating back from the illness screen without tapping Done discards all pending selections
+    Given I have selected "Arthritis" and the "Fatigue" chip on the illness entry screen
+    When I navigate back without tapping "Done"
+    Then no new UserCondition or UserSymptom records are created
+    And the active profile's tracked conditions and symptoms are unchanged
 
   Scenario: Tapping "A vital" from the first-log prompt opens the vital entry form
     Given the first-log prompt is visible
@@ -162,6 +361,13 @@ Feature: Onboarding
     Given the first-log prompt is visible
     When I tap "A medication"
     Then the add medication form opens
+
+  Scenario: Closing an entry form without saving does not re-show the first-log prompt
+    Given the first-log prompt is visible
+    When I tap "An illness"
+    And I navigate back from the illness screen without saving
+    Then I am returned to the dashboard
+    And the first-log prompt is not shown again
 
   Scenario: First-log prompt can be dismissed to explore freely
     Given the first-log prompt is visible

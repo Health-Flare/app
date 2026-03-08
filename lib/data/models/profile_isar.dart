@@ -21,6 +21,10 @@ class ProfileIsar {
 
   String? avatarPath;
 
+  /// Whether the first-log prompt has been shown for this profile.
+  /// Set to true the moment the prompt is displayed — never shown again after.
+  bool firstLogShown = false;
+
   // ── Conversion ────────────────────────────────────────────────────────────
 
   /// Convert to the immutable domain class used by the UI.
