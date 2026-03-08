@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:health_flare/features/illness/screens/illness_screen.dart';
 import 'package:health_flare/features/journal/screens/journal_composer_screen.dart';
 import 'package:health_flare/features/journal/screens/journal_detail_screen.dart';
 import 'package:health_flare/features/journal/screens/journal_list_screen.dart';
@@ -18,6 +19,7 @@ abstract final class AppRoutes {
   static const onboarding = '/onboarding';
   static const home = '/';
   static const dashboard = '/dashboard';
+  static const illness = '/illness';
   static const symptoms = '/symptoms';
   static const medications = '/medications';
   static const meals = '/meals';
@@ -88,6 +90,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             path: AppRoutes.dashboard,
             name: 'dashboard',
             builder: (context, state) => const DashboardScreen(),
+          ),
+          GoRoute(
+            path: AppRoutes.illness,
+            name: 'illness',
+            builder: (context, state) => const IllnessScreen(),
           ),
           GoRoute(
             path: AppRoutes.symptoms,

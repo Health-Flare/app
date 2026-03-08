@@ -8,8 +8,8 @@ import 'package:health_flare/core/router/app_router.dart';
 /// First-log prompt — shown once, immediately after the first profile
 /// is created, over the dashboard.
 ///
-/// Presents four option cards (Symptom, Vital, Meal, Medication) and a
-/// dismiss link. Tapping a card navigates to the relevant entry form.
+/// Presents five option cards (Illness, Symptom, Vital, Meal, Medication) and
+/// a dismiss link. Tapping a card navigates to the relevant entry form.
 /// Dismissing or completing an entry marks the prompt as done permanently.
 ///
 /// Copy source: docs/onboarding-copy.md › Post-Setup: First-Log Prompt
@@ -68,66 +68,88 @@ class FirstLogPrompt extends ConsumerWidget {
 
             const SizedBox(height: 28),
 
-            // Option cards grid
-            GridView.count(
-              crossAxisCount: 2,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              mainAxisSpacing: 12,
-              crossAxisSpacing: 12,
-              childAspectRatio: 1.35,
+            // Option cards — 2-column grid (illness spans full width on top)
+            Column(
               children: [
+                // Illness — full-width top card
                 _LogOptionCard(
-                  emoji: '🩺',
-                  label: 'A symptom',
-                  sublabel: 'How are you feeling right now?',
+                  emoji: '🏥',
+                  label: 'An illness',
+                  sublabel: 'Add conditions you want to track',
                   semanticsLabel:
-                      'Log a symptom — how are you feeling right now?',
+                      'Track an illness — add conditions you want to track',
+                  fullWidth: true,
                   onTap: () {
-                    ref.read(firstLogPromptProvider.notifier).dismiss();
+                    // DashboardScreen already called markShown() before
+                    // displaying this sheet, so dismiss() is a no-op here.
+                    // Pop the sheet first, then push the full illness screen.
                     Navigator.of(context).pop();
-                    context.go(AppRoutes.symptoms);
-                    // TODO: auto-open new symptom entry form
+                    context.push(AppRoutes.illness);
                   },
                 ),
-                _LogOptionCard(
-                  emoji: '📊',
-                  label: 'A vital',
-                  sublabel: 'Blood pressure, heart rate, and more',
-                  semanticsLabel:
-                      'Log a vital — blood pressure, heart rate, and more',
-                  onTap: () {
-                    ref.read(firstLogPromptProvider.notifier).dismiss();
-                    Navigator.of(context).pop();
-                    context.go(AppRoutes.symptoms);
-                    // TODO: auto-open new vital entry form
-                  },
-                ),
-                _LogOptionCard(
-                  emoji: '🍽️',
-                  label: 'A meal',
-                  sublabel: 'What did you last eat or drink?',
-                  semanticsLabel:
-                      'Log a meal — what did you last eat or drink?',
-                  onTap: () {
-                    ref.read(firstLogPromptProvider.notifier).dismiss();
-                    Navigator.of(context).pop();
-                    context.go(AppRoutes.meals);
-                    // TODO: auto-open new meal entry form
-                  },
-                ),
-                _LogOptionCard(
-                  emoji: '💊',
-                  label: 'A medication',
-                  sublabel: "Add something you're currently taking",
-                  semanticsLabel:
-                      "Log a medication — add something you're currently taking",
-                  onTap: () {
-                    ref.read(firstLogPromptProvider.notifier).dismiss();
-                    Navigator.of(context).pop();
-                    context.go(AppRoutes.medications);
-                    // TODO: auto-open add medication form
-                  },
+                const SizedBox(height: 12),
+                // 2 × 2 grid for remaining options
+                GridView.count(
+                  crossAxisCount: 2,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  mainAxisSpacing: 12,
+                  crossAxisSpacing: 12,
+                  childAspectRatio: 1.35,
+                  children: [
+                    _LogOptionCard(
+                      emoji: '🩺',
+                      label: 'A symptom',
+                      sublabel: 'How are you feeling right now?',
+                      semanticsLabel:
+                          'Log a symptom — how are you feeling right now?',
+                      onTap: () {
+                        ref.read(firstLogPromptProvider.notifier).dismiss();
+                        Navigator.of(context).pop();
+                        context.go(AppRoutes.symptoms);
+                        // TODO: auto-open new symptom entry form
+                      },
+                    ),
+                    _LogOptionCard(
+                      emoji: '📊',
+                      label: 'A vital',
+                      sublabel: 'Blood pressure, heart rate, and more',
+                      semanticsLabel:
+                          'Log a vital — blood pressure, heart rate, and more',
+                      onTap: () {
+                        ref.read(firstLogPromptProvider.notifier).dismiss();
+                        Navigator.of(context).pop();
+                        context.go(AppRoutes.symptoms);
+                        // TODO: auto-open new vital entry form
+                      },
+                    ),
+                    _LogOptionCard(
+                      emoji: '🍽️',
+                      label: 'A meal',
+                      sublabel: 'What did you last eat or drink?',
+                      semanticsLabel:
+                          'Log a meal — what did you last eat or drink?',
+                      onTap: () {
+                        ref.read(firstLogPromptProvider.notifier).dismiss();
+                        Navigator.of(context).pop();
+                        context.go(AppRoutes.meals);
+                        // TODO: auto-open new meal entry form
+                      },
+                    ),
+                    _LogOptionCard(
+                      emoji: '💊',
+                      label: 'A medication',
+                      sublabel: "Add something you're currently taking",
+                      semanticsLabel:
+                          "Log a medication — add something you're currently taking",
+                      onTap: () {
+                        ref.read(firstLogPromptProvider.notifier).dismiss();
+                        Navigator.of(context).pop();
+                        context.go(AppRoutes.medications);
+                        // TODO: auto-open add medication form
+                      },
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -163,6 +185,7 @@ class _LogOptionCard extends StatelessWidget {
     required this.sublabel,
     required this.semanticsLabel,
     required this.onTap,
+    this.fullWidth = false,
   });
 
   final String emoji;
@@ -171,12 +194,15 @@ class _LogOptionCard extends StatelessWidget {
   final String semanticsLabel;
   final VoidCallback onTap;
 
+  /// When true the card expands to full row width (used for the illness card).
+  final bool fullWidth;
+
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final tt = Theme.of(context).textTheme;
 
-    return Semantics(
+    final card = Semantics(
       button: true,
       label: semanticsLabel,
       child: Material(
@@ -187,31 +213,64 @@ class _LogOptionCard extends StatelessWidget {
           onTap: onTap,
           child: Padding(
             padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(emoji, style: const TextStyle(fontSize: 28)),
-                const Spacer(),
-                Text(
-                  label,
-                  style: tt.titleSmall?.copyWith(color: cs.onSurface),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  sublabel,
-                  style: tt.bodySmall?.copyWith(
-                    color: cs.onSurfaceVariant,
-                    height: 1.3,
+            child: fullWidth
+                ? Row(
+                    children: [
+                      Text(emoji, style: const TextStyle(fontSize: 28)),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              label,
+                              style: tt.titleSmall?.copyWith(
+                                color: cs.onSurface,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              sublabel,
+                              style: tt.bodySmall?.copyWith(
+                                color: cs.onSurfaceVariant,
+                                height: 1.3,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Icon(Icons.chevron_right, color: cs.onSurfaceVariant),
+                    ],
+                  )
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(emoji, style: const TextStyle(fontSize: 28)),
+                      const Spacer(),
+                      Text(
+                        label,
+                        style: tt.titleSmall?.copyWith(color: cs.onSurface),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        sublabel,
+                        style: tt.bodySmall?.copyWith(
+                          color: cs.onSurfaceVariant,
+                          height: 1.3,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
                   ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
           ),
         ),
       ),
     );
+
+    if (fullWidth) return SizedBox(width: double.infinity, child: card);
+    return card;
   }
 }
 
