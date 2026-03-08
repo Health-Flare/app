@@ -35,7 +35,15 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  integration_test:
+    sdk: flutter
   flutter_lints: ^6.0.0
+
+  # Testing
+  mocktail: ^1.0.4
+  bdd_widget_test: ^1.7.0
+  patrol: ^3.14.1
+  golden_toolkit: ^0.15.0
 
   # Code generation
   build_runner: ^2.4.13
