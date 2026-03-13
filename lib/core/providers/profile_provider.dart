@@ -89,10 +89,22 @@ class ProfileListNotifier extends Notifier<List<Profile>> {
   }
 
   /// Replace an existing profile by id.
+  ///
+  /// Uses read-modify-write so that internal-only Isar flags
+  /// ([ProfileIsar.firstLogShown], [ProfileIsar.weatherOptInShown]) are
+  /// preserved even when the domain model doesn't carry them.
   Future<void> update(Profile updated) async {
     final isar = ref.read(isarProvider);
     await isar.writeTxn(() async {
-      await isar.profileIsars.put(ProfileIsar.fromDomain(updated));
+      final existing =
+          await isar.profileIsars.get(updated.id) ?? ProfileIsar();
+      existing
+        ..id = updated.id
+        ..name = updated.name
+        ..dateOfBirth = updated.dateOfBirth
+        ..avatarPath = updated.avatarPath
+        ..weatherTrackingEnabled = updated.weatherTrackingEnabled;
+      await isar.profileIsars.put(existing);
     });
   }
 

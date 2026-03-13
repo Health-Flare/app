@@ -1,9 +1,12 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
+import 'package:health_flare/core/providers/condition_provider.dart';
 import 'package:health_flare/core/theme/app_colors.dart';
+import 'package:health_flare/models/condition.dart';
 
 /// Zone 3 — Profile creation form (inline, no navigation away).
 ///
@@ -12,7 +15,7 @@ import 'package:health_flare/core/theme/app_colors.dart';
 /// button "never disappears" (docs/onboarding-copy.md).
 ///
 /// Copy source: docs/onboarding-copy.md › Zone 3
-class OnboardingProfileZone extends StatefulWidget {
+class OnboardingProfileZone extends ConsumerStatefulWidget {
   const OnboardingProfileZone({
     super.key,
     required this.formKey,
@@ -30,37 +33,47 @@ class OnboardingProfileZone extends StatefulWidget {
   final FocusNode nameFocusNode;
   final bool isSubmitting;
 
-  /// Called when the user taps the CTA. Receives the optional date of birth
-  /// and avatar file path selected in this zone.
-  final void Function(DateTime? dateOfBirth, String? avatarPath) onSubmit;
+  /// Called when the user taps the CTA. Receives the optional date of birth,
+  /// avatar file path, and list of conditions selected during onboarding.
+  final void Function(
+    DateTime? dateOfBirth,
+    String? avatarPath,
+    List<Condition> conditions,
+  ) onSubmit;
 
   @override
-  State<OnboardingProfileZone> createState() => _OnboardingProfileZoneState();
+  ConsumerState<OnboardingProfileZone> createState() =>
+      _OnboardingProfileZoneState();
 }
 
-class _OnboardingProfileZoneState extends State<OnboardingProfileZone> {
-  // Tracks whether the CTA button should be enabled.
+class _OnboardingProfileZoneState
+    extends ConsumerState<OnboardingProfileZone> {
   bool _hasName = false;
-
-  // Holds the picked date of birth so it can be displayed and submitted.
   DateTime? _dateOfBirth;
-
-  // Holds the path of the picked avatar image.
   String? _avatarPath;
 
-  // Read-only controller that shows the formatted date in the DOB field.
   final _dobController = TextEditingController();
+  final _conditionSearchController = TextEditingController();
+  String _conditionQuery = '';
+
+  final List<Condition> _selectedConditions = [];
 
   @override
   void initState() {
     super.initState();
     widget.nameController.addListener(_onNameChanged);
+    _conditionSearchController.addListener(() {
+      setState(
+        () => _conditionQuery = _conditionSearchController.text.trim(),
+      );
+    });
   }
 
   @override
   void dispose() {
     widget.nameController.removeListener(_onNameChanged);
     _dobController.dispose();
+    _conditionSearchController.dispose();
     super.dispose();
   }
 
@@ -71,10 +84,33 @@ class _OnboardingProfileZoneState extends State<OnboardingProfileZone> {
     }
   }
 
+  List<Condition> _filteredResults(List<Condition> catalog) {
+    if (_conditionQuery.isEmpty) return [];
+    final selectedIds = _selectedConditions.map((c) => c.id).toSet();
+    final available = catalog.where((c) => !selectedIds.contains(c.id));
+    return rankSearch(available.toList(), _conditionQuery, (c) => c.name)
+        .take(6)
+        .toList();
+  }
+
+  void _selectCondition(Condition condition) {
+    setState(() {
+      _selectedConditions.add(condition);
+      _conditionSearchController.clear();
+      _conditionQuery = '';
+    });
+  }
+
+  void _removeCondition(Condition condition) {
+    setState(() => _selectedConditions.remove(condition));
+  }
+
   @override
   Widget build(BuildContext context) {
+    final catalog = ref.watch(conditionCatalogProvider);
     final cs = Theme.of(context).colorScheme;
     final tt = Theme.of(context).textTheme;
+    final results = _filteredResults(catalog);
 
     return Container(
       color: AppColors.surface,
@@ -159,6 +195,90 @@ class _OnboardingProfileZoneState extends State<OnboardingProfileZone> {
               onChanged: (path) => setState(() => _avatarPath = path),
             ),
 
+            const SizedBox(height: 32),
+
+            // ── Illness selector ────────────────────────────────────────────
+            Text(
+              'What are you managing?',
+              style: tt.bodyMedium?.copyWith(
+                color: cs.onSurface,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+
+            const SizedBox(height: 4),
+
+            Text(
+              'Optional — search and add the conditions you want to track',
+              style: tt.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+            ),
+
+            const SizedBox(height: 12),
+
+            // Selected condition chips
+            if (_selectedConditions.isNotEmpty) ...[
+              Wrap(
+                spacing: 8,
+                runSpacing: 4,
+                children: _selectedConditions
+                    .map(
+                      (c) => InputChip(
+                        label: Text(c.name),
+                        onDeleted: () => _removeCondition(c),
+                        deleteIcon: const Icon(Icons.cancel, size: 18),
+                        deleteIconColor: cs.onSurfaceVariant,
+                        backgroundColor: cs.surfaceContainerHighest,
+                        labelStyle: tt.bodySmall,
+                      ),
+                    )
+                    .toList(),
+              ),
+              const SizedBox(height: 10),
+            ],
+
+            // Condition search field
+            TextFormField(
+              key: const Key('onboarding_condition_search'),
+              controller: _conditionSearchController,
+              textInputAction: TextInputAction.done,
+              decoration: InputDecoration(
+                hintText: 'Search conditions...',
+                prefixIcon: const Icon(Icons.search, size: 20),
+                suffixIcon: _conditionQuery.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.close, size: 18),
+                        onPressed: () {
+                          _conditionSearchController.clear();
+                          setState(() => _conditionQuery = '');
+                        },
+                      )
+                    : null,
+              ),
+            ),
+
+            // Search results
+            if (results.isNotEmpty)
+              Container(
+                margin: const EdgeInsets.only(top: 4),
+                decoration: BoxDecoration(
+                  color: cs.surface,
+                  border: Border.all(color: cs.outlineVariant),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: results
+                      .map(
+                        (c) => ListTile(
+                          dense: true,
+                          title: Text(c.name, style: tt.bodyMedium),
+                          onTap: () => _selectCondition(c),
+                        ),
+                      )
+                      .toList(),
+                ),
+              ),
+
             const SizedBox(height: 40),
 
             // CTA button — always visible, disabled until name is entered
@@ -166,7 +286,11 @@ class _OnboardingProfileZoneState extends State<OnboardingProfileZone> {
               label: 'Create profile and get started',
               child: ElevatedButton(
                 onPressed: (_hasName && !widget.isSubmitting)
-                    ? () => widget.onSubmit(_dateOfBirth, _avatarPath)
+                    ? () => widget.onSubmit(
+                          _dateOfBirth,
+                          _avatarPath,
+                          List.unmodifiable(_selectedConditions),
+                        )
                     : null,
                 child: widget.isSubmitting
                     ? const SizedBox(
@@ -197,7 +321,6 @@ class _OnboardingProfileZoneState extends State<OnboardingProfileZone> {
       fieldLabelText: 'Date of birth',
     );
 
-    // User dismissed the picker without choosing — leave existing value alone.
     if (picked == null) return;
 
     setState(() {
@@ -211,10 +334,6 @@ class _OnboardingProfileZoneState extends State<OnboardingProfileZone> {
 }
 
 /// Inline avatar picker widget.
-///
-/// Shows a circular placeholder (or the picked image) that the user can tap
-/// to select a photo from the library or take a new one with the camera.
-/// Calls [onChanged] with the local file path whenever a new image is picked.
 class _AvatarPicker extends StatefulWidget {
   const _AvatarPicker({required this.onChanged});
 

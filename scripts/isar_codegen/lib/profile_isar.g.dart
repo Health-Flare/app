@@ -36,6 +36,16 @@ const ProfileIsarSchema = CollectionSchema(
       id: 3,
       name: r'name',
       type: IsarType.string,
+    ),
+    r'weatherOptInShown': PropertySchema(
+      id: 4,
+      name: r'weatherOptInShown',
+      type: IsarType.bool,
+    ),
+    r'weatherTrackingEnabled': PropertySchema(
+      id: 5,
+      name: r'weatherTrackingEnabled',
+      type: IsarType.bool,
     )
   },
   estimateSize: _profileIsarEstimateSize,
@@ -78,6 +88,8 @@ void _profileIsarSerialize(
   writer.writeDateTime(offsets[1], object.dateOfBirth);
   writer.writeBool(offsets[2], object.firstLogShown);
   writer.writeString(offsets[3], object.name);
+  writer.writeBool(offsets[4], object.weatherOptInShown);
+  writer.writeBool(offsets[5], object.weatherTrackingEnabled);
 }
 
 ProfileIsar _profileIsarDeserialize(
@@ -92,6 +104,8 @@ ProfileIsar _profileIsarDeserialize(
   object.firstLogShown = reader.readBool(offsets[2]);
   object.id = id;
   object.name = reader.readString(offsets[3]);
+  object.weatherOptInShown = reader.readBool(offsets[4]);
+  object.weatherTrackingEnabled = reader.readBool(offsets[5]);
   return object;
 }
 
@@ -110,6 +124,10 @@ P _profileIsarDeserializeProp<P>(
       return (reader.readBool(offset)) as P;
     case 3:
       return (reader.readString(offset)) as P;
+    case 4:
+      return (reader.readBool(offset)) as P;
+    case 5:
+      return (reader.readBool(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -629,6 +647,26 @@ extension ProfileIsarQueryFilter
       ));
     });
   }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
+      weatherOptInShownEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'weatherOptInShown',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
+      weatherTrackingEnabledEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'weatherTrackingEnabled',
+        value: value,
+      ));
+    });
+  }
 }
 
 extension ProfileIsarQueryObject
@@ -685,6 +723,34 @@ extension ProfileIsarQuerySortBy
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy> sortByNameDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'name', Sort.desc);
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy>
+      sortByWeatherOptInShown() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'weatherOptInShown', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy>
+      sortByWeatherOptInShownDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'weatherOptInShown', Sort.desc);
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy>
+      sortByWeatherTrackingEnabled() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'weatherTrackingEnabled', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy>
+      sortByWeatherTrackingEnabledDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'weatherTrackingEnabled', Sort.desc);
     });
   }
 }
@@ -751,6 +817,34 @@ extension ProfileIsarQuerySortThenBy
       return query.addSortBy(r'name', Sort.desc);
     });
   }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy>
+      thenByWeatherOptInShown() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'weatherOptInShown', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy>
+      thenByWeatherOptInShownDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'weatherOptInShown', Sort.desc);
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy>
+      thenByWeatherTrackingEnabled() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'weatherTrackingEnabled', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy>
+      thenByWeatherTrackingEnabledDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'weatherTrackingEnabled', Sort.desc);
+    });
+  }
 }
 
 extension ProfileIsarQueryWhereDistinct
@@ -778,6 +872,20 @@ extension ProfileIsarQueryWhereDistinct
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'name', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QDistinct>
+      distinctByWeatherOptInShown() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'weatherOptInShown');
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QDistinct>
+      distinctByWeatherTrackingEnabled() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'weatherTrackingEnabled');
     });
   }
 }
@@ -811,6 +919,20 @@ extension ProfileIsarQueryProperty
   QueryBuilder<ProfileIsar, String, QQueryOperations> nameProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'name');
+    });
+  }
+
+  QueryBuilder<ProfileIsar, bool, QQueryOperations>
+      weatherOptInShownProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'weatherOptInShown');
+    });
+  }
+
+  QueryBuilder<ProfileIsar, bool, QQueryOperations>
+      weatherTrackingEnabledProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'weatherTrackingEnabled');
     });
   }
 }

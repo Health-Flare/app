@@ -56,6 +56,11 @@ class _FakeFirstLogPrompt extends FirstLogPromptNotifier {
   bool build() => false;
 }
 
+class _FakeWeatherOptIn extends WeatherOptInNotifier {
+  @override
+  bool build() => false;
+}
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -72,6 +77,7 @@ List<Override> _appOverrides({
   userConditionListProvider.overrideWith(_FakeUserConditions.new),
   userSymptomListProvider.overrideWith(_FakeUserSymptoms.new),
   firstLogPromptProvider.overrideWith(_FakeFirstLogPrompt.new),
+  weatherOptInProvider.overrideWith(_FakeWeatherOptIn.new),
 ];
 
 // ---------------------------------------------------------------------------

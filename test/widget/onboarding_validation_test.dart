@@ -1,7 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:health_flare/core/providers/condition_provider.dart';
 import 'package:health_flare/features/onboarding/widgets/onboarding_profile_zone.dart';
+import 'package:health_flare/models/condition.dart';
+
+class _FakeConditionCatalog extends ConditionCatalogNotifier {
+  @override
+  List<Condition> build() => [];
+}
 
 /// Tests for onboarding profile-zone input validation edge cases.
 ///
@@ -10,15 +18,20 @@ import 'package:health_flare/features/onboarding/widgets/onboarding_profile_zone
 void main() {
   group('OnboardingProfileZone — name validation', () {
     Widget buildZone({required TextEditingController nameController}) {
-      return MaterialApp(
-        home: Scaffold(
-          body: SingleChildScrollView(
-            child: OnboardingProfileZone(
-              formKey: GlobalKey<FormState>(),
-              nameController: nameController,
-              nameFocusNode: FocusNode(),
-              isSubmitting: false,
-              onSubmit: (dateOfBirth, avatarPath) {},
+      return ProviderScope(
+        overrides: [
+          conditionCatalogProvider.overrideWith(_FakeConditionCatalog.new),
+        ],
+        child: MaterialApp(
+          home: Scaffold(
+            body: SingleChildScrollView(
+              child: OnboardingProfileZone(
+                formKey: GlobalKey<FormState>(),
+                nameController: nameController,
+                nameFocusNode: FocusNode(),
+                isSubmitting: false,
+                onSubmit: (dateOfBirth, avatarPath, conditions) {},
+              ),
             ),
           ),
         ),

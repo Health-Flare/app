@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:health_flare/core/providers/condition_provider.dart';
 import 'package:health_flare/core/providers/onboarding_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/core/theme/app_colors.dart';
 import 'package:health_flare/features/onboarding/widgets/onboarding_welcome_zone.dart';
 import 'package:health_flare/features/onboarding/widgets/onboarding_privacy_zone.dart';
 import 'package:health_flare/features/onboarding/widgets/onboarding_profile_zone.dart';
+import 'package:health_flare/models/condition.dart';
 
 /// Onboarding screen — shown exactly once on first launch.
 ///
@@ -63,14 +65,17 @@ class _OnboardingBodyState extends ConsumerState<_OnboardingBody> {
     super.dispose();
   }
 
-  Future<void> _submit(DateTime? dateOfBirth, String? avatarPath) async {
+  Future<void> _submit(
+    DateTime? dateOfBirth,
+    String? avatarPath,
+    List<Condition> selectedConditions,
+  ) async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
     if (_isSubmitting) return;
 
     setState(() => _isSubmitting = true);
 
-    // Create the first profile and persist it to the database.
-    // Isar assigns the id; the notifier makes it the active profile.
+    // Create the first profile; Isar assigns the id and makes it active.
     await ref
         .read(profileListProvider.notifier)
         .add(
@@ -80,12 +85,26 @@ class _OnboardingBodyState extends ConsumerState<_OnboardingBody> {
         );
     if (!mounted) return;
 
-    // onboardingProvider derives its state from profileListProvider,
-    // so no explicit markComplete() call is needed. Kept for clarity.
+    // Persist any conditions selected during onboarding.
+    if (selectedConditions.isNotEmpty) {
+      final conditionsNotifier = ref.read(
+        userConditionListProvider.notifier,
+      );
+      for (final condition in selectedConditions) {
+        await conditionsNotifier.add(
+          conditionId: condition.id,
+          conditionName: condition.name,
+        );
+      }
+    }
+    if (!mounted) return;
+
+    // onboardingProvider derives from profileListProvider — no explicit call
+    // needed, but kept for call-site clarity.
     ref.read(onboardingProvider.notifier).markComplete();
 
-    // Trigger the first-log prompt on the dashboard.
-    ref.read(firstLogPromptProvider.notifier).show();
+    // Weather opt-in and first-log prompt are shown on the Dashboard once
+    // the router navigates there automatically (onboardingProvider → false).
   }
 
   @override
