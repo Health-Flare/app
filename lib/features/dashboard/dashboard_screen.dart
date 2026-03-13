@@ -6,6 +6,7 @@ import 'package:health_flare/core/providers/onboarding_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/core/router/app_router.dart';
 import 'package:health_flare/features/onboarding/widgets/first_log_prompt.dart';
+import 'package:health_flare/features/onboarding/widgets/weather_opt_in_sheet.dart';
 
 /// Dashboard — the home tab.
 ///
@@ -26,26 +27,40 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   @override
   void initState() {
     super.initState();
-    // Check the provider state after the first frame is fully built.
-    // Handles the case where firstLogPromptProvider is already true before
-    // this widget mounts (async check in FirstLogPromptNotifier.build).
-    WidgetsBinding.instance.addPostFrameCallback((_) => _maybeShowFirstLog());
+    // Check after the first frame is fully built.
+    WidgetsBinding.instance.addPostFrameCallback((_) => _maybeShowPrompts());
   }
 
-  /// Shows [FirstLogPrompt] if [firstLogPromptProvider] is currently true.
+  /// Shows the weather opt-in prompt (if not yet seen), then the first-log
+  /// prompt (if not yet seen), in sequence.
   ///
-  /// Marks the prompt as shown *before* displaying it so that any subsequent
-  /// route change or swipe-dismiss cannot trigger a second display.
-  Future<void> _maybeShowFirstLog() async {
-    if (!mounted) return;
-    if (!ref.read(firstLogPromptProvider)) return;
-
-    // Persist immediately — prevents re-show on swipe-dismiss or hot-restart.
-    await ref.read(firstLogPromptProvider.notifier).markShown();
+  /// Both prompts are marked as shown *before* being displayed so that
+  /// swipe-dismiss or hot-restart cannot re-trigger them.
+  Future<void> _maybeShowPrompts() async {
     if (!mounted) return;
 
-    final profile = ref.read(activeProfileDataProvider);
-    await showFirstLogPrompt(context, profileName: profile?.name ?? '');
+    // Weather opt-in first
+    if (ref.read(weatherOptInProvider)) {
+      await showWeatherOptIn(
+        context,
+        onResult: (enabled) async {
+          await ref
+              .read(weatherOptInProvider.notifier)
+              .dismiss(enabled: enabled);
+          if (mounted) Navigator.of(context).pop();
+        },
+      );
+    }
+
+    if (!mounted) return;
+
+    // First-log prompt second
+    if (ref.read(firstLogPromptProvider)) {
+      await ref.read(firstLogPromptProvider.notifier).markShown();
+      if (!mounted) return;
+      final profile = ref.read(activeProfileDataProvider);
+      await showFirstLogPrompt(context, profileName: profile?.name ?? '');
+    }
   }
 
   @override
@@ -54,13 +69,12 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     final cs = Theme.of(context).colorScheme;
     final tt = Theme.of(context).textTheme;
 
-    // Listen for subsequent transitions to true — handles the case where the
-    // active profile changes while on another tab (new profile created from
-    // profile switcher), then the user navigates back to the dashboard.
+    // Listen for subsequent transitions to true — handles the case where a
+    // new profile is created from the profile switcher while on another tab.
     ref.listen<bool>(firstLogPromptProvider, (prev, next) {
       if (next && !(prev ?? false)) {
         WidgetsBinding.instance.addPostFrameCallback(
-          (_) => _maybeShowFirstLog(),
+          (_) => _maybeShowPrompts(),
         );
       }
     });

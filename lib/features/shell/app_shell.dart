@@ -10,7 +10,7 @@ import 'package:health_flare/features/profiles/widgets/profile_switcher_sheet.da
 /// Persistent shell wrapping all tab destinations.
 ///
 /// Provides:
-///   • [NavigationBar] for the 5 main sections
+///   • [NavigationBar] for the 6 main sections
 ///   • A persistent profile avatar button at the top-right, accessible
 ///     from every screen, that opens the [ProfileSwitcherSheet].
 class AppShell extends ConsumerWidget {
@@ -24,6 +24,12 @@ class AppShell extends ConsumerWidget {
       label: 'Dashboard',
       icon: Icons.grid_view_rounded,
       selectedIcon: Icons.grid_view_rounded,
+    ),
+    (
+      route: AppRoutes.illness,
+      label: 'Illnesses',
+      icon: Icons.medical_information_outlined,
+      selectedIcon: Icons.medical_information_rounded,
     ),
     (
       route: AppRoutes.symptoms,

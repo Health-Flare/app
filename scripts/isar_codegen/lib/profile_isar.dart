@@ -12,4 +12,14 @@ class ProfileIsar {
   /// Whether the first-log prompt has been shown (and dismissed) for this profile.
   /// Defaults to false — prompt shown automatically on first dashboard visit.
   bool firstLogShown = false;
+
+  /// Whether the user opted in to weather tracking for this profile.
+  /// Defaults to false. Set to true after the user taps "Enable" in the
+  /// weather opt-in prompt.
+  bool weatherTrackingEnabled = false;
+
+  /// Whether the weather opt-in prompt has been shown for this profile.
+  /// Defaults to false. Set to true once the prompt is presented, regardless
+  /// of whether the user enabled or declined.
+  bool weatherOptInShown = false;
 }

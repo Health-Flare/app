@@ -112,23 +112,26 @@ void main() {
     });
   });
 
-  group('IllnessScreen — Done button state', () {
-    testWidgets('Done button is disabled with no selections', (tester) async {
+  group('IllnessScreen — Add to profile button state', () {
+    testWidgets('"Add to profile" is disabled with no selections', (
+      tester,
+    ) async {
       const arthritis = Condition(id: 1, name: 'Arthritis', global: true);
       await tester.pumpWidget(buildIllnessScreen(conditions: [arthritis]));
       await tester.pump();
 
-      final done = tester.widget<TextButton>(
-        find.widgetWithText(TextButton, 'Done'),
+      final button = tester.widget<FilledButton>(
+        find.widgetWithText(FilledButton, 'Add to profile'),
       );
       expect(
-        done.onPressed,
+        button.onPressed,
         isNull,
-        reason: 'Done must be disabled until a condition or symptom is chosen',
+        reason:
+            '"Add to profile" must be disabled until a condition or symptom is chosen',
       );
     });
 
-    testWidgets('tapping a condition enables Done button', (tester) async {
+    testWidgets('tapping a condition enables "Add to profile"', (tester) async {
       const arthritis = Condition(id: 1, name: 'Arthritis', global: true);
       await tester.pumpWidget(buildIllnessScreen(conditions: [arthritis]));
       await tester.pump();
@@ -136,10 +139,10 @@ void main() {
       await tester.tap(find.text('Arthritis'));
       await tester.pump();
 
-      final done = tester.widget<TextButton>(
-        find.widgetWithText(TextButton, 'Done'),
+      final button = tester.widget<FilledButton>(
+        find.widgetWithText(FilledButton, 'Add to profile'),
       );
-      expect(done.onPressed, isNotNull);
+      expect(button.onPressed, isNotNull);
     });
 
     testWidgets(

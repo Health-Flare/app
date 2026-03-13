@@ -25,6 +25,12 @@ class ProfileIsar {
   /// Set to true the moment the prompt is displayed — never shown again after.
   bool firstLogShown = false;
 
+  /// Whether the user opted in to weather tracking for this profile.
+  bool weatherTrackingEnabled = false;
+
+  /// Whether the weather opt-in prompt has been shown for this profile.
+  bool weatherOptInShown = false;
+
   // ── Conversion ────────────────────────────────────────────────────────────
 
   /// Convert to the immutable domain class used by the UI.
@@ -33,12 +39,19 @@ class ProfileIsar {
     name: name,
     dateOfBirth: dateOfBirth,
     avatarPath: avatarPath,
+    weatherTrackingEnabled: weatherTrackingEnabled,
   );
 
   /// Construct from a domain [Profile] for writing to Isar.
+  ///
+  /// Note: internal-only flags ([firstLogShown], [weatherOptInShown]) are NOT
+  /// carried on the domain model. Callers that need a safe update should
+  /// read the existing row from Isar and mutate it directly (read-modify-write)
+  /// rather than calling this method, to avoid clobbering those flags.
   static ProfileIsar fromDomain(Profile p) => ProfileIsar()
     ..id = p.id
     ..name = p.name
     ..dateOfBirth = p.dateOfBirth
-    ..avatarPath = p.avatarPath;
+    ..avatarPath = p.avatarPath
+    ..weatherTrackingEnabled = p.weatherTrackingEnabled;
 }

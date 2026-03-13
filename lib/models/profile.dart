@@ -14,6 +14,7 @@ class Profile {
     required this.name,
     this.dateOfBirth,
     this.avatarPath,
+    this.weatherTrackingEnabled = false,
   });
 
   /// Stable local identifier. In the in-memory MVP this is a simple
@@ -29,6 +30,9 @@ class Profile {
   /// Filesystem path to the chosen avatar image, or null for the default
   /// generated avatar. Set by image_picker when that layer is wired up.
   final String? avatarPath;
+
+  /// Whether weather context is captured at the time of each log entry.
+  final bool weatherTrackingEnabled;
 
   /// Returns true if this profile has a real photo rather than a generated one.
   bool get hasAvatar => avatarPath != null;
@@ -63,6 +67,7 @@ class Profile {
     String? name,
     DateTime? dateOfBirth,
     String? avatarPath,
+    bool? weatherTrackingEnabled,
     bool clearDateOfBirth = false,
     bool clearAvatar = false,
   }) {
@@ -71,6 +76,8 @@ class Profile {
       name: name ?? this.name,
       dateOfBirth: clearDateOfBirth ? null : (dateOfBirth ?? this.dateOfBirth),
       avatarPath: clearAvatar ? null : (avatarPath ?? this.avatarPath),
+      weatherTrackingEnabled:
+          weatherTrackingEnabled ?? this.weatherTrackingEnabled,
     );
   }
 

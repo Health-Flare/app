@@ -9,6 +9,7 @@ import 'package:health_flare/data/seed_data.dart';
 ///
 /// Schema v1 = initial Isar schema (profiles, journal entries, settings).
 /// Schema v2 = condition + symptom catalogue seeded from [SeedData].
+/// Schema v3 = added weatherTrackingEnabled + weatherOptInShown to ProfileIsar.
 ///
 /// How to add a future migration:
 ///   1. Increment [_targetVersion].
@@ -22,7 +23,7 @@ import 'package:health_flare/data/seed_data.dart';
 class MigrationRunner {
   MigrationRunner._();
 
-  static const int _targetVersion = 2;
+  static const int _targetVersion = 3;
 
   /// Run all pending migrations and update [AppSettings.schemaVersion].
   ///
@@ -57,6 +58,17 @@ class MigrationRunner {
       await isar.writeTxn(() async {
         final s = await isar.appSettings.get(1) ?? (AppSettings()..id = 1);
         s.schemaVersion = 2;
+        await isar.appSettings.put(s);
+      });
+    }
+
+    // ── v2 → v3: weather fields on ProfileIsar ────────────────────────────
+    // Isar automatically applies defaults (false) to the two new boolean
+    // fields on existing rows. No data transformation needed.
+    if (currentVersion < 3) {
+      await isar.writeTxn(() async {
+        final s = await isar.appSettings.get(1) ?? (AppSettings()..id = 1);
+        s.schemaVersion = 3;
         await isar.appSettings.put(s);
       });
     }

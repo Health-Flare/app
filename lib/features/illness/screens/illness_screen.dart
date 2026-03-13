@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
+import 'package:health_flare/core/router/app_router.dart';
 import 'package:health_flare/models/condition.dart';
 import 'package:health_flare/models/symptom.dart';
 import 'package:health_flare/core/providers/condition_provider.dart';
@@ -98,7 +100,13 @@ class _IllnessScreenState extends ConsumerState<IllnessScreen> {
       }
     }
 
-    if (mounted) Navigator.of(context).pop();
+    if (mounted) {
+      if (Navigator.of(context).canPop()) {
+        Navigator.of(context).pop();
+      } else {
+        context.go(AppRoutes.dashboard);
+      }
+    }
   }
 
   // ── "Add custom" when search has no matches ────────────────────────────────
@@ -143,20 +151,24 @@ class _IllnessScreenState extends ConsumerState<IllnessScreen> {
         _pendingConditionIds.isNotEmpty || _pendingSymptomIds.isNotEmpty;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Track Illnesses'),
-        actions: [
-          TextButton(
+      appBar: AppBar(title: const Text('Track Illnesses')),
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+          child: FilledButton(
             onPressed: hasSelections && !_isSaving ? _save : null,
             child: _isSaving
                 ? const SizedBox(
-                    width: 18,
-                    height: 18,
-                    child: CircularProgressIndicator(strokeWidth: 2),
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
                   )
-                : const Text('Done'),
+                : const Text('Add to profile'),
           ),
-        ],
+        ),
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
