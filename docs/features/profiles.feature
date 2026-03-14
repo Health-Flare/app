@@ -135,6 +135,89 @@ Feature: Profile Management
     Then "Dad" is the active profile
 
   # ---------------------------------------------------------------------------
+  # Dependant attribution on entry screens
+  # ---------------------------------------------------------------------------
+
+  Scenario: Every data entry screen shows whose record is being updated
+    Given the following profiles exist:
+      | Name  |
+      | Sarah |
+      | Dad   |
+    And "Dad" is the active profile
+    When I open any of the following screens:
+      | Screen                |
+      | Add symptom           |
+      | Add meal              |
+      | Add medication        |
+      | Add vital             |
+      | Add journal entry     |
+      | Add illness           |
+      | Quick log sheet       |
+    Then each screen shows "Logging for Dad" or "Adding to Dad's record"
+    And this label is visible before any save action is taken
+
+  Scenario: Attribution label uses the profile name, not a pronoun
+    Given "Dad" is the active profile
+    When I open the add symptom screen
+    Then the screen says "Logging for Dad"
+    And not "Logging for you" or "Logging for me"
+
+  Scenario: Attribution label is visible without scrolling
+    Given "Dad" is the active profile
+    When I open any data entry form
+    Then the attribution label is visible in the initial viewport
+    And the user does not need to scroll to see it
+
+  Scenario: Dashboard heading confirms whose feed is being viewed
+    Given the following profiles exist:
+      | Name  |
+      | Sarah |
+      | Dad   |
+    And "Dad" is the active profile
+    When I am on the dashboard
+    Then the dashboard heading or subheading confirms "Dad's" name
+    And I cannot mistake the feed for Sarah's
+
+  Scenario: Switching profile while a data entry form is open prompts to discard the draft
+    Given "Sarah" is the active profile
+    And I have opened the add symptom screen and entered "Knee pain"
+    When I switch to the "Dad" profile from the profile switcher
+    Then I see a confirmation dialog with two equally visible options:
+      | Option           |
+      | Discard entry    |
+      | Keep editing     |
+    And the dialog makes clear the entry has not been saved
+
+  Scenario: Confirming profile switch while a form is open discards the draft
+    Given "Sarah" is the active profile
+    And I have opened the add symptom screen and entered "Knee pain"
+    When I switch to "Dad" and tap "Discard entry"
+    Then "Dad" becomes the active profile
+    And the draft entry is discarded
+    And no entry is saved to Sarah's or Dad's record
+
+  Scenario: Cancelling profile switch while a form is open preserves the draft
+    Given "Sarah" is the active profile
+    And I have opened the add symptom screen and entered "Knee pain"
+    When I switch to "Dad" and tap "Keep editing"
+    Then I remain on Sarah's add symptom screen
+    And the text "Knee pain" is still in the entry field
+    And "Sarah" is still the active profile
+
+  Scenario: Saving an entry attributes it only to the profile active at save time
+    Given "Dad" is the active profile
+    When I open the add meal screen
+    And I enter "Chicken soup"
+    And I tap "Add to profile"
+    Then the meal entry is saved to Dad's record
+    And the entry does not appear in any other profile's history
+
+  Scenario: Profile switcher is accessible without leaving a data entry form
+    Given "Sarah" is the active profile
+    And I have opened the add medication screen
+    Then the profile switcher is reachable without closing the form or losing my place in navigation
+
+  # ---------------------------------------------------------------------------
   # First launch / onboarding
   # ---------------------------------------------------------------------------
 

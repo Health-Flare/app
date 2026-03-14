@@ -50,29 +50,12 @@ Feature: Navigation and General UX
   # Quick entry
   # ---------------------------------------------------------------------------
 
-  Scenario: Log a new symptom in 3 taps or fewer from any screen
-    When I am on the Dashboard screen
-    Then I can open a new symptom entry within 3 taps
-    When I am on the Medications screen
-    Then I can open a new symptom entry within 3 taps
-    When I am on the Meals screen
-    Then I can open a new symptom entry within 3 taps
-
-  Scenario: Log a new vital in 3 taps or fewer from any screen
-    When I am on any main screen
-    Then I can open a new vital entry within 3 taps
-
-  Scenario: Log a new dose in 3 taps or fewer from any screen
-    When I am on any main screen
-    Then I can open a new dose log entry within 3 taps
-
-  Scenario: Log a new meal in 3 taps or fewer from any screen
-    When I am on any main screen
-    Then I can open a new meal entry within 3 taps
-
-  Scenario: Quick entry form pre-fills the timestamp with the current date and time
-    When I open any quick entry form
-    Then the date and time fields are pre-filled with the current date and time
+  Scenario: Any health entry can be started in 2 taps from any main screen
+    Given I am on any main screen
+    When I tap the log entry button
+    Then the quick log sheet opens
+    And I can begin typing immediately
+    And tapping Save completes the entry — 2 taps total from any screen
 
   # ---------------------------------------------------------------------------
   # Profile switcher
