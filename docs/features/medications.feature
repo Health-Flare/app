@@ -188,6 +188,85 @@ Feature: Medication Tracking
     And the full dose history for "Prednisolone" is still accessible
 
   # ---------------------------------------------------------------------------
+  # Medication effectiveness
+  # ---------------------------------------------------------------------------
+
+  # For as-needed (PRN) medications especially, it is valuable to know whether
+  # taking the medication actually helped. This is distinct from logging that a
+  # dose was taken — it records the user's perceived response.
+
+  Scenario: Rate the effectiveness of a dose after taking it
+    Given "Sarah" has a medication "Ibuprofen" at "400mg" as needed
+    When I log a dose for "Ibuprofen" as taken
+    And I set the effectiveness to "Helped a lot"
+    And I save the dose
+    Then the dose log entry records effectiveness "Helped a lot"
+
+  Scenario: Effectiveness options cover the full range of responses
+    When I log a dose and open the effectiveness field
+    Then I see the following options:
+      | Option         |
+      | Helped a lot   |
+      | Helped a little|
+      | No effect      |
+      | Made it worse  |
+    And no option is pre-selected
+
+  Scenario: Effectiveness is optional — a dose can be saved without it
+    When I log a dose for "Ibuprofen"
+    And I leave the effectiveness field blank
+    And I save the dose
+    Then the dose is saved with no effectiveness value recorded
+
+  Scenario: Effectiveness summary is shown in the medication detail view
+    Given "Sarah" has logged 10 doses of "Ibuprofen" with effectiveness ratings
+    When I navigate to the "Ibuprofen" medication detail
+    Then I see an effectiveness summary: e.g. "Helped in 7 of 10 logged doses"
+
+  Scenario: Effectiveness ratings are included in exported reports
+    When I generate a report including medications
+    Then the dose log CSV includes an effectiveness column for each dose entry
+
+  # ---------------------------------------------------------------------------
+  # Supplements
+  # ---------------------------------------------------------------------------
+
+  # Supplements (vitamins, minerals, herbal remedies) are clinically relevant
+  # but feel wrong to many users when categorised under "medications".
+  # They are tracked the same way but labelled and displayed separately.
+
+  Scenario: Add a supplement
+    When I open the add medication form
+    And I select "Supplement" as the medication type
+    And I enter "Vitamin D3" as the name
+    And I enter "2000" as the dose amount and "IU" as the unit
+    And I select "Once daily" as the frequency
+    And I enter "2026-01-01" as the start date
+    And I save
+    Then "Vitamin D3" is added to "Sarah"'s supplements list
+    And it appears in a "Supplements" section, separate from prescribed medications
+
+  Scenario: Supplements are visually separated from medications on the medications screen
+    Given "Sarah" has the following:
+      | Name        | Type        |
+      | Metformin   | Medication  |
+      | Vitamin D3  | Supplement  |
+      | Fish oil    | Supplement  |
+    When I navigate to the medications screen
+    Then "Metformin" appears under "Medications"
+    And "Vitamin D3" and "Fish oil" appear under "Supplements"
+
+  Scenario: Supplements can have effectiveness tracked just like medications
+    Given "Sarah" has a supplement "Magnesium glycinate" at "400mg" once daily
+    When I log a dose and rate it "Helped a little"
+    Then the dose log records the effectiveness for the supplement
+
+  Scenario: Supplements are included in exported reports as a separate section
+    When I generate a report including medications
+    Then the report contains a separate supplements section
+    And supplements are not mixed into the medications section
+
+  # ---------------------------------------------------------------------------
   # Empty state
   # ---------------------------------------------------------------------------
 
