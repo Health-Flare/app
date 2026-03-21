@@ -96,8 +96,7 @@ class ProfileListNotifier extends Notifier<List<Profile>> {
   Future<void> update(Profile updated) async {
     final isar = ref.read(isarProvider);
     await isar.writeTxn(() async {
-      final existing =
-          await isar.profileIsars.get(updated.id) ?? ProfileIsar();
+      final existing = await isar.profileIsars.get(updated.id) ?? ProfileIsar();
       existing
         ..id = updated.id
         ..name = updated.name

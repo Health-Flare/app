@@ -87,9 +87,7 @@ class _OnboardingBodyState extends ConsumerState<_OnboardingBody> {
 
     // Persist any conditions selected during onboarding.
     if (selectedConditions.isNotEmpty) {
-      final conditionsNotifier = ref.read(
-        userConditionListProvider.notifier,
-      );
+      final conditionsNotifier = ref.read(userConditionListProvider.notifier);
       for (final condition in selectedConditions) {
         await conditionsNotifier.add(
           conditionId: condition.id,
