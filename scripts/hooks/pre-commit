@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# Pre-commit hook: auto-format staged Dart files and re-stage them.
+# Mirrors the CI check: dart format --set-exit-if-changed lib/ test/
+
+set -euo pipefail
+
+# Collect staged .dart files under lib/ and test/
+STAGED=$(git diff --cached --name-only --diff-filter=ACMR | grep '\.dart$' | grep -E '^(lib|test)/' || true)
+
+if [ -z "$STAGED" ]; then
+  exit 0
+fi
+
+# Format in-place
+echo "$STAGED" | xargs dart format --output=write > /dev/null
+
+# Re-stage any files that were modified by the formatter
+echo "$STAGED" | xargs git add
+
+exit 0
