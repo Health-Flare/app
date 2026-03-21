@@ -39,15 +39,15 @@ class OnboardingProfileZone extends ConsumerStatefulWidget {
     DateTime? dateOfBirth,
     String? avatarPath,
     List<Condition> conditions,
-  ) onSubmit;
+  )
+  onSubmit;
 
   @override
   ConsumerState<OnboardingProfileZone> createState() =>
       _OnboardingProfileZoneState();
 }
 
-class _OnboardingProfileZoneState
-    extends ConsumerState<OnboardingProfileZone> {
+class _OnboardingProfileZoneState extends ConsumerState<OnboardingProfileZone> {
   bool _hasName = false;
   DateTime? _dateOfBirth;
   String? _avatarPath;
@@ -63,9 +63,7 @@ class _OnboardingProfileZoneState
     super.initState();
     widget.nameController.addListener(_onNameChanged);
     _conditionSearchController.addListener(() {
-      setState(
-        () => _conditionQuery = _conditionSearchController.text.trim(),
-      );
+      setState(() => _conditionQuery = _conditionSearchController.text.trim());
     });
   }
 
@@ -88,9 +86,11 @@ class _OnboardingProfileZoneState
     if (_conditionQuery.isEmpty) return [];
     final selectedIds = _selectedConditions.map((c) => c.id).toSet();
     final available = catalog.where((c) => !selectedIds.contains(c.id));
-    return rankSearch(available.toList(), _conditionQuery, (c) => c.name)
-        .take(6)
-        .toList();
+    return rankSearch(
+      available.toList(),
+      _conditionQuery,
+      (c) => c.name,
+    ).take(6).toList();
   }
 
   void _selectCondition(Condition condition) {
@@ -287,10 +287,10 @@ class _OnboardingProfileZoneState
               child: ElevatedButton(
                 onPressed: (_hasName && !widget.isSubmitting)
                     ? () => widget.onSubmit(
-                          _dateOfBirth,
-                          _avatarPath,
-                          List.unmodifiable(_selectedConditions),
-                        )
+                        _dateOfBirth,
+                        _avatarPath,
+                        List.unmodifiable(_selectedConditions),
+                      )
                     : null,
                 child: widget.isSubmitting
                     ? const SizedBox(

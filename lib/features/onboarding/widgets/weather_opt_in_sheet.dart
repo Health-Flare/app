@@ -56,11 +56,7 @@ class WeatherTrackingOptInSheet extends StatelessWidget {
                 color: AppColors.paleSky,
                 borderRadius: BorderRadius.circular(14),
               ),
-              child: Icon(
-                Icons.cloud_outlined,
-                size: 28,
-                color: cs.primary,
-              ),
+              child: Icon(Icons.cloud_outlined, size: 28, color: cs.primary),
             ),
 
             // Title

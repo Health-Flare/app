@@ -88,8 +88,9 @@ void main() {
       expect(find.text('Rheumatoid Arthritis'), findsNothing);
     });
 
-    testWidgets('starts-with results appear before contains results',
-        (tester) async {
+    testWidgets('starts-with results appear before contains results', (
+      tester,
+    ) async {
       await tester.pumpWidget(_buildZone(catalog: _testConditions));
       await tester.pump();
 
@@ -105,8 +106,9 @@ void main() {
       expect(find.text('Fibrous Dysplasia'), findsOneWidget);
     });
 
-    testWidgets('tapping a result adds it as a chip and clears the search',
-        (tester) async {
+    testWidgets('tapping a result adds it as a chip and clears the search', (
+      tester,
+    ) async {
       await tester.pumpWidget(_buildZone(catalog: _testConditions));
       await tester.pump();
 
@@ -137,8 +139,9 @@ void main() {
       expect(searchField.controller?.text ?? '', isEmpty);
     });
 
-    testWidgets('selected condition no longer appears in search results',
-        (tester) async {
+    testWidgets('selected condition no longer appears in search results', (
+      tester,
+    ) async {
       await tester.pumpWidget(_buildZone(catalog: _testConditions));
       await tester.pump();
 
@@ -171,8 +174,9 @@ void main() {
       );
     });
 
-    testWidgets('tapping the chip delete icon removes the condition',
-        (tester) async {
+    testWidgets('tapping the chip delete icon removes the condition', (
+      tester,
+    ) async {
       await tester.pumpWidget(_buildZone(catalog: _testConditions));
       await tester.pump();
 
