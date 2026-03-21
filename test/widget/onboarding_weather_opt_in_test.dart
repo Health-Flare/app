@@ -5,9 +5,7 @@ import 'package:health_flare/features/onboarding/widgets/weather_opt_in_sheet.da
 
 Widget _buildSheet({required void Function(bool) onResult}) {
   return MaterialApp(
-    home: Scaffold(
-      body: WeatherTrackingOptInSheet(onResult: onResult),
-    ),
+    home: Scaffold(body: WeatherTrackingOptInSheet(onResult: onResult)),
   );
 }
 
@@ -18,8 +16,9 @@ void main() {
       expect(find.text('Track weather with every log'), findsOneWidget);
     });
 
-    testWidgets('shows an explanation mentioning barometric pressure',
-        (tester) async {
+    testWidgets('shows an explanation mentioning barometric pressure', (
+      tester,
+    ) async {
       await tester.pumpWidget(_buildSheet(onResult: (_) {}));
       expect(
         find.textContaining('barometric pressure', findRichText: true),
