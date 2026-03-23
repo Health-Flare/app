@@ -167,6 +167,16 @@ class _JournalComposerScreenState extends ConsumerState<JournalComposerScreen> {
       }
     } else {
       _entryDate = DateTime.now();
+      // Reset any mood/energy left from a previous composer session.
+      // Must use addPostFrameCallback — ref is not yet attached at initState
+      // time. Moving this reset to dispose() is unsafe because ref is already
+      // invalidated by the time dispose() runs in ConsumerStatefulWidget.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          ref.read(journalComposerStateProvider.notifier).state =
+              JournalComposerState.empty;
+        }
+      });
     }
 
     _bodyController.addListener(_onTextChanged);
@@ -186,8 +196,6 @@ class _JournalComposerScreenState extends ConsumerState<JournalComposerScreen> {
     _titleController.removeListener(_onTextChanged);
     _bodyController.dispose();
     _titleController.dispose();
-    ref.read(journalComposerStateProvider.notifier).state =
-        JournalComposerState.empty;
     super.dispose();
   }
 
@@ -373,42 +381,6 @@ class _JournalComposerScreenState extends ConsumerState<JournalComposerScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Date chip — tappable in create mode to backdate the entry.
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 4),
-                      child: GestureDetector(
-                        onTap: _canEditDate ? _pickDate : null,
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.calendar_today_rounded,
-                              size: 14,
-                              color: _canEditDate
-                                  ? cs.primary
-                                  : cs.onSurfaceVariant,
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              _dateLabel(),
-                              style: tt.labelMedium?.copyWith(
-                                color: _canEditDate
-                                    ? cs.primary
-                                    : cs.onSurfaceVariant,
-                              ),
-                            ),
-                            if (_canEditDate) ...[
-                              const SizedBox(width: 2),
-                              Icon(
-                                Icons.arrow_drop_down_rounded,
-                                size: 16,
-                                color: cs.primary,
-                              ),
-                            ],
-                          ],
-                        ),
-                      ),
-                    ),
                     if (_titleVisible)
                       TextField(
                         controller: _titleController,
@@ -460,6 +432,8 @@ class _JournalComposerScreenState extends ConsumerState<JournalComposerScreen> {
               ),
             ),
             JournalEnrichmentBar(
+              dateLabel: _dateLabel(),
+              onDateTap: _canEditDate ? _pickDate : null,
               mood: composerState.mood,
               energyLevel: composerState.energyLevel,
               onMoodChanged: (mood) {
