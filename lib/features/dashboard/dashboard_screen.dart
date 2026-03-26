@@ -106,6 +106,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             tooltip: 'Reports',
             onPressed: () => context.go(AppRoutes.reports),
           ),
+          IconButton(
+            icon: const Icon(Icons.settings_outlined),
+            tooltip: 'Settings',
+            onPressed: () => context.push(AppRoutes.settings),
+          ),
           // Leave space for the shell overlay avatar (top-right corner).
           const SizedBox(width: 56),
         ],
