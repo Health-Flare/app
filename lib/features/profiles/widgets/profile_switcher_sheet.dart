@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:health_flare/core/providers/backup_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/models/profile.dart';
 import 'package:health_flare/features/profiles/widgets/profile_avatar.dart';
@@ -120,7 +121,138 @@ class ProfileSwitcherSheet extends ConsumerWidget {
             ),
           ),
 
-          const SizedBox(height: 8),
+          const Divider(height: 24, indent: 24, endIndent: 24),
+
+          // ── Data & backup ─────────────────────────────────────────────────
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24, 0, 24, 4),
+            child: Text(
+              'Data & backup',
+              style: tt.labelSmall?.copyWith(color: cs.onSurfaceVariant),
+            ),
+          ),
+
+          _BackupTiles(),
+
+          const SizedBox(height: 16),
+        ],
+      ),
+    );
+  }
+}
+
+// ── Backup tiles ─────────────────────────────────────────────────────────────
+
+class _BackupTiles extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final cs = Theme.of(context).colorScheme;
+    final backupState = ref.watch(backupProvider);
+    final notifier = ref.read(backupProvider.notifier);
+    final isBusy = backupState is BackupInProgress;
+
+    // Show the "restart to apply" dialog after staging completes.
+    ref.listen(backupProvider, (prev, next) {
+      if (next is BackupRestoreStaged) {
+        notifier.reset();
+        showDialog<void>(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: const Text('Backup staged'),
+            content: const Text(
+              'Close and reopen the app to apply the backup. '
+              'All current data will be replaced.',
+            ),
+            actions: [
+              FilledButton(
+                onPressed: () => Navigator.of(ctx).pop(),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+      } else if (next is BackupError) {
+        notifier.reset();
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(next.message)));
+      } else if (next is BackupExportDone) {
+        notifier.reset();
+      }
+    });
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      child: Column(
+        children: [
+          ListTile(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+            ),
+            leading: Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: cs.surfaceContainerHighest,
+                shape: BoxShape.circle,
+              ),
+              child: isBusy
+                  ? const Padding(
+                      padding: EdgeInsets.all(14),
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : Icon(Icons.upload_rounded, color: cs.onSurfaceVariant),
+            ),
+            title: const Text('Export backup'),
+            subtitle: const Text('Save a copy of all data to Files or share'),
+            onTap: isBusy ? null : notifier.export,
+          ),
+          ListTile(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+            ),
+            leading: Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: cs.surfaceContainerHighest,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(Icons.download_rounded, color: cs.onSurfaceVariant),
+            ),
+            title: const Text('Restore backup'),
+            subtitle: const Text(
+              'Replace all data from a backup file — requires restart',
+            ),
+            onTap: isBusy
+                ? null
+                : () async {
+                    final confirmed = await showDialog<bool>(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        title: const Text('Restore from backup?'),
+                        content: const Text(
+                          'This will replace ALL current data with the '
+                          'contents of the backup file. The restore is applied '
+                          'when you restart the app.',
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.of(ctx).pop(false),
+                            child: const Text('Cancel'),
+                          ),
+                          FilledButton(
+                            onPressed: () => Navigator.of(ctx).pop(true),
+                            child: const Text('Choose file'),
+                          ),
+                        ],
+                      ),
+                    );
+                    if (confirmed == true) {
+                      await notifier.stageRestore();
+                    }
+                  },
+          ),
         ],
       ),
     );

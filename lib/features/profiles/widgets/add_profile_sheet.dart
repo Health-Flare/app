@@ -30,6 +30,7 @@ class _AddProfileSheetState extends ConsumerState<AddProfileSheet> {
   DateTime? _dateOfBirth;
   String? _avatarPath;
   bool _isSaving = false;
+  bool _weatherEnabled = false;
 
   final _picker = ImagePicker();
 
@@ -45,6 +46,7 @@ class _AddProfileSheetState extends ConsumerState<AddProfileSheet> {
       _dobController.text = _formatDate(_dateOfBirth!);
     }
     _avatarPath = existing?.avatarPath;
+    _weatherEnabled = existing?.weatherTrackingEnabled ?? false;
   }
 
   @override
@@ -101,6 +103,7 @@ class _AddProfileSheetState extends ConsumerState<AddProfileSheet> {
         dateOfBirth: _dateOfBirth,
         avatarPath: _avatarPath,
         clearDateOfBirth: _dateOfBirth == null,
+        weatherTrackingEnabled: _weatherEnabled,
       );
       await listNotifier.update(updated);
     } else {
@@ -306,6 +309,21 @@ class _AddProfileSheetState extends ConsumerState<AddProfileSheet> {
                   ),
                   onTap: _pickDob,
                 ),
+
+                // ── Weather toggle (edit mode only) ─────────────────────
+                if (_isEditMode) ...[
+                  const SizedBox(height: 8),
+                  SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text('Weather tracking'),
+                    subtitle: const Text(
+                      'Log local conditions alongside health data',
+                    ),
+                    value: _weatherEnabled,
+                    onChanged: (value) =>
+                        setState(() => _weatherEnabled = value),
+                  ),
+                ],
 
                 const SizedBox(height: 32),
 
