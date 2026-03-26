@@ -29,7 +29,7 @@ import 'package:health_flare/data/seed_data.dart';
 class MigrationRunner {
   MigrationRunner._();
 
-  static const int _targetVersion = 9;
+  static const int _targetVersion = 10;
 
   /// Run all pending migrations and update [AppSettings.schemaVersion].
   ///
@@ -143,6 +143,18 @@ class MigrationRunner {
       await isar.writeTxn(() async {
         final s = await isar.appSettings.get(1) ?? (AppSettings()..id = 1);
         s.schemaVersion = 9;
+        await isar.appSettings.put(s);
+      });
+    }
+
+    // ── v9 → v10: DailyCheckinIsar registered; cycleTrackingEnabled added ──
+    // ProfileIsar gains cycleTrackingEnabled (bool, default false).
+    // Isar handles the new nullable-equivalent column automatically.
+    // No data transformation needed.
+    if (currentVersion < 10) {
+      await isar.writeTxn(() async {
+        final s = await isar.appSettings.get(1) ?? (AppSettings()..id = 1);
+        s.schemaVersion = 10;
         await isar.appSettings.put(s);
       });
     }

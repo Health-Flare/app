@@ -25,6 +25,8 @@ import 'package:health_flare/features/meals/screens/meal_detail_screen.dart';
 import 'package:health_flare/features/flare/screens/flare_history_screen.dart';
 import 'package:health_flare/features/flare/screens/flare_form_screen.dart';
 import 'package:health_flare/features/flare/screens/flare_detail_screen.dart';
+import 'package:health_flare/features/daily_checkin/screens/checkin_form_screen.dart';
+import 'package:health_flare/features/daily_checkin/screens/checkin_history_screen.dart';
 import 'package:health_flare/core/providers/onboarding_provider.dart';
 import 'package:health_flare/models/sleep_entry.dart';
 import 'package:health_flare/models/symptom_entry.dart';
@@ -33,6 +35,7 @@ import 'package:health_flare/models/medication.dart';
 import 'package:health_flare/models/dose_log.dart';
 import 'package:health_flare/models/meal_entry.dart';
 import 'package:health_flare/models/flare.dart';
+import 'package:health_flare/models/daily_checkin.dart';
 
 // ---------------------------------------------------------------------------
 // Route names — use these constants everywhere instead of raw strings.
@@ -72,6 +75,9 @@ abstract final class AppRoutes {
   static const sleep = '/sleep';
   static const sleepNew = '/sleep/new';
   static String sleepEdit(int id) => '/sleep/$id/edit';
+  static const checkinHistory = '/checkin';
+  static const checkinNew = '/checkin/new';
+  static String checkinEdit(int id) => '/checkin/$id/edit';
   static const settings = '/settings';
 }
 
@@ -270,6 +276,24 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 builder: (context, state) => FlareDetailScreen(
                   flareId: int.parse(state.pathParameters['fid']!),
                 ),
+              ),
+            ],
+          ),
+          GoRoute(
+            path: AppRoutes.checkinHistory,
+            name: 'checkin-history',
+            builder: (context, state) => const CheckInHistoryScreen(),
+            routes: [
+              GoRoute(
+                path: 'new',
+                name: 'checkin-new',
+                builder: (context, state) => const CheckInFormScreen(),
+              ),
+              GoRoute(
+                path: ':cid/edit',
+                name: 'checkin-edit',
+                builder: (context, state) =>
+                    CheckInFormScreen(checkin: state.extra as DailyCheckin?),
               ),
             ],
           ),

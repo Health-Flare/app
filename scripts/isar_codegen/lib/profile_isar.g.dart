@@ -27,28 +27,33 @@ const ProfileIsarSchema = CollectionSchema(
       name: r'colorSeed',
       type: IsarType.long,
     ),
-    r'dateOfBirth': PropertySchema(
+    r'cycleTrackingEnabled': PropertySchema(
       id: 2,
+      name: r'cycleTrackingEnabled',
+      type: IsarType.bool,
+    ),
+    r'dateOfBirth': PropertySchema(
+      id: 3,
       name: r'dateOfBirth',
       type: IsarType.dateTime,
     ),
     r'firstLogShown': PropertySchema(
-      id: 3,
+      id: 4,
       name: r'firstLogShown',
       type: IsarType.bool,
     ),
     r'name': PropertySchema(
-      id: 4,
+      id: 5,
       name: r'name',
       type: IsarType.string,
     ),
     r'weatherOptInShown': PropertySchema(
-      id: 5,
+      id: 6,
       name: r'weatherOptInShown',
       type: IsarType.bool,
     ),
     r'weatherTrackingEnabled': PropertySchema(
-      id: 6,
+      id: 7,
       name: r'weatherTrackingEnabled',
       type: IsarType.bool,
     )
@@ -91,11 +96,12 @@ void _profileIsarSerialize(
 ) {
   writer.writeString(offsets[0], object.avatarPath);
   writer.writeLong(offsets[1], object.colorSeed);
-  writer.writeDateTime(offsets[2], object.dateOfBirth);
-  writer.writeBool(offsets[3], object.firstLogShown);
-  writer.writeString(offsets[4], object.name);
-  writer.writeBool(offsets[5], object.weatherOptInShown);
-  writer.writeBool(offsets[6], object.weatherTrackingEnabled);
+  writer.writeBool(offsets[2], object.cycleTrackingEnabled);
+  writer.writeDateTime(offsets[3], object.dateOfBirth);
+  writer.writeBool(offsets[4], object.firstLogShown);
+  writer.writeString(offsets[5], object.name);
+  writer.writeBool(offsets[6], object.weatherOptInShown);
+  writer.writeBool(offsets[7], object.weatherTrackingEnabled);
 }
 
 ProfileIsar _profileIsarDeserialize(
@@ -107,12 +113,13 @@ ProfileIsar _profileIsarDeserialize(
   final object = ProfileIsar();
   object.avatarPath = reader.readStringOrNull(offsets[0]);
   object.colorSeed = reader.readLongOrNull(offsets[1]);
-  object.dateOfBirth = reader.readDateTimeOrNull(offsets[2]);
-  object.firstLogShown = reader.readBool(offsets[3]);
+  object.cycleTrackingEnabled = reader.readBool(offsets[2]);
+  object.dateOfBirth = reader.readDateTimeOrNull(offsets[3]);
+  object.firstLogShown = reader.readBool(offsets[4]);
   object.id = id;
-  object.name = reader.readString(offsets[4]);
-  object.weatherOptInShown = reader.readBool(offsets[5]);
-  object.weatherTrackingEnabled = reader.readBool(offsets[6]);
+  object.name = reader.readString(offsets[5]);
+  object.weatherOptInShown = reader.readBool(offsets[6]);
+  object.weatherTrackingEnabled = reader.readBool(offsets[7]);
   return object;
 }
 
@@ -128,14 +135,16 @@ P _profileIsarDeserializeProp<P>(
     case 1:
       return (reader.readLongOrNull(offset)) as P;
     case 2:
-      return (reader.readDateTimeOrNull(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 3:
-      return (reader.readBool(offset)) as P;
+      return (reader.readDateTimeOrNull(offset)) as P;
     case 4:
-      return (reader.readString(offset)) as P;
-    case 5:
       return (reader.readBool(offset)) as P;
+    case 5:
+      return (reader.readString(offset)) as P;
     case 6:
+      return (reader.readBool(offset)) as P;
+    case 7:
       return (reader.readBool(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -464,6 +473,16 @@ extension ProfileIsarQueryFilter
   }
 
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
+      cycleTrackingEnabledEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'cycleTrackingEnabled',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
       dateOfBirthIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -784,6 +803,20 @@ extension ProfileIsarQuerySortBy
     });
   }
 
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy>
+      sortByCycleTrackingEnabled() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'cycleTrackingEnabled', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy>
+      sortByCycleTrackingEnabledDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'cycleTrackingEnabled', Sort.desc);
+    });
+  }
+
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy> sortByDateOfBirth() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'dateOfBirth', Sort.asc);
@@ -873,6 +906,20 @@ extension ProfileIsarQuerySortThenBy
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy> thenByColorSeedDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'colorSeed', Sort.desc);
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy>
+      thenByCycleTrackingEnabled() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'cycleTrackingEnabled', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy>
+      thenByCycleTrackingEnabledDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'cycleTrackingEnabled', Sort.desc);
     });
   }
 
@@ -969,6 +1016,13 @@ extension ProfileIsarQueryWhereDistinct
     });
   }
 
+  QueryBuilder<ProfileIsar, ProfileIsar, QDistinct>
+      distinctByCycleTrackingEnabled() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'cycleTrackingEnabled');
+    });
+  }
+
   QueryBuilder<ProfileIsar, ProfileIsar, QDistinct> distinctByDateOfBirth() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'dateOfBirth');
@@ -1020,6 +1074,13 @@ extension ProfileIsarQueryProperty
   QueryBuilder<ProfileIsar, int?, QQueryOperations> colorSeedProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'colorSeed');
+    });
+  }
+
+  QueryBuilder<ProfileIsar, bool, QQueryOperations>
+      cycleTrackingEnabledProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'cycleTrackingEnabled');
     });
   }
 
