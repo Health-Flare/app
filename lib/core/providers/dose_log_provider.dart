@@ -51,6 +51,7 @@ class DoseLogListNotifier extends Notifier<List<DoseLog>> {
     String? reason,
     String? effectiveness,
     String? notes,
+    int? flareIsarId,
   }) async {
     final isar = ref.read(isarProvider);
     final row = DoseLogIsar()
@@ -64,7 +65,8 @@ class DoseLogListNotifier extends Notifier<List<DoseLog>> {
       ..status = status
       ..reason = reason
       ..effectiveness = effectiveness
-      ..notes = notes;
+      ..notes = notes
+      ..flareIsarId = flareIsarId;
     await isar.writeTxn(() async {
       await isar.doseLogIsars.put(row);
     });
