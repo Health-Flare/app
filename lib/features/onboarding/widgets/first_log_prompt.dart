@@ -50,7 +50,7 @@ class FirstLogPrompt extends ConsumerWidget {
 
             // Heading — personalised with profile name
             Text(
-              "You're all set, $profileName.",
+              "$profileName's profile is ready.",
               style: tt.headlineSmall?.copyWith(color: cs.onSurface),
             ),
 
@@ -59,7 +59,7 @@ class FirstLogPrompt extends ConsumerWidget {
             // Body
             Text(
               'The best way to spot patterns is to start logging now, while '
-              'the day is fresh. What would you like to record first?',
+              'the day is fresh. What would you like to record for $profileName first?',
               style: tt.bodyMedium?.copyWith(
                 color: cs.onSurfaceVariant,
                 height: 1.5,
@@ -100,9 +100,9 @@ class FirstLogPrompt extends ConsumerWidget {
                     _LogOptionCard(
                       emoji: '🩺',
                       label: 'A symptom',
-                      sublabel: 'How are you feeling right now?',
+                      sublabel: 'How is $profileName feeling right now?',
                       semanticsLabel:
-                          'Log a symptom — how are you feeling right now?',
+                          'Log a symptom — how is $profileName feeling right now?',
                       onTap: () {
                         ref.read(firstLogPromptProvider.notifier).dismiss();
                         Navigator.of(context).pop();
@@ -126,9 +126,9 @@ class FirstLogPrompt extends ConsumerWidget {
                     _LogOptionCard(
                       emoji: '🍽️',
                       label: 'A meal',
-                      sublabel: 'What did you last eat or drink?',
+                      sublabel: 'What did $profileName last eat or drink?',
                       semanticsLabel:
-                          'Log a meal — what did you last eat or drink?',
+                          'Log a meal — what did $profileName last eat or drink?',
                       onTap: () {
                         ref.read(firstLogPromptProvider.notifier).dismiss();
                         Navigator.of(context).pop();
@@ -139,9 +139,10 @@ class FirstLogPrompt extends ConsumerWidget {
                     _LogOptionCard(
                       emoji: '💊',
                       label: 'A medication',
-                      sublabel: "Add something you're currently taking",
+                      sublabel:
+                          'Add something $profileName is currently taking',
                       semanticsLabel:
-                          "Log a medication — add something you're currently taking",
+                          'Log a medication — add something $profileName is currently taking',
                       onTap: () {
                         ref.read(firstLogPromptProvider.notifier).dismiss();
                         Navigator.of(context).pop();
@@ -160,7 +161,7 @@ class FirstLogPrompt extends ConsumerWidget {
             Center(
               child: Semantics(
                 button: true,
-                label: 'Skip for now, explore the app on my own',
+                label: "Skip for now, explore $profileName's data on my own",
                 child: TextButton(
                   onPressed: () {
                     ref.read(firstLogPromptProvider.notifier).dismiss();

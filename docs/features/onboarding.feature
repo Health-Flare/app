@@ -173,7 +173,7 @@ Feature: Onboarding
     Given the first-log prompt is visible
     When I add an illness and return to the prompt
     Then the prompt heading updates to invite a related first log
-    Such as "Now, how are you feeling today?"
+    Such as "What would you like to record for Sarah first?"
     And the non-illness options are visually foregrounded
 
   Scenario: Tapping a daily-use option opens the entry form and lands on the dashboard
