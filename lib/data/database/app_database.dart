@@ -10,6 +10,7 @@ import 'package:health_flare/data/models/symptom_isar.dart';
 import 'package:health_flare/data/models/user_condition_isar.dart';
 import 'package:health_flare/data/models/user_symptom_isar.dart';
 import 'package:health_flare/data/database/app_settings.dart';
+import 'package:health_flare/data/database/backup_service.dart';
 import 'package:health_flare/data/database/migration_runner.dart';
 
 /// Startup data read before [runApp] so providers have real values on
@@ -39,6 +40,9 @@ class IsarService {
     } else {
       final dir = await getApplicationDocumentsDirectory();
       directory = dir.path;
+      // Apply any pending restore before opening — replaces the database file
+      // while Isar is still closed, so no live instance juggling is required.
+      await BackupService.applyPendingRestoreIfNeeded(directory);
     }
 
     final isar = await Isar.open(

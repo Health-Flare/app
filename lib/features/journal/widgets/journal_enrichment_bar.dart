@@ -8,20 +8,33 @@ import 'package:health_flare/features/journal/widgets/journal_mood_sheet.dart';
 /// journal composer.
 ///
 /// Contains:
+/// - Date chip (shows entry date; tappable to change in create mode)
 /// - Mood chip (opens [JournalMoodSheet])
 /// - Energy chip (opens [JournalEnergySheet])
 ///
-/// Both are always visible but unobtrusive when unset. Selecting a value
-/// updates the chip to show the current value and calls the appropriate
-/// callback. Tapping an already-set value allows clearing it.
+/// Mood and energy are always visible but unobtrusive when unset. Selecting
+/// a value updates the chip to show the current value and calls the
+/// appropriate callback. Tapping an already-set value allows clearing it.
+///
+/// The date chip is shown when [dateLabel] is provided. Pass a non-null
+/// [onDateTap] to make it tappable (create mode); null makes it read-only
+/// (edit mode).
 class JournalEnrichmentBar extends StatelessWidget {
   const JournalEnrichmentBar({
     super.key,
+    this.dateLabel,
+    this.onDateTap,
     required this.mood,
     required this.energyLevel,
     required this.onMoodChanged,
     required this.onEnergyChanged,
   });
+
+  /// Formatted date string to display. When null the date chip is hidden.
+  final String? dateLabel;
+
+  /// Callback for the date chip tap. Null = chip is read-only.
+  final VoidCallback? onDateTap;
 
   final JournalMood? mood;
   final int? energyLevel;
@@ -58,6 +71,19 @@ class JournalEnrichmentBar extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
         children: [
+          // Date chip — shown in create mode (tappable) and edit mode (read-only)
+          if (dateLabel != null) ...[
+            _EnrichmentChip(
+              icon: Icons.calendar_today_rounded,
+              label: dateLabel!,
+              isSet: onDateTap != null,
+              semanticLabel: onDateTap != null
+                  ? 'Entry date: $dateLabel. Tap to change.'
+                  : 'Entry date: $dateLabel',
+              onTap: onDateTap ?? () {},
+            ),
+            const SizedBox(width: 8),
+          ],
           // Mood chip
           _EnrichmentChip(
             icon: Icons.mood_rounded,

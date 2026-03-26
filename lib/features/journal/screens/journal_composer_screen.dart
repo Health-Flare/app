@@ -56,6 +56,11 @@ class _JournalComposerScreenState extends ConsumerState<JournalComposerScreen> {
   // Time of last save — shown in the AppBar title.
   DateTime? _lastSavedAt;
 
+  // The date/time to use as createdAt when saving a new entry.
+  // Defaults to now; can be changed by the user in create mode to backdate
+  // the entry. Read-only in edit mode.
+  late DateTime _entryDate;
+
   static const _autosaveDelay = Duration(milliseconds: 800);
 
   static const _prompts = [
@@ -68,6 +73,69 @@ class _JournalComposerScreenState extends ConsumerState<JournalComposerScreen> {
 
   static final _timeFormat = DateFormat('h:mm a');
   static final _dateFormat = DateFormat('d MMM');
+  static final _chipDateFormat = DateFormat('E, d MMM');
+  static final _chipDateYearFormat = DateFormat('d MMM y');
+
+  // Whether the user can change the entry date.
+  // True only in create mode (new entries not yet saved, or saved but not
+  // yet navigated away from). False in edit mode.
+  bool get _canEditDate => widget.entryId == null;
+
+  String _dateLabel() {
+    final now = DateTime.now();
+    final isCurrentYear = _entryDate.year == now.year;
+    final datePart = isCurrentYear
+        ? _chipDateFormat.format(_entryDate)
+        : _chipDateYearFormat.format(_entryDate);
+    final timePart = _timeFormat.format(_entryDate);
+    return '$datePart · $timePart';
+  }
+
+  Future<void> _pickDate() async {
+    final now = DateTime.now();
+    final pickedDate = await showDatePicker(
+      context: context,
+      initialDate: _entryDate,
+      firstDate: DateTime(2000),
+      lastDate: now,
+    );
+    if (pickedDate == null || !mounted) return;
+
+    final pickedTime = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.fromDateTime(_entryDate),
+    );
+    if (!mounted) return;
+
+    final newDate = DateTime(
+      pickedDate.year,
+      pickedDate.month,
+      pickedDate.day,
+      pickedTime?.hour ?? _entryDate.hour,
+      pickedTime?.minute ?? _entryDate.minute,
+    );
+    setState(() => _entryDate = newDate);
+
+    // If the entry has already been saved to Isar, update its createdAt so
+    // the timeline reflects the user's intended date.
+    if (_entryId != null) {
+      final entry = ref.read(journalEntryListProvider.notifier).byId(_entryId!);
+      if (entry != null) {
+        await ref
+            .read(journalEntryListProvider.notifier)
+            .update(
+              JournalEntry(
+                id: entry.id,
+                profileId: entry.profileId,
+                createdAt: newDate,
+                snapshots: entry.snapshots,
+                mood: entry.mood,
+                energyLevel: entry.energyLevel,
+              ),
+            );
+      }
+    }
+  }
 
   @override
   void initState() {
@@ -77,6 +145,7 @@ class _JournalComposerScreenState extends ConsumerState<JournalComposerScreen> {
       _entryId = widget.entryId;
       final entry = ref.read(journalEntryListProvider.notifier).byId(_entryId!);
       if (entry != null) {
+        _entryDate = entry.createdAt;
         _bodyController.text = entry.body;
         _lastSavedBody = entry.body;
         _lastSavedAt = entry.lastSavedAt;
@@ -93,7 +162,21 @@ class _JournalComposerScreenState extends ConsumerState<JournalComposerScreen> {
             energyLevel: entry.energyLevel,
           );
         });
+      } else {
+        _entryDate = DateTime.now();
       }
+    } else {
+      _entryDate = DateTime.now();
+      // Reset any mood/energy left from a previous composer session.
+      // Must use addPostFrameCallback — ref is not yet attached at initState
+      // time. Moving this reset to dispose() is unsafe because ref is already
+      // invalidated by the time dispose() runs in ConsumerStatefulWidget.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          ref.read(journalComposerStateProvider.notifier).state =
+              JournalComposerState.empty;
+        }
+      });
     }
 
     _bodyController.addListener(_onTextChanged);
@@ -113,8 +196,6 @@ class _JournalComposerScreenState extends ConsumerState<JournalComposerScreen> {
     _titleController.removeListener(_onTextChanged);
     _bodyController.dispose();
     _titleController.dispose();
-    ref.read(journalComposerStateProvider.notifier).state =
-        JournalComposerState.empty;
     super.dispose();
   }
 
@@ -150,11 +231,12 @@ class _JournalComposerScreenState extends ConsumerState<JournalComposerScreen> {
 
     if (_entryId == null) {
       // First save in create mode — Isar assigns the id.
+      // Use _entryDate (not now) so backdated entries land on the correct date.
       _entryId = await ref
           .read(journalEntryListProvider.notifier)
           .add(
             profileId: profileId,
-            createdAt: now,
+            createdAt: _entryDate,
             firstSnapshot: snapshot,
             mood: ref.read(journalComposerStateProvider).mood?.index,
             energyLevel: ref.read(journalComposerStateProvider).energyLevel,
@@ -350,6 +432,8 @@ class _JournalComposerScreenState extends ConsumerState<JournalComposerScreen> {
               ),
             ),
             JournalEnrichmentBar(
+              dateLabel: _dateLabel(),
+              onDateTap: _canEditDate ? _pickDate : null,
               mood: composerState.mood,
               energyLevel: composerState.energyLevel,
               onMoodChanged: (mood) {
