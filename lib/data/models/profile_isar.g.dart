@@ -22,24 +22,29 @@ const ProfileIsarSchema = CollectionSchema(
       name: r'avatarPath',
       type: IsarType.string,
     ),
-    r'dateOfBirth': PropertySchema(
+    r'colorSeed': PropertySchema(
       id: 1,
+      name: r'colorSeed',
+      type: IsarType.long,
+    ),
+    r'dateOfBirth': PropertySchema(
+      id: 2,
       name: r'dateOfBirth',
       type: IsarType.dateTime,
     ),
     r'firstLogShown': PropertySchema(
-      id: 2,
+      id: 3,
       name: r'firstLogShown',
       type: IsarType.bool,
     ),
-    r'name': PropertySchema(id: 3, name: r'name', type: IsarType.string),
+    r'name': PropertySchema(id: 4, name: r'name', type: IsarType.string),
     r'weatherOptInShown': PropertySchema(
-      id: 4,
+      id: 5,
       name: r'weatherOptInShown',
       type: IsarType.bool,
     ),
     r'weatherTrackingEnabled': PropertySchema(
-      id: 5,
+      id: 6,
       name: r'weatherTrackingEnabled',
       type: IsarType.bool,
     ),
@@ -81,11 +86,12 @@ void _profileIsarSerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeString(offsets[0], object.avatarPath);
-  writer.writeDateTime(offsets[1], object.dateOfBirth);
-  writer.writeBool(offsets[2], object.firstLogShown);
-  writer.writeString(offsets[3], object.name);
-  writer.writeBool(offsets[4], object.weatherOptInShown);
-  writer.writeBool(offsets[5], object.weatherTrackingEnabled);
+  writer.writeLong(offsets[1], object.colorSeed);
+  writer.writeDateTime(offsets[2], object.dateOfBirth);
+  writer.writeBool(offsets[3], object.firstLogShown);
+  writer.writeString(offsets[4], object.name);
+  writer.writeBool(offsets[5], object.weatherOptInShown);
+  writer.writeBool(offsets[6], object.weatherTrackingEnabled);
 }
 
 ProfileIsar _profileIsarDeserialize(
@@ -96,12 +102,13 @@ ProfileIsar _profileIsarDeserialize(
 ) {
   final object = ProfileIsar();
   object.avatarPath = reader.readStringOrNull(offsets[0]);
-  object.dateOfBirth = reader.readDateTimeOrNull(offsets[1]);
-  object.firstLogShown = reader.readBool(offsets[2]);
+  object.colorSeed = reader.readLongOrNull(offsets[1]);
+  object.dateOfBirth = reader.readDateTimeOrNull(offsets[2]);
+  object.firstLogShown = reader.readBool(offsets[3]);
   object.id = id;
-  object.name = reader.readString(offsets[3]);
-  object.weatherOptInShown = reader.readBool(offsets[4]);
-  object.weatherTrackingEnabled = reader.readBool(offsets[5]);
+  object.name = reader.readString(offsets[4]);
+  object.weatherOptInShown = reader.readBool(offsets[5]);
+  object.weatherTrackingEnabled = reader.readBool(offsets[6]);
   return object;
 }
 
@@ -115,14 +122,16 @@ P _profileIsarDeserializeProp<P>(
     case 0:
       return (reader.readStringOrNull(offset)) as P;
     case 1:
-      return (reader.readDateTimeOrNull(offset)) as P;
+      return (reader.readLongOrNull(offset)) as P;
     case 2:
-      return (reader.readBool(offset)) as P;
+      return (reader.readDateTimeOrNull(offset)) as P;
     case 3:
-      return (reader.readString(offset)) as P;
-    case 4:
       return (reader.readBool(offset)) as P;
+    case 4:
+      return (reader.readString(offset)) as P;
     case 5:
+      return (reader.readBool(offset)) as P;
+    case 6:
       return (reader.readBool(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -384,6 +393,79 @@ extension ProfileIsarQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(property: r'avatarPath', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
+  colorSeedIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'colorSeed'),
+      );
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
+  colorSeedIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'colorSeed'),
+      );
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
+  colorSeedEqualTo(int? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'colorSeed', value: value),
+      );
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
+  colorSeedGreaterThan(int? value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'colorSeed',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
+  colorSeedLessThan(int? value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'colorSeed',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
+  colorSeedBetween(
+    int? lower,
+    int? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'colorSeed',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
       );
     });
   }
@@ -718,6 +800,18 @@ extension ProfileIsarQuerySortBy
     });
   }
 
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy> sortByColorSeed() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'colorSeed', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy> sortByColorSeedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'colorSeed', Sort.desc);
+    });
+  }
+
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy> sortByDateOfBirth() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'dateOfBirth', Sort.asc);
@@ -795,6 +889,18 @@ extension ProfileIsarQuerySortThenBy
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy> thenByAvatarPathDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'avatarPath', Sort.desc);
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy> thenByColorSeed() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'colorSeed', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy> thenByColorSeedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'colorSeed', Sort.desc);
     });
   }
 
@@ -886,6 +992,12 @@ extension ProfileIsarQueryWhereDistinct
     });
   }
 
+  QueryBuilder<ProfileIsar, ProfileIsar, QDistinct> distinctByColorSeed() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'colorSeed');
+    });
+  }
+
   QueryBuilder<ProfileIsar, ProfileIsar, QDistinct> distinctByDateOfBirth() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'dateOfBirth');
@@ -932,6 +1044,12 @@ extension ProfileIsarQueryProperty
   QueryBuilder<ProfileIsar, String?, QQueryOperations> avatarPathProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'avatarPath');
+    });
+  }
+
+  QueryBuilder<ProfileIsar, int?, QQueryOperations> colorSeedProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'colorSeed');
     });
   }
 

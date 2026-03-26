@@ -8,6 +8,21 @@ import 'package:health_flare/models/profile.dart';
 import 'package:health_flare/core/providers/database_provider.dart';
 
 // ---------------------------------------------------------------------------
+// Color palette — 8 visually distinct Material 3 seed colors, cycled mod 8
+// ---------------------------------------------------------------------------
+
+const _colorPalette = [
+  0xFF6750A4, // purple (default)
+  0xFF006EBF, // blue
+  0xFF006B5C, // teal
+  0xFF2E7D32, // green
+  0xFFE65100, // orange
+  0xFFB00020, // red
+  0xFF4A148C, // deep purple
+  0xFF004D40, // dark teal
+];
+
+// ---------------------------------------------------------------------------
 // Helpers — AppSettings access
 // ---------------------------------------------------------------------------
 
@@ -70,17 +85,22 @@ class ProfileListNotifier extends Notifier<List<Profile>> {
   }
 
   /// Add a new profile. Isar assigns its id; the new profile becomes active.
+  ///
+  /// Auto-assigns a [colorSeed] from the palette, cycling by current profile
+  /// count so successive profiles get distinct colors.
   Future<void> add({
     required String name,
     DateTime? dateOfBirth,
     String? avatarPath,
   }) async {
     final isar = ref.read(isarProvider);
+    final seed = _colorPalette[state.length % _colorPalette.length];
     final row = ProfileIsar()
       ..id = Isar.autoIncrement
       ..name = name
       ..dateOfBirth = dateOfBirth
-      ..avatarPath = avatarPath;
+      ..avatarPath = avatarPath
+      ..colorSeed = seed;
     await isar.writeTxn(() async {
       await isar.profileIsars.put(row);
     });
@@ -102,7 +122,8 @@ class ProfileListNotifier extends Notifier<List<Profile>> {
         ..name = updated.name
         ..dateOfBirth = updated.dateOfBirth
         ..avatarPath = updated.avatarPath
-        ..weatherTrackingEnabled = updated.weatherTrackingEnabled;
+        ..weatherTrackingEnabled = updated.weatherTrackingEnabled
+        ..colorSeed = updated.colorSeed ?? existing.colorSeed;
       await isar.profileIsars.put(existing);
     });
   }

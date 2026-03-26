@@ -22,4 +22,8 @@ class ProfileIsar {
   /// Defaults to false. Set to true once the prompt is presented, regardless
   /// of whether the user enabled or declined.
   bool weatherOptInShown = false;
+
+  /// Material seed color for this profile's ColorScheme.
+  /// Null = use the app default. Auto-assigned from a palette on creation.
+  int? colorSeed;
 }
