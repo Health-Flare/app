@@ -215,52 +215,16 @@ void main() {
     // ── Quick-entry sheet ────────────────────────────────────────────────────
 
     group('quick-entry sheet', () {
-      testWidgets('tapping FAB shows sheet with Journal entry and Sleep', (
-        tester,
-      ) async {
+      testWidgets('tapping FAB opens quick log sheet', (tester) async {
         await tester.pumpWidget(_buildDashboard());
         await tester.pump();
 
         await tester.tap(find.byType(FloatingActionButton));
-        await tester.pump(); // trigger modal
-        await tester.pump(const Duration(milliseconds: 300)); // animation
-
-        expect(find.text('Journal entry'), findsOneWidget);
-        expect(find.text('Sleep'), findsOneWidget);
-      });
-
-      testWidgets('tapping "Journal entry" navigates to journal composer', (
-        tester,
-      ) async {
-        await tester.pumpWidget(_buildDashboardWithRouter());
-        await tester.pump();
-
-        await tester.tap(find.byType(FloatingActionButton));
         await tester.pump();
         await tester.pump(const Duration(milliseconds: 300));
 
-        await tester.tap(find.text('Journal entry'));
-        await tester.pump();
-        await tester.pump(const Duration(milliseconds: 300));
-
-        expect(find.text('Journal Composer'), findsOneWidget);
-      });
-
-      testWidgets('tapping "Sleep" navigates to sleep entry screen', (
-        tester,
-      ) async {
-        await tester.pumpWidget(_buildDashboardWithRouter());
-        await tester.pump();
-
-        await tester.tap(find.byType(FloatingActionButton));
-        await tester.pump();
-        await tester.pump(const Duration(milliseconds: 300));
-
-        await tester.tap(find.text('Sleep'));
-        await tester.pump();
-        await tester.pump(const Duration(milliseconds: 300));
-
-        expect(find.text('Sleep Entry'), findsOneWidget);
+        expect(find.text('Logging for Sarah'), findsOneWidget);
+        expect(find.text('Save'), findsOneWidget);
       });
     });
 

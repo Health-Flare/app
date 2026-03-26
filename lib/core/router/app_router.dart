@@ -170,7 +170,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: 'new-symptom',
                 name: 'symptoms-new',
-                builder: (context, state) => const SymptomEntryFormScreen(),
+                builder: (context, state) => SymptomEntryFormScreen(
+                  prefillText: state.extra is String
+                      ? state.extra as String
+                      : null,
+                ),
               ),
               GoRoute(
                 path: ':sid/edit',
@@ -245,7 +249,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: 'new',
                 name: 'meals-new',
-                builder: (context, state) => const MealEntryFormScreen(),
+                builder: (context, state) => MealEntryFormScreen(
+                  prefillText: state.extra is String
+                      ? state.extra as String
+                      : null,
+                ),
               ),
               GoRoute(
                 path: ':meid/edit',
@@ -313,9 +321,15 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: 'new',
                 name: 'appointment-new',
-                builder: (context, state) => AppointmentFormScreen(
-                  prefillProvider: state.extra as String?,
-                ),
+                builder: (context, state) {
+                  final extra = state.extra;
+                  return AppointmentFormScreen(
+                    prefillProvider: extra is String ? extra : null,
+                    prefillTitle: extra is Map
+                        ? extra['title'] as String?
+                        : null,
+                  );
+                },
               ),
               GoRoute(
                 path: ':aid/edit',
@@ -365,7 +379,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: 'new',
                 name: 'journal-new',
-                builder: (context, state) => const JournalComposerScreen(),
+                builder: (context, state) => JournalComposerScreen(
+                  prefillBody: state.extra is String
+                      ? state.extra as String
+                      : null,
+                ),
               ),
               GoRoute(
                 path: ':id',

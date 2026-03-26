@@ -14,10 +14,12 @@ import 'package:health_flare/models/meal_entry.dart';
 /// Full-screen form for creating or editing a meal entry.
 ///
 /// Pass [entry] to open in edit mode; leave null for a new entry.
+/// Pass [prefillText] to pre-populate the description (quick-log promotion).
 class MealEntryFormScreen extends ConsumerStatefulWidget {
-  const MealEntryFormScreen({super.key, this.entry});
+  const MealEntryFormScreen({super.key, this.entry, this.prefillText});
 
   final MealEntry? entry;
+  final String? prefillText;
 
   @override
   ConsumerState<MealEntryFormScreen> createState() =>
@@ -47,7 +49,9 @@ class _MealEntryFormScreenState extends ConsumerState<MealEntryFormScreen> {
       _hasReaction = e.hasReaction;
       _photoPath = e.photoPath;
     } else {
-      _descriptionController = TextEditingController();
+      _descriptionController = TextEditingController(
+        text: widget.prefillText ?? '',
+      );
       _notesController = TextEditingController();
       _loggedAt = DateTime.now();
       _hasReaction = false;
