@@ -9,7 +9,10 @@ import 'package:health_flare/features/journal/screens/journal_list_screen.dart';
 import 'package:health_flare/features/onboarding/screens/onboarding_screen.dart';
 import 'package:health_flare/features/shell/app_shell.dart';
 import 'package:health_flare/features/dashboard/dashboard_screen.dart';
+import 'package:health_flare/features/sleep/screens/sleep_entry_screen.dart';
+import 'package:health_flare/features/sleep/screens/sleep_list_screen.dart';
 import 'package:health_flare/core/providers/onboarding_provider.dart';
+import 'package:health_flare/models/sleep_entry.dart';
 
 // ---------------------------------------------------------------------------
 // Route names — use these constants everywhere instead of raw strings.
@@ -28,6 +31,9 @@ abstract final class AppRoutes {
   static const journalNew = '/journal/new';
   static String journalDetail(int id) => '/journal/$id';
   static String journalEdit(int id) => '/journal/$id/edit';
+  static const sleep = '/sleep';
+  static const sleepNew = '/sleep/new';
+  static String sleepEdit(int id) => '/sleep/$id/edit';
 }
 
 // ---------------------------------------------------------------------------
@@ -119,6 +125,24 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             name: 'reports',
             builder: (context, state) =>
                 const _PlaceholderScreen(title: 'Reports'),
+          ),
+          GoRoute(
+            path: AppRoutes.sleep,
+            name: 'sleep',
+            builder: (context, state) => const SleepListScreen(),
+            routes: [
+              GoRoute(
+                path: 'new',
+                name: 'sleep-new',
+                builder: (context, state) => const SleepEntryScreen(),
+              ),
+              GoRoute(
+                path: ':id/edit',
+                name: 'sleep-edit',
+                builder: (context, state) =>
+                    SleepEntryScreen(entry: state.extra as SleepEntry?),
+              ),
+            ],
           ),
           GoRoute(
             path: AppRoutes.journal,
