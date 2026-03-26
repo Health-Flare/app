@@ -12,6 +12,7 @@ class MealEntry {
     required this.loggedAt,
     required this.createdAt,
     this.updatedAt,
+    this.flareIsarId,
   });
 
   final int id;
@@ -23,6 +24,7 @@ class MealEntry {
   final DateTime loggedAt;
   final DateTime createdAt;
   final DateTime? updatedAt;
+  final int? flareIsarId; // set when logged during an active flare
 
   MealEntry copyWith({
     String? description,
@@ -31,6 +33,7 @@ class MealEntry {
     bool? hasReaction,
     DateTime? loggedAt,
     DateTime? updatedAt,
+    int? flareIsarId,
     bool clearNotes = false,
     bool clearPhotoPath = false,
   }) {
@@ -44,6 +47,7 @@ class MealEntry {
       loggedAt: loggedAt ?? this.loggedAt,
       createdAt: createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      flareIsarId: flareIsarId ?? this.flareIsarId,
     );
   }
 

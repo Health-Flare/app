@@ -22,6 +22,9 @@ import 'package:health_flare/features/medications/screens/dose_log_form_screen.d
 import 'package:health_flare/features/meals/screens/meals_screen.dart';
 import 'package:health_flare/features/meals/screens/meal_entry_form_screen.dart';
 import 'package:health_flare/features/meals/screens/meal_detail_screen.dart';
+import 'package:health_flare/features/flare/screens/flare_history_screen.dart';
+import 'package:health_flare/features/flare/screens/flare_form_screen.dart';
+import 'package:health_flare/features/flare/screens/flare_detail_screen.dart';
 import 'package:health_flare/core/providers/onboarding_provider.dart';
 import 'package:health_flare/models/sleep_entry.dart';
 import 'package:health_flare/models/symptom_entry.dart';
@@ -29,6 +32,7 @@ import 'package:health_flare/models/vital_entry.dart';
 import 'package:health_flare/models/medication.dart';
 import 'package:health_flare/models/dose_log.dart';
 import 'package:health_flare/models/meal_entry.dart';
+import 'package:health_flare/models/flare.dart';
 
 // ---------------------------------------------------------------------------
 // Route names — use these constants everywhere instead of raw strings.
@@ -56,6 +60,10 @@ abstract final class AppRoutes {
   static const mealsNew = '/meals/new';
   static String mealsEdit(int id) => '/meals/$id/edit';
   static String mealsDetail(int id) => '/meals/$id';
+  static const flareHistory = '/flare';
+  static const flareNew = '/flare/new';
+  static String flareEdit(int id) => '/flare/$id/edit';
+  static String flareDetail(int id) => '/flare/$id';
   static const reports = '/reports';
   static const journal = '/journal';
   static const journalNew = '/journal/new';
@@ -236,6 +244,31 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 name: 'meals-detail',
                 builder: (context, state) => MealDetailScreen(
                   mealId: int.parse(state.pathParameters['meid']!),
+                ),
+              ),
+            ],
+          ),
+          GoRoute(
+            path: AppRoutes.flareHistory,
+            name: 'flare-history',
+            builder: (context, state) => const FlareHistoryScreen(),
+            routes: [
+              GoRoute(
+                path: 'new',
+                name: 'flare-new',
+                builder: (context, state) => const FlareFormScreen(),
+              ),
+              GoRoute(
+                path: ':fid/edit',
+                name: 'flare-edit',
+                builder: (context, state) =>
+                    FlareFormScreen(flare: state.extra as Flare?),
+              ),
+              GoRoute(
+                path: ':fid',
+                name: 'flare-detail',
+                builder: (context, state) => FlareDetailScreen(
+                  flareId: int.parse(state.pathParameters['fid']!),
                 ),
               ),
             ],

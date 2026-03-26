@@ -9,6 +9,7 @@ import 'package:health_flare/core/router/app_router.dart';
 import 'package:health_flare/features/dashboard/widgets/dashboard_activity_feed.dart';
 import 'package:health_flare/features/dashboard/widgets/dashboard_quick_entry_sheet.dart';
 import 'package:health_flare/features/onboarding/widgets/first_log_prompt.dart';
+import 'package:health_flare/features/flare/widgets/active_flare_banner.dart';
 import 'package:health_flare/features/onboarding/widgets/weather_opt_in_sheet.dart';
 
 /// Dashboard — the home tab.
@@ -140,33 +141,51 @@ class _DashboardBody extends ConsumerWidget {
     final items = ref.watch(dashboardActivityProvider);
 
     if (!hasActivity) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 40),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.favorite_outline_rounded, size: 64, color: cs.primary),
-              const SizedBox(height: 24),
-              Text(
-                'Nothing logged yet.',
-                style: tt.titleMedium?.copyWith(color: cs.onSurface),
-                textAlign: TextAlign.center,
+      return Column(
+        children: [
+          const ActiveFlareBanner(),
+          Expanded(
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 40),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.favorite_outline_rounded,
+                      size: 64,
+                      color: cs.primary,
+                    ),
+                    const SizedBox(height: 24),
+                    Text(
+                      'Nothing logged yet.',
+                      style: tt.titleMedium?.copyWith(color: cs.onSurface),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Tap the + button to record a symptom, vital, meal, '
+                      'or medication. The more you log, the clearer your '
+                      'health picture becomes.',
+                      style: tt.bodyMedium?.copyWith(
+                        color: cs.onSurfaceVariant,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
               ),
-              const SizedBox(height: 8),
-              Text(
-                'Tap the + button to record a symptom, vital, meal, '
-                'or medication. The more you log, the clearer your '
-                'health picture becomes.',
-                style: tt.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
-                textAlign: TextAlign.center,
-              ),
-            ],
+            ),
           ),
-        ),
+        ],
       );
     }
 
-    return ListView(children: [DashboardActivityFeed(items: items)]);
+    return ListView(
+      children: [
+        const ActiveFlareBanner(),
+        DashboardActivityFeed(items: items),
+      ],
+    );
   }
 }
