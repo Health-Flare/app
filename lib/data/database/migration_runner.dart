@@ -29,7 +29,7 @@ import 'package:health_flare/data/seed_data.dart';
 class MigrationRunner {
   MigrationRunner._();
 
-  static const int _targetVersion = 10;
+  static const int _targetVersion = 11;
 
   /// Run all pending migrations and update [AppSettings.schemaVersion].
   ///
@@ -155,6 +155,18 @@ class MigrationRunner {
       await isar.writeTxn(() async {
         final s = await isar.appSettings.get(1) ?? (AppSettings()..id = 1);
         s.schemaVersion = 10;
+        await isar.appSettings.put(s);
+      });
+    }
+
+    // ── v10 → v11: AppointmentIsar registered ─────────────────────────────
+    // New collection with embedded AppointmentQuestionIsar + MedicationChangeIsar.
+    // Isar creates the collection automatically.
+    // No data transformation needed.
+    if (currentVersion < 11) {
+      await isar.writeTxn(() async {
+        final s = await isar.appSettings.get(1) ?? (AppSettings()..id = 1);
+        s.schemaVersion = 11;
         await isar.appSettings.put(s);
       });
     }
