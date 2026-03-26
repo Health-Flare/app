@@ -64,10 +64,10 @@ class _JournalComposerScreenState extends ConsumerState<JournalComposerScreen> {
   static const _autosaveDelay = Duration(milliseconds: 800);
 
   static const _prompts = [
-    'How are you feeling today?',
+    'What do you want to remember about today?',
     'What\'s been on your mind?',
     'Anything you want to remember?',
-    'What do you want to tell your doctor?',
+    'What do you want to tell the doctor?',
     'What helped today? What didn\'t?',
   ];
 
@@ -336,6 +336,8 @@ class _JournalComposerScreenState extends ConsumerState<JournalComposerScreen> {
     final cs = Theme.of(context).colorScheme;
     final tt = Theme.of(context).textTheme;
     final composerState = ref.watch(journalComposerStateProvider);
+    final profileName =
+        ref.watch(activeProfileDataProvider)?.name ?? 'this profile';
 
     final liveEntry = _entryId != null
         ? ref.watch(journalEntryListProvider.notifier).byId(_entryId!)
@@ -436,6 +438,7 @@ class _JournalComposerScreenState extends ConsumerState<JournalComposerScreen> {
               onDateTap: _canEditDate ? _pickDate : null,
               mood: composerState.mood,
               energyLevel: composerState.energyLevel,
+              profileName: profileName,
               onMoodChanged: (mood) {
                 final updated = composerState.copyWith(
                   mood: mood,

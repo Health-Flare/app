@@ -11,10 +11,12 @@ class JournalMoodSheet extends StatelessWidget {
     super.key,
     required this.currentMood,
     required this.onSelected,
+    required this.profileName,
   });
 
   final JournalMood? currentMood;
   final ValueChanged<JournalMood?> onSelected;
+  final String profileName;
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +40,7 @@ class JournalMoodSheet extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             Text(
-              'How are you feeling?',
+              'How is $profileName feeling?',
               style: tt.titleMedium?.copyWith(color: cs.onSurface),
             ),
             const SizedBox(height: 20),
