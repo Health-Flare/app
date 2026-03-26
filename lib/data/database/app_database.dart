@@ -8,8 +8,10 @@ import 'package:health_flare/data/models/journal_entry_isar.dart';
 import 'package:health_flare/data/models/profile_isar.dart';
 import 'package:health_flare/data/models/symptom_isar.dart';
 import 'package:health_flare/data/models/sleep_entry_isar.dart';
+import 'package:health_flare/data/models/symptom_entry_isar.dart';
 import 'package:health_flare/data/models/user_condition_isar.dart';
 import 'package:health_flare/data/models/user_symptom_isar.dart';
+import 'package:health_flare/data/models/vital_entry_isar.dart';
 import 'package:health_flare/data/database/app_settings.dart';
 import 'package:health_flare/data/database/backup_service.dart';
 import 'package:health_flare/data/database/migration_runner.dart';
@@ -56,6 +58,8 @@ class IsarService {
         SymptomIsarSchema,
         UserSymptomIsarSchema,
         SleepEntryIsarSchema,
+        SymptomEntryIsarSchema,
+        VitalEntryIsarSchema,
       ],
       directory: directory ?? '',
       name: 'healthflare',

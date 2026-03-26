@@ -31,5 +31,8 @@ cp "$CODEGEN_DIR/lib/condition_isar.g.dart"       "$REPO_ROOT/lib/data/models/co
 cp "$CODEGEN_DIR/lib/user_condition_isar.g.dart"  "$REPO_ROOT/lib/data/models/user_condition_isar.g.dart"
 cp "$CODEGEN_DIR/lib/symptom_isar.g.dart"         "$REPO_ROOT/lib/data/models/symptom_isar.g.dart"
 cp "$CODEGEN_DIR/lib/user_symptom_isar.g.dart"    "$REPO_ROOT/lib/data/models/user_symptom_isar.g.dart"
+cp "$CODEGEN_DIR/lib/sleep_entry_isar.g.dart"     "$REPO_ROOT/lib/data/models/sleep_entry_isar.g.dart"
+cp "$CODEGEN_DIR/lib/symptom_entry_isar.g.dart"   "$REPO_ROOT/lib/data/models/symptom_entry_isar.g.dart"
+cp "$CODEGEN_DIR/lib/vital_entry_isar.g.dart"     "$REPO_ROOT/lib/data/models/vital_entry_isar.g.dart"
 
 echo "✓ Done. Generated files written to lib/data/."
