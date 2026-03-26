@@ -16,6 +16,7 @@ class Profile {
     this.avatarPath,
     this.weatherTrackingEnabled = false,
     this.colorSeed,
+    this.cycleTrackingEnabled = false,
   });
 
   /// Stable local identifier. In the in-memory MVP this is a simple
@@ -38,6 +39,10 @@ class Profile {
   /// Material seed color (ARGB int) for this profile's ColorScheme.
   /// Null = use the app default theme.
   final int? colorSeed;
+
+  /// Whether menstrual cycle tracking is enabled for this profile.
+  /// When true, cycle phase field appears in daily check-in.
+  final bool cycleTrackingEnabled;
 
   /// Returns true if this profile has a real photo rather than a generated one.
   bool get hasAvatar => avatarPath != null;
@@ -74,6 +79,7 @@ class Profile {
     String? avatarPath,
     bool? weatherTrackingEnabled,
     int? colorSeed,
+    bool? cycleTrackingEnabled,
     bool clearDateOfBirth = false,
     bool clearAvatar = false,
   }) {
@@ -85,6 +91,7 @@ class Profile {
       weatherTrackingEnabled:
           weatherTrackingEnabled ?? this.weatherTrackingEnabled,
       colorSeed: colorSeed ?? this.colorSeed,
+      cycleTrackingEnabled: cycleTrackingEnabled ?? this.cycleTrackingEnabled,
     );
   }
 

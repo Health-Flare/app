@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:health_flare/core/providers/daily_checkin_provider.dart';
 import 'package:health_flare/core/providers/flare_provider.dart';
 import 'package:health_flare/core/providers/journal_provider.dart';
 import 'package:health_flare/core/providers/onboarding_provider.dart';
@@ -10,6 +11,7 @@ import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/core/providers/sleep_provider.dart';
 import 'package:health_flare/core/router/app_router.dart';
 import 'package:health_flare/features/dashboard/dashboard_screen.dart';
+import 'package:health_flare/models/daily_checkin.dart';
 import 'package:health_flare/models/flare.dart';
 import 'package:health_flare/models/journal_entry.dart';
 import 'package:health_flare/models/profile.dart';
@@ -36,6 +38,11 @@ class _FakeFirstLogPrompt extends FirstLogPromptNotifier {
 class _FakeFlareList extends FlareListNotifier {
   @override
   List<Flare> build() => [];
+}
+
+class _FakeCheckinList extends DailyCheckinListNotifier {
+  @override
+  List<DailyCheckin> build() => [];
 }
 
 class _FakeWeatherOptIn extends WeatherOptInNotifier {
@@ -107,6 +114,8 @@ Widget _buildDashboard({
       weatherOptInProvider.overrideWith(_FakeWeatherOptIn.new),
       flareListProvider.overrideWith(_FakeFlareList.new),
       activeFlareProvider.overrideWith((ref) => null),
+      dailyCheckinListProvider.overrideWith(_FakeCheckinList.new),
+      todayCheckinProvider.overrideWith((ref) => null),
     ],
     child: const MaterialApp(home: DashboardScreen()),
   );
@@ -157,6 +166,8 @@ Widget _buildDashboardWithRouter({
       weatherOptInProvider.overrideWith(_FakeWeatherOptIn.new),
       flareListProvider.overrideWith(_FakeFlareList.new),
       activeFlareProvider.overrideWith((ref) => null),
+      dailyCheckinListProvider.overrideWith(_FakeCheckinList.new),
+      todayCheckinProvider.overrideWith((ref) => null),
     ],
     child: MaterialApp.router(routerConfig: router),
   );

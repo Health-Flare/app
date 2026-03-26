@@ -3,12 +3,14 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:health_flare/main.dart';
 import 'package:health_flare/core/providers/condition_provider.dart';
+import 'package:health_flare/core/providers/daily_checkin_provider.dart';
 import 'package:health_flare/core/providers/flare_provider.dart';
 import 'package:health_flare/core/providers/journal_provider.dart';
 import 'package:health_flare/core/providers/onboarding_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/core/providers/sleep_provider.dart';
 import 'package:health_flare/models/condition.dart';
+import 'package:health_flare/models/daily_checkin.dart';
 import 'package:health_flare/models/flare.dart';
 import 'package:health_flare/models/journal_entry.dart';
 import 'package:health_flare/models/profile.dart';
@@ -82,6 +84,11 @@ class _FakeFlareList extends FlareListNotifier {
   List<Flare> build() => [];
 }
 
+class _FakeCheckinList extends DailyCheckinListNotifier {
+  @override
+  List<DailyCheckin> build() => [];
+}
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -103,6 +110,8 @@ List<Override> _appOverrides({
   weatherOptInProvider.overrideWith(_FakeWeatherOptIn.new),
   flareListProvider.overrideWith(_FakeFlareList.new),
   activeFlareProvider.overrideWith((ref) => null),
+  dailyCheckinListProvider.overrideWith(_FakeCheckinList.new),
+  todayCheckinProvider.overrideWith((ref) => null),
 ];
 
 // ---------------------------------------------------------------------------
