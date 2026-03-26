@@ -174,7 +174,7 @@ Create profile and get started →
 
 ### Heading
 ```
-You're all set, [Name].
+[Name]'s profile is ready.
 ```
 
 *(Replace `[Name]` with the profile name entered during setup.)*
@@ -182,17 +182,21 @@ You're all set, [Name].
 ### Body copy
 ```
 The best way to spot patterns is to start logging now, while the day is fresh.
-What would you like to record first?
+What would you like to record for [Name] first?
 ```
+
+*(Replace `[Name]` with the profile name.)*
 
 ### Option cards (four, tappable)
 
 | Card | Icon suggestion | Label | Sublabel |
 |---|---|---|---|
-| Symptom | 🩺 | **A symptom** | How are you feeling right now? |
+| Symptom | 🩺 | **A symptom** | How is [Name] feeling right now? |
 | Vital | 📊 | **A vital** | Blood pressure, heart rate, and more |
-| Meal | 🍽️ | **A meal** | What did you last eat or drink? |
-| Medication | 💊 | **A medication** | Add something you're currently taking |
+| Meal | 🍽️ | **A meal** | What did [Name] last eat or drink? |
+| Medication | 💊 | **A medication** | Add something [Name] is currently taking |
+
+*(Replace `[Name]` with the profile name in all sublabels.)*
 
 ### Dismiss link (below option cards)
 ```
@@ -232,7 +236,7 @@ I'll explore on my own →
 - The primary action button's accessible label must be: `"Create profile and get started"`
 - The name field's accessible label must be: `"Profile name, required"`
 - The "How does this work?" toggle must announce its expanded/collapsed state: `"Privacy details, collapsed, double tap to expand"` / `"Privacy details, expanded, double tap to collapse"`
-- The four first-log option cards must each have accessible labels that include both the label and sublabel, e.g.: `"Log a symptom — how are you feeling right now?"`
-- The dismiss link must be labelled: `"Skip for now, explore the app on my own"`
+- The four first-log option cards must each have accessible labels that include both the label and sublabel, e.g.: `"Log a symptom — how is Ethan feeling right now?"` (profile name interpolated)
+- The dismiss link must be labelled: `"Skip for now, explore [Name]'s data on my own"` (profile name interpolated)
 - No colour alone is used to distinguish required vs optional fields — the word "Optional" or "Required" is always present in the helper text
 - Minimum touch target size: 44×44pt on all interactive elements
