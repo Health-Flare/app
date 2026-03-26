@@ -10,16 +10,19 @@ import 'package:health_flare/models/appointment.dart';
 /// Screen to create a new appointment or edit an existing one.
 ///
 /// Pass [appointment] to open in edit mode; [prefillProvider] to pre-fill
-/// provider name (e.g. when scheduling a follow-up).
+/// provider name (e.g. when scheduling a follow-up); [prefillTitle] to
+/// pre-fill the title (e.g. from quick-log promotion).
 class AppointmentFormScreen extends ConsumerStatefulWidget {
   const AppointmentFormScreen({
     super.key,
     this.appointment,
     this.prefillProvider,
+    this.prefillTitle,
   });
 
   final Appointment? appointment;
   final String? prefillProvider;
+  final String? prefillTitle;
 
   @override
   ConsumerState<AppointmentFormScreen> createState() =>
@@ -38,7 +41,9 @@ class _AppointmentFormScreenState extends ConsumerState<AppointmentFormScreen> {
   void initState() {
     super.initState();
     final a = widget.appointment;
-    _titleController = TextEditingController(text: a?.title ?? '');
+    _titleController = TextEditingController(
+      text: a?.title ?? widget.prefillTitle ?? '',
+    );
     _providerController = TextEditingController(
       text: a?.providerName ?? widget.prefillProvider ?? '',
     );
