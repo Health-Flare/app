@@ -46,10 +46,11 @@ class HealthFlareApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(appRouterProvider);
+    final activeProfile = ref.watch(activeProfileDataProvider);
 
     return MaterialApp.router(
       title: 'Health Flare',
-      theme: AppTheme.light,
+      theme: AppTheme.forSeed(activeProfile?.colorSeed),
       darkTheme: AppTheme.dark,
       themeMode: ThemeMode.system,
       routerConfig: router,

@@ -109,24 +109,36 @@ abstract final class AppTheme {
   // Light Theme
   // ---------------------------------------------------------------------------
 
-  static ThemeData get light => ThemeData(
+  static ThemeData get light => _build(_lightColorScheme);
+
+  /// Returns a [ThemeData] derived from the given [seedColor].
+  ///
+  /// Uses Material 3 [ColorScheme.fromSeed] so the entire tonal palette is
+  /// generated from the seed. Falls back to [light] when [seedColor] is null.
+  static ThemeData forSeed(int? seedColor) {
+    if (seedColor == null) return light;
+    final cs = ColorScheme.fromSeed(seedColor: Color(seedColor));
+    return _build(cs);
+  }
+
+  static ThemeData _build(ColorScheme cs) => ThemeData(
     useMaterial3: true,
-    colorScheme: _lightColorScheme,
+    colorScheme: cs,
     textTheme: AppTextStyles.textTheme,
     scaffoldBackgroundColor: AppColors.softCloud,
-    appBarTheme: _appBarTheme(_lightColorScheme),
+    appBarTheme: _appBarTheme(cs),
     cardTheme: _cardTheme,
-    inputDecorationTheme: _inputDecorationTheme(_lightColorScheme),
-    elevatedButtonTheme: _elevatedButtonTheme(_lightColorScheme),
-    outlinedButtonTheme: _outlinedButtonTheme(_lightColorScheme),
-    textButtonTheme: _textButtonTheme(_lightColorScheme),
-    navigationBarTheme: _navigationBarTheme(_lightColorScheme),
+    inputDecorationTheme: _inputDecorationTheme(cs),
+    elevatedButtonTheme: _elevatedButtonTheme(cs),
+    outlinedButtonTheme: _outlinedButtonTheme(cs),
+    textButtonTheme: _textButtonTheme(cs),
+    navigationBarTheme: _navigationBarTheme(cs),
     dividerTheme: const DividerThemeData(
       color: AppColors.warmLinen,
       space: 1,
       thickness: 1,
     ),
-    chipTheme: _chipTheme(_lightColorScheme),
+    chipTheme: _chipTheme(cs),
   );
 
   // ---------------------------------------------------------------------------
@@ -152,6 +164,9 @@ abstract final class AppTheme {
     ),
     chipTheme: _chipTheme(_darkColorScheme),
   );
+
+  // Dark theme does not vary per profile — profiles are typically used
+  // in light mode. Dark support is v2 scope.
 
   // ---------------------------------------------------------------------------
   // Colour Schemes

@@ -15,6 +15,7 @@ class Profile {
     this.dateOfBirth,
     this.avatarPath,
     this.weatherTrackingEnabled = false,
+    this.colorSeed,
   });
 
   /// Stable local identifier. In the in-memory MVP this is a simple
@@ -33,6 +34,10 @@ class Profile {
 
   /// Whether weather context is captured at the time of each log entry.
   final bool weatherTrackingEnabled;
+
+  /// Material seed color (ARGB int) for this profile's ColorScheme.
+  /// Null = use the app default theme.
+  final int? colorSeed;
 
   /// Returns true if this profile has a real photo rather than a generated one.
   bool get hasAvatar => avatarPath != null;
@@ -68,6 +73,7 @@ class Profile {
     DateTime? dateOfBirth,
     String? avatarPath,
     bool? weatherTrackingEnabled,
+    int? colorSeed,
     bool clearDateOfBirth = false,
     bool clearAvatar = false,
   }) {
@@ -78,6 +84,7 @@ class Profile {
       avatarPath: clearAvatar ? null : (avatarPath ?? this.avatarPath),
       weatherTrackingEnabled:
           weatherTrackingEnabled ?? this.weatherTrackingEnabled,
+      colorSeed: colorSeed ?? this.colorSeed,
     );
   }
 

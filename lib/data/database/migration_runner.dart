@@ -11,6 +11,7 @@ import 'package:health_flare/data/seed_data.dart';
 /// Schema v2 = condition + symptom catalogue seeded from [SeedData].
 /// Schema v3 = added weatherTrackingEnabled + weatherOptInShown to ProfileIsar.
 /// Schema v4 = registered SleepEntryIsar collection.
+/// Schema v5 = added colorSeed to ProfileIsar.
 ///
 /// How to add a future migration:
 ///   1. Increment [_targetVersion].
@@ -24,7 +25,7 @@ import 'package:health_flare/data/seed_data.dart';
 class MigrationRunner {
   MigrationRunner._();
 
-  static const int _targetVersion = 4;
+  static const int _targetVersion = 5;
 
   /// Run all pending migrations and update [AppSettings.schemaVersion].
   ///
@@ -81,6 +82,18 @@ class MigrationRunner {
       await isar.writeTxn(() async {
         final s = await isar.appSettings.get(1) ?? (AppSettings()..id = 1);
         s.schemaVersion = 4;
+        await isar.appSettings.put(s);
+      });
+    }
+
+    // ── v4 → v5: colorSeed added to ProfileIsar ───────────────────────────
+    // Isar automatically defaults the new nullable field to null for existing
+    // rows. New profiles get a color auto-assigned on creation by the provider.
+    // No data transformation needed.
+    if (currentVersion < 5) {
+      await isar.writeTxn(() async {
+        final s = await isar.appSettings.get(1) ?? (AppSettings()..id = 1);
+        s.schemaVersion = 5;
         await isar.appSettings.put(s);
       });
     }
