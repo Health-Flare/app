@@ -15,10 +15,16 @@ import 'package:health_flare/features/sleep/screens/sleep_list_screen.dart';
 import 'package:health_flare/features/symptoms_vitals/screens/symptom_entry_form_screen.dart';
 import 'package:health_flare/features/symptoms_vitals/screens/symptoms_vitals_screen.dart';
 import 'package:health_flare/features/symptoms_vitals/screens/vital_entry_form_screen.dart';
+import 'package:health_flare/features/medications/screens/medications_screen.dart';
+import 'package:health_flare/features/medications/screens/medication_form_screen.dart';
+import 'package:health_flare/features/medications/screens/medication_detail_screen.dart';
+import 'package:health_flare/features/medications/screens/dose_log_form_screen.dart';
 import 'package:health_flare/core/providers/onboarding_provider.dart';
 import 'package:health_flare/models/sleep_entry.dart';
 import 'package:health_flare/models/symptom_entry.dart';
 import 'package:health_flare/models/vital_entry.dart';
+import 'package:health_flare/models/medication.dart';
+import 'package:health_flare/models/dose_log.dart';
 
 // ---------------------------------------------------------------------------
 // Route names — use these constants everywhere instead of raw strings.
@@ -35,6 +41,13 @@ abstract final class AppRoutes {
   static const vitalsNew = '/symptoms/new-vital';
   static String vitalsEdit(int id) => '/symptoms/$id/edit-vital';
   static const medications = '/medications';
+  static const medicationsNew = '/medications/new';
+  static String medicationsEdit(int id) => '/medications/$id/edit';
+  static String medicationsDetail(int id) => '/medications/$id';
+  static String medicationsDoseNew(int medicationId) =>
+      '/medications/$medicationId/dose/new';
+  static String medicationsDoseEdit(int medicationId, int doseId) =>
+      '/medications/$medicationId/dose/$doseId/edit';
   static const meals = '/meals';
   static const reports = '/reports';
   static const journal = '/journal';
@@ -152,14 +165,48 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: AppRoutes.medications,
             name: 'medications',
-            builder: (context, state) => const _TabPlaceholderScreen(
-              title: 'Medications',
-              icon: Icons.medication_outlined,
-              description:
-                  'Log current and past medications, set dose reminders, '
-                  'and track what\'s been taken each day. '
-                  'Coming in the next update.',
-            ),
+            builder: (context, state) => const MedicationsScreen(),
+            routes: [
+              GoRoute(
+                path: 'new',
+                name: 'medications-new',
+                builder: (context, state) => const MedicationFormScreen(),
+              ),
+              GoRoute(
+                path: ':mid/edit',
+                name: 'medications-edit',
+                builder: (context, state) => MedicationFormScreen(
+                  medication: state.extra as Medication?,
+                ),
+              ),
+              GoRoute(
+                path: ':mid',
+                name: 'medications-detail',
+                builder: (context, state) => MedicationDetailScreen(
+                  medicationId: int.parse(state.pathParameters['mid']!),
+                ),
+                routes: [
+                  GoRoute(
+                    path: 'dose/new',
+                    name: 'medications-dose-new',
+                    builder: (context, state) => DoseLogFormScreen(
+                      medication: state.extra as Medication,
+                    ),
+                  ),
+                  GoRoute(
+                    path: 'dose/:did/edit',
+                    name: 'medications-dose-edit',
+                    builder: (context, state) {
+                      final extra = state.extra as Map<String, dynamic>;
+                      return DoseLogFormScreen(
+                        medication: extra['med'] as Medication,
+                        doseLog: extra['log'] as DoseLog,
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ],
           ),
           GoRoute(
             path: AppRoutes.meals,
