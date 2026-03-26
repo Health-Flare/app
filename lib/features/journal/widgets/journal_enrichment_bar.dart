@@ -28,6 +28,7 @@ class JournalEnrichmentBar extends StatelessWidget {
     required this.energyLevel,
     required this.onMoodChanged,
     required this.onEnergyChanged,
+    required this.profileName,
   });
 
   /// Formatted date string to display. When null the date chip is hidden.
@@ -40,12 +41,16 @@ class JournalEnrichmentBar extends StatelessWidget {
   final int? energyLevel;
   final ValueChanged<JournalMood?> onMoodChanged;
   final ValueChanged<int?> onEnergyChanged;
+  final String profileName;
 
   void _showMoodSheet(BuildContext context) {
     showModalBottomSheet<void>(
       context: context,
-      builder: (_) =>
-          JournalMoodSheet(currentMood: mood, onSelected: onMoodChanged),
+      builder: (_) => JournalMoodSheet(
+        currentMood: mood,
+        onSelected: onMoodChanged,
+        profileName: profileName,
+      ),
     );
   }
 
@@ -55,6 +60,7 @@ class JournalEnrichmentBar extends StatelessWidget {
       builder: (_) => JournalEnergySheet(
         currentLevel: energyLevel,
         onSelected: onEnergyChanged,
+        profileName: profileName,
       ),
     );
   }
