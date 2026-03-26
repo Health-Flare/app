@@ -7,6 +7,7 @@ import 'package:health_flare/data/models/condition_isar.dart';
 import 'package:health_flare/data/models/journal_entry_isar.dart';
 import 'package:health_flare/data/models/profile_isar.dart';
 import 'package:health_flare/data/models/symptom_isar.dart';
+import 'package:health_flare/data/models/sleep_entry_isar.dart';
 import 'package:health_flare/data/models/user_condition_isar.dart';
 import 'package:health_flare/data/models/user_symptom_isar.dart';
 import 'package:health_flare/data/database/app_settings.dart';
@@ -54,6 +55,7 @@ class IsarService {
         UserConditionIsarSchema,
         SymptomIsarSchema,
         UserSymptomIsarSchema,
+        SleepEntryIsarSchema,
       ],
       directory: directory ?? '',
       name: 'healthflare',
