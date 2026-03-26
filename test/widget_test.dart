@@ -3,10 +3,14 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:health_flare/main.dart';
 import 'package:health_flare/core/providers/condition_provider.dart';
+import 'package:health_flare/core/providers/journal_provider.dart';
 import 'package:health_flare/core/providers/onboarding_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
+import 'package:health_flare/core/providers/sleep_provider.dart';
 import 'package:health_flare/models/condition.dart';
+import 'package:health_flare/models/journal_entry.dart';
 import 'package:health_flare/models/profile.dart';
+import 'package:health_flare/models/sleep_entry.dart';
 import 'package:health_flare/models/symptom.dart';
 import 'package:health_flare/models/user_condition.dart';
 import 'package:health_flare/models/user_symptom.dart';
@@ -51,6 +55,16 @@ class _FakeUserSymptoms extends UserSymptomListNotifier {
   List<UserSymptom> build() => [];
 }
 
+class _FakeJournalList extends JournalEntryListNotifier {
+  @override
+  List<JournalEntry> build() => [];
+}
+
+class _FakeSleepList extends SleepEntryListNotifier {
+  @override
+  List<SleepEntry> build() => [];
+}
+
 class _FakeFirstLogPrompt extends FirstLogPromptNotifier {
   @override
   bool build() => false;
@@ -76,6 +90,8 @@ List<Override> _appOverrides({
   symptomCatalogProvider.overrideWith(_FakeSymptomCatalog.new),
   userConditionListProvider.overrideWith(_FakeUserConditions.new),
   userSymptomListProvider.overrideWith(_FakeUserSymptoms.new),
+  journalEntryListProvider.overrideWith(_FakeJournalList.new),
+  sleepEntryListProvider.overrideWith(_FakeSleepList.new),
   firstLogPromptProvider.overrideWith(_FakeFirstLogPrompt.new),
   weatherOptInProvider.overrideWith(_FakeWeatherOptIn.new),
 ];

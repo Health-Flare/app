@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:health_flare/core/providers/dashboard_provider.dart';
 import 'package:health_flare/core/providers/onboarding_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/core/router/app_router.dart';
+import 'package:health_flare/features/dashboard/widgets/dashboard_activity_feed.dart';
+import 'package:health_flare/features/dashboard/widgets/dashboard_quick_entry_sheet.dart';
 import 'package:health_flare/features/onboarding/widgets/first_log_prompt.dart';
 import 'package:health_flare/features/onboarding/widgets/weather_opt_in_sheet.dart';
 
@@ -107,7 +110,32 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           const SizedBox(width: 56),
         ],
       ),
-      body: Center(
+      body: const _DashboardBody(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => showDashboardQuickEntrySheet(context),
+        tooltip: 'Log entry',
+        child: const Icon(Icons.add_rounded),
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Body — switches between empty state and activity feed
+// ---------------------------------------------------------------------------
+
+class _DashboardBody extends ConsumerWidget {
+  const _DashboardBody();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
+    final hasActivity = ref.watch(dashboardHasActivityProvider);
+    final items = ref.watch(dashboardActivityProvider);
+
+    if (!hasActivity) {
+      return Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 40),
           child: Column(
@@ -131,14 +159,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             ],
           ),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // TODO: open quick-entry bottom sheet
-        },
-        tooltip: 'Log entry',
-        child: const Icon(Icons.add_rounded),
-      ),
-    );
+      );
+    }
+
+    return ListView(children: [DashboardActivityFeed(items: items)]);
   }
 }
