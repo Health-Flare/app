@@ -26,4 +26,8 @@ class ProfileIsar {
   /// Material seed color for this profile's ColorScheme.
   /// Null = use the app default. Auto-assigned from a palette on creation.
   int? colorSeed;
+
+  /// Whether menstrual cycle tracking is enabled for this profile.
+  /// Defaults to false. When true, cycle phase field appears in daily check-in.
+  bool cycleTrackingEnabled = false;
 }

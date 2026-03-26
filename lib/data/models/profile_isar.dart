@@ -35,6 +35,9 @@ class ProfileIsar {
   /// Null = use the app default. Auto-assigned from a palette on creation.
   int? colorSeed;
 
+  /// Whether menstrual cycle tracking is enabled for this profile.
+  bool cycleTrackingEnabled = false;
+
   // ── Conversion ────────────────────────────────────────────────────────────
 
   /// Convert to the immutable domain class used by the UI.
@@ -45,6 +48,7 @@ class ProfileIsar {
     avatarPath: avatarPath,
     weatherTrackingEnabled: weatherTrackingEnabled,
     colorSeed: colorSeed,
+    cycleTrackingEnabled: cycleTrackingEnabled,
   );
 
   /// Construct from a domain [Profile] for writing to Isar.
@@ -59,5 +63,6 @@ class ProfileIsar {
     ..dateOfBirth = p.dateOfBirth
     ..avatarPath = p.avatarPath
     ..weatherTrackingEnabled = p.weatherTrackingEnabled
-    ..colorSeed = p.colorSeed;
+    ..colorSeed = p.colorSeed
+    ..cycleTrackingEnabled = p.cycleTrackingEnabled;
 }
