@@ -114,20 +114,38 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: AppRoutes.symptoms,
             name: 'symptoms',
-            builder: (context, state) =>
-                const _PlaceholderScreen(title: 'Symptoms & Vitals'),
+            builder: (context, state) => const _TabPlaceholderScreen(
+              title: 'Symptoms & Vitals',
+              icon: Icons.monitor_heart_outlined,
+              description:
+                  'Track how you\'re feeling and record measurements '
+                  'like blood pressure, heart rate, temperature, and weight. '
+                  'Coming in the next update.',
+            ),
           ),
           GoRoute(
             path: AppRoutes.medications,
             name: 'medications',
-            builder: (context, state) =>
-                const _PlaceholderScreen(title: 'Medications'),
+            builder: (context, state) => const _TabPlaceholderScreen(
+              title: 'Medications',
+              icon: Icons.medication_outlined,
+              description:
+                  'Log current and past medications, set dose reminders, '
+                  'and track what\'s been taken each day. '
+                  'Coming in the next update.',
+            ),
           ),
           GoRoute(
             path: AppRoutes.meals,
             name: 'meals',
-            builder: (context, state) =>
-                const _PlaceholderScreen(title: 'Meals'),
+            builder: (context, state) => const _TabPlaceholderScreen(
+              title: 'Meals',
+              icon: Icons.restaurant_outlined,
+              description:
+                  'Record meals and flag reactions. Over time, Health Flare '
+                  'will help you spot patterns between food and symptoms. '
+                  'Coming in the next update.',
+            ),
           ),
           GoRoute(
             path: AppRoutes.reports,
@@ -207,6 +225,50 @@ class _PlaceholderScreen extends StatelessWidget {
           style: Theme.of(
             context,
           ).textTheme.bodyLarge?.copyWith(color: cs.onSurfaceVariant),
+        ),
+      ),
+    );
+  }
+}
+
+class _TabPlaceholderScreen extends StatelessWidget {
+  const _TabPlaceholderScreen({
+    required this.title,
+    required this.icon,
+    required this.description,
+  });
+
+  final String title;
+  final IconData icon;
+  final String description;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
+    return Scaffold(
+      appBar: AppBar(title: Text(title)),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 56, color: cs.onSurfaceVariant),
+              const SizedBox(height: 16),
+              Text(
+                title,
+                style: tt.titleMedium?.copyWith(color: cs.onSurface),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                description,
+                style: tt.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
         ),
       ),
     );
