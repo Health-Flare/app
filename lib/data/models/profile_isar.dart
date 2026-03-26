@@ -31,6 +31,10 @@ class ProfileIsar {
   /// Whether the weather opt-in prompt has been shown for this profile.
   bool weatherOptInShown = false;
 
+  /// Material seed color for this profile's ColorScheme.
+  /// Null = use the app default. Auto-assigned from a palette on creation.
+  int? colorSeed;
+
   // ── Conversion ────────────────────────────────────────────────────────────
 
   /// Convert to the immutable domain class used by the UI.
@@ -40,6 +44,7 @@ class ProfileIsar {
     dateOfBirth: dateOfBirth,
     avatarPath: avatarPath,
     weatherTrackingEnabled: weatherTrackingEnabled,
+    colorSeed: colorSeed,
   );
 
   /// Construct from a domain [Profile] for writing to Isar.
@@ -53,5 +58,6 @@ class ProfileIsar {
     ..name = p.name
     ..dateOfBirth = p.dateOfBirth
     ..avatarPath = p.avatarPath
-    ..weatherTrackingEnabled = p.weatherTrackingEnabled;
+    ..weatherTrackingEnabled = p.weatherTrackingEnabled
+    ..colorSeed = p.colorSeed;
 }
