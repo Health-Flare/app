@@ -19,12 +19,16 @@ import 'package:health_flare/features/medications/screens/medications_screen.dar
 import 'package:health_flare/features/medications/screens/medication_form_screen.dart';
 import 'package:health_flare/features/medications/screens/medication_detail_screen.dart';
 import 'package:health_flare/features/medications/screens/dose_log_form_screen.dart';
+import 'package:health_flare/features/meals/screens/meals_screen.dart';
+import 'package:health_flare/features/meals/screens/meal_entry_form_screen.dart';
+import 'package:health_flare/features/meals/screens/meal_detail_screen.dart';
 import 'package:health_flare/core/providers/onboarding_provider.dart';
 import 'package:health_flare/models/sleep_entry.dart';
 import 'package:health_flare/models/symptom_entry.dart';
 import 'package:health_flare/models/vital_entry.dart';
 import 'package:health_flare/models/medication.dart';
 import 'package:health_flare/models/dose_log.dart';
+import 'package:health_flare/models/meal_entry.dart';
 
 // ---------------------------------------------------------------------------
 // Route names — use these constants everywhere instead of raw strings.
@@ -49,6 +53,9 @@ abstract final class AppRoutes {
   static String medicationsDoseEdit(int medicationId, int doseId) =>
       '/medications/$medicationId/dose/$doseId/edit';
   static const meals = '/meals';
+  static const mealsNew = '/meals/new';
+  static String mealsEdit(int id) => '/meals/$id/edit';
+  static String mealsDetail(int id) => '/meals/$id';
   static const reports = '/reports';
   static const journal = '/journal';
   static const journalNew = '/journal/new';
@@ -211,14 +218,27 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: AppRoutes.meals,
             name: 'meals',
-            builder: (context, state) => const _TabPlaceholderScreen(
-              title: 'Meals',
-              icon: Icons.restaurant_outlined,
-              description:
-                  'Record meals and flag reactions. Over time, Health Flare '
-                  'will help you spot patterns between food and symptoms. '
-                  'Coming in the next update.',
-            ),
+            builder: (context, state) => const MealsScreen(),
+            routes: [
+              GoRoute(
+                path: 'new',
+                name: 'meals-new',
+                builder: (context, state) => const MealEntryFormScreen(),
+              ),
+              GoRoute(
+                path: ':meid/edit',
+                name: 'meals-edit',
+                builder: (context, state) =>
+                    MealEntryFormScreen(entry: state.extra as MealEntry?),
+              ),
+              GoRoute(
+                path: ':meid',
+                name: 'meals-detail',
+                builder: (context, state) => MealDetailScreen(
+                  mealId: int.parse(state.pathParameters['meid']!),
+                ),
+              ),
+            ],
           ),
           GoRoute(
             path: AppRoutes.reports,
@@ -298,50 +318,6 @@ class _PlaceholderScreen extends StatelessWidget {
           style: Theme.of(
             context,
           ).textTheme.bodyLarge?.copyWith(color: cs.onSurfaceVariant),
-        ),
-      ),
-    );
-  }
-}
-
-class _TabPlaceholderScreen extends StatelessWidget {
-  const _TabPlaceholderScreen({
-    required this.title,
-    required this.icon,
-    required this.description,
-  });
-
-  final String title;
-  final IconData icon;
-  final String description;
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    final tt = Theme.of(context).textTheme;
-    return Scaffold(
-      appBar: AppBar(title: Text(title)),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 32),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(icon, size: 56, color: cs.onSurfaceVariant),
-              const SizedBox(height: 16),
-              Text(
-                title,
-                style: tt.titleMedium?.copyWith(color: cs.onSurface),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                description,
-                style: tt.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
         ),
       ),
     );
