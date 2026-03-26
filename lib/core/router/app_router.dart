@@ -28,6 +28,7 @@ import 'package:health_flare/features/flare/screens/flare_detail_screen.dart';
 import 'package:health_flare/features/daily_checkin/screens/checkin_form_screen.dart';
 import 'package:health_flare/features/daily_checkin/screens/checkin_history_screen.dart';
 import 'package:health_flare/features/appointments/screens/appointment_list_screen.dart';
+import 'package:health_flare/features/reports/screens/reports_screen.dart';
 import 'package:health_flare/features/appointments/screens/appointment_form_screen.dart';
 import 'package:health_flare/features/appointments/screens/appointment_detail_screen.dart';
 import 'package:health_flare/core/providers/onboarding_provider.dart';
@@ -350,8 +351,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: AppRoutes.reports,
             name: 'reports',
-            builder: (context, state) =>
-                const _PlaceholderScreen(title: 'Reports'),
+            builder: (context, state) => const ReportsScreen(),
           ),
           GoRoute(
             path: AppRoutes.sleep,
@@ -408,29 +408,3 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     ],
   );
 });
-
-// ---------------------------------------------------------------------------
-// Temporary placeholder for screens not yet built
-// ---------------------------------------------------------------------------
-
-class _PlaceholderScreen extends StatelessWidget {
-  // ignore: unused_element
-  const _PlaceholderScreen({required this.title});
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    return Scaffold(
-      appBar: AppBar(title: Text(title)),
-      body: Center(
-        child: Text(
-          'Coming soon',
-          style: Theme.of(
-            context,
-          ).textTheme.bodyLarge?.copyWith(color: cs.onSurfaceVariant),
-        ),
-      ),
-    );
-  }
-}
