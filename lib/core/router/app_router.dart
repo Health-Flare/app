@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:health_flare/features/illness/screens/illness_screen.dart';
+import 'package:health_flare/features/settings/screens/settings_screen.dart';
 import 'package:health_flare/features/journal/screens/journal_composer_screen.dart';
 import 'package:health_flare/features/journal/screens/journal_detail_screen.dart';
 import 'package:health_flare/features/journal/screens/journal_list_screen.dart';
@@ -34,6 +35,7 @@ abstract final class AppRoutes {
   static const sleep = '/sleep';
   static const sleepNew = '/sleep/new';
   static String sleepEdit(int id) => '/sleep/$id/edit';
+  static const settings = '/settings';
 }
 
 // ---------------------------------------------------------------------------
@@ -82,6 +84,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.onboarding,
         name: 'onboarding',
         builder: (context, state) => const OnboardingScreen(),
+      ),
+
+      // Settings — full-screen push, outside the shell nav bar
+      GoRoute(
+        path: AppRoutes.settings,
+        name: 'settings',
+        builder: (context, state) => const SettingsScreen(),
       ),
 
       // Main app shell — wraps all tab destinations
