@@ -27,6 +27,9 @@ import 'package:health_flare/features/flare/screens/flare_form_screen.dart';
 import 'package:health_flare/features/flare/screens/flare_detail_screen.dart';
 import 'package:health_flare/features/daily_checkin/screens/checkin_form_screen.dart';
 import 'package:health_flare/features/daily_checkin/screens/checkin_history_screen.dart';
+import 'package:health_flare/features/appointments/screens/appointment_list_screen.dart';
+import 'package:health_flare/features/appointments/screens/appointment_form_screen.dart';
+import 'package:health_flare/features/appointments/screens/appointment_detail_screen.dart';
 import 'package:health_flare/core/providers/onboarding_provider.dart';
 import 'package:health_flare/models/sleep_entry.dart';
 import 'package:health_flare/models/symptom_entry.dart';
@@ -36,6 +39,7 @@ import 'package:health_flare/models/dose_log.dart';
 import 'package:health_flare/models/meal_entry.dart';
 import 'package:health_flare/models/flare.dart';
 import 'package:health_flare/models/daily_checkin.dart';
+import 'package:health_flare/models/appointment.dart';
 
 // ---------------------------------------------------------------------------
 // Route names — use these constants everywhere instead of raw strings.
@@ -78,6 +82,10 @@ abstract final class AppRoutes {
   static const checkinHistory = '/checkin';
   static const checkinNew = '/checkin/new';
   static String checkinEdit(int id) => '/checkin/$id/edit';
+  static const appointments = '/appointments';
+  static const appointmentNew = '/appointments/new';
+  static String appointmentEdit(int id) => '/appointments/$id/edit';
+  static String appointmentDetail(int id) => '/appointments/$id';
   static const settings = '/settings';
 }
 
@@ -294,6 +302,34 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 name: 'checkin-edit',
                 builder: (context, state) =>
                     CheckInFormScreen(checkin: state.extra as DailyCheckin?),
+              ),
+            ],
+          ),
+          GoRoute(
+            path: AppRoutes.appointments,
+            name: 'appointments',
+            builder: (context, state) => const AppointmentListScreen(),
+            routes: [
+              GoRoute(
+                path: 'new',
+                name: 'appointment-new',
+                builder: (context, state) => AppointmentFormScreen(
+                  prefillProvider: state.extra as String?,
+                ),
+              ),
+              GoRoute(
+                path: ':aid/edit',
+                name: 'appointment-edit',
+                builder: (context, state) => AppointmentFormScreen(
+                  appointment: state.extra as Appointment?,
+                ),
+              ),
+              GoRoute(
+                path: ':aid',
+                name: 'appointment-detail',
+                builder: (context, state) => AppointmentDetailScreen(
+                  appointmentId: int.parse(state.pathParameters['aid']!),
+                ),
               ),
             ],
           ),
