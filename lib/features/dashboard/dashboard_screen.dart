@@ -11,6 +11,7 @@ import 'package:health_flare/features/dashboard/widgets/dashboard_quick_entry_sh
 import 'package:health_flare/features/onboarding/widgets/first_log_prompt.dart';
 import 'package:health_flare/features/flare/widgets/active_flare_banner.dart';
 import 'package:health_flare/features/daily_checkin/widgets/daily_checkin_card.dart';
+import 'package:health_flare/features/appointments/widgets/upcoming_appointments_card.dart';
 import 'package:health_flare/features/onboarding/widgets/weather_opt_in_sheet.dart';
 
 /// Dashboard — the home tab.
@@ -146,6 +147,7 @@ class _DashboardBody extends ConsumerWidget {
         children: [
           const ActiveFlareBanner(),
           const DailyCheckinCard(),
+          const UpcomingAppointmentsCard(),
           Expanded(
             child: Center(
               child: Padding(
@@ -187,6 +189,7 @@ class _DashboardBody extends ConsumerWidget {
       children: [
         const ActiveFlareBanner(),
         const DailyCheckinCard(),
+        const UpcomingAppointmentsCard(),
         DashboardActivityFeed(items: items),
       ],
     );

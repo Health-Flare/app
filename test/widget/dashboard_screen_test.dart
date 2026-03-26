@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:health_flare/core/providers/appointment_provider.dart';
 import 'package:health_flare/core/providers/daily_checkin_provider.dart';
 import 'package:health_flare/core/providers/flare_provider.dart';
 import 'package:health_flare/core/providers/journal_provider.dart';
@@ -11,6 +12,7 @@ import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/core/providers/sleep_provider.dart';
 import 'package:health_flare/core/router/app_router.dart';
 import 'package:health_flare/features/dashboard/dashboard_screen.dart';
+import 'package:health_flare/models/appointment.dart';
 import 'package:health_flare/models/daily_checkin.dart';
 import 'package:health_flare/models/flare.dart';
 import 'package:health_flare/models/journal_entry.dart';
@@ -43,6 +45,11 @@ class _FakeFlareList extends FlareListNotifier {
 class _FakeCheckinList extends DailyCheckinListNotifier {
   @override
   List<DailyCheckin> build() => [];
+}
+
+class _FakeAppointmentList extends AppointmentListNotifier {
+  @override
+  List<Appointment> build() => [];
 }
 
 class _FakeWeatherOptIn extends WeatherOptInNotifier {
@@ -116,6 +123,9 @@ Widget _buildDashboard({
       activeFlareProvider.overrideWith((ref) => null),
       dailyCheckinListProvider.overrideWith(_FakeCheckinList.new),
       todayCheckinProvider.overrideWith((ref) => null),
+      appointmentListProvider.overrideWith(_FakeAppointmentList.new),
+      activeProfileAppointmentsProvider.overrideWith((ref) => []),
+      upcomingAppointmentsProvider.overrideWith((ref) => []),
     ],
     child: const MaterialApp(home: DashboardScreen()),
   );
@@ -168,6 +178,9 @@ Widget _buildDashboardWithRouter({
       activeFlareProvider.overrideWith((ref) => null),
       dailyCheckinListProvider.overrideWith(_FakeCheckinList.new),
       todayCheckinProvider.overrideWith((ref) => null),
+      appointmentListProvider.overrideWith(_FakeAppointmentList.new),
+      activeProfileAppointmentsProvider.overrideWith((ref) => []),
+      upcomingAppointmentsProvider.overrideWith((ref) => []),
     ],
     child: MaterialApp.router(routerConfig: router),
   );
