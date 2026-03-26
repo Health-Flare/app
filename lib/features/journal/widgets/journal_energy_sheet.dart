@@ -9,10 +9,12 @@ class JournalEnergySheet extends StatelessWidget {
     super.key,
     required this.currentLevel,
     required this.onSelected,
+    required this.profileName,
   });
 
   final int? currentLevel;
   final ValueChanged<int?> onSelected;
+  final String profileName;
 
   static const _labels = ['Exhausted', 'Low', 'Okay', 'Good', 'Great'];
 
@@ -38,7 +40,7 @@ class JournalEnergySheet extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             Text(
-              'How\'s your energy?',
+              "How is $profileName's energy?",
               style: tt.titleMedium?.copyWith(color: cs.onSurface),
             ),
             const SizedBox(height: 20),

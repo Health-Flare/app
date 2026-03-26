@@ -6,6 +6,7 @@ import 'package:health_flare/core/providers/journal_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/features/journal/screens/journal_composer_screen.dart';
 import 'package:health_flare/models/journal_entry.dart';
+import 'package:health_flare/models/profile.dart';
 
 // ---------------------------------------------------------------------------
 // Fakes — subclass real notifiers, override build() to skip Isar
@@ -67,11 +68,14 @@ JournalEntry _entry({
   );
 }
 
+final _fakeProfile = Profile(id: 1, name: 'Ethan');
+
 Widget _buildComposer({int? entryId, List<JournalEntry> entries = const []}) {
   return ProviderScope(
     overrides: [
       journalEntryListProvider.overrideWith(() => _FakeJournalList(entries)),
       activeProfileProvider.overrideWith(_FakeActiveProfile.new),
+      activeProfileDataProvider.overrideWith((_) => _fakeProfile),
     ],
     child: MaterialApp(home: JournalComposerScreen(entryId: entryId)),
   );
