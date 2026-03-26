@@ -12,8 +12,13 @@ import 'package:health_flare/features/shell/app_shell.dart';
 import 'package:health_flare/features/dashboard/dashboard_screen.dart';
 import 'package:health_flare/features/sleep/screens/sleep_entry_screen.dart';
 import 'package:health_flare/features/sleep/screens/sleep_list_screen.dart';
+import 'package:health_flare/features/symptoms_vitals/screens/symptom_entry_form_screen.dart';
+import 'package:health_flare/features/symptoms_vitals/screens/symptoms_vitals_screen.dart';
+import 'package:health_flare/features/symptoms_vitals/screens/vital_entry_form_screen.dart';
 import 'package:health_flare/core/providers/onboarding_provider.dart';
 import 'package:health_flare/models/sleep_entry.dart';
+import 'package:health_flare/models/symptom_entry.dart';
+import 'package:health_flare/models/vital_entry.dart';
 
 // ---------------------------------------------------------------------------
 // Route names — use these constants everywhere instead of raw strings.
@@ -25,6 +30,10 @@ abstract final class AppRoutes {
   static const dashboard = '/dashboard';
   static const illness = '/illness';
   static const symptoms = '/symptoms';
+  static const symptomsNew = '/symptoms/new-symptom';
+  static String symptomsEdit(int id) => '/symptoms/$id/edit';
+  static const vitalsNew = '/symptoms/new-vital';
+  static String vitalsEdit(int id) => '/symptoms/$id/edit-vital';
   static const medications = '/medications';
   static const meals = '/meals';
   static const reports = '/reports';
@@ -114,14 +123,31 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: AppRoutes.symptoms,
             name: 'symptoms',
-            builder: (context, state) => const _TabPlaceholderScreen(
-              title: 'Symptoms & Vitals',
-              icon: Icons.monitor_heart_outlined,
-              description:
-                  'Track how you\'re feeling and record measurements '
-                  'like blood pressure, heart rate, temperature, and weight. '
-                  'Coming in the next update.',
-            ),
+            builder: (context, state) => const SymptomsVitalsScreen(),
+            routes: [
+              GoRoute(
+                path: 'new-symptom',
+                name: 'symptoms-new',
+                builder: (context, state) => const SymptomEntryFormScreen(),
+              ),
+              GoRoute(
+                path: ':sid/edit',
+                name: 'symptoms-edit',
+                builder: (context, state) =>
+                    SymptomEntryFormScreen(entry: state.extra as SymptomEntry?),
+              ),
+              GoRoute(
+                path: 'new-vital',
+                name: 'vitals-new',
+                builder: (context, state) => const VitalEntryFormScreen(),
+              ),
+              GoRoute(
+                path: ':vid/edit-vital',
+                name: 'vitals-edit',
+                builder: (context, state) =>
+                    VitalEntryFormScreen(entry: state.extra as VitalEntry?),
+              ),
+            ],
           ),
           GoRoute(
             path: AppRoutes.medications,
