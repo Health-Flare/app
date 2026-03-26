@@ -51,6 +51,7 @@ class VitalEntryListNotifier extends Notifier<List<VitalEntry>> {
     required String unit,
     required DateTime loggedAt,
     String? notes,
+    int? flareIsarId,
   }) async {
     final isar = ref.read(isarProvider);
     final row = VitalEntryIsar()
@@ -62,6 +63,7 @@ class VitalEntryListNotifier extends Notifier<List<VitalEntry>> {
       ..unit = unit
       ..loggedAt = loggedAt
       ..notes = notes
+      ..flareIsarId = flareIsarId
       ..createdAt = DateTime.now();
     await isar.writeTxn(() async {
       await isar.vitalEntryIsars.put(row);

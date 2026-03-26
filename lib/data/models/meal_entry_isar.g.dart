@@ -27,29 +27,34 @@ const MealEntryIsarSchema = CollectionSchema(
       name: r'description',
       type: IsarType.string,
     ),
-    r'hasReaction': PropertySchema(
+    r'flareIsarId': PropertySchema(
       id: 2,
+      name: r'flareIsarId',
+      type: IsarType.long,
+    ),
+    r'hasReaction': PropertySchema(
+      id: 3,
       name: r'hasReaction',
       type: IsarType.bool,
     ),
     r'loggedAt': PropertySchema(
-      id: 3,
+      id: 4,
       name: r'loggedAt',
       type: IsarType.dateTime,
     ),
-    r'notes': PropertySchema(id: 4, name: r'notes', type: IsarType.string),
+    r'notes': PropertySchema(id: 5, name: r'notes', type: IsarType.string),
     r'photoPath': PropertySchema(
-      id: 5,
+      id: 6,
       name: r'photoPath',
       type: IsarType.string,
     ),
     r'profileId': PropertySchema(
-      id: 6,
+      id: 7,
       name: r'profileId',
       type: IsarType.long,
     ),
     r'updatedAt': PropertySchema(
-      id: 7,
+      id: 8,
       name: r'updatedAt',
       type: IsarType.dateTime,
     ),
@@ -125,12 +130,13 @@ void _mealEntryIsarSerialize(
 ) {
   writer.writeDateTime(offsets[0], object.createdAt);
   writer.writeString(offsets[1], object.description);
-  writer.writeBool(offsets[2], object.hasReaction);
-  writer.writeDateTime(offsets[3], object.loggedAt);
-  writer.writeString(offsets[4], object.notes);
-  writer.writeString(offsets[5], object.photoPath);
-  writer.writeLong(offsets[6], object.profileId);
-  writer.writeDateTime(offsets[7], object.updatedAt);
+  writer.writeLong(offsets[2], object.flareIsarId);
+  writer.writeBool(offsets[3], object.hasReaction);
+  writer.writeDateTime(offsets[4], object.loggedAt);
+  writer.writeString(offsets[5], object.notes);
+  writer.writeString(offsets[6], object.photoPath);
+  writer.writeLong(offsets[7], object.profileId);
+  writer.writeDateTime(offsets[8], object.updatedAt);
 }
 
 MealEntryIsar _mealEntryIsarDeserialize(
@@ -142,13 +148,14 @@ MealEntryIsar _mealEntryIsarDeserialize(
   final object = MealEntryIsar();
   object.createdAt = reader.readDateTime(offsets[0]);
   object.description = reader.readString(offsets[1]);
-  object.hasReaction = reader.readBool(offsets[2]);
+  object.flareIsarId = reader.readLongOrNull(offsets[2]);
+  object.hasReaction = reader.readBool(offsets[3]);
   object.id = id;
-  object.loggedAt = reader.readDateTime(offsets[3]);
-  object.notes = reader.readStringOrNull(offsets[4]);
-  object.photoPath = reader.readStringOrNull(offsets[5]);
-  object.profileId = reader.readLong(offsets[6]);
-  object.updatedAt = reader.readDateTimeOrNull(offsets[7]);
+  object.loggedAt = reader.readDateTime(offsets[4]);
+  object.notes = reader.readStringOrNull(offsets[5]);
+  object.photoPath = reader.readStringOrNull(offsets[6]);
+  object.profileId = reader.readLong(offsets[7]);
+  object.updatedAt = reader.readDateTimeOrNull(offsets[8]);
   return object;
 }
 
@@ -164,16 +171,18 @@ P _mealEntryIsarDeserializeProp<P>(
     case 1:
       return (reader.readString(offset)) as P;
     case 2:
-      return (reader.readBool(offset)) as P;
+      return (reader.readLongOrNull(offset)) as P;
     case 3:
-      return (reader.readDateTime(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 4:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readDateTime(offset)) as P;
     case 5:
       return (reader.readStringOrNull(offset)) as P;
     case 6:
-      return (reader.readLong(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 7:
+      return (reader.readLong(offset)) as P;
+    case 8:
       return (reader.readDateTimeOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -690,6 +699,79 @@ extension MealEntryIsarQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(property: r'description', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
+  flareIsarIdIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'flareIsarId'),
+      );
+    });
+  }
+
+  QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
+  flareIsarIdIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'flareIsarId'),
+      );
+    });
+  }
+
+  QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
+  flareIsarIdEqualTo(int? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'flareIsarId', value: value),
+      );
+    });
+  }
+
+  QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
+  flareIsarIdGreaterThan(int? value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'flareIsarId',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
+  flareIsarIdLessThan(int? value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'flareIsarId',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
+  flareIsarIdBetween(
+    int? lower,
+    int? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'flareIsarId',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
       );
     });
   }
@@ -1296,6 +1378,19 @@ extension MealEntryIsarQuerySortBy
     });
   }
 
+  QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterSortBy> sortByFlareIsarId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'flareIsarId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterSortBy>
+  sortByFlareIsarIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'flareIsarId', Sort.desc);
+    });
+  }
+
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterSortBy> sortByHasReaction() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'hasReaction', Sort.asc);
@@ -1399,6 +1494,19 @@ extension MealEntryIsarQuerySortThenBy
   thenByDescriptionDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'description', Sort.desc);
+    });
+  }
+
+  QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterSortBy> thenByFlareIsarId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'flareIsarId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterSortBy>
+  thenByFlareIsarIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'flareIsarId', Sort.desc);
     });
   }
 
@@ -1509,6 +1617,13 @@ extension MealEntryIsarQueryWhereDistinct
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QDistinct>
+  distinctByFlareIsarId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'flareIsarId');
+    });
+  }
+
+  QueryBuilder<MealEntryIsar, MealEntryIsar, QDistinct>
   distinctByHasReaction() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'hasReaction');
@@ -1567,6 +1682,12 @@ extension MealEntryIsarQueryProperty
   QueryBuilder<MealEntryIsar, String, QQueryOperations> descriptionProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'description');
+    });
+  }
+
+  QueryBuilder<MealEntryIsar, int?, QQueryOperations> flareIsarIdProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'flareIsarId');
     });
   }
 

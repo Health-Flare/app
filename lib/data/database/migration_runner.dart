@@ -15,6 +15,7 @@ import 'package:health_flare/data/seed_data.dart';
 /// Schema v6 = registered SymptomEntryIsar + VitalEntryIsar collections.
 /// Schema v7 = registered MedicationIsar + DoseLogIsar collections.
 /// Schema v8 = registered MealEntryIsar collection.
+/// Schema v9 = registered FlareIsar collection; added flareIsarId to MealEntryIsar.
 ///
 /// How to add a future migration:
 ///   1. Increment [_targetVersion].
@@ -28,7 +29,7 @@ import 'package:health_flare/data/seed_data.dart';
 class MigrationRunner {
   MigrationRunner._();
 
-  static const int _targetVersion = 8;
+  static const int _targetVersion = 9;
 
   /// Run all pending migrations and update [AppSettings.schemaVersion].
   ///
@@ -130,6 +131,18 @@ class MigrationRunner {
       await isar.writeTxn(() async {
         final s = await isar.appSettings.get(1) ?? (AppSettings()..id = 1);
         s.schemaVersion = 8;
+        await isar.appSettings.put(s);
+      });
+    }
+
+    // ── v8 → v9: FlareIsar registered; flareIsarId added to MealEntryIsar ──
+    // Isar automatically creates the new collection and the nullable
+    // flareIsarId column (defaults to null) on first open.
+    // No data transformation needed.
+    if (currentVersion < 9) {
+      await isar.writeTxn(() async {
+        final s = await isar.appSettings.get(1) ?? (AppSettings()..id = 1);
+        s.schemaVersion = 9;
         await isar.appSettings.put(s);
       });
     }

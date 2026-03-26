@@ -48,6 +48,7 @@ class MealEntryListNotifier extends Notifier<List<MealEntry>> {
     String? photoPath,
     required bool hasReaction,
     required DateTime loggedAt,
+    int? flareIsarId,
   }) async {
     final isar = ref.read(isarProvider);
     final row = MealEntryIsar()
@@ -58,7 +59,8 @@ class MealEntryListNotifier extends Notifier<List<MealEntry>> {
       ..photoPath = photoPath
       ..hasReaction = hasReaction
       ..loggedAt = loggedAt
-      ..createdAt = DateTime.now();
+      ..createdAt = DateTime.now()
+      ..flareIsarId = flareIsarId;
     await isar.writeTxn(() async {
       await isar.mealEntryIsars.put(row);
     });

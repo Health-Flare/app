@@ -3,12 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:health_flare/core/providers/flare_provider.dart';
 import 'package:health_flare/core/providers/journal_provider.dart';
 import 'package:health_flare/core/providers/onboarding_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/core/providers/sleep_provider.dart';
 import 'package:health_flare/core/router/app_router.dart';
 import 'package:health_flare/features/dashboard/dashboard_screen.dart';
+import 'package:health_flare/models/flare.dart';
 import 'package:health_flare/models/journal_entry.dart';
 import 'package:health_flare/models/profile.dart';
 import 'package:health_flare/models/sleep_entry.dart';
@@ -29,6 +31,11 @@ class _FakeFirstLogPrompt extends FirstLogPromptNotifier {
 
   @override
   Future<void> dismiss() async {}
+}
+
+class _FakeFlareList extends FlareListNotifier {
+  @override
+  List<Flare> build() => [];
 }
 
 class _FakeWeatherOptIn extends WeatherOptInNotifier {
@@ -98,6 +105,8 @@ Widget _buildDashboard({
       activeSleepEntriesProvider.overrideWith((ref) => sleepEntries),
       firstLogPromptProvider.overrideWith(_FakeFirstLogPrompt.new),
       weatherOptInProvider.overrideWith(_FakeWeatherOptIn.new),
+      flareListProvider.overrideWith(_FakeFlareList.new),
+      activeFlareProvider.overrideWith((ref) => null),
     ],
     child: const MaterialApp(home: DashboardScreen()),
   );
@@ -146,6 +155,8 @@ Widget _buildDashboardWithRouter({
       activeSleepEntriesProvider.overrideWith((ref) => sleepEntries),
       firstLogPromptProvider.overrideWith(_FakeFirstLogPrompt.new),
       weatherOptInProvider.overrideWith(_FakeWeatherOptIn.new),
+      flareListProvider.overrideWith(_FakeFlareList.new),
+      activeFlareProvider.overrideWith((ref) => null),
     ],
     child: MaterialApp.router(routerConfig: router),
   );
