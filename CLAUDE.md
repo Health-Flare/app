@@ -27,6 +27,26 @@ dart run build_runner build --delete-conflicting-outputs
 ./scripts/generate_isar.sh
 ```
 
+## Git & Pull Requests
+
+This project uses **Gitea** (not GitHub). Use the `tea` CLI for all repository operations:
+
+```bash
+# Create a pull request (from current branch into main)
+tea pr create --title "feat(foo): short title" --description "## Summary\n..."
+
+# List open PRs
+tea pr list
+
+# Merge a PR
+tea pr merge <number>
+
+# View PR status / checks
+tea pr view <number>
+```
+
+Do **not** use `gh` — it is not configured for this repo.
+
 ## Project Architecture
 
 ```
