@@ -3,11 +3,13 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:health_flare/main.dart';
 import 'package:health_flare/core/providers/condition_provider.dart';
+import 'package:health_flare/core/providers/flare_provider.dart';
 import 'package:health_flare/core/providers/journal_provider.dart';
 import 'package:health_flare/core/providers/onboarding_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/core/providers/sleep_provider.dart';
 import 'package:health_flare/models/condition.dart';
+import 'package:health_flare/models/flare.dart';
 import 'package:health_flare/models/journal_entry.dart';
 import 'package:health_flare/models/profile.dart';
 import 'package:health_flare/models/sleep_entry.dart';
@@ -75,6 +77,11 @@ class _FakeWeatherOptIn extends WeatherOptInNotifier {
   bool build() => false;
 }
 
+class _FakeFlareList extends FlareListNotifier {
+  @override
+  List<Flare> build() => [];
+}
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -94,6 +101,8 @@ List<Override> _appOverrides({
   sleepEntryListProvider.overrideWith(_FakeSleepList.new),
   firstLogPromptProvider.overrideWith(_FakeFirstLogPrompt.new),
   weatherOptInProvider.overrideWith(_FakeWeatherOptIn.new),
+  flareListProvider.overrideWith(_FakeFlareList.new),
+  activeFlareProvider.overrideWith((ref) => null),
 ];
 
 // ---------------------------------------------------------------------------

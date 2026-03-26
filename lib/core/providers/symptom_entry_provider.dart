@@ -50,6 +50,7 @@ class SymptomEntryListNotifier extends Notifier<List<SymptomEntry>> {
     String? notes,
     int? userSymptomIsarId,
     int? userConditionIsarId,
+    int? flareIsarId,
   }) async {
     final isar = ref.read(isarProvider);
     final row = SymptomEntryIsar()
@@ -61,6 +62,7 @@ class SymptomEntryListNotifier extends Notifier<List<SymptomEntry>> {
       ..notes = notes
       ..userSymptomIsarId = userSymptomIsarId
       ..userConditionIsarId = userConditionIsarId
+      ..flareIsarId = flareIsarId
       ..createdAt = DateTime.now();
     await isar.writeTxn(() async {
       await isar.symptomEntryIsars.put(row);

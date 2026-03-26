@@ -25,6 +25,8 @@ class MealEntryIsar {
 
   DateTime? updatedAt;
 
+  int? flareIsarId; // back-filled when FlareIsar lands in v9
+
   MealEntry toDomain() => MealEntry(
     id: id,
     profileId: profileId,
@@ -35,6 +37,7 @@ class MealEntryIsar {
     loggedAt: loggedAt,
     createdAt: createdAt,
     updatedAt: updatedAt,
+    flareIsarId: flareIsarId,
   );
 
   static MealEntryIsar fromDomain(MealEntry e) => MealEntryIsar()
@@ -46,5 +49,6 @@ class MealEntryIsar {
     ..hasReaction = e.hasReaction
     ..loggedAt = e.loggedAt
     ..createdAt = e.createdAt
-    ..updatedAt = e.updatedAt;
+    ..updatedAt = e.updatedAt
+    ..flareIsarId = e.flareIsarId;
 }
