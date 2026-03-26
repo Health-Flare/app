@@ -10,10 +10,12 @@ import 'package:health_flare/models/symptom_entry.dart';
 /// Full-screen form for creating or editing a symptom entry.
 ///
 /// Pass [entry] to open in edit mode; leave null for a new entry.
+/// Pass [prefillText] to pre-populate the name field (quick-log promotion).
 class SymptomEntryFormScreen extends ConsumerStatefulWidget {
-  const SymptomEntryFormScreen({super.key, this.entry});
+  const SymptomEntryFormScreen({super.key, this.entry, this.prefillText});
 
   final SymptomEntry? entry;
+  final String? prefillText;
 
   @override
   ConsumerState<SymptomEntryFormScreen> createState() =>
@@ -40,7 +42,7 @@ class _SymptomEntryFormScreenState
       _severity = e.severity;
       _loggedAt = e.loggedAt;
     } else {
-      _nameController = TextEditingController();
+      _nameController = TextEditingController(text: widget.prefillText ?? '');
       _notesController = TextEditingController();
       _loggedAt = DateTime.now();
     }

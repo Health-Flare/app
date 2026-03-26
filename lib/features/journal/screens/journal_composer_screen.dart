@@ -26,9 +26,12 @@ import 'package:health_flare/features/journal/widgets/journal_enrichment_bar.dar
 ///
 /// [entryId] null = create mode; non-null = edit mode.
 class JournalComposerScreen extends ConsumerStatefulWidget {
-  const JournalComposerScreen({super.key, this.entryId});
+  const JournalComposerScreen({super.key, this.entryId, this.prefillBody});
 
   final int? entryId;
+
+  /// Pre-populate the body field (e.g. from quick-log promotion).
+  final String? prefillBody;
 
   @override
   ConsumerState<JournalComposerScreen> createState() =>
@@ -167,6 +170,9 @@ class _JournalComposerScreenState extends ConsumerState<JournalComposerScreen> {
       }
     } else {
       _entryDate = DateTime.now();
+      if (widget.prefillBody != null) {
+        _bodyController.text = widget.prefillBody!;
+      }
       // Reset any mood/energy left from a previous composer session.
       // Must use addPostFrameCallback — ref is not yet attached at initState
       // time. Moving this reset to dispose() is unsafe because ref is already
