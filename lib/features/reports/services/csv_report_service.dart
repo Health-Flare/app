@@ -104,6 +104,20 @@ abstract final class CsvReportService {
       ]);
     }
 
+    for (final e in data.activities) {
+      final parts = <String>[];
+      if (e.activityType != null) parts.add(e.activityType!.label);
+      if (e.effortLevel != null) parts.add('Effort ${e.effortLevel}/5');
+      if (e.durationMinutes != null) parts.add('${e.durationMinutes} min');
+      rows.add([
+        _fmt.format(e.loggedAt),
+        'Activity',
+        e.description,
+        parts.join('  ·  '),
+        e.notes ?? '',
+      ]);
+    }
+
     // Sort data rows by date (column 0) ascending.
     final header = rows.removeAt(0);
     rows.sort((a, b) => (a[0] as String).compareTo(b[0] as String));

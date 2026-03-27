@@ -160,6 +160,13 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
                 .update(config.copyWith(includeAppointments: v)),
           ),
           _TypeToggle(
+            label: 'Activities',
+            value: config.includeActivities,
+            onChanged: (v) => ref
+                .read(reportConfigProvider.notifier)
+                .update(config.copyWith(includeActivities: v)),
+          ),
+          _TypeToggle(
             label: 'Journal entries',
             value: config.includeJournal,
             onChanged: (v) => ref

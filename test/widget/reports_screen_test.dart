@@ -50,6 +50,7 @@ void main() {
       expect(find.text('Sleep', skipOffstage: false), findsOneWidget);
       expect(find.text('Daily check-ins', skipOffstage: false), findsOneWidget);
       expect(find.text('Appointments', skipOffstage: false), findsOneWidget);
+      expect(find.text('Activities', skipOffstage: false), findsOneWidget);
       expect(find.text('Journal entries', skipOffstage: false), findsOneWidget);
     });
 
@@ -73,6 +74,7 @@ void main() {
         includeSleep: false,
         includeCheckins: false,
         includeAppointments: false,
+        includeActivities: false,
       );
       await tester.pumpWidget(_buildScreen(config: noTypes));
       await tester.pump();

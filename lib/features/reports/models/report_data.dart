@@ -1,3 +1,4 @@
+import 'package:health_flare/models/activity_entry.dart';
 import 'package:health_flare/models/appointment.dart';
 import 'package:health_flare/models/daily_checkin.dart';
 import 'package:health_flare/models/dose_log.dart';
@@ -23,6 +24,7 @@ class ReportData {
     required this.sleep,
     required this.checkins,
     required this.appointments,
+    required this.activities,
   });
 
   final String profileName;
@@ -38,6 +40,7 @@ class ReportData {
   final List<SleepEntry> sleep;
   final List<DailyCheckin> checkins;
   final List<Appointment> appointments;
+  final List<ActivityEntry> activities;
 
   bool get isEmpty =>
       symptoms.isEmpty &&
@@ -47,5 +50,6 @@ class ReportData {
       journal.isEmpty &&
       sleep.isEmpty &&
       checkins.isEmpty &&
-      appointments.isEmpty;
+      appointments.isEmpty &&
+      activities.isEmpty;
 }

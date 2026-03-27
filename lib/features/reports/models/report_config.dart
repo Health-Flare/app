@@ -15,6 +15,7 @@ class ReportConfig {
     this.includeSleep = true,
     this.includeCheckins = true,
     this.includeAppointments = true,
+    this.includeActivities = true,
   }) : customStart =
            customStart ?? DateTime.now().subtract(const Duration(days: 30)),
        customEnd = customEnd ?? DateTime.now();
@@ -31,6 +32,7 @@ class ReportConfig {
   final bool includeSleep;
   final bool includeCheckins;
   final bool includeAppointments;
+  final bool includeActivities;
 
   /// Returns true when at least one data type is selected.
   bool get hasDataTypes =>
@@ -41,7 +43,8 @@ class ReportConfig {
       includeJournal ||
       includeSleep ||
       includeCheckins ||
-      includeAppointments;
+      includeAppointments ||
+      includeActivities;
 
   /// Resolved start date (beginning of day) based on [preset].
   DateTime get resolvedStart {
@@ -83,6 +86,7 @@ class ReportConfig {
     bool? includeSleep,
     bool? includeCheckins,
     bool? includeAppointments,
+    bool? includeActivities,
   }) => ReportConfig(
     preset: preset ?? this.preset,
     customStart: customStart ?? this.customStart,
@@ -95,6 +99,7 @@ class ReportConfig {
     includeSleep: includeSleep ?? this.includeSleep,
     includeCheckins: includeCheckins ?? this.includeCheckins,
     includeAppointments: includeAppointments ?? this.includeAppointments,
+    includeActivities: includeActivities ?? this.includeActivities,
   );
 }
 

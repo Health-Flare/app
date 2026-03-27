@@ -1,5 +1,6 @@
 import 'package:isar_community/isar.dart';
 
+import 'package:health_flare/data/models/activity_entry_isar.dart';
 import 'package:health_flare/data/models/appointment_isar.dart';
 import 'package:health_flare/data/models/daily_checkin_isar.dart';
 import 'package:health_flare/data/models/dose_log_isar.dart';
@@ -11,6 +12,7 @@ import 'package:health_flare/data/models/symptom_entry_isar.dart';
 import 'package:health_flare/data/models/vital_entry_isar.dart';
 import 'package:health_flare/features/reports/models/report_config.dart';
 import 'package:health_flare/features/reports/models/report_data.dart';
+import 'package:health_flare/models/activity_entry.dart';
 import 'package:health_flare/models/appointment.dart';
 import 'package:health_flare/models/daily_checkin.dart';
 import 'package:health_flare/models/dose_log.dart';
@@ -109,6 +111,14 @@ abstract final class ReportQueryService {
               .toList()
         : <Appointment>[];
 
+    final activities = config.includeActivities
+        ? (await isar.activityEntryIsars.where().findAll())
+              .where((r) => isProfile(r.profileId) && inRange(r.loggedAt))
+              .map((r) => r.toDomain())
+              .cast<ActivityEntry>()
+              .toList()
+        : <ActivityEntry>[];
+
     return ReportData(
       profileName: profileName,
       start: start,
@@ -122,6 +132,7 @@ abstract final class ReportQueryService {
       sleep: sleep,
       checkins: checkins,
       appointments: appointments,
+      activities: activities,
     );
   }
 }
