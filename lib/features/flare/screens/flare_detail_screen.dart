@@ -474,7 +474,13 @@ class _InfoRow extends StatelessWidget {
           '$label: ',
           style: tt.bodySmall?.copyWith(color: cs.onSurfaceVariant),
         ),
-        Text(value, style: tt.bodySmall),
+        Expanded(
+          child: Text(
+            value,
+            style: tt.bodySmall,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
       ],
     );
   }
