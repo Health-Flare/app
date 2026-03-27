@@ -16,6 +16,9 @@ import 'package:health_flare/data/seed_data.dart';
 /// Schema v7 = registered MedicationIsar + DoseLogIsar collections.
 /// Schema v8 = registered MealEntryIsar collection.
 /// Schema v9 = registered FlareIsar collection; added flareIsarId to MealEntryIsar.
+/// Schema v10 = registered DailyCheckinIsar; added cycleTrackingEnabled to ProfileIsar.
+/// Schema v11 = registered AppointmentIsar collection.
+/// Schema v12 = registered ActivityEntryIsar collection.
 ///
 /// How to add a future migration:
 ///   1. Increment [_targetVersion].
@@ -29,7 +32,7 @@ import 'package:health_flare/data/seed_data.dart';
 class MigrationRunner {
   MigrationRunner._();
 
-  static const int _targetVersion = 11;
+  static const int _targetVersion = 12;
 
   /// Run all pending migrations and update [AppSettings.schemaVersion].
   ///
@@ -167,6 +170,18 @@ class MigrationRunner {
       await isar.writeTxn(() async {
         final s = await isar.appSettings.get(1) ?? (AppSettings()..id = 1);
         s.schemaVersion = 11;
+        await isar.appSettings.put(s);
+      });
+    }
+
+    // ── v11 → v12: ActivityEntryIsar registered ───────────────────────────
+    // New collection for physical activity and exertion logging.
+    // Isar creates the collection automatically.
+    // No data transformation needed.
+    if (currentVersion < 12) {
+      await isar.writeTxn(() async {
+        final s = await isar.appSettings.get(1) ?? (AppSettings()..id = 1);
+        s.schemaVersion = 12;
         await isar.appSettings.put(s);
       });
     }
