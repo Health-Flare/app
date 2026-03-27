@@ -2,24 +2,37 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:health_flare/main.dart';
+import 'package:health_flare/core/providers/activity_entry_provider.dart';
 import 'package:health_flare/core/providers/condition_provider.dart';
 import 'package:health_flare/core/providers/appointment_provider.dart';
 import 'package:health_flare/core/providers/daily_checkin_provider.dart';
+import 'package:health_flare/core/providers/dashboard_provider.dart';
+import 'package:health_flare/core/providers/dose_log_provider.dart';
 import 'package:health_flare/core/providers/flare_provider.dart';
 import 'package:health_flare/core/providers/journal_provider.dart';
+import 'package:health_flare/core/providers/meal_entry_provider.dart';
+import 'package:health_flare/core/providers/medication_provider.dart';
 import 'package:health_flare/core/providers/onboarding_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/core/providers/sleep_provider.dart';
+import 'package:health_flare/core/providers/symptom_entry_provider.dart';
+import 'package:health_flare/core/providers/vital_entry_provider.dart';
+import 'package:health_flare/models/activity_entry.dart';
 import 'package:health_flare/models/condition.dart';
 import 'package:health_flare/models/appointment.dart';
 import 'package:health_flare/models/daily_checkin.dart';
+import 'package:health_flare/models/dose_log.dart';
 import 'package:health_flare/models/flare.dart';
 import 'package:health_flare/models/journal_entry.dart';
+import 'package:health_flare/models/meal_entry.dart';
+import 'package:health_flare/models/medication.dart';
 import 'package:health_flare/models/profile.dart';
 import 'package:health_flare/models/sleep_entry.dart';
 import 'package:health_flare/models/symptom.dart';
+import 'package:health_flare/models/symptom_entry.dart';
 import 'package:health_flare/models/user_condition.dart';
 import 'package:health_flare/models/user_symptom.dart';
+import 'package:health_flare/models/vital_entry.dart';
 
 // ---------------------------------------------------------------------------
 // Fake notifiers — skip Isar by overriding build()
@@ -96,6 +109,36 @@ class _FakeAppointmentList extends AppointmentListNotifier {
   List<Appointment> build() => [];
 }
 
+class _FakeSymptomEntryList extends SymptomEntryListNotifier {
+  @override
+  List<SymptomEntry> build() => [];
+}
+
+class _FakeVitalEntryList extends VitalEntryListNotifier {
+  @override
+  List<VitalEntry> build() => [];
+}
+
+class _FakeDoseLogList extends DoseLogListNotifier {
+  @override
+  List<DoseLog> build() => [];
+}
+
+class _FakeMealEntryList extends MealEntryListNotifier {
+  @override
+  List<MealEntry> build() => [];
+}
+
+class _FakeMedicationList extends MedicationListNotifier {
+  @override
+  List<Medication> build() => [];
+}
+
+class _FakeActivityEntryList extends ActivityEntryListNotifier {
+  @override
+  List<ActivityEntry> build() => [];
+}
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -122,6 +165,20 @@ List<Override> _appOverrides({
   appointmentListProvider.overrideWith(_FakeAppointmentList.new),
   activeProfileAppointmentsProvider.overrideWith((ref) => []),
   upcomingAppointmentsProvider.overrideWith((ref) => []),
+  symptomEntryListProvider.overrideWith(_FakeSymptomEntryList.new),
+  activeProfileSymptomEntriesProvider.overrideWith((ref) => []),
+  vitalEntryListProvider.overrideWith(_FakeVitalEntryList.new),
+  activeProfileVitalEntriesProvider.overrideWith((ref) => []),
+  doseLogListProvider.overrideWith(_FakeDoseLogList.new),
+  activeProfileDoseLogsProvider.overrideWith((ref) => []),
+  mealEntryListProvider.overrideWith(_FakeMealEntryList.new),
+  activeProfileMealEntriesProvider.overrideWith((ref) => []),
+  medicationListProvider.overrideWith(_FakeMedicationList.new),
+  activeProfileMedicationsProvider.overrideWith((ref) => []),
+  activityEntryListProvider.overrideWith(_FakeActivityEntryList.new),
+  activeProfileActivityEntriesProvider.overrideWith((ref) => []),
+  dashboardActivityProvider.overrideWith((ref) => []),
+  dashboardHasActivityProvider.overrideWith((ref) => false),
 ];
 
 // ---------------------------------------------------------------------------
