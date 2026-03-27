@@ -28,6 +28,7 @@ import 'package:health_flare/features/flare/screens/flare_detail_screen.dart';
 import 'package:health_flare/features/daily_checkin/screens/checkin_form_screen.dart';
 import 'package:health_flare/features/daily_checkin/screens/checkin_history_screen.dart';
 import 'package:health_flare/features/appointments/screens/appointment_list_screen.dart';
+import 'package:health_flare/features/reports/screens/insights_screen.dart';
 import 'package:health_flare/features/reports/screens/reports_screen.dart';
 import 'package:health_flare/features/appointments/screens/appointment_form_screen.dart';
 import 'package:health_flare/features/appointments/screens/appointment_detail_screen.dart';
@@ -73,6 +74,7 @@ abstract final class AppRoutes {
   static String flareEdit(int id) => '/flare/$id/edit';
   static String flareDetail(int id) => '/flare/$id';
   static const reports = '/reports';
+  static const insights = '/reports/insights';
   static const journal = '/journal';
   static const journalNew = '/journal/new';
   static String journalDetail(int id) => '/journal/$id';
@@ -352,6 +354,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             path: AppRoutes.reports,
             name: 'reports',
             builder: (context, state) => const ReportsScreen(),
+            routes: [
+              GoRoute(
+                path: 'insights',
+                name: 'insights',
+                builder: (context, state) => const InsightsScreen(),
+              ),
+            ],
           ),
           GoRoute(
             path: AppRoutes.sleep,

@@ -180,8 +180,9 @@ abstract final class PdfReportService {
       final m = dur.inMinutes % 60;
       final label = _fmt.format(e.wakeTime);
       final value = StringBuffer('${h}h ${m}m');
-      if (e.qualityRating != null)
+      if (e.qualityRating != null) {
         value.write('  ·  quality ${e.qualityRating}/5');
+      }
       if (e.isNap) value.write('  (nap)');
       if (e.notes != null) value.write('\n${e.notes}');
       out.add(_row(label, value.toString()));

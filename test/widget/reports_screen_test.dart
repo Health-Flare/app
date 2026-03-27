@@ -40,14 +40,17 @@ void main() {
       await tester.pumpWidget(_buildScreen());
       await tester.pump();
 
-      expect(find.text('Symptoms'), findsOneWidget);
-      expect(find.text('Vitals'), findsOneWidget);
-      expect(find.text('Medications & doses'), findsOneWidget);
-      expect(find.text('Meals'), findsOneWidget);
-      expect(find.text('Sleep'), findsOneWidget);
-      expect(find.text('Daily check-ins'), findsOneWidget);
-      expect(find.text('Appointments'), findsOneWidget);
-      expect(find.text('Journal entries'), findsOneWidget);
+      expect(find.text('Symptoms', skipOffstage: false), findsOneWidget);
+      expect(find.text('Vitals', skipOffstage: false), findsOneWidget);
+      expect(
+        find.text('Medications & doses', skipOffstage: false),
+        findsOneWidget,
+      );
+      expect(find.text('Meals', skipOffstage: false), findsOneWidget);
+      expect(find.text('Sleep', skipOffstage: false), findsOneWidget);
+      expect(find.text('Daily check-ins', skipOffstage: false), findsOneWidget);
+      expect(find.text('Appointments', skipOffstage: false), findsOneWidget);
+      expect(find.text('Journal entries', skipOffstage: false), findsOneWidget);
     });
 
     testWidgets('shows Export CSV and Export PDF buttons', (tester) async {
@@ -74,7 +77,10 @@ void main() {
       await tester.pumpWidget(_buildScreen(config: noTypes));
       await tester.pump();
 
-      expect(find.text('Select at least one data type.'), findsOneWidget);
+      expect(
+        find.text('Select at least one data type.', skipOffstage: false),
+        findsOneWidget,
+      );
     });
 
     testWidgets('shows custom date pickers when Custom preset is selected', (
@@ -113,12 +119,12 @@ void main() {
       await tester.pumpWidget(_buildScreen());
       await tester.pump();
 
-      // Uncheck Symptoms (first checkbox)
-      await tester.tap(find.text('Symptoms'));
+      // Uncheck Symptoms (first checkbox, may be off-screen)
+      await tester.tap(find.text('Symptoms', skipOffstage: false));
       await tester.pump();
 
       // The screen should still render without error
-      expect(find.text('Symptoms'), findsOneWidget);
+      expect(find.text('Symptoms', skipOffstage: false), findsOneWidget);
     });
   });
 }
