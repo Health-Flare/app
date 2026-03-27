@@ -28,6 +28,8 @@ import 'package:health_flare/features/flare/screens/flare_detail_screen.dart';
 import 'package:health_flare/features/daily_checkin/screens/checkin_form_screen.dart';
 import 'package:health_flare/features/daily_checkin/screens/checkin_history_screen.dart';
 import 'package:health_flare/features/appointments/screens/appointment_list_screen.dart';
+import 'package:health_flare/features/activity/screens/activity_list_screen.dart';
+import 'package:health_flare/features/activity/screens/activity_entry_form_screen.dart';
 import 'package:health_flare/features/reports/screens/insights_screen.dart';
 import 'package:health_flare/features/reports/screens/reports_screen.dart';
 import 'package:health_flare/features/appointments/screens/appointment_form_screen.dart';
@@ -41,6 +43,7 @@ import 'package:health_flare/models/dose_log.dart';
 import 'package:health_flare/models/meal_entry.dart';
 import 'package:health_flare/models/flare.dart';
 import 'package:health_flare/models/daily_checkin.dart';
+import 'package:health_flare/models/activity_entry.dart';
 import 'package:health_flare/models/appointment.dart';
 
 // ---------------------------------------------------------------------------
@@ -89,6 +92,9 @@ abstract final class AppRoutes {
   static const appointmentNew = '/appointments/new';
   static String appointmentEdit(int id) => '/appointments/$id/edit';
   static String appointmentDetail(int id) => '/appointments/$id';
+  static const activity = '/activity';
+  static const activityNew = '/activity/new';
+  static String activityEdit(int id) => '/activity/$id/edit';
   static const settings = '/settings';
 }
 
@@ -346,6 +352,29 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 name: 'appointment-detail',
                 builder: (context, state) => AppointmentDetailScreen(
                   appointmentId: int.parse(state.pathParameters['aid']!),
+                ),
+              ),
+            ],
+          ),
+          GoRoute(
+            path: AppRoutes.activity,
+            name: 'activity',
+            builder: (context, state) => const ActivityListScreen(),
+            routes: [
+              GoRoute(
+                path: 'new',
+                name: 'activity-new',
+                builder: (context, state) => ActivityEntryFormScreen(
+                  prefillText: state.extra is String
+                      ? state.extra as String
+                      : null,
+                ),
+              ),
+              GoRoute(
+                path: ':acid/edit',
+                name: 'activity-edit',
+                builder: (context, state) => ActivityEntryFormScreen(
+                  entry: state.extra as ActivityEntry?,
                 ),
               ),
             ],
