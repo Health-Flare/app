@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import 'package:health_flare/core/providers/report_provider.dart';
+import 'package:health_flare/core/router/app_router.dart';
 import 'package:health_flare/features/reports/models/report_config.dart';
 
 /// Report configuration and generation screen.
@@ -47,6 +49,20 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          // ── Insights shortcut ─────────────────────────────────────────
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.insights_rounded),
+              title: const Text('Pattern Insights'),
+              subtitle: const Text(
+                'Symptom trends, food reactions, sleep correlation',
+              ),
+              trailing: const Icon(Icons.chevron_right_rounded),
+              onTap: () => context.push(AppRoutes.insights),
+            ),
+          ),
+          const SizedBox(height: 16),
+
           // ── Date range ───────────────────────────────────────────────
           Text(
             'Date range',
