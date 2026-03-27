@@ -276,7 +276,14 @@ abstract final class AppTheme {
   static InputDecorationTheme _inputDecorationTheme(ColorScheme cs) =>
       InputDecorationTheme(
         filled: true,
-        fillColor: AppColors.ashWhite,
+        // Use brightness-adaptive fill so text is always readable.
+        // Light: ashWhite on softCloud scaffold (~legible).
+        // Dark: darkSurface as fill — onSurface (softCloud) text gives ~13:1.
+        // Never hardcode a light fill; in dark mode onSurface is light,
+        // making light-text-on-light-fill effectively invisible.
+        fillColor: cs.brightness == Brightness.light
+            ? AppColors.ashWhite
+            : AppColors.darkSurface,
         contentPadding: const EdgeInsets.symmetric(
           horizontal: space4,
           vertical: 14,
@@ -330,9 +337,11 @@ abstract final class AppTheme {
   static OutlinedButtonThemeData _outlinedButtonTheme(ColorScheme cs) =>
       OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: AppColors.deepDusk,
-          backgroundColor: AppColors.sunrisePeach,
-          side: const BorderSide(color: AppColors.warmLinen),
+          // Adaptive colors — hardcoded light values (deepDusk, sunrisePeach)
+          // are unreadable in dark mode.
+          foregroundColor: cs.onSurface,
+          backgroundColor: cs.surfaceContainerHighest,
+          side: BorderSide(color: cs.outlineVariant),
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           minimumSize: const Size(double.infinity, 48),
           shape: const RoundedRectangleBorder(borderRadius: borderRadiusMd),
@@ -343,7 +352,9 @@ abstract final class AppTheme {
   static TextButtonThemeData _textButtonTheme(ColorScheme cs) =>
       TextButtonThemeData(
         style: TextButton.styleFrom(
-          foregroundColor: AppColors.deepDusk,
+          // Use cs.onSurface — adapts to dark mode (was hardcoded deepDusk,
+          // which is invisible dark-on-dark in dark mode).
+          foregroundColor: cs.onSurface,
           padding: const EdgeInsets.symmetric(
             horizontal: space2,
             vertical: space1,
