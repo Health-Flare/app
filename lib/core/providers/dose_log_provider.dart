@@ -4,6 +4,7 @@ import 'package:isar_community/isar.dart';
 import 'package:health_flare/data/models/dose_log_isar.dart';
 import 'package:health_flare/models/dose_log.dart';
 import 'package:health_flare/core/providers/database_provider.dart';
+import 'package:health_flare/core/providers/profile_provider.dart';
 
 // ---------------------------------------------------------------------------
 // Dose log list — all dose logs across all profiles
@@ -124,6 +125,15 @@ final doseLogListProvider =
 // ---------------------------------------------------------------------------
 // Per-medication dose logs
 // ---------------------------------------------------------------------------
+
+/// All dose logs for the currently active profile, newest-first.
+final activeProfileDoseLogsProvider = Provider<List<DoseLog>>((ref) {
+  final profileId = ref.watch(activeProfileProvider);
+  final all = ref.watch(doseLogListProvider);
+  if (profileId == null) return [];
+  return all.where((d) => d.profileId == profileId).toList()
+    ..sort((a, b) => b.loggedAt.compareTo(a.loggedAt));
+});
 
 /// Dose logs for a specific medication, reverse-chronological.
 final medicationDoseLogsProvider = Provider.family<List<DoseLog>, int>((

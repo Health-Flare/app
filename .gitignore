@@ -43,3 +43,8 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Isar test artifacts
+*.isar
+*.isar-lck
+libisar.dylib
