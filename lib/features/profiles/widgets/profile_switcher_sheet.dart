@@ -26,116 +26,127 @@ class ProfileSwitcherSheet extends ConsumerWidget {
     final tt = Theme.of(context).textTheme;
 
     return SafeArea(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // ── Drag handle ──────────────────────────────────────────────────
-          Center(
-            child: Container(
-              width: 40,
-              height: 4,
-              margin: const EdgeInsets.fromLTRB(0, 12, 0, 20),
-              decoration: BoxDecoration(
-                color: cs.outline,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-          ),
-
-          // ── Header ───────────────────────────────────────────────────────
-          Padding(
-            padding: const EdgeInsets.fromLTRB(24, 0, 24, 8),
-            child: Text(
-              'Profiles',
-              style: tt.titleLarge?.copyWith(color: cs.onSurface),
-            ),
-          ),
-
-          // ── Profile list ─────────────────────────────────────────────────
-          if (profiles.isEmpty)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-              child: Text(
-                'No profiles yet.',
-                style: tt.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
-              ),
-            )
-          else
-            ListView.separated(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              itemCount: profiles.length,
-              separatorBuilder: (context, index) => const SizedBox(height: 2),
-              itemBuilder: (context, index) {
-                final profile = profiles[index];
-                final isActive = profile.id == activeId;
-                return _ProfileTile(
-                  profile: profile,
-                  isActive: isActive,
-                  onTap: () {
-                    ref
-                        .read(activeProfileProvider.notifier)
-                        .setActive(profile.id);
-                    Navigator.of(context).pop();
-                  },
-                  onEdit: () {
-                    Navigator.of(context).pop();
-                    showAddOrEditProfileSheet(context, existing: profile);
-                  },
-                );
-              },
-            ),
-
-          const Divider(height: 24, indent: 24, endIndent: 24),
-
-          // ── Add profile button ────────────────────────────────────────────
-          Padding(
-            padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
-            child: ListTile(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14),
-              ),
-              leading: Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: cs.surfaceContainerHighest,
-                  shape: BoxShape.circle,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.sizeOf(context).height * 0.88,
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // ── Drag handle ──────────────────────────────────────────────────
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.fromLTRB(0, 12, 0, 20),
+                  decoration: BoxDecoration(
+                    color: cs.outline,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
                 ),
-                child: Icon(Icons.add_rounded, color: cs.primary),
               ),
-              title: Text(
-                'Add profile',
-                style: tt.titleSmall?.copyWith(color: cs.primary),
+
+              // ── Header ───────────────────────────────────────────────────────
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 0, 24, 8),
+                child: Text(
+                  'Profiles',
+                  style: tt.titleLarge?.copyWith(color: cs.onSurface),
+                ),
               ),
-              subtitle: Text(
-                'Track a family member or dependant',
-                style: tt.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+
+              // ── Profile list ─────────────────────────────────────────────────
+              if (profiles.isEmpty)
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 16,
+                  ),
+                  child: Text(
+                    'No profiles yet.',
+                    style: tt.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
+                  ),
+                )
+              else
+                ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  itemCount: profiles.length,
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(height: 2),
+                  itemBuilder: (context, index) {
+                    final profile = profiles[index];
+                    final isActive = profile.id == activeId;
+                    return _ProfileTile(
+                      profile: profile,
+                      isActive: isActive,
+                      onTap: () {
+                        ref
+                            .read(activeProfileProvider.notifier)
+                            .setActive(profile.id);
+                        Navigator.of(context).pop();
+                      },
+                      onEdit: () {
+                        Navigator.of(context).pop();
+                        showAddOrEditProfileSheet(context, existing: profile);
+                      },
+                    );
+                  },
+                ),
+
+              const Divider(height: 24, indent: 24, endIndent: 24),
+
+              // ── Add profile button ────────────────────────────────────────────
+              Padding(
+                padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
+                child: ListTile(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  leading: Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: cs.surfaceContainerHighest,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(Icons.add_rounded, color: cs.primary),
+                  ),
+                  title: Text(
+                    'Add profile',
+                    style: tt.titleSmall?.copyWith(color: cs.primary),
+                  ),
+                  subtitle: Text(
+                    'Track a family member or dependant',
+                    style: tt.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+                  ),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    showAddOrEditProfileSheet(context);
+                  },
+                ),
               ),
-              onTap: () {
-                Navigator.of(context).pop();
-                showAddOrEditProfileSheet(context);
-              },
-            ),
+
+              const Divider(height: 24, indent: 24, endIndent: 24),
+
+              // ── Data & backup ─────────────────────────────────────────────────
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 0, 24, 4),
+                child: Text(
+                  'Data & backup',
+                  style: tt.labelSmall?.copyWith(color: cs.onSurfaceVariant),
+                ),
+              ),
+
+              _BackupTiles(),
+
+              const SizedBox(height: 16),
+            ],
           ),
-
-          const Divider(height: 24, indent: 24, endIndent: 24),
-
-          // ── Data & backup ─────────────────────────────────────────────────
-          Padding(
-            padding: const EdgeInsets.fromLTRB(24, 0, 24, 4),
-            child: Text(
-              'Data & backup',
-              style: tt.labelSmall?.copyWith(color: cs.onSurfaceVariant),
-            ),
-          ),
-
-          _BackupTiles(),
-
-          const SizedBox(height: 16),
-        ],
+        ),
       ),
     );
   }
