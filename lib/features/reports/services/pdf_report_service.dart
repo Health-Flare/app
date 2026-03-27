@@ -27,6 +27,7 @@ abstract final class PdfReportService {
     _addSleep(sections, data);
     _addCheckins(sections, data);
     _addAppointments(sections, data);
+    _addActivities(sections, data);
     _addJournal(sections, data);
 
     pdf.addPage(
@@ -216,6 +217,24 @@ abstract final class PdfReportService {
       if (e.providerName != null) value.write('  ·  ${e.providerName}');
       value.write('  ·  ${_apptStatus(e.status)}');
       if (e.outcomeNotes != null) value.write('\n${e.outcomeNotes}');
+      out.add(_row(label, value.toString()));
+    }
+  }
+
+  // ── Activities ────────────────────────────────────────────────────────────
+
+  static void _addActivities(List<pw.Widget> out, ReportData data) {
+    if (data.activities.isEmpty) return;
+    out.add(_sectionTitle('Activities (${data.activities.length})'));
+    for (final e in data.activities) {
+      final label = '${_fmt.format(e.loggedAt)} ${_timeFmt.format(e.loggedAt)}';
+      final value = StringBuffer(e.description);
+      if (e.activityType != null) value.write('  ·  ${e.activityType!.label}');
+      if (e.effortLevel != null) value.write('  ·  effort ${e.effortLevel}/5');
+      if (e.durationMinutes != null) {
+        value.write('  ·  ${e.durationMinutes} min');
+      }
+      if (e.notes != null) value.write('\n${e.notes}');
       out.add(_row(label, value.toString()));
     }
   }
