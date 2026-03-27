@@ -113,9 +113,17 @@ abstract final class AppColors {
   static const Color text = deepDusk;
 
   /// Subtle/secondary text (Deep Dusk at ~70%).
+  ///
+  /// Contrast on white: ~5.7:1 | on softCloud: ~5.1:1 | on ashWhite: ~5.5:1
+  /// Safe for body and caption text on any light surface.
+  /// DO NOT apply withAlpha() — doing so will fail WCAG AA (4.5:1 minimum).
   static const Color textSubtle = Color(0xFF6B6560);
 
   /// Muted text for captions, placeholders (Deep Dusk at ~50%).
+  ///
+  /// Contrast on white: ~2.7:1 — NOT WCAG AA compliant for readable text.
+  /// Restricted to: disabled button labels (which are exempt from contrast
+  /// requirements). Never use for visible, actionable, or informational text.
   static const Color textMuted = Color(0xFF9E9790);
 
   /// Primary action colour (Flare Amber).

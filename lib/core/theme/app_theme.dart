@@ -301,13 +301,14 @@ abstract final class AppTheme {
           borderRadius: borderRadiusMd,
           borderSide: BorderSide(color: cs.error, width: 2),
         ),
-        labelStyle: AppTextStyles.caption.copyWith(
-          color: cs.onSurface.withAlpha(179), // 70% opacity
-        ),
+        // Use onSurfaceVariant at full opacity — it achieves ~5.5:1 on ashWhite
+        // fill and ~5.1:1 on softCloud. Never apply withAlpha() to label/hint
+        // text: even a modest reduction (e.g. withAlpha(153) = 60%) can drop
+        // contrast below the WCAG AA minimum of 4.5:1.
+        labelStyle: AppTextStyles.label.copyWith(color: cs.onSurfaceVariant),
         floatingLabelStyle: const TextStyle(color: AppColors.flareAmber),
-        hintStyle: AppTextStyles.bodyMd.copyWith(
-          color: cs.onSurfaceVariant.withAlpha(153),
-        ),
+        hintStyle: AppTextStyles.bodyMd.copyWith(color: cs.onSurfaceVariant),
+        helperStyle: AppTextStyles.caption.copyWith(color: cs.onSurfaceVariant),
         errorStyle: TextStyle(color: cs.error),
       );
 
