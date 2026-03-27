@@ -25,153 +25,163 @@ class FirstLogPrompt extends ConsumerWidget {
 
     return Material(
       color: Colors.transparent,
-      child: Container(
-        decoration: BoxDecoration(
-          color: cs.surface,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
-        ),
-        padding: const EdgeInsets.fromLTRB(24, 12, 24, 32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Drag handle
-            Center(
-              child: Container(
-                width: 40,
-                height: 4,
-                margin: const EdgeInsets.only(bottom: 24),
-                decoration: BoxDecoration(
-                  color: cs.outline,
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-            ),
-
-            // Heading — personalised with profile name
-            Text(
-              "$profileName's profile is ready.",
-              style: tt.headlineSmall?.copyWith(color: cs.onSurface),
-            ),
-
-            const SizedBox(height: 8),
-
-            // Body
-            Text(
-              'The best way to spot patterns is to start logging now, while '
-              'the day is fresh. What would you like to record for $profileName first?',
-              style: tt.bodyMedium?.copyWith(
-                color: cs.onSurfaceVariant,
-                height: 1.5,
-              ),
-            ),
-
-            const SizedBox(height: 28),
-
-            // Option cards — 2-column grid (illness spans full width on top)
-            Column(
+      child: SafeArea(
+        top: false,
+        child: Container(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.sizeOf(context).height * 0.88,
+          ),
+          decoration: BoxDecoration(
+            color: cs.surface,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+          ),
+          padding: const EdgeInsets.fromLTRB(24, 12, 24, 0),
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.only(bottom: 32),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Illness — full-width top card
-                _LogOptionCard(
-                  emoji: '🏥',
-                  label: 'An illness',
-                  sublabel: 'Add conditions you want to track',
-                  semanticsLabel:
-                      'Track an illness — add conditions you want to track',
-                  fullWidth: true,
-                  onTap: () {
-                    // DashboardScreen already called markShown() before
-                    // displaying this sheet, so dismiss() is a no-op here.
-                    // Pop the sheet first, then push the full illness screen.
-                    Navigator.of(context).pop();
-                    context.push(AppRoutes.illness);
-                  },
+                // Drag handle
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    margin: const EdgeInsets.only(bottom: 24),
+                    decoration: BoxDecoration(
+                      color: cs.outline,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
                 ),
-                const SizedBox(height: 12),
-                // 2 × 2 grid for remaining options
-                GridView.count(
-                  crossAxisCount: 2,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  mainAxisSpacing: 12,
-                  crossAxisSpacing: 12,
-                  childAspectRatio: 1.35,
+
+                // Heading — personalised with profile name
+                Text(
+                  "$profileName's profile is ready.",
+                  style: tt.headlineSmall?.copyWith(color: cs.onSurface),
+                ),
+
+                const SizedBox(height: 8),
+
+                // Body
+                Text(
+                  'The best way to spot patterns is to start logging now, while '
+                  'the day is fresh. What would you like to record for $profileName first?',
+                  style: tt.bodyMedium?.copyWith(
+                    color: cs.onSurfaceVariant,
+                    height: 1.5,
+                  ),
+                ),
+
+                const SizedBox(height: 28),
+
+                // Option cards — 2-column grid (illness spans full width on top)
+                Column(
                   children: [
+                    // Illness — full-width top card
                     _LogOptionCard(
-                      emoji: '🩺',
-                      label: 'A symptom',
-                      sublabel: 'How is $profileName feeling right now?',
+                      emoji: '🏥',
+                      label: 'An illness',
+                      sublabel: 'Add conditions you want to track',
                       semanticsLabel:
-                          'Log a symptom — how is $profileName feeling right now?',
+                          'Track an illness — add conditions you want to track',
+                      fullWidth: true,
                       onTap: () {
-                        ref.read(firstLogPromptProvider.notifier).dismiss();
+                        // DashboardScreen already called markShown() before
+                        // displaying this sheet, so dismiss() is a no-op here.
+                        // Pop the sheet first, then push the full illness screen.
                         Navigator.of(context).pop();
-                        context.go(AppRoutes.symptoms);
-                        // TODO: auto-open new symptom entry form
+                        context.push(AppRoutes.illness);
                       },
                     ),
-                    _LogOptionCard(
-                      emoji: '📊',
-                      label: 'A vital',
-                      sublabel: 'Blood pressure, heart rate, and more',
-                      semanticsLabel:
-                          'Log a vital — blood pressure, heart rate, and more',
-                      onTap: () {
-                        ref.read(firstLogPromptProvider.notifier).dismiss();
-                        Navigator.of(context).pop();
-                        context.go(AppRoutes.symptoms);
-                        // TODO: auto-open new vital entry form
-                      },
-                    ),
-                    _LogOptionCard(
-                      emoji: '🍽️',
-                      label: 'A meal',
-                      sublabel: 'What did $profileName last eat or drink?',
-                      semanticsLabel:
-                          'Log a meal — what did $profileName last eat or drink?',
-                      onTap: () {
-                        ref.read(firstLogPromptProvider.notifier).dismiss();
-                        Navigator.of(context).pop();
-                        context.go(AppRoutes.meals);
-                        // TODO: auto-open new meal entry form
-                      },
-                    ),
-                    _LogOptionCard(
-                      emoji: '💊',
-                      label: 'A medication',
-                      sublabel:
-                          'Add something $profileName is currently taking',
-                      semanticsLabel:
-                          'Log a medication — add something $profileName is currently taking',
-                      onTap: () {
-                        ref.read(firstLogPromptProvider.notifier).dismiss();
-                        Navigator.of(context).pop();
-                        context.go(AppRoutes.medications);
-                        // TODO: auto-open add medication form
-                      },
+                    const SizedBox(height: 12),
+                    // 2 × 2 grid for remaining options
+                    GridView.count(
+                      crossAxisCount: 2,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      mainAxisSpacing: 12,
+                      crossAxisSpacing: 12,
+                      childAspectRatio: 1.35,
+                      children: [
+                        _LogOptionCard(
+                          emoji: '🩺',
+                          label: 'A symptom',
+                          sublabel: 'How is $profileName feeling right now?',
+                          semanticsLabel:
+                              'Log a symptom — how is $profileName feeling right now?',
+                          onTap: () {
+                            ref.read(firstLogPromptProvider.notifier).dismiss();
+                            Navigator.of(context).pop();
+                            context.go(AppRoutes.symptoms);
+                            // TODO: auto-open new symptom entry form
+                          },
+                        ),
+                        _LogOptionCard(
+                          emoji: '📊',
+                          label: 'A vital',
+                          sublabel: 'Blood pressure, heart rate, and more',
+                          semanticsLabel:
+                              'Log a vital — blood pressure, heart rate, and more',
+                          onTap: () {
+                            ref.read(firstLogPromptProvider.notifier).dismiss();
+                            Navigator.of(context).pop();
+                            context.go(AppRoutes.symptoms);
+                            // TODO: auto-open new vital entry form
+                          },
+                        ),
+                        _LogOptionCard(
+                          emoji: '🍽️',
+                          label: 'A meal',
+                          sublabel: 'What did $profileName last eat or drink?',
+                          semanticsLabel:
+                              'Log a meal — what did $profileName last eat or drink?',
+                          onTap: () {
+                            ref.read(firstLogPromptProvider.notifier).dismiss();
+                            Navigator.of(context).pop();
+                            context.go(AppRoutes.meals);
+                            // TODO: auto-open new meal entry form
+                          },
+                        ),
+                        _LogOptionCard(
+                          emoji: '💊',
+                          label: 'A medication',
+                          sublabel:
+                              'Add something $profileName is currently taking',
+                          semanticsLabel:
+                              'Log a medication — add something $profileName is currently taking',
+                          onTap: () {
+                            ref.read(firstLogPromptProvider.notifier).dismiss();
+                            Navigator.of(context).pop();
+                            context.go(AppRoutes.medications);
+                            // TODO: auto-open add medication form
+                          },
+                        ),
+                      ],
                     ),
                   ],
                 ),
+
+                const SizedBox(height: 20),
+
+                // Dismiss link
+                Center(
+                  child: Semantics(
+                    button: true,
+                    label:
+                        "Skip for now, explore $profileName's data on my own",
+                    child: TextButton(
+                      onPressed: () {
+                        ref.read(firstLogPromptProvider.notifier).dismiss();
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text("I'll explore on my own  →"),
+                    ),
+                  ),
+                ),
               ],
             ),
-
-            const SizedBox(height: 20),
-
-            // Dismiss link
-            Center(
-              child: Semantics(
-                button: true,
-                label: "Skip for now, explore $profileName's data on my own",
-                child: TextButton(
-                  onPressed: () {
-                    ref.read(firstLogPromptProvider.notifier).dismiss();
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text("I'll explore on my own  →"),
-                ),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
