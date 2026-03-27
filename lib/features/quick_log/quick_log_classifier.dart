@@ -5,6 +5,7 @@ enum QuickLogEntryType {
   vital,
   medication,
   doctorVisit,
+  activity,
   journal,
 }
 
@@ -35,6 +36,7 @@ abstract final class QuickLogClassifier {
     if (_matchesMedication(lower)) return QuickLogEntryType.medication;
     if (_matchesDoctor(lower)) return QuickLogEntryType.doctorVisit;
     if (_matchesMeal(lower)) return QuickLogEntryType.meal;
+    if (_matchesActivity(lower)) return QuickLogEntryType.activity;
     if (_matchesSymptom(lower)) return QuickLogEntryType.symptom;
     return QuickLogEntryType.journal;
   }
@@ -127,6 +129,28 @@ abstract final class QuickLogClassifier {
     'migraine',
     'cramping',
     'cramp',
+  ]);
+
+  static bool _matchesActivity(String lower) => _any(lower, [
+    'walked',
+    'walking',
+    'went for a walk',
+    'yoga',
+    'stretching',
+    'exercise',
+    'exercised',
+    'rest day',
+    'rested',
+    'housework',
+    'cleaning',
+    'gardening',
+    'physio',
+    'physiotherapy',
+    'gentle',
+    'activity',
+    'minutes of',
+    'min walk',
+    'min run',
   ]);
 
   static bool _any(String text, List<String> keywords) =>

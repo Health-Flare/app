@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import 'package:health_flare/core/providers/activity_entry_provider.dart';
 import 'package:health_flare/core/providers/appointment_provider.dart';
 import 'package:health_flare/core/providers/journal_provider.dart';
 import 'package:health_flare/core/providers/meal_entry_provider.dart';
@@ -100,6 +101,14 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
         await ref
             .read(appointmentListProvider.notifier)
             .add(profileId: profileId, title: _text, scheduledAt: _timestamp);
+      case QuickLogEntryType.activity:
+        await ref
+            .read(activityEntryListProvider.notifier)
+            .add(
+              profileId: profileId,
+              description: _text,
+              loggedAt: _timestamp,
+            );
       case QuickLogEntryType.vital:
       case QuickLogEntryType.medication:
       case QuickLogEntryType.journal:
@@ -126,6 +135,8 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
         context.push(AppRoutes.symptomsNew, extra: _text);
       case QuickLogEntryType.doctorVisit:
         context.push(AppRoutes.appointmentNew, extra: {'title': _text});
+      case QuickLogEntryType.activity:
+        context.push(AppRoutes.activityNew, extra: _text);
       case QuickLogEntryType.vital:
       case QuickLogEntryType.medication:
       case QuickLogEntryType.journal:
@@ -333,6 +344,7 @@ String _chipLabel(QuickLogEntryType type) => switch (type) {
   QuickLogEntryType.vital => 'Vital',
   QuickLogEntryType.medication => 'Medication',
   QuickLogEntryType.doctorVisit => 'Doctor Visit',
+  QuickLogEntryType.activity => 'Activity',
   QuickLogEntryType.journal => 'Journal',
 };
 
@@ -342,5 +354,6 @@ IconData _chipIcon(QuickLogEntryType type) => switch (type) {
   QuickLogEntryType.vital => Icons.monitor_heart_outlined,
   QuickLogEntryType.medication => Icons.medication_outlined,
   QuickLogEntryType.doctorVisit => Icons.local_hospital_outlined,
+  QuickLogEntryType.activity => Icons.directions_walk_outlined,
   QuickLogEntryType.journal => Icons.book_outlined,
 };

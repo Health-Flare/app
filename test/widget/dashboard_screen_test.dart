@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:health_flare/core/providers/appointment_provider.dart';
 import 'package:health_flare/core/providers/daily_checkin_provider.dart';
+import 'package:health_flare/core/providers/dashboard_provider.dart';
 import 'package:health_flare/core/providers/flare_provider.dart';
 import 'package:health_flare/core/providers/journal_provider.dart';
 import 'package:health_flare/core/providers/onboarding_provider.dart';
@@ -12,6 +13,7 @@ import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/core/providers/sleep_provider.dart';
 import 'package:health_flare/core/router/app_router.dart';
 import 'package:health_flare/features/dashboard/dashboard_screen.dart';
+import 'package:health_flare/models/activity_item.dart';
 import 'package:health_flare/models/appointment.dart';
 import 'package:health_flare/models/daily_checkin.dart';
 import 'package:health_flare/models/flare.dart';
@@ -105,18 +107,40 @@ SleepEntry _sleepEntry({int id = 1, DateTime? bedtime, DateTime? wakeTime}) {
 // Widget helpers
 // ---------------------------------------------------------------------------
 
+/// Builds the feed items list from journal + sleep entries for legacy tests.
+List<ActivityItem> _feedItems({
+  List<JournalEntry> journalEntries = const [],
+  List<SleepEntry> sleepEntries = const [],
+}) {
+  final items = <ActivityItem>[
+    ...journalEntries.map(
+      (e) => JournalActivityItem(timestamp: e.createdAt, entry: e),
+    ),
+    ...sleepEntries.map(
+      (e) => SleepActivityItem(timestamp: e.wakeTime, entry: e),
+    ),
+  ]..sort((a, b) => b.timestamp.compareTo(a.timestamp));
+  return items.take(10).toList();
+}
+
 /// Wraps DashboardScreen in a plain MaterialApp (no GoRouter) — suitable for
 /// content and sheet-presence tests where navigation is not exercised.
 Widget _buildDashboard({
   List<JournalEntry> journalEntries = const [],
   List<SleepEntry> sleepEntries = const [],
 }) {
+  final feedItems = _feedItems(
+    journalEntries: journalEntries,
+    sleepEntries: sleepEntries,
+  );
   return ProviderScope(
     overrides: [
       activeProfileProvider.overrideWith(_FakeActiveProfile.new),
       activeProfileDataProvider.overrideWith((ref) => _sarahProfile),
       activeProfileJournalProvider.overrideWith((ref) => journalEntries),
       activeSleepEntriesProvider.overrideWith((ref) => sleepEntries),
+      dashboardActivityProvider.overrideWith((ref) => feedItems),
+      dashboardHasActivityProvider.overrideWith((ref) => feedItems.isNotEmpty),
       firstLogPromptProvider.overrideWith(_FakeFirstLogPrompt.new),
       weatherOptInProvider.overrideWith(_FakeWeatherOptIn.new),
       flareListProvider.overrideWith(_FakeFlareList.new),
@@ -166,12 +190,18 @@ Widget _buildDashboardWithRouter({
     ],
   );
 
+  final feedItems = _feedItems(
+    journalEntries: journalEntries,
+    sleepEntries: sleepEntries,
+  );
   return ProviderScope(
     overrides: [
       activeProfileProvider.overrideWith(_FakeActiveProfile.new),
       activeProfileDataProvider.overrideWith((ref) => _sarahProfile),
       activeProfileJournalProvider.overrideWith((ref) => journalEntries),
       activeSleepEntriesProvider.overrideWith((ref) => sleepEntries),
+      dashboardActivityProvider.overrideWith((ref) => feedItems),
+      dashboardHasActivityProvider.overrideWith((ref) => feedItems.isNotEmpty),
       firstLogPromptProvider.overrideWith(_FakeFirstLogPrompt.new),
       weatherOptInProvider.overrideWith(_FakeWeatherOptIn.new),
       flareListProvider.overrideWith(_FakeFlareList.new),
@@ -261,12 +291,12 @@ void main() {
         expect(find.text('7h 30m'), findsOneWidget);
       });
 
-      testWidgets('feed shows at most five items when six entries exist', (
+      testWidgets('feed shows at most ten items when eleven entries exist', (
         tester,
       ) async {
-        // Entry 6 is newest (shown), Entry 1 is oldest (cut off after 5).
+        // Entry 11 is newest (shown), Entry 1 is oldest (cut off after 10).
         final entries = List.generate(
-          6,
+          11,
           (i) => _journalEntry(
             id: i + 1,
             body: 'Entry ${i + 1}',
@@ -276,9 +306,9 @@ void main() {
         await tester.pumpWidget(_buildDashboard(journalEntries: entries));
         await tester.pump();
 
-        // Newest five are visible, oldest is not.
-        expect(find.text('Entry 6'), findsOneWidget);
-        expect(find.text('Entry 1'), findsNothing);
+        // Newest ten are visible, oldest is not.
+        expect(find.text('Entry 11', skipOffstage: false), findsOneWidget);
+        expect(find.text('Entry 1', skipOffstage: false), findsNothing);
       });
 
       testWidgets('feed is in reverse chronological order', (tester) async {
