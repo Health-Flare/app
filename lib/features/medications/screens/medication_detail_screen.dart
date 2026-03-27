@@ -162,9 +162,12 @@ class _MedicationHeader extends StatelessWidget {
                 children: [
                   Icon(Icons.insights_outlined, size: 16, color: cs.primary),
                   const SizedBox(width: 8),
-                  Text(
-                    effectivenessSummary,
-                    style: tt.labelMedium?.copyWith(color: cs.primary),
+                  Expanded(
+                    child: Text(
+                      effectivenessSummary,
+                      style: tt.labelMedium?.copyWith(color: cs.primary),
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                 ],
               ),
@@ -191,7 +194,13 @@ class _InfoRow extends StatelessWidget {
         children: [
           Icon(icon, size: 16, color: cs.onSurfaceVariant),
           const SizedBox(width: 8),
-          Text(label, style: Theme.of(context).textTheme.bodyMedium),
+          Expanded(
+            child: Text(
+              label,
+              style: Theme.of(context).textTheme.bodyMedium,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
         ],
       ),
     );
