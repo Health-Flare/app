@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'package:health_flare/core/providers/backup_provider.dart';
 import 'package:health_flare/core/providers/database_provider.dart';
@@ -501,27 +502,54 @@ class _ImportCategorySheetState extends State<_ImportCategorySheet> {
 // About tiles
 // ---------------------------------------------------------------------------
 
+const _kPrivacyPolicyUrl = 'https://healthflare.org/privacy';
+
 class _AboutTiles extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final schemaAsync = ref.watch(_schemaVersionProvider);
 
-    return schemaAsync.when(
-      loading: () => const ListTile(
-        leading: Icon(Icons.info_outline_rounded),
-        title: Text('Schema version'),
-        subtitle: Text('Loading…'),
-      ),
-      error: (err, st) => const ListTile(
-        leading: Icon(Icons.info_outline_rounded),
-        title: Text('Schema version'),
-        subtitle: Text('Unavailable'),
-      ),
-      data: (version) => ListTile(
-        leading: const Icon(Icons.info_outline_rounded),
-        title: const Text('Schema version'),
-        subtitle: Text('v$version'),
-      ),
+    return Column(
+      children: [
+        // Privacy policy
+        ListTile(
+          leading: const Icon(Icons.privacy_tip_outlined),
+          title: const Text('Privacy policy'),
+          subtitle: const Text('healthflare.org/privacy'),
+          trailing: const Icon(Icons.open_in_new, size: 18),
+          onTap: () async {
+            final uri = Uri.parse(_kPrivacyPolicyUrl);
+            if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Could not open privacy policy'),
+                  ),
+                );
+              }
+            }
+          },
+        ),
+
+        // Schema version
+        schemaAsync.when(
+          loading: () => const ListTile(
+            leading: Icon(Icons.info_outline_rounded),
+            title: Text('Schema version'),
+            subtitle: Text('Loading…'),
+          ),
+          error: (err, st) => const ListTile(
+            leading: Icon(Icons.info_outline_rounded),
+            title: Text('Schema version'),
+            subtitle: Text('Unavailable'),
+          ),
+          data: (version) => ListTile(
+            leading: const Icon(Icons.info_outline_rounded),
+            title: const Text('Schema version'),
+            subtitle: Text('v$version'),
+          ),
+        ),
+      ],
     );
   }
 }

@@ -33,6 +33,9 @@ dependencies:
   share_plus: ^10.1.0
   file_picker: ^8.1.2
 
+  # Open URLs in browser (privacy policy link)
+  url_launcher: ^6.3.1
+
   # Date formatting (used in journal entry list and detail views)
   intl: ^0.19.0
   pdf: ^3.12.0
