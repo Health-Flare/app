@@ -4,6 +4,7 @@ import 'package:share_plus/share_plus.dart';
 
 import 'package:health_flare/core/providers/database_provider.dart';
 import 'package:health_flare/data/database/backup_service.dart';
+import 'package:health_flare/data/database/import_service.dart';
 
 /// The result of a backup or restore operation.
 sealed class BackupResult {
@@ -23,9 +24,22 @@ class BackupExportDone extends BackupResult {
   const BackupExportDone();
 }
 
-/// Restore was staged — the user needs to restart to apply it.
+/// Restore was staged (overwrite mode) — user must restart to apply it.
 class BackupRestoreStaged extends BackupResult {
   const BackupRestoreStaged();
+}
+
+/// Merge or selective import complete.
+class ImportComplete extends BackupResult {
+  const ImportComplete(this.recordsAdded);
+  final int recordsAdded;
+}
+
+/// Selective import: backup opened, category preview ready for user to review.
+class ImportPreviewReady extends BackupResult {
+  const ImportPreviewReady({required this.filePath, required this.categories});
+  final String filePath;
+  final List<ImportCategoryInfo> categories;
 }
 
 /// The user cancelled the file picker.
@@ -35,21 +49,21 @@ class BackupCancelled extends BackupResult {
 
 class BackupError extends BackupResult {
   const BackupError(this.message);
-
   final String message;
 }
 
-/// Manages one-tap database export and staged restore.
+/// Manages database export and all three restore modes.
 ///
-/// Export:
-///   Calls [BackupService.export] to create a compact snapshot via Isar's
-///   hot-backup API, then opens the system share sheet so the user can save
-///   the file to Files, AirDrop it, email it, etc.
+/// **Export** — calls [BackupService.export], then opens the OS share sheet.
 ///
-/// Restore:
-///   Opens the system file picker filtered to `.isar` files, then calls
-///   [BackupService.stagePendingRestore] to copy the file to the pending-
-///   restore slot. [IsarService.open] applies it on the next app launch.
+/// **Overwrite** (staged restore) — copies a user-chosen `.isar` file to the
+/// pending-restore slot; [IsarService.open] applies it on next app launch.
+///
+/// **Merge** — opens the backup inline as a secondary Isar instance and
+/// imports records that are not already in the main database. No restart needed.
+///
+/// **Selective** — same as merge but the user first previews which categories
+/// are available and picks what to import.
 class BackupNotifier extends Notifier<BackupResult> {
   @override
   BackupResult build() => const BackupIdle();
@@ -71,18 +85,17 @@ class BackupNotifier extends Notifier<BackupResult> {
     }
   }
 
-  /// Opens the file picker and stages the chosen backup for restore.
+  /// Opens the file picker and stages the chosen backup for a full overwrite.
   ///
-  /// The restore is applied on the next app launch. Returns false if the
-  /// user cancelled without selecting a file.
+  /// The restore is applied on the next app launch. Returns false if the user
+  /// cancelled without selecting a file.
   Future<bool> stageRestore() async {
     if (state is BackupInProgress) return false;
     state = const BackupInProgress();
 
     try {
       final result = await FilePicker.platform.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: ['isar'],
+        type: FileType.any,
         withData: false,
         withReadStream: false,
       );
@@ -104,6 +117,98 @@ class BackupNotifier extends Notifier<BackupResult> {
     } catch (e) {
       state = BackupError('Restore failed: $e');
       return false;
+    }
+  }
+
+  /// Opens the file picker and merges all data from the chosen backup,
+  /// skipping records that already exist in the main database.
+  Future<void> mergeRestore() async {
+    if (state is BackupInProgress) return;
+    state = const BackupInProgress();
+
+    try {
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.any,
+        withData: false,
+        withReadStream: false,
+      );
+
+      if (result == null || result.files.isEmpty) {
+        state = const BackupCancelled();
+        return;
+      }
+
+      final path = result.files.single.path;
+      if (path == null) {
+        state = const BackupError('Could not read the selected file.');
+        return;
+      }
+
+      final isar = ref.read(isarProvider);
+      final added = await ImportService.mergeAll(path, isar);
+      state = ImportComplete(added);
+    } catch (e) {
+      state = BackupError('Import failed: $e');
+    }
+  }
+
+  /// Opens the file picker, then sets state to [ImportPreviewReady] so the
+  /// UI can show the user a category picker before committing the import.
+  Future<void> startSelectiveImport() async {
+    if (state is BackupInProgress) return;
+    state = const BackupInProgress();
+
+    try {
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.any,
+        withData: false,
+        withReadStream: false,
+      );
+
+      if (result == null || result.files.isEmpty) {
+        state = const BackupCancelled();
+        return;
+      }
+
+      final path = result.files.single.path;
+      if (path == null) {
+        state = const BackupError('Could not read the selected file.');
+        return;
+      }
+
+      final isar = ref.read(isarProvider);
+      final categories = await ImportService.preview(path, isar);
+
+      if (categories.isEmpty) {
+        // Nothing new to import — treat as done with 0 records.
+        state = const ImportComplete(0);
+        return;
+      }
+
+      state = ImportPreviewReady(filePath: path, categories: categories);
+    } catch (e) {
+      state = BackupError('Preview failed: $e');
+    }
+  }
+
+  /// Commits the selective import using the categories the user has selected.
+  ///
+  /// Must only be called while state is [ImportPreviewReady].
+  Future<void> commitSelectiveImport(Set<String> selectedCategoryIds) async {
+    final current = state;
+    if (current is! ImportPreviewReady) return;
+    state = const BackupInProgress();
+
+    try {
+      final isar = ref.read(isarProvider);
+      final added = await ImportService.mergeSelected(
+        current.filePath,
+        isar,
+        selectedCategoryIds,
+      );
+      state = ImportComplete(added);
+    } catch (e) {
+      state = BackupError('Import failed: $e');
     }
   }
 
