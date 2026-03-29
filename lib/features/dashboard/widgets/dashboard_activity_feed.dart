@@ -47,13 +47,21 @@ class DashboardActivityFeed extends StatelessWidget {
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
-        subtitle: Text(_formatDate(item.timestamp)),
+        subtitle: Text(
+          _formatDate(item.timestamp),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
         onTap: () => context.go(AppRoutes.journalDetail(entry.id)),
       ),
       SleepActivityItem(:final entry) => ListTile(
         leading: Icon(Icons.bedtime_outlined, color: cs.primary),
         title: Text(entry.formattedDuration),
-        subtitle: Text(_formatDate(item.timestamp)),
+        subtitle: Text(
+          _formatDate(item.timestamp),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
         onTap: () => context.go(AppRoutes.sleepEdit(entry.id)),
       ),
       SymptomActivityItem(:final entry) => ListTile(
@@ -61,6 +69,8 @@ class DashboardActivityFeed extends StatelessWidget {
         title: Text(entry.name, maxLines: 1, overflow: TextOverflow.ellipsis),
         subtitle: Text(
           '${_formatDate(item.timestamp)} · severity ${entry.severity}/10',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
         onTap: () =>
             context.push(AppRoutes.symptomsEdit(entry.id), extra: entry),
@@ -70,6 +80,8 @@ class DashboardActivityFeed extends StatelessWidget {
         title: Text(entry.vitalType.label),
         subtitle: Text(
           '${_formatDate(item.timestamp)} · ${entry.displayValue}',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
         onTap: () => context.push(AppRoutes.vitalsEdit(entry.id), extra: entry),
       ),
@@ -83,6 +95,8 @@ class DashboardActivityFeed extends StatelessWidget {
         subtitle: Text(
           '${_formatDate(item.timestamp)} · '
           '${doseLog.amount} ${doseLog.unit}',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
       ),
       MealActivityItem(:final entry) => ListTile(
@@ -92,7 +106,11 @@ class DashboardActivityFeed extends StatelessWidget {
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
-        subtitle: Text(_formatDate(item.timestamp)),
+        subtitle: Text(
+          _formatDate(item.timestamp),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
         trailing: entry.hasReaction
             ? Icon(
                 Icons.warning_amber_rounded,
@@ -110,7 +128,11 @@ class DashboardActivityFeed extends StatelessWidget {
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
-        subtitle: Text(_formatDate(item.timestamp)),
+        subtitle: Text(
+          _formatDate(item.timestamp),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
         onTap: () => context.push(AppRoutes.flareDetail(entry.id)),
       ),
       CheckinActivityItem(:final entry) => ListTile(
@@ -118,12 +140,18 @@ class DashboardActivityFeed extends StatelessWidget {
         title: const Text('Daily check-in'),
         subtitle: Text(
           '${_formatDate(item.timestamp)} · wellbeing ${entry.wellbeing}/10',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
       ),
       AppointmentActivityItem(:final entry) => ListTile(
         leading: Icon(Icons.calendar_today_outlined, color: cs.primary),
         title: Text(entry.title, maxLines: 1, overflow: TextOverflow.ellipsis),
-        subtitle: Text(_formatDate(item.timestamp)),
+        subtitle: Text(
+          _formatDate(item.timestamp),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
         onTap: () => context.push(AppRoutes.appointmentDetail(entry.id)),
       ),
       ActivityLogActivityItem(:final entry) => ListTile(
@@ -137,6 +165,8 @@ class DashboardActivityFeed extends StatelessWidget {
           entry.activityType != null
               ? '${_formatDate(item.timestamp)} · ${entry.activityType!.label}'
               : _formatDate(item.timestamp),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
         onTap: () =>
             context.push(AppRoutes.activityEdit(entry.id), extra: entry),
