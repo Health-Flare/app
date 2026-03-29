@@ -65,7 +65,9 @@ class JournalDetailScreen extends ConsumerWidget {
 
             // Mood and energy chips (only shown if set)
             if (entry.moodValue != null || entry.energyLevel != null) ...[
-              Row(
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
                 children: [
                   if (entry.moodValue != null)
                     _InfoChip(
@@ -73,8 +75,6 @@ class JournalDetailScreen extends ConsumerWidget {
                           '${entry.moodValue!.emoji}  ${entry.moodValue!.label}',
                       semanticLabel: 'Mood: ${entry.moodValue!.label}',
                     ),
-                  if (entry.moodValue != null && entry.energyLevel != null)
-                    const SizedBox(width: 8),
                   if (entry.energyLevel != null)
                     _InfoChip(
                       label: 'Energy ${entry.energyLevel}/5',
