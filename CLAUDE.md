@@ -201,7 +201,7 @@ flutter test test/widget/onboarding_screen_test.dart
 
 1. `flutter analyze` — zero warnings/errors
 2. `dart format --set-exit-if-changed .` — code is formatted
-3. No network URLs in Dart files (offline-only app)
+3. No network URLs in Dart files (offline-only app) — **exception:** `healthflare.org` links are permitted (first-party domain, opened by the OS browser on explicit user tap, never called by app code). Add any new `healthflare.org` URLs to `.url-scan-ignore` with a justification comment.
 4. No `google_fonts` package (fonts are bundled locally)
 
 ### Conventions
