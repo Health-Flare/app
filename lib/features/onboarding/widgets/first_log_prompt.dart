@@ -247,6 +247,8 @@ class _LogOptionCard extends StatelessWidget {
                                 color: cs.onSurfaceVariant,
                                 height: 1.3,
                               ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ],
                         ),
