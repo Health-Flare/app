@@ -48,6 +48,9 @@ if [ -f "$IGNORE_FILE" ] && [ -n "$FINDINGS" ]; then
   while IFS= read -r pattern || [ -n "$pattern" ]; do
     # Skip blank lines and comment lines in the ignore file.
     [[ -z "$pattern" || "$pattern" == \#* ]] && continue
+    # Strip inline comments (e.g. "pattern  # Justification: ...").
+    pattern=$(echo "$pattern" | sed 's/[[:space:]]*#.*//')
+    [[ -z "$pattern" ]] && continue
     FINDINGS=$(echo "$FINDINGS" | grep -vE "$pattern" || true)
   done < "$IGNORE_FILE"
 fi
