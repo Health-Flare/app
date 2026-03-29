@@ -475,25 +475,48 @@ class _Ctx {
     bool include(String id) => filter == null || filter.contains(id);
 
     // Order matters: referenced collections before referencing ones.
-    if (include(ImportCategoryId.profiles)) total += await _importProfiles();
-    if (include(ImportCategoryId.trackedConditions))
+    if (include(ImportCategoryId.profiles)) {
+      total += await _importProfiles();
+    }
+    if (include(ImportCategoryId.trackedConditions)) {
       total += await _importUserConditions();
-    if (include(ImportCategoryId.trackedSymptoms))
+    }
+    if (include(ImportCategoryId.trackedSymptoms)) {
       total += await _importUserSymptoms();
-    if (include(ImportCategoryId.flares)) total += await _importFlares();
-    if (include(ImportCategoryId.medications))
+    }
+    if (include(ImportCategoryId.flares)) {
+      total += await _importFlares();
+    }
+    if (include(ImportCategoryId.medications)) {
       total += await _importMedications();
-    if (include(ImportCategoryId.journal)) total += await _importJournal();
-    if (include(ImportCategoryId.sleep)) total += await _importSleep();
-    if (include(ImportCategoryId.vitals)) total += await _importVitals();
-    if (include(ImportCategoryId.meals)) total += await _importMeals();
-    if (include(ImportCategoryId.checkins)) total += await _importCheckins();
-    if (include(ImportCategoryId.appointments))
+    }
+    if (include(ImportCategoryId.journal)) {
+      total += await _importJournal();
+    }
+    if (include(ImportCategoryId.sleep)) {
+      total += await _importSleep();
+    }
+    if (include(ImportCategoryId.vitals)) {
+      total += await _importVitals();
+    }
+    if (include(ImportCategoryId.meals)) {
+      total += await _importMeals();
+    }
+    if (include(ImportCategoryId.checkins)) {
+      total += await _importCheckins();
+    }
+    if (include(ImportCategoryId.appointments)) {
       total += await _importAppointments();
-    if (include(ImportCategoryId.activity)) total += await _importActivity();
-    if (include(ImportCategoryId.doseLogs)) total += await _importDoseLogs();
-    if (include(ImportCategoryId.symptomEntries))
+    }
+    if (include(ImportCategoryId.activity)) {
+      total += await _importActivity();
+    }
+    if (include(ImportCategoryId.doseLogs)) {
+      total += await _importDoseLogs();
+    }
+    if (include(ImportCategoryId.symptomEntries)) {
       total += await _importSymptomEntries();
+    }
 
     return total;
   }
@@ -722,8 +745,9 @@ class _Ctx {
     for (final be in backupItems) {
       final pid = profileMap[be.profileId];
       if (pid == null) continue;
-      if (mainSet.contains('${pid}_${be.createdAt.millisecondsSinceEpoch}'))
+      if (mainSet.contains('${pid}_${be.createdAt.millisecondsSinceEpoch}')) {
         continue;
+      }
       toInsert.add(
         JournalEntryIsar()
           ..profileId = pid
@@ -748,8 +772,9 @@ class _Ctx {
     for (final be in backupItems) {
       final pid = profileMap[be.profileId];
       if (pid == null) continue;
-      if (mainSet.contains('${pid}_${be.bedtime.millisecondsSinceEpoch}'))
+      if (mainSet.contains('${pid}_${be.bedtime.millisecondsSinceEpoch}')) {
         continue;
+      }
       toInsert.add(
         SleepEntryIsar()
           ..profileId = pid
@@ -815,8 +840,9 @@ class _Ctx {
     for (final be in backupItems) {
       final pid = profileMap[be.profileId];
       if (pid == null) continue;
-      if (mainSet.contains('${pid}_${be.loggedAt.millisecondsSinceEpoch}'))
+      if (mainSet.contains('${pid}_${be.loggedAt.millisecondsSinceEpoch}')) {
         continue;
+      }
       toInsert.add(
         MealEntryIsar()
           ..profileId = pid
@@ -847,8 +873,9 @@ class _Ctx {
     for (final be in backupItems) {
       final pid = profileMap[be.profileId];
       if (pid == null) continue;
-      if (mainSet.contains('${pid}_${be.checkinDate.millisecondsSinceEpoch}'))
+      if (mainSet.contains('${pid}_${be.checkinDate.millisecondsSinceEpoch}')) {
         continue;
+      }
       toInsert.add(
         DailyCheckinIsar()
           ..profileId = pid
@@ -923,8 +950,9 @@ class _Ctx {
     for (final be in backupItems) {
       final pid = profileMap[be.profileId];
       if (pid == null) continue;
-      if (mainSet.contains('${pid}_${be.loggedAt.millisecondsSinceEpoch}'))
+      if (mainSet.contains('${pid}_${be.loggedAt.millisecondsSinceEpoch}')) {
         continue;
+      }
       toInsert.add(
         ActivityEntryIsar()
           ..profileId = pid
@@ -956,8 +984,9 @@ class _Ctx {
     for (final bd in backupItems) {
       final pid = profileMap[bd.profileId];
       if (pid == null) continue;
-      if (mainSet.contains('${pid}_${bd.loggedAt.millisecondsSinceEpoch}'))
+      if (mainSet.contains('${pid}_${bd.loggedAt.millisecondsSinceEpoch}')) {
         continue;
+      }
 
       // Resolve medication FK — skip dose log if medication was not imported.
       final mainMedId = medicationMap[bd.medicationIsarId];
@@ -997,8 +1026,9 @@ class _Ctx {
     for (final be in backupItems) {
       final pid = profileMap[be.profileId];
       if (pid == null) continue;
-      if (mainSet.contains('${pid}_${be.loggedAt.millisecondsSinceEpoch}'))
+      if (mainSet.contains('${pid}_${be.loggedAt.millisecondsSinceEpoch}')) {
         continue;
+      }
       toInsert.add(
         SymptomEntryIsar()
           ..profileId = pid
