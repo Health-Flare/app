@@ -12,4 +12,8 @@
 #   - Patterns should be as specific as possible (avoid broad wildcards).
 #   - Reviewed as part of any PR that adds a new entry.
 #
-# Currently no whitelisted patterns — the codebase is clean.
+# healthflare.org is the app's own domain. Links to it (e.g. the privacy policy
+# in Settings) are intentional first-party references, not third-party network
+# dependencies. The app remains fully offline — these URLs are only opened by
+# the OS browser on explicit user tap, never called by app code.
+healthflare\.org  # Justification: first-party domain, opened by OS browser on user action only
