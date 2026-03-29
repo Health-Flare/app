@@ -271,7 +271,12 @@ class _OnboardingProfileZoneState extends ConsumerState<OnboardingProfileZone> {
                       .map(
                         (c) => ListTile(
                           dense: true,
-                          title: Text(c.name, style: tt.bodyMedium),
+                          title: Text(
+                            c.name,
+                            style: tt.bodyMedium,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                           onTap: () => _selectCondition(c),
                         ),
                       )

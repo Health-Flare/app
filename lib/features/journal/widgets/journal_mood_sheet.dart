@@ -45,44 +45,51 @@ class JournalMoodSheet extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: JournalMood.values.map((mood) {
                 final isSelected = mood == currentMood;
-                return Semantics(
-                  button: true,
-                  selected: isSelected,
-                  label: mood.label,
-                  child: GestureDetector(
-                    onTap: () {
-                      // Tapping the already-selected mood clears it
-                      onSelected(isSelected ? null : mood);
-                      Navigator.of(context).pop();
-                    },
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 150),
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: isSelected
-                            ? cs.primaryContainer
-                            : Colors.transparent,
-                      ),
-                      child: Column(
-                        children: [
-                          Text(
-                            mood.emoji,
-                            style: const TextStyle(fontSize: 32),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            mood.label,
-                            style: tt.labelSmall?.copyWith(
-                              color: isSelected
-                                  ? cs.onPrimaryContainer
-                                  : cs.onSurfaceVariant,
+                return Flexible(
+                  child: Semantics(
+                    button: true,
+                    selected: isSelected,
+                    label: mood.label,
+                    child: GestureDetector(
+                      onTap: () {
+                        // Tapping the already-selected mood clears it
+                        onSelected(isSelected ? null : mood);
+                        Navigator.of(context).pop();
+                      },
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 150),
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 10,
+                          horizontal: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          color: isSelected
+                              ? cs.primaryContainer
+                              : Colors.transparent,
+                        ),
+                        child: Column(
+                          children: [
+                            Text(
+                              mood.emoji,
+                              style: const TextStyle(fontSize: 32),
                             ),
-                          ),
-                        ],
+                            const SizedBox(height: 4),
+                            Text(
+                              mood.label,
+                              style: tt.labelSmall?.copyWith(
+                                color: isSelected
+                                    ? cs.onPrimaryContainer
+                                    : cs.onSurfaceVariant,
+                              ),
+                              textAlign: TextAlign.center,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),

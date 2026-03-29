@@ -45,55 +45,56 @@ class JournalEnergySheet extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: List.generate(5, (i) {
                 final level = i + 1; // 1-indexed
                 final isSelected = level == currentLevel;
-                return Semantics(
-                  button: true,
-                  selected: isSelected,
-                  label: 'Energy ${_labels[i]}',
-                  child: GestureDetector(
-                    onTap: () {
-                      // Tapping the already-selected level clears it
-                      onSelected(isSelected ? null : level);
-                      Navigator.of(context).pop();
-                    },
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 150),
-                      width: 56,
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 12,
-                        horizontal: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        color: isSelected
-                            ? cs.primaryContainer
-                            : cs.surfaceContainerHighest,
-                      ),
-                      child: Column(
-                        children: [
-                          Text(
-                            '$level',
-                            style: tt.titleLarge?.copyWith(
-                              color: isSelected
-                                  ? cs.onPrimaryContainer
-                                  : cs.onSurface,
-                              fontWeight: FontWeight.bold,
-                            ),
+                return Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    child: Semantics(
+                      button: true,
+                      selected: isSelected,
+                      label: 'Energy ${_labels[i]}',
+                      child: GestureDetector(
+                        onTap: () {
+                          // Tapping the already-selected level clears it
+                          onSelected(isSelected ? null : level);
+                          Navigator.of(context).pop();
+                        },
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 150),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            color: isSelected
+                                ? cs.primaryContainer
+                                : cs.surfaceContainerHighest,
                           ),
-                          const SizedBox(height: 4),
-                          Text(
-                            _labels[i],
-                            style: tt.labelSmall?.copyWith(
-                              color: isSelected
-                                  ? cs.onPrimaryContainer
-                                  : cs.onSurfaceVariant,
-                            ),
-                            textAlign: TextAlign.center,
+                          child: Column(
+                            children: [
+                              Text(
+                                '$level',
+                                style: tt.titleLarge?.copyWith(
+                                  color: isSelected
+                                      ? cs.onPrimaryContainer
+                                      : cs.onSurface,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                _labels[i],
+                                style: tt.labelSmall?.copyWith(
+                                  color: isSelected
+                                      ? cs.onPrimaryContainer
+                                      : cs.onSurfaceVariant,
+                                ),
+                                textAlign: TextAlign.center,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
                     ),
                   ),
