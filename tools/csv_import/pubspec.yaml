@@ -1,0 +1,16 @@
+name: health_flare_csv_import
+description: CLI tool to import CSV data into a Health Flare Isar database.
+version: 1.0.0
+
+environment:
+  sdk: ^3.0.0
+
+# No Flutter dependency — this is a plain Dart CLI project.
+
+dependencies:
+  isar_community: 3.3.0 # pinned to match generated .g.dart files
+  args: ^2.6.0
+  csv: ^6.0.0
+
+dev_dependencies:
+  lints: ^3.0.0

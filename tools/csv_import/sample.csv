@@ -1,0 +1,10 @@
+type,date,title,body,severity
+journal,2024-01-15,Rough day,"Fatigue was really bad today. Headache started around noon. Stayed in bed most of the afternoon.",,
+journal,2024-01-16,,"Woke up feeling a bit better. Managed a short walk to the letterbox. Still tired by 3pm.",,
+journal,2024-01-17,Crash day,"Complete crash. Did not get out of bed. Everything hurts.",,
+symptom,2024-01-15,Fatigue,,,8
+symptom,2024-01-15,Headache,,,5
+symptom,2024-01-16,Fatigue,,,4
+symptom,2024-01-17,Fatigue,,,10
+symptom,2024-01-17,Pain,,,7
+journal,2024-01-20,Better week,"Feeling more like myself today. Cooked dinner for the first time in days.",,
