@@ -72,20 +72,26 @@ jobs:
       #   GitHub → https://api.github.com
       #   Gitea  → https://<your-instance>/api/v1
       # github.token is auto-provided on both platforms.
-      - name: Create release
+      - name: Create or get release
         run: |
-          curl -sf -X POST \
+          # If the release was already created (e.g. via the GitHub UI), reuse it.
+          HTTP_CODE=$(curl -s -o release.json -w "%{http_code}" \
             -H "Authorization: token ${{ github.token }}" \
-            -H "Content-Type: application/json" \
-            "${{ github.api_url }}/repos/${{ github.repository }}/releases" \
-            -d "{
-              \"tag_name\": \"${{ github.ref_name }}\",
-              \"name\": \"Health Flare ${{ github.ref_name }}\",
-              \"body\": \"Release ${{ github.ref_name }}\",
-              \"draft\": false,
-              \"prerelease\": false
-            }" \
-            -o release.json
+            "${{ github.api_url }}/repos/${{ github.repository }}/releases/tags/${{ github.ref_name }}")
+          if [ "$HTTP_CODE" != "200" ]; then
+            curl -sf -X POST \
+              -H "Authorization: token ${{ github.token }}" \
+              -H "Content-Type: application/json" \
+              "${{ github.api_url }}/repos/${{ github.repository }}/releases" \
+              -d "{
+                \"tag_name\": \"${{ github.ref_name }}\",
+                \"name\": \"Health Flare ${{ github.ref_name }}\",
+                \"body\": \"Release ${{ github.ref_name }}\",
+                \"draft\": false,
+                \"prerelease\": false
+              }" \
+              -o release.json
+          fi
           echo "Release ID: $(jq '.id' release.json)"
 
       # Both GitHub and Gitea return an upload_url field in the release
