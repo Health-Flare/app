@@ -51,6 +51,9 @@ dev_dependencies:
   path_provider_platform_interface: ^2.1.2
   plugin_platform_interface: ^2.1.8
 
+  # App icon generation
+  flutter_launcher_icons: ^0.14.3
+
   # Code generation
   build_runner: ^2.4.13
   riverpod_generator: ^2.4.0
@@ -58,6 +61,17 @@ dev_dependencies:
   # incompatible analyzer version constraints. Isar generated files are produced
   # using a separate minimal project (scripts/isar_codegen/) and committed.
   # See scripts/isar_codegen/README.md for how to regenerate them.
+
+flutter_launcher_icons:
+  android: "ic_launcher"
+  ios: true
+  image_path: "assets/images/HealthFlare Icon Light.png"
+  remove_alpha_ios: true
+  min_sdk_android: 21
+  # Adaptive icon (Android 8.0+ / API 26+): foreground + background layer.
+  # Background uses softCloud (#F4F1EC) to match the app surface colour.
+  adaptive_icon_background: "#F4F1EC"
+  adaptive_icon_foreground: "assets/images/HealthFlare Icon Light.png"
 
 flutter:
   uses-material-design: true
