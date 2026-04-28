@@ -134,6 +134,11 @@ Feature: Quick Log
     And I type "Blood pressure was 128 over 84 this morning"
     Then a suggestion chip labelled "Vital" appears
 
+  Scenario: Typing about sleep suggests a Sleep entry type
+    When I tap the + button
+    And I type "Slept for 6 hours last night, woke up twice"
+    Then a suggestion chip labelled "Sleep" appears below the text field
+
   Scenario: Typing a reflective thought suggests a Journal entry type
     When I tap the + button
     And I type "Feeling overwhelmed but had a decent morning"
@@ -220,6 +225,15 @@ Feature: Quick Log
     Then the full symptom entry form opens
     And the description is pre-filled
     And severity, affected area, and notes fields are available
+
+  Scenario: Tapping "Add details" on a Sleep entry opens the full sleep form
+    When I tap the + button
+    And I type "Slept about 7 hours, felt groggy"
+    And the app suggests "Sleep"
+    And I tap "Add details"
+    Then the full sleep entry form opens
+    And the notes field is pre-filled with "Slept about 7 hours, felt groggy"
+    And bedtime, wake time, and quality fields are available
 
   Scenario: Saving without tapping "Add details" still creates a complete entry
     When I tap the + button
@@ -371,6 +385,11 @@ Feature: Quick Log
   Scenario: A Doctor Visit-typed entry is accessible from the dashboard
     When I save a quick log entry classified as "Doctor Visit"
     Then the entry appears in a "Doctor Visits" section on the dashboard
+
+  Scenario: A Sleep-typed entry is visible in the sleep log
+    When I save a quick log entry classified as "Sleep"
+    Then the entry appears in the sleep log alongside fully-formed sleep entries
+    And the duration is shown as "Unknown" until the user expands and provides bedtime/wake time
 
   # ---------------------------------------------------------------------------
   # Accessibility

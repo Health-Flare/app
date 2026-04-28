@@ -185,3 +185,34 @@ Feature: UI Patterns and Design Language
     Then the IconButton has a tooltip that describes its action
     And the tooltip text is used as the semantic label for screen readers
     And the label is written in sentence case (e.g. "Filter entries", not "Filter Entries")
+
+  # ---------------------------------------------------------------------------
+  # Profile icon and AppBar action co-existence
+  # ---------------------------------------------------------------------------
+
+  Scenario: The profile icon is always visible and never hidden by other AppBar actions
+    Given any screen with an AppBar that contains the profile icon
+    When the screen also has utility actions in the AppBar trailing area
+    Then the profile icon and all utility actions are simultaneously visible
+    And no action button is clipped, hidden, or placed behind another element
+
+  Scenario: The profile icon is always the rightmost element in the AppBar
+    Given any screen that shows the profile icon in the AppBar
+    Then the profile icon occupies the rightmost position in the trailing action row
+    And all other utility actions (e.g. search, filter, overflow menu) appear to its left
+
+  Scenario: AppBar trailing actions do not overlap the profile icon tap target
+    Given a screen with both the profile icon and one or more utility actions
+    Then every action button's tap target is fully within the visible screen bounds
+    And no tap target overlaps the profile icon's tap target
+    And the minimum gap between adjacent tap targets is 0 dp (standard IconButton sizing applies)
+
+  Scenario: Screens requiring many AppBar actions use an overflow menu to preserve space
+    Given a screen that would otherwise place three or more utility actions alongside the profile icon
+    Then actions beyond the first two are collapsed into a trailing overflow (MoreVert) menu
+    And the profile icon remains the rightmost element and is never moved into the overflow
+
+  Scenario: CI or widget test detects when an AppBar action is obscured by the profile icon
+    Given a widget test for any screen with an AppBar
+    Then the test asserts that every expected action button is within visible bounds
+    And the test fails if any IconButton's rect overlaps the profile icon's rect

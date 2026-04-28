@@ -157,3 +157,47 @@ Feature: Developer Experience
       <type>(<optional scope>): <description>
     Where type is one of: feat, fix, chore, docs, refactor, test, perf, ci
     And the pipeline warns (but does not fail) if the format is not followed
+
+  # ---------------------------------------------------------------------------
+  # Visual regression testing and screenshot capture
+  # ---------------------------------------------------------------------------
+
+  Scenario: Golden file tests capture the expected visual state of key widgets
+    Given the test suite includes golden file tests for key screens and widgets
+    Then running `flutter test --update-goldens` regenerates all reference images
+    And running `flutter test` compares rendered output against the committed reference images
+    And the pipeline fails if any rendered widget differs from its golden file
+    And golden files are committed to the repository under test/goldens/
+
+  Scenario: Screenshot capture runs as part of the integration test suite
+    Given the integration_test/ directory includes a screenshot capture test
+    When `flutter test integration_test/` is run against a real device or emulator
+    Then screenshots are captured for at minimum the following screens:
+      | Screen              |
+      | Dashboard           |
+      | Sleep entry form    |
+      | Journal list        |
+      | Reports             |
+    And screenshots are saved to a versioned output directory (e.g. screenshots/raw/)
+    And the CI pipeline archives them as build artefacts on every main-branch build
+
+  Scenario: Screenshots for store submission are produced by the same automated run
+    Given the screenshot integration tests have completed successfully
+    Then the output directory contains device-framed or store-ready screenshots
+    And a single documented command regenerates all screenshots for any supported device class
+    And no store screenshot is produced by a manual, one-off export
+
+  Scenario: Visual diffs are surfaced on pull requests when UI changes
+    Given a pull request that modifies widget or screen code
+    When the CI pipeline runs the golden-file tests
+    Then any golden file that differs from the committed reference is flagged
+    And the diff images are attached to the PR as build artefacts or a comment
+    And reviewers can inspect before/after screenshots without checking out the branch
+    And the pipeline surfaces diffs for human review but does not block the merge automatically on visual changes alone
+
+  Scenario: The screenshot fixture provides realistic "Sarah" tracking data
+    Given the screenshot integration test setup
+    Then the active profile is "Sarah"
+    And the fixture data includes at least 7 days of sleep, symptom, and journal entries
+    And all dates are within a recent, plausible range relative to the test run date
+    And no fixture entry contains placeholder text, lorem ipsum, or developer identifiers
