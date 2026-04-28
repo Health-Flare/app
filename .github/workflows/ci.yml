@@ -9,6 +9,9 @@ on:
     # Weekly dependency report — every Monday at 07:00 UTC
     - cron: "0 7 * * 1"
 
+permissions:
+  contents: read
+
 # Flutter version pinned here — update in one place when upgrading.
 env:
   FLUTTER_VERSION: "3.41.1"
