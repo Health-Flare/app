@@ -145,7 +145,32 @@ jobs:
           path: build/app/outputs/flutter-apk/app-debug.apk
           retention-days: 7
 
-  # ── 8. Weekly dependency report (scheduled) ───────────────────────────────
+  # ── 8. Build macOS app ────────────────────────────────────────────────────
+  flutter-build-macos:
+    name: Build macOS app
+    runs-on: macos-latest
+    needs: [flutter-analyze, dart-format, url-scan, flutter-pub-audit, flutter-test]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+      - run: flutter pub get
+      - name: Build macOS app (debug)
+        run: flutter build macos --debug
+      - name: Zip .app bundle
+        run: |
+          cd build/macos/Build/Products/Debug
+          zip -r healthflare-macos-debug.zip "Health Flare.app"
+      - name: Archive macOS app
+        uses: actions/upload-artifact@v6
+        with:
+          name: healthflare-macos-debug.zip
+          path: build/macos/Build/Products/Debug/healthflare-macos-debug.zip
+          retention-days: 7
+
+  # ── 9. Weekly dependency report (scheduled) ───────────────────────────────
   dependency-audit:
     name: Weekly dependency report
     runs-on: ubuntu-latest
