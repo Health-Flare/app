@@ -1,0 +1,122 @@
+name: Release macOS
+
+# Triggers on any version tag, e.g. v0.1.0
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+# Flutter version kept in sync with ci.yml — update both together.
+env:
+  FLUTTER_VERSION: "3.41.1"
+
+jobs:
+  build-release-macos:
+    name: Build & publish macOS app
+    runs-on: macos-latest
+
+    # Required for github.token to create releases on GitHub.
+    # Gitea ignores this block but it is harmless.
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      # ── Signing setup ────────────────────────────────────────────────────────
+      # For a notarised, signed release build add these secrets:
+      #   MACOS_CERTIFICATE_BASE64   base64-encoded .p12 developer certificate
+      #   MACOS_CERTIFICATE_PASSWORD password for the .p12
+      #   MACOS_KEYCHAIN_PASSWORD    any strong password (used for temp keychain)
+      #   MACOS_NOTARIZE_APPLE_ID    Apple ID email for notarisation
+      #   MACOS_NOTARIZE_PASSWORD    App-specific password for notarisation
+      #   MACOS_NOTARIZE_TEAM_ID     10-char Apple Developer team ID
+      #
+      # If the secrets are absent the build runs unsigned (fine for direct
+      # distribution outside the Mac App Store).
+      - name: Set up signing keychain
+        if: ${{ env.MACOS_CERTIFICATE_BASE64 != '' }}
+        env:
+          MACOS_CERTIFICATE_BASE64: ${{ secrets.MACOS_CERTIFICATE_BASE64 }}
+          MACOS_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_PASSWORD }}
+          MACOS_KEYCHAIN_PASSWORD: ${{ secrets.MACOS_KEYCHAIN_PASSWORD }}
+        run: |
+          echo "$MACOS_CERTIFICATE_BASE64" | base64 --decode > certificate.p12
+          security create-keychain -p "$MACOS_KEYCHAIN_PASSWORD" build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p "$MACOS_KEYCHAIN_PASSWORD" build.keychain
+          security import certificate.p12 -k build.keychain \
+            -P "$MACOS_CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple: \
+            -s -k "$MACOS_KEYCHAIN_PASSWORD" build.keychain
+
+      # ── Build ────────────────────────────────────────────────────────────────
+      - name: Build release macOS app
+        run: flutter build macos --release
+
+      # ── Package ──────────────────────────────────────────────────────────────
+      - name: Create DMG
+        run: |
+          APP=build/macos/Build/Products/Release/Health\ Flare.app
+          DMG=healthflare-${{ github.ref_name }}.dmg
+          # Create a simple DMG with hdiutil — no extra tooling required.
+          hdiutil create -volname "Health Flare ${{ github.ref_name }}" \
+            -srcfolder "$APP" \
+            -ov -format UDZO \
+            "$DMG"
+
+      # ── Notarise (optional) ──────────────────────────────────────────────────
+      - name: Notarise DMG
+        if: ${{ env.MACOS_NOTARIZE_APPLE_ID != '' }}
+        env:
+          MACOS_NOTARIZE_APPLE_ID: ${{ secrets.MACOS_NOTARIZE_APPLE_ID }}
+          MACOS_NOTARIZE_PASSWORD: ${{ secrets.MACOS_NOTARIZE_PASSWORD }}
+          MACOS_NOTARIZE_TEAM_ID: ${{ secrets.MACOS_NOTARIZE_TEAM_ID }}
+        run: |
+          xcrun notarytool submit healthflare-${{ github.ref_name }}.dmg \
+            --apple-id "$MACOS_NOTARIZE_APPLE_ID" \
+            --password "$MACOS_NOTARIZE_PASSWORD" \
+            --team-id "$MACOS_NOTARIZE_TEAM_ID" \
+            --wait
+          xcrun stapler staple healthflare-${{ github.ref_name }}.dmg
+
+      # ── Publish ──────────────────────────────────────────────────────────────
+      # github.api_url works on both GitHub and Gitea.
+      - name: Create or get release
+        run: |
+          HTTP_CODE=$(curl -s -o release.json -w "%{http_code}" \
+            -H "Authorization: token ${{ github.token }}" \
+            "${{ github.api_url }}/repos/${{ github.repository }}/releases/tags/${{ github.ref_name }}")
+          if [ "$HTTP_CODE" != "200" ]; then
+            curl -sf -X POST \
+              -H "Authorization: token ${{ github.token }}" \
+              -H "Content-Type: application/json" \
+              "${{ github.api_url }}/repos/${{ github.repository }}/releases" \
+              -d "{
+                \"tag_name\": \"${{ github.ref_name }}\",
+                \"name\": \"Health Flare ${{ github.ref_name }}\",
+                \"body\": \"Release ${{ github.ref_name }}\",
+                \"draft\": false,
+                \"prerelease\": false
+              }" \
+              -o release.json
+          fi
+          echo "Release ID: $(jq '.id' release.json)"
+
+      - name: Upload DMG to release
+        run: |
+          UPLOAD_URL=$(jq -r '.upload_url' release.json | sed 's/{?name,label}//')
+          DMG=healthflare-${{ github.ref_name }}.dmg
+          curl -sf -X POST \
+            -H "Authorization: token ${{ github.token }}" \
+            -H "Content-Type: application/x-apple-diskimage" \
+            "${UPLOAD_URL}?name=${DMG}" \
+            --data-binary "@${DMG}"
