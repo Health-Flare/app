@@ -362,6 +362,10 @@ class _ConditionTile extends StatelessWidget {
           ? Text('Diagnosed ${fmt.format(condition.diagnosedAt!)}')
           : null,
       trailing: const Icon(Icons.chevron_right),
+      onTap: () => context.push(
+        AppRoutes.conditionDetail(condition.id),
+        extra: condition,
+      ),
     );
   }
 }

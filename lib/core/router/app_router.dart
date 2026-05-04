@@ -12,9 +12,11 @@ import 'package:health_flare/features/shell/app_shell.dart';
 import 'package:health_flare/features/dashboard/dashboard_screen.dart';
 import 'package:health_flare/features/sleep/screens/sleep_entry_screen.dart';
 import 'package:health_flare/features/sleep/screens/sleep_list_screen.dart';
+import 'package:health_flare/features/illness/screens/condition_detail_screen.dart';
 import 'package:health_flare/features/symptoms_vitals/screens/symptom_entry_form_screen.dart';
 import 'package:health_flare/features/symptoms_vitals/screens/vital_entry_form_screen.dart';
 import 'package:health_flare/features/tracking/screens/tracking_screen.dart';
+import 'package:health_flare/models/user_condition.dart';
 import 'package:health_flare/features/medications/screens/medications_screen.dart';
 import 'package:health_flare/features/medications/screens/medication_form_screen.dart';
 import 'package:health_flare/features/medications/screens/medication_detail_screen.dart';
@@ -57,6 +59,7 @@ abstract final class AppRoutes {
   static const illness = '/illness';
   static const tracking = '/tracking';
   static const symptoms = '/tracking';
+  static String conditionDetail(int id) => '/tracking/condition/$id';
   static const symptomsNew = '/tracking/new-symptom';
   static String symptomsEdit(int id) => '/tracking/$id/edit';
   static const vitalsNew = '/tracking/new-vital';
@@ -202,6 +205,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 name: 'vitals-edit',
                 builder: (context, state) =>
                     VitalEntryFormScreen(entry: state.extra as VitalEntry?),
+              ),
+              GoRoute(
+                path: 'condition/:cid',
+                name: 'condition-detail',
+                builder: (context, state) => ConditionDetailScreen(
+                  condition: state.extra as UserCondition,
+                ),
               ),
             ],
           ),
