@@ -19,6 +19,7 @@ import 'package:health_flare/data/seed_data.dart';
 /// Schema v10 = registered DailyCheckinIsar; added cycleTrackingEnabled to ProfileIsar.
 /// Schema v11 = registered AppointmentIsar collection.
 /// Schema v12 = registered ActivityEntryIsar collection.
+/// Schema v13 = added status + statusHistory (ConditionStatusEventIsar) to UserConditionIsar.
 ///
 /// How to add a future migration:
 ///   1. Increment [_targetVersion].
@@ -32,7 +33,7 @@ import 'package:health_flare/data/seed_data.dart';
 class MigrationRunner {
   MigrationRunner._();
 
-  static const int _targetVersion = 12;
+  static const int _targetVersion = 13;
 
   /// Run all pending migrations and update [AppSettings.schemaVersion].
   ///
@@ -182,6 +183,17 @@ class MigrationRunner {
       await isar.writeTxn(() async {
         final s = await isar.appSettings.get(1) ?? (AppSettings()..id = 1);
         s.schemaVersion = 12;
+        await isar.appSettings.put(s);
+      });
+    }
+
+    // ── v12 → v13: status + statusHistory added to UserConditionIsar ─────
+    // Existing rows get status = 'active' and statusHistory = [] automatically
+    // via Isar's default field handling. No data transformation needed.
+    if (currentVersion < 13) {
+      await isar.writeTxn(() async {
+        final s = await isar.appSettings.get(1) ?? (AppSettings()..id = 1);
+        s.schemaVersion = 13;
         await isar.appSettings.put(s);
       });
     }
