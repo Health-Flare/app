@@ -45,7 +45,7 @@ import 'package:health_flare/models/vital_entry.dart';
 
 final _sarah = Profile(id: 1, name: 'Sarah Chen');
 
-final _now = DateTime(2026, 4, 2, 9, 30);
+final _now = DateTime(2026, 5, 4, 9, 30);
 
 final _medications = [
   Medication(
@@ -89,7 +89,7 @@ final _appointments = [
     profileId: 1,
     title: 'Rheumatology follow-up',
     providerName: 'Dr. Patel',
-    scheduledAt: DateTime(2026, 4, 10, 14, 0),
+    scheduledAt: DateTime(2026, 5, 12, 14, 0),
     status: AppointmentStatus.upcoming,
     createdAt: _now,
     questions: const [
@@ -108,7 +108,7 @@ final _appointments = [
     profileId: 1,
     title: 'GP check-in',
     providerName: 'Dr. Williams',
-    scheduledAt: DateTime(2026, 3, 20, 10, 30),
+    scheduledAt: DateTime(2026, 4, 22, 10, 30),
     status: AppointmentStatus.completed,
     outcomeNotes: 'Blood work ordered. Continue current medications.',
     createdAt: _now,
@@ -119,7 +119,7 @@ final _journalEntries = [
   JournalEntry(
     id: 1,
     profileId: 1,
-    createdAt: DateTime(2026, 4, 1, 20, 15),
+    createdAt: DateTime(2026, 5, 3, 20, 15),
     snapshots: [
       JournalSnapshot(
         body:
@@ -127,17 +127,17 @@ final _journalEntries = [
             'Managed a short walk but had to rest for two hours afterwards. '
             "Joint pain in knees is a 6/10 today. Tomorrow's rheumatology "
             'appointment can\'t come soon enough.',
-        title: 'Rough Tuesday',
-        savedAt: DateTime(2026, 4, 1, 20, 15),
+        title: 'Rough Saturday',
+        savedAt: DateTime(2026, 5, 3, 20, 15),
       ),
     ],
-    mood: 3, // rough
+    mood: 3,
     energyLevel: 2,
   ),
   JournalEntry(
     id: 2,
     profileId: 1,
-    createdAt: DateTime(2026, 3, 29, 18, 0),
+    createdAt: DateTime(2026, 4, 30, 18, 0),
     snapshots: [
       JournalSnapshot(
         body:
@@ -145,22 +145,22 @@ final _journalEntries = [
             'Morning stiffness was only about 20 minutes today. '
             'Went to the farmers market with mum — first outing in weeks!',
         title: 'A good day',
-        savedAt: DateTime(2026, 3, 29, 18, 0),
+        savedAt: DateTime(2026, 4, 30, 18, 0),
       ),
     ],
-    mood: 1, // okay
+    mood: 1,
     energyLevel: 3,
   ),
   JournalEntry(
     id: 3,
     profileId: 1,
-    createdAt: DateTime(2026, 3, 25, 21, 0),
+    createdAt: DateTime(2026, 4, 25, 21, 0),
     snapshots: [
       JournalSnapshot(
         body:
             'Started tracking sleep this week. Noticing a clear correlation '
             'between poor sleep and next-day pain levels. Will mention to Dr. Patel.',
-        savedAt: DateTime(2026, 3, 25, 21, 0),
+        savedAt: DateTime(2026, 4, 25, 21, 0),
       ),
     ],
   ),
@@ -172,8 +172,8 @@ final _meals = [
     profileId: 1,
     description: 'Oat porridge with blueberries and flaxseed',
     hasReaction: false,
-    loggedAt: DateTime(2026, 4, 2, 8, 0),
-    createdAt: DateTime(2026, 4, 2, 8, 0),
+    loggedAt: DateTime(2026, 5, 4, 8, 0),
+    createdAt: DateTime(2026, 5, 4, 8, 0),
   ),
   MealEntry(
     id: 2,
@@ -181,16 +181,16 @@ final _meals = [
     description: 'Gluten-free pasta with roasted vegetables',
     notes: 'Felt slightly bloated after — monitor this.',
     hasReaction: true,
-    loggedAt: DateTime(2026, 4, 1, 19, 30),
-    createdAt: DateTime(2026, 4, 1, 19, 30),
+    loggedAt: DateTime(2026, 5, 3, 19, 30),
+    createdAt: DateTime(2026, 5, 3, 19, 30),
   ),
   MealEntry(
     id: 3,
     profileId: 1,
     description: 'Green smoothie — spinach, banana, almond milk',
     hasReaction: false,
-    loggedAt: DateTime(2026, 4, 1, 8, 15),
-    createdAt: DateTime(2026, 4, 1, 8, 15),
+    loggedAt: DateTime(2026, 5, 3, 8, 15),
+    createdAt: DateTime(2026, 5, 3, 8, 15),
   ),
 ];
 
@@ -202,8 +202,8 @@ final _activities = [
     activityType: ActivityType.walking,
     effortLevel: 2,
     durationMinutes: 20,
-    loggedAt: DateTime(2026, 4, 1, 15, 0),
-    createdAt: DateTime(2026, 4, 1, 15, 0),
+    loggedAt: DateTime(2026, 5, 3, 15, 0),
+    createdAt: DateTime(2026, 5, 3, 15, 0),
   ),
   ActivityEntry(
     id: 2,
@@ -212,8 +212,8 @@ final _activities = [
     activityType: ActivityType.gentleExercise,
     effortLevel: 1,
     durationMinutes: 15,
-    loggedAt: DateTime(2026, 3, 31, 10, 0),
-    createdAt: DateTime(2026, 3, 31, 10, 0),
+    loggedAt: DateTime(2026, 5, 2, 10, 0),
+    createdAt: DateTime(2026, 5, 2, 10, 0),
   ),
   ActivityEntry(
     id: 3,
@@ -221,8 +221,8 @@ final _activities = [
     description: 'Rest day — very low energy',
     activityType: ActivityType.rest,
     effortLevel: 1,
-    loggedAt: DateTime(2026, 3, 30, 18, 0),
-    createdAt: DateTime(2026, 3, 30, 18, 0),
+    loggedAt: DateTime(2026, 5, 1, 18, 0),
+    createdAt: DateTime(2026, 5, 1, 18, 0),
   ),
 ];
 
@@ -230,12 +230,12 @@ final _flares = [
   Flare(
     id: 1,
     profileId: 1,
-    startedAt: DateTime(2026, 3, 20),
-    endedAt: DateTime(2026, 3, 24),
+    startedAt: DateTime(2026, 4, 20),
+    endedAt: DateTime(2026, 4, 24),
     initialSeverity: 7,
     peakSeverity: 8,
     notes: 'Triggered after the cold front came through. Joint pain and fatigue.',
-    createdAt: DateTime(2026, 3, 20),
+    createdAt: DateTime(2026, 4, 20),
   ),
   Flare(
     id: 2,
@@ -252,20 +252,21 @@ final _checkins = [
   DailyCheckin(
     id: 1,
     profileId: 1,
-    checkinDate: DateTime(2026, 4, 1),
+    checkinDate: DateTime(2026, 5, 3),
     wellbeing: 3,
     notes: 'Joints aching. Tired after a busy day.',
-    createdAt: DateTime(2026, 4, 1, 22, 0),
+    createdAt: DateTime(2026, 5, 3, 22, 0),
   ),
   DailyCheckin(
     id: 2,
     profileId: 1,
-    checkinDate: DateTime(2026, 3, 31),
+    checkinDate: DateTime(2026, 5, 2),
     wellbeing: 4,
-    createdAt: DateTime(2026, 3, 31, 21, 30),
+    createdAt: DateTime(2026, 5, 2, 21, 30),
   ),
 ];
 
+// Conditions — showcases Active + In recovery grouping and diagnosis dates.
 final _userConditions = [
   UserCondition(
     id: 1,
@@ -274,6 +275,8 @@ final _userConditions = [
     conditionName: 'Lupus (SLE)',
     trackedSince: DateTime(2022, 3, 15),
     diagnosedAt: DateTime(2022, 3, 15),
+    status: ConditionStatus.active,
+    statusHistory: const [],
   ),
   UserCondition(
     id: 2,
@@ -281,6 +284,20 @@ final _userConditions = [
     conditionId: 102,
     conditionName: 'Fibromyalgia',
     trackedSince: DateTime(2023, 7, 1),
+    diagnosedAt: DateTime(2023, 7, 1),
+    status: ConditionStatus.inRecovery,
+    statusHistory: [
+      ConditionStatusEvent(eventType: 'recovery', date: DateTime.utc(2026, 1, 15)),
+    ],
+  ),
+  UserCondition(
+    id: 3,
+    profileId: 1,
+    conditionId: 103,
+    conditionName: 'Chronic Fatigue Syndrome',
+    trackedSince: DateTime(2024, 5, 20),
+    status: ConditionStatus.active,
+    statusHistory: const [],
   ),
 ];
 
@@ -315,8 +332,8 @@ final _symptomEntries = [
     userSymptomIsarId: 1,
     name: 'Fatigue',
     severity: 7,
-    loggedAt: DateTime(2026, 4, 1, 14, 0),
-    createdAt: DateTime(2026, 4, 1, 14, 0),
+    loggedAt: DateTime(2026, 5, 3, 14, 0),
+    createdAt: DateTime(2026, 5, 3, 14, 0),
   ),
   SymptomEntry(
     id: 2,
@@ -324,8 +341,17 @@ final _symptomEntries = [
     userSymptomIsarId: 2,
     name: 'Joint pain',
     severity: 6,
-    loggedAt: DateTime(2026, 4, 1, 14, 0),
-    createdAt: DateTime(2026, 4, 1, 14, 0),
+    loggedAt: DateTime(2026, 5, 3, 14, 0),
+    createdAt: DateTime(2026, 5, 3, 14, 0),
+  ),
+  SymptomEntry(
+    id: 3,
+    profileId: 1,
+    userSymptomIsarId: 3,
+    name: 'Brain fog',
+    severity: 5,
+    loggedAt: DateTime(2026, 5, 2, 10, 30),
+    createdAt: DateTime(2026, 5, 2, 10, 30),
   ),
 ];
 
@@ -333,18 +359,18 @@ final _sleepEntries = [
   SleepEntry(
     id: 1,
     profileId: 1,
-    bedtime: DateTime(2026, 4, 1, 23, 15),
-    wakeTime: DateTime(2026, 4, 2, 7, 0),
+    bedtime: DateTime(2026, 5, 3, 23, 15),
+    wakeTime: DateTime(2026, 5, 4, 7, 0),
     qualityRating: 3,
-    createdAt: DateTime(2026, 4, 2, 7, 0),
+    createdAt: DateTime(2026, 5, 4, 7, 0),
   ),
   SleepEntry(
     id: 2,
     profileId: 1,
-    bedtime: DateTime(2026, 3, 31, 22, 0),
-    wakeTime: DateTime(2026, 4, 1, 7, 30),
+    bedtime: DateTime(2026, 5, 2, 22, 0),
+    wakeTime: DateTime(2026, 5, 3, 7, 30),
     qualityRating: 4,
-    createdAt: DateTime(2026, 4, 1, 7, 30),
+    createdAt: DateTime(2026, 5, 3, 7, 30),
   ),
 ];
 
@@ -353,8 +379,8 @@ final _doseLogs = [
     id: 1,
     profileId: 1,
     medicationIsarId: 1,
-    loggedAt: DateTime(2026, 4, 2, 8, 0),
-    createdAt: DateTime(2026, 4, 2, 8, 0),
+    loggedAt: DateTime(2026, 5, 4, 8, 0),
+    createdAt: DateTime(2026, 5, 4, 8, 0),
     amount: 200,
     unit: 'mg',
     status: 'taken',
@@ -363,8 +389,8 @@ final _doseLogs = [
     id: 2,
     profileId: 1,
     medicationIsarId: 2,
-    loggedAt: DateTime(2026, 4, 2, 8, 5),
-    createdAt: DateTime(2026, 4, 2, 8, 5),
+    loggedAt: DateTime(2026, 5, 4, 8, 5),
+    createdAt: DateTime(2026, 5, 4, 8, 5),
     amount: 2000,
     unit: 'IU',
     status: 'taken',
@@ -600,10 +626,6 @@ Future<void> _settle(WidgetTester tester) async {
 }
 
 /// Takes a named screenshot and prints progress to the console.
-///
-/// On Android, [convertFlutterSurfaceToImage] must be called before
-/// [takeScreenshot]. It also registers an automatic teardown to revert
-/// the surface, so it should be called once per test (not per screenshot).
 Future<void> _screenshot(
   IntegrationTestWidgetsFlutterBinding binding,
   WidgetTester tester,
@@ -622,9 +644,6 @@ Future<void> _screenshot(
 void main() {
   final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  // Layout overflow errors (e.g. tight device widths) are visual-only issues
-  // that don't affect screenshot capture. Suppress them so they don't fail
-  // the test run and block the driver's responseDataCallback.
   setUpAll(() {
     final originalOnError = FlutterError.onError;
     FlutterError.onError = (FlutterErrorDetails details) {
@@ -656,20 +675,38 @@ void main() {
       await _screenshot(binding, tester, '02_dashboard');
     });
 
-    testWidgets('03_illnesses', (tester) async {
+    // Tracking — Symptoms tab (default view when tapping Tracking in nav)
+    testWidgets('03_tracking_symptoms', (tester) async {
       await tester.pumpWidget(
         ProviderScope(
           overrides: _overrides(),
           child: const HealthFlareApp(),
         ),
       );
+      await _settle(tester);
+      await tester.tap(find.text('Tracking'));
+      await _settle(tester);
+      await _screenshot(binding, tester, '03_tracking_symptoms');
+    });
+
+    // Tracking — Illnesses tab showing Active + In recovery sections
+    testWidgets('04_tracking_illnesses', (tester) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: _overrides(),
+          child: const HealthFlareApp(),
+        ),
+      );
+      await _settle(tester);
+      await tester.tap(find.text('Tracking'));
       await _settle(tester);
       await tester.tap(find.text('Illnesses'));
       await _settle(tester);
-      await _screenshot(binding, tester, '03_illnesses');
+      await _screenshot(binding, tester, '04_tracking_illnesses');
     });
 
-    testWidgets('04_symptoms', (tester) async {
+    // Condition detail — Fibromyalgia (in recovery, has diagnosis date + history)
+    testWidgets('05_condition_detail', (tester) async {
       await tester.pumpWidget(
         ProviderScope(
           overrides: _overrides(),
@@ -677,67 +714,16 @@ void main() {
         ),
       );
       await _settle(tester);
-      await tester.tap(find.text('Symptoms'));
+      await tester.tap(find.text('Tracking'));
       await _settle(tester);
-      await _screenshot(binding, tester, '04_symptoms');
+      await tester.tap(find.text('Illnesses'));
+      await _settle(tester);
+      await tester.tap(find.text('Fibromyalgia'));
+      await _settle(tester);
+      await _screenshot(binding, tester, '05_condition_detail');
     });
 
-    testWidgets('05_medications', (tester) async {
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: _overrides(),
-          child: const HealthFlareApp(),
-        ),
-      );
-      await _settle(tester);
-      await tester.tap(find.text('Medications'));
-      await _settle(tester);
-      await _screenshot(binding, tester, '05_medications');
-    });
-
-    testWidgets('06_meals', (tester) async {
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: _overrides(),
-          child: const HealthFlareApp(),
-        ),
-      );
-      await _settle(tester);
-      await tester.tap(find.text('Meals'));
-      await _settle(tester);
-      await _screenshot(binding, tester, '06_meals');
-    });
-
-    testWidgets('07_journal', (tester) async {
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: _overrides(),
-          child: const HealthFlareApp(),
-        ),
-      );
-      await _settle(tester);
-      await tester.tap(find.text('Journal'));
-      await _settle(tester);
-      await _screenshot(binding, tester, '07_journal');
-    });
-
-    testWidgets('08_journal_composer', (tester) async {
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: _overrides(),
-          child: const HealthFlareApp(),
-        ),
-      );
-      await _settle(tester);
-      await tester.tap(find.text('Journal'));
-      await _settle(tester);
-      // Tap the FAB to open the composer.
-      await tester.tap(find.byType(FloatingActionButton));
-      await _settle(tester);
-      await _screenshot(binding, tester, '08_journal_composer');
-    });
-
-    testWidgets('09_medication_form', (tester) async {
+    testWidgets('06_medications', (tester) async {
       await tester.pumpWidget(
         ProviderScope(
           overrides: _overrides(),
@@ -747,12 +733,10 @@ void main() {
       await _settle(tester);
       await tester.tap(find.text('Medications'));
       await _settle(tester);
-      await tester.tap(find.byType(FloatingActionButton));
-      await _settle(tester);
-      await _screenshot(binding, tester, '09_medication_form');
+      await _screenshot(binding, tester, '06_medications');
     });
 
-    testWidgets('10_meal_form', (tester) async {
+    testWidgets('07_meals', (tester) async {
       await tester.pumpWidget(
         ProviderScope(
           overrides: _overrides(),
@@ -762,9 +746,65 @@ void main() {
       await _settle(tester);
       await tester.tap(find.text('Meals'));
       await _settle(tester);
-      await tester.tap(find.byType(FloatingActionButton));
+      await _screenshot(binding, tester, '07_meals');
+    });
+
+    testWidgets('08_journal', (tester) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: _overrides(),
+          child: const HealthFlareApp(),
+        ),
+      );
       await _settle(tester);
-      await _screenshot(binding, tester, '10_meal_form');
+      await tester.tap(find.text('Journal'));
+      await _settle(tester);
+      await _screenshot(binding, tester, '08_journal');
+    });
+
+    testWidgets('09_journal_composer', (tester) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: _overrides(),
+          child: const HealthFlareApp(),
+        ),
+      );
+      await _settle(tester);
+      await tester.tap(find.text('Journal'));
+      await _settle(tester);
+      await tester.tap(find.byTooltip('New journal entry'));
+      await _settle(tester);
+      await _screenshot(binding, tester, '09_journal_composer');
+    });
+
+    testWidgets('10_medication_form', (tester) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: _overrides(),
+          child: const HealthFlareApp(),
+        ),
+      );
+      await _settle(tester);
+      await tester.tap(find.text('Medications'));
+      await _settle(tester);
+      await tester.tap(find.byTooltip('Add medication'));
+      await _settle(tester);
+      await _screenshot(binding, tester, '10_medication_form');
+    });
+
+    testWidgets('11_meal_form', (tester) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: _overrides(),
+          child: const HealthFlareApp(),
+        ),
+      );
+      await _settle(tester);
+      await tester.tap(find.text('Meals'));
+      await _settle(tester);
+      await tester.tap(find.byTooltip('Log meal'));
+      await _settle(tester);
+      await _screenshot(binding, tester, '11_meal_form');
     });
   });
 }
