@@ -39,22 +39,23 @@ Subsection meanings (from Keep a Changelog):
 ## [Unreleased]
 
 ### Added
-- _Nothing yet._
+- Unified **Tracking** tab in bottom navigation, combining Symptoms and Illnesses into a single tabbed view.
+- Condition status tracking — each illness can now be marked **Active** or **In Recovery**.
+- Recovery and relapse timeline — record status change events against any condition and view the full history.
+- Diagnosis date field on tracked conditions, shown alongside the tracking start date.
+- New **Condition Detail** screen with status, dates, history, and quick actions.
+- New `Chronic Fatigue Syndrome` and `Brain fog` entries in the demo dataset.
+- App screenshots archived under `screenshots/v1/` (historical) and `screenshots/v2/` (current).
 
 ### Changed
-- _Nothing yet._
-
-### Deprecated
-- _Nothing yet._
-
-### Removed
-- _Nothing yet._
+- Bottom navigation replaces separate Illnesses and Symptoms tabs with a single Tracking tab.
+- Illnesses list now groups conditions by Active and In Recovery status.
+- Database schema upgraded to v13 (adds `status` and `statusHistory` to conditions).
+- Screenshot test updated with 11 captures covering the new tracking flow.
+- Gherkin specs updated for illness and navigation features.
 
 ### Fixed
-- _Nothing yet._
-
-### Security
-- _Nothing yet._
+- Migration tests updated to expect schema v13.
 
 ## [1.0.0] - 2026-04-28
 
