@@ -39,6 +39,26 @@ Subsection meanings (from Keep a Changelog):
 ## [Unreleased]
 
 ### Added
+- _Nothing yet._
+
+### Changed
+- _Nothing yet._
+
+### Deprecated
+- _Nothing yet._
+
+### Removed
+- _Nothing yet._
+
+### Fixed
+- _Nothing yet._
+
+### Security
+- _Nothing yet._
+
+## [1.1.0] - 2026-05-04
+
+### Added
 - Unified **Tracking** tab in bottom navigation, combining Symptoms and Illnesses into a single tabbed view.
 - Condition status tracking — each illness can now be marked **Active** or **In Recovery**.
 - Recovery and relapse timeline — record status change events against any condition and view the full history.
@@ -71,5 +91,6 @@ Subsection meanings (from Keep a Changelog):
 - Offline-first guarantee: zero outbound network requests at runtime, enforced
   by the `url-scan` CI check.
 
-[Unreleased]: https://git.ahosking.com/HealthFlare/app/compare/v1.0.0...HEAD
+[Unreleased]: https://git.ahosking.com/HealthFlare/app/compare/v1.1.0...HEAD
+[1.1.0]: https://git.ahosking.com/HealthFlare/app/compare/v1.0.0...v1.1.0
 [1.0.0]: https://git.ahosking.com/HealthFlare/app/releases/tag/v1.0.0
