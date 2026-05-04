@@ -4,6 +4,22 @@ import 'package:health_flare/models/user_condition.dart';
 
 part 'user_condition_isar.g.dart';
 
+/// A single point-in-time status change stored against a [UserConditionIsar].
+/// eventType: "diagnosed" | "recovery" | "relapse"
+@embedded
+class ConditionStatusEventIsar {
+  late String eventType;
+  late DateTime date;
+
+  ConditionStatusEvent toDomain() =>
+      ConditionStatusEvent(eventType: eventType, date: date);
+
+  static ConditionStatusEventIsar fromDomain(ConditionStatusEvent e) =>
+      ConditionStatusEventIsar()
+        ..eventType = e.eventType
+        ..date = e.date;
+}
+
 /// Isar-annotated storage representation of a profile's tracked [UserCondition].
 ///
 /// [conditionName] is denormalised so that list views don't need a join query.
@@ -33,6 +49,11 @@ class UserConditionIsar {
   /// Optional free-text notes.
   String? notes;
 
+  /// "active" | "inRecovery"
+  String status = 'active';
+
+  List<ConditionStatusEventIsar> statusHistory = [];
+
   // ── Conversion ────────────────────────────────────────────────────────────
 
   UserCondition toDomain() => UserCondition(
@@ -43,6 +64,10 @@ class UserConditionIsar {
     trackedSince: trackedSince,
     diagnosedAt: diagnosedAt,
     notes: notes,
+    status: status == 'inRecovery'
+        ? ConditionStatus.inRecovery
+        : ConditionStatus.active,
+    statusHistory: statusHistory.map((e) => e.toDomain()).toList(),
   );
 
   static UserConditionIsar fromDomain(UserCondition u) => UserConditionIsar()
@@ -52,5 +77,9 @@ class UserConditionIsar {
     ..conditionName = u.conditionName
     ..trackedSince = u.trackedSince
     ..diagnosedAt = u.diagnosedAt
-    ..notes = u.notes;
+    ..notes = u.notes
+    ..status = u.status == ConditionStatus.inRecovery ? 'inRecovery' : 'active'
+    ..statusHistory = u.statusHistory
+        .map(ConditionStatusEventIsar.fromDomain)
+        .toList();
 }

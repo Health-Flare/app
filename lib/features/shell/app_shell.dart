@@ -26,14 +26,8 @@ class AppShell extends ConsumerWidget {
       selectedIcon: Icons.grid_view_rounded,
     ),
     (
-      route: AppRoutes.illness,
-      label: 'Illnesses',
-      icon: Icons.medical_information_outlined,
-      selectedIcon: Icons.medical_information_rounded,
-    ),
-    (
-      route: AppRoutes.symptoms,
-      label: 'Symptoms',
+      route: AppRoutes.tracking,
+      label: 'Tracking',
       icon: Icons.monitor_heart_outlined,
       selectedIcon: Icons.monitor_heart_rounded,
     ),

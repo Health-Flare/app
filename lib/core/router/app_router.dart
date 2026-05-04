@@ -12,9 +12,11 @@ import 'package:health_flare/features/shell/app_shell.dart';
 import 'package:health_flare/features/dashboard/dashboard_screen.dart';
 import 'package:health_flare/features/sleep/screens/sleep_entry_screen.dart';
 import 'package:health_flare/features/sleep/screens/sleep_list_screen.dart';
+import 'package:health_flare/features/illness/screens/condition_detail_screen.dart';
 import 'package:health_flare/features/symptoms_vitals/screens/symptom_entry_form_screen.dart';
-import 'package:health_flare/features/symptoms_vitals/screens/symptoms_vitals_screen.dart';
 import 'package:health_flare/features/symptoms_vitals/screens/vital_entry_form_screen.dart';
+import 'package:health_flare/features/tracking/screens/tracking_screen.dart';
+import 'package:health_flare/models/user_condition.dart';
 import 'package:health_flare/features/medications/screens/medications_screen.dart';
 import 'package:health_flare/features/medications/screens/medication_form_screen.dart';
 import 'package:health_flare/features/medications/screens/medication_detail_screen.dart';
@@ -55,11 +57,13 @@ abstract final class AppRoutes {
   static const home = '/';
   static const dashboard = '/dashboard';
   static const illness = '/illness';
-  static const symptoms = '/symptoms';
-  static const symptomsNew = '/symptoms/new-symptom';
-  static String symptomsEdit(int id) => '/symptoms/$id/edit';
-  static const vitalsNew = '/symptoms/new-vital';
-  static String vitalsEdit(int id) => '/symptoms/$id/edit-vital';
+  static const tracking = '/tracking';
+  static const symptoms = '/tracking';
+  static String conditionDetail(int id) => '/tracking/condition/$id';
+  static const symptomsNew = '/tracking/new-symptom';
+  static String symptomsEdit(int id) => '/tracking/$id/edit';
+  static const vitalsNew = '/tracking/new-vital';
+  static String vitalsEdit(int id) => '/tracking/$id/edit-vital';
   static const medications = '/medications';
   static const medicationsNew = '/medications/new';
   static String medicationsEdit(int id) => '/medications/$id/edit';
@@ -172,9 +176,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             builder: (context, state) => const IllnessScreen(),
           ),
           GoRoute(
-            path: AppRoutes.symptoms,
-            name: 'symptoms',
-            builder: (context, state) => const SymptomsVitalsScreen(),
+            path: AppRoutes.tracking,
+            name: 'tracking',
+            builder: (context, state) => const TrackingScreen(),
             routes: [
               GoRoute(
                 path: 'new-symptom',
@@ -201,6 +205,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 name: 'vitals-edit',
                 builder: (context, state) =>
                     VitalEntryFormScreen(entry: state.extra as VitalEntry?),
+              ),
+              GoRoute(
+                path: 'condition/:cid',
+                name: 'condition-detail',
+                builder: (context, state) => ConditionDetailScreen(
+                  condition: state.extra as UserCondition,
+                ),
               ),
             ],
           ),

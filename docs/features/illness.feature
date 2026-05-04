@@ -213,12 +213,99 @@ Feature: Illness Tracking
   # Diagnosis date
   # ---------------------------------------------------------------------------
 
-  Scenario: Add a diagnosis date to a tracked condition
-    Given the active profile is already tracking "Arthritis"
-    When I open the details for "Arthritis"
-    And I enter "2024-06-15" as the diagnosis date
+  Scenario: Diagnosis date is optional when adding a condition
+    Given the illness entry screen is open
+    When I add "Arthritis" to the profile without entering a diagnosis date
+    Then "Arthritis" is saved with no diagnosis date
+    And the condition appears in the tracked conditions list
+
+  Scenario: Entering a diagnosis date when adding a new condition
+    Given the illness entry screen is open
+    And I have selected "Arthritis"
+    When I tap the diagnosis date field
+    And I select "15 June 2021" from the date picker
+    And I tap "Add to profile"
+    Then "Arthritis" is saved with a diagnosis date of "15 June 2021"
+
+  Scenario: Diagnosis date is shown on the condition detail screen
+    Given the active profile is tracking "Arthritis" with a diagnosis date of "15 June 2021"
+    When I open the detail screen for "Arthritis"
+    Then I see "Diagnosed 15 June 2021"
+
+  Scenario: Editing the diagnosis date of a tracked condition
+    Given the active profile is tracking "Arthritis" with a diagnosis date of "15 June 2021"
+    When I open the detail screen for "Arthritis"
+    And I tap the diagnosis date to edit it
+    And I change the date to "3 March 2020"
     And I save the changes
-    Then the "Arthritis" entry records a diagnosis date of "2024-06-15"
+    Then the "Arthritis" entry records a diagnosis date of "3 March 2020"
+
+  Scenario: Clearing the diagnosis date of a tracked condition
+    Given the active profile is tracking "Arthritis" with a diagnosis date of "15 June 2021"
+    When I open the detail screen for "Arthritis"
+    And I tap to clear the diagnosis date
+    And I save the changes
+    Then the "Arthritis" entry has no diagnosis date
+
+  # ---------------------------------------------------------------------------
+  # Recovery and relapse
+  # ---------------------------------------------------------------------------
+  #
+  # Schema note (pending): UserConditionIsar needs:
+  #   - status (enum: active | inRecovery)  — default: active
+  #   - recoveryDate (DateTime?)
+  #   - relapseDate (DateTime?)
+  #   - conditionHistory (List<ConditionStatusEventIsar>) — embedded, each event
+  #     has eventType (diagnosed | recovery | relapse) and date
+  # Requires a schema version bump and migration before implementation.
+
+  Scenario: Marking a condition as in recovery
+    Given the active profile is tracking "Arthritis" with a status of "Active"
+    When I open the detail screen for "Arthritis"
+    And I tap "Mark as in recovery"
+    And I select "20 April 2025" as the recovery date
+    And I save the changes
+    Then "Arthritis" is shown with a status of "In recovery"
+    And the recovery date "20 April 2025" is recorded
+
+  Scenario: Recovery date defaults to today when marking a condition as in recovery
+    Given the active profile is tracking "Arthritis"
+    When I open the detail screen for "Arthritis"
+    And I tap "Mark as in recovery"
+    Then the recovery date field pre-fills with today's date
+    And I can change it before saving
+
+  Scenario: A condition in recovery shows a distinct visual indicator in the list
+    Given the active profile is tracking "Arthritis" with a status of "In recovery"
+    When I open the Illnesses tab
+    Then "Arthritis" is shown with a visual indicator distinguishing it from active conditions
+
+  Scenario: Marking a condition in recovery as relapsed
+    Given the active profile is tracking "Arthritis" with a status of "In recovery"
+    When I open the detail screen for "Arthritis"
+    And I tap "Mark as relapsed"
+    And I select "1 May 2025" as the relapse date
+    And I save the changes
+    Then "Arthritis" is shown with a status of "Active"
+    And the relapse date "1 May 2025" is recorded in the condition history
+
+  Scenario: Condition detail shows a timeline of status changes
+    Given the active profile is tracking "Arthritis" with the following history:
+      | Event     | Date          |
+      | Diagnosed | 15 June 2021  |
+      | Recovery  | 20 April 2025 |
+      | Relapse   | 1 May 2025    |
+    When I open the detail screen for "Arthritis"
+    Then I see a timeline listing all three events in chronological order
+
+  Scenario: Active and in-recovery conditions are grouped separately in the Illnesses tab
+    Given the active profile is tracking:
+      | Condition    | Status      |
+      | Arthritis    | Active      |
+      | Fibromyalgia | In recovery |
+    When I open the Illnesses tab
+    Then I see "Arthritis" under an "Active" section
+    And I see "Fibromyalgia" under an "In recovery" section
 
   # ---------------------------------------------------------------------------
   # Condition-symptom linking

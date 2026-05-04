@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 import 'package:health_flare/core/router/app_router.dart';
 import 'package:health_flare/models/condition.dart';
@@ -33,6 +34,9 @@ class _IllnessScreenState extends ConsumerState<IllnessScreen> {
 
   // Conditions chosen in this session (not yet in userConditionListProvider)
   final Set<int> _pendingConditionIds = {};
+
+  // Diagnosis dates keyed by condition id — optional, set by the user
+  final Map<int, DateTime> _diagnosisDates = {};
 
   // Symptoms toggled on/off in this session
   final Set<int> _pendingSymptomIds = {};
@@ -86,6 +90,7 @@ class _IllnessScreenState extends ConsumerState<IllnessScreen> {
         await conditionsNotifier.add(
           conditionId: condition.id,
           conditionName: condition.name,
+          diagnosedAt: _diagnosisDates[id],
         );
       }
     }
@@ -233,6 +238,28 @@ class _IllnessScreenState extends ConsumerState<IllnessScreen> {
                 }).toList(),
               ),
             ),
+          ],
+
+          // ── Diagnosis dates (optional, per pending condition) ──────────
+          if (_pendingConditionIds.isNotEmpty) ...[
+            const SizedBox(height: 4),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: _SectionLabel('Diagnosis dates (optional)'),
+            ),
+            const SizedBox(height: 4),
+            ..._pendingConditionIds.map((id) {
+              final condition = allConditions
+                  .where((c) => c.id == id)
+                  .firstOrNull;
+              if (condition == null) return const SizedBox.shrink();
+              return _DiagnosisDateRow(
+                conditionName: condition.name,
+                date: _diagnosisDates[id],
+                onPick: (date) => setState(() => _diagnosisDates[id] = date),
+                onClear: () => setState(() => _diagnosisDates.remove(id)),
+              );
+            }),
           ],
 
           const SizedBox(height: 12),
@@ -448,6 +475,67 @@ class _SymptomChip extends StatelessWidget {
       checkmarkColor: cs.onSecondaryContainer,
       showCheckmark: added,
       padding: const EdgeInsets.symmetric(horizontal: 4),
+    );
+  }
+}
+
+class _DiagnosisDateRow extends StatelessWidget {
+  const _DiagnosisDateRow({
+    required this.conditionName,
+    required this.date,
+    required this.onPick,
+    required this.onClear,
+  });
+
+  final String conditionName;
+  final DateTime? date;
+  final ValueChanged<DateTime> onPick;
+  final VoidCallback onClear;
+
+  Future<void> _pickDate(BuildContext context) async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: date ?? DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+      helpText: 'Diagnosis date',
+    );
+    if (picked != null) onPick(picked);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
+    final fmt = DateFormat('d MMM yyyy');
+
+    return ListTile(
+      dense: true,
+      title: Text(conditionName, style: tt.bodyMedium),
+      trailing: date != null
+          ? Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  fmt.format(date!),
+                  style: tt.bodyMedium?.copyWith(color: cs.primary),
+                ),
+                const SizedBox(width: 4),
+                GestureDetector(
+                  onTap: onClear,
+                  child: Icon(
+                    Icons.close,
+                    size: 16,
+                    color: cs.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            )
+          : TextButton(
+              onPressed: () => _pickDate(context),
+              child: const Text('Add date'),
+            ),
+      onTap: date == null ? () => _pickDate(context) : null,
     );
   }
 }

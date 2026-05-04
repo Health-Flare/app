@@ -18,21 +18,22 @@ Feature: Navigation and General UX
   Scenario: Primary navigation gives access to all main sections
     When the app is open with "Sarah" as the active profile
     Then the primary navigation contains the following destinations:
-      | Destination        |
-      | Dashboard          |
-      | Symptoms & Vitals  |
-      | Medications        |
-      | Meals              |
-      | Reports            |
+      | Destination |
+      | Dashboard   |
+      | Tracking    |
+      | Medications |
+      | Meals       |
+      | Reports     |
 
   Scenario: Navigate to the Dashboard
     When I tap "Dashboard" in the primary navigation
     Then I am shown the dashboard for "Sarah"
     And the dashboard shows a recent summary of logged data
 
-  Scenario: Navigate to Symptoms and Vitals
-    When I tap "Symptoms & Vitals" in the primary navigation
-    Then I am shown the symptom and vitals log screen for "Sarah"
+  Scenario: Navigate to Tracking
+    When I tap "Tracking" in the primary navigation
+    Then I am shown the Tracking screen for "Sarah"
+    And the Symptoms tab is selected by default
 
   Scenario: Navigate to Medications
     When I tap "Medications" in the primary navigation
@@ -45,6 +46,40 @@ Feature: Navigation and General UX
   Scenario: Navigate to Reports
     When I tap "Reports" in the primary navigation
     Then I am shown the reports configuration screen for "Sarah"
+
+  # ---------------------------------------------------------------------------
+  # Tracking screen tab layout
+  # ---------------------------------------------------------------------------
+  #
+  # Schema note (pending): the Illnesses tab surfaces UserConditionIsar fields
+  # (status, recoveryDate, relapseDate, conditionHistory) that are not yet in
+  # the schema. The tab structure can be built before those fields land, but
+  # the recovery/relapse UI within the tab requires the schema version bump first.
+
+  Scenario: Tracking screen defaults to the Symptoms tab
+    When I tap "Tracking" in the primary navigation
+    Then the "Symptoms" tab is selected and visible
+    And I see the symptom and vitals log for "Sarah"
+
+  Scenario: Illnesses tab is accessible from the Tracking screen
+    Given I am on the Tracking screen
+    When I tap the "Illnesses" tab
+    Then I see the list of conditions tracked for "Sarah"
+    And I can manage diagnosis dates, recovery status, and condition links from this tab
+
+  Scenario: Switching tabs does not lose scroll position
+    Given I have scrolled partway down the Symptoms tab on the Tracking screen
+    When I tap the "Illnesses" tab
+    And I tap the "Symptoms" tab
+    Then my scroll position on the Symptoms tab is preserved
+
+  Scenario: Each log screen shows a helpful empty state when no data exists
+    Given "Sarah" has no data logged
+    When I navigate to the Tracking screen
+    And I am on the "Symptoms" tab
+    Then I see an empty state message guiding me to log my first symptom or vital
+    When I tap the "Illnesses" tab
+    Then I see an empty state message guiding me to add my first condition
 
   # ---------------------------------------------------------------------------
   # Quick entry
@@ -105,8 +140,6 @@ Feature: Navigation and General UX
 
   Scenario: Each log screen shows a helpful empty state when no data exists
     Given "Sarah" has no data logged
-    When I navigate to the "Symptoms & Vitals" screen
-    Then I see an empty state message guiding me to log my first symptom or vital
     When I navigate to the "Medications" screen
     Then I see an empty state message guiding me to add my first medication
     When I navigate to the "Meals" screen
