@@ -56,6 +56,16 @@ Subsection meanings (from Keep a Changelog):
 ### Security
 - _Nothing yet._
 
+## [1.2.0] - 2026-05-07
+
+### Added
+- **Weather tracking** (opt-in) — when enabled for a profile, the current conditions at log time are automatically captured on symptom, meal, activity, and daily check-in entries. Conditions are displayed read-only on entry detail screens. Fails silently if location permission is denied or unavailable; entries always save normally.
+- Database schema upgraded to v14 (adds an embedded `WeatherSnapshot` to symptom, meal, activity, and daily check-in entries; existing entries read back with no weather data — no migration required).
+
+### Fixed
+- Profile avatar overlay no longer appears on top of action buttons on entry detail and form screens.
+- Tracked conditions and symptoms now reload correctly when switching between profiles, preventing data from one profile showing for another.
+
 ## [1.1.0] - 2026-05-04
 
 ### Added
@@ -91,6 +101,7 @@ Subsection meanings (from Keep a Changelog):
 - Offline-first guarantee: zero outbound network requests at runtime, enforced
   by the `url-scan` CI check.
 
-[Unreleased]: https://git.ahosking.com/HealthFlare/app/compare/v1.1.0...HEAD
+[Unreleased]: https://git.ahosking.com/HealthFlare/app/compare/v1.2.0...HEAD
+[1.2.0]: https://git.ahosking.com/HealthFlare/app/compare/v1.1.0...v1.2.0
 [1.1.0]: https://git.ahosking.com/HealthFlare/app/compare/v1.0.0...v1.1.0
 [1.0.0]: https://git.ahosking.com/HealthFlare/app/releases/tag/v1.0.0
