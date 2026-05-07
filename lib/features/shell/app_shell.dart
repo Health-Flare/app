@@ -63,9 +63,21 @@ class AppShell extends ConsumerWidget {
     return index < 0 ? 0 : index;
   }
 
+  /// Returns true when the current location is a root-level tab screen.
+  ///
+  /// Detail and form sub-routes (e.g. /medications/1, /meals/1/edit) have
+  /// their own AppBar actions in the same top-right region, so we suppress
+  /// the overlay to avoid covering those buttons.
+  bool _isRootRoute(String location) {
+    final segments = location.split('/').where((s) => s.isNotEmpty).toList();
+    return segments.length <= 1;
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final activeProfile = ref.watch(activeProfileDataProvider);
+    final location = GoRouterState.of(context).matchedLocation;
+    final showProfileButton = _isRootRoute(location);
 
     return Scaffold(
       // The individual tab screens each supply their own AppBar. The shell
@@ -74,34 +86,36 @@ class AppShell extends ConsumerWidget {
       body: Stack(
         children: [
           child,
-          // Persistent profile indicator — top-right, always visible.
-          Positioned(
-            top: MediaQuery.of(context).padding.top + 8,
-            right: 8,
-            child: Semantics(
-              button: true,
-              label: activeProfile != null
-                  ? 'Switch profile. Current: ${activeProfile.name}'
-                  : 'Switch profile',
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: () => showProfileSwitcher(context),
-                  borderRadius: BorderRadius.circular(24),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: activeProfile != null
-                        ? ProfileAvatar(
-                            profile: activeProfile,
-                            radius: 18,
-                            showBorder: false,
-                          )
-                        : const _DefaultProfileButton(),
+          // Persistent profile indicator — top-right, shown only on root tab
+          // screens so it does not cover AppBar actions on detail/form screens.
+          if (showProfileButton)
+            Positioned(
+              top: MediaQuery.of(context).padding.top + 8,
+              right: 8,
+              child: Semantics(
+                button: true,
+                label: activeProfile != null
+                    ? 'Switch profile. Current: ${activeProfile.name}'
+                    : 'Switch profile',
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: () => showProfileSwitcher(context),
+                    borderRadius: BorderRadius.circular(24),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: activeProfile != null
+                          ? ProfileAvatar(
+                              profile: activeProfile,
+                              radius: 18,
+                              showBorder: false,
+                            )
+                          : const _DefaultProfileButton(),
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
         ],
       ),
       bottomNavigationBar: NavigationBar(
