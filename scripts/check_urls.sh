@@ -79,11 +79,15 @@ BANNED_PACKAGES=(
   "cloud_firestore"
   "supabase"
   "supabase_flutter"
-  "http"
   "dio"
   "retrofit"
   "chopper"
 )
+
+# http is permitted solely for weather_service.dart (Open-Meteo fetch).
+# Any other use of package:http in lib/ or test/ is a violation.
+BANNED_HTTP_FILES=$(grep -rln --include="*.dart" "package:http" lib/ test/ 2>/dev/null \
+  | grep -v "lib/data/services/weather_service.dart" || true)
 
 IMPORT_VIOLATIONS=()
 for pkg in "${BANNED_PACKAGES[@]}"; do
@@ -92,6 +96,10 @@ for pkg in "${BANNED_PACKAGES[@]}"; do
     IMPORT_VIOLATIONS+=("$pkg: $MATCHES")
   fi
 done
+
+if [ -n "$BANNED_HTTP_FILES" ]; then
+  IMPORT_VIOLATIONS+=("http (outside weather_service): $BANNED_HTTP_FILES")
+fi
 
 if [ ${#IMPORT_VIOLATIONS[@]} -gt 0 ]; then
   echo "❌  Banned network-dependent package imports found:"
