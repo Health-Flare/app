@@ -1,4 +1,6 @@
 import 'package:isar_community/isar.dart';
+
+import 'package:health_flare/data/models/weather_snapshot_isar.dart';
 import 'package:health_flare/models/meal_entry.dart';
 
 part 'meal_entry_isar.g.dart';
@@ -27,6 +29,8 @@ class MealEntryIsar {
 
   int? flareIsarId; // back-filled when FlareIsar lands in v9
 
+  WeatherSnapshotIsar? weatherSnapshot;
+
   MealEntry toDomain() => MealEntry(
     id: id,
     profileId: profileId,
@@ -38,6 +42,7 @@ class MealEntryIsar {
     createdAt: createdAt,
     updatedAt: updatedAt,
     flareIsarId: flareIsarId,
+    weatherSnapshot: weatherSnapshot?.toDomain(),
   );
 
   static MealEntryIsar fromDomain(MealEntry e) => MealEntryIsar()
@@ -50,5 +55,8 @@ class MealEntryIsar {
     ..loggedAt = e.loggedAt
     ..createdAt = e.createdAt
     ..updatedAt = e.updatedAt
-    ..flareIsarId = e.flareIsarId;
+    ..flareIsarId = e.flareIsarId
+    ..weatherSnapshot = e.weatherSnapshot != null
+        ? WeatherSnapshotIsar.fromDomain(e.weatherSnapshot!)
+        : null;
 }

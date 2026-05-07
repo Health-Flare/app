@@ -74,6 +74,9 @@ class _CheckInTile extends StatelessWidget {
     if (c.cyclePhase != null) {
       parts.add(_cycleLabel(c.cyclePhase!));
     }
+    if (c.weatherSnapshot != null) {
+      parts.add(c.weatherSnapshot!.displayString);
+    }
     if (parts.isEmpty) return null;
     final cs = Theme.of(context).colorScheme;
     final tt = Theme.of(context).textTheme;

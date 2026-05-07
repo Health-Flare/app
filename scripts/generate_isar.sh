@@ -21,7 +21,7 @@ echo "→ Installing codegen project dependencies..."
 (cd "$CODEGEN_DIR" && dart pub get)
 
 echo "→ Running isar_community_generator..."
-(cd "$CODEGEN_DIR" && dart run build_runner build --delete-conflicting-outputs)
+(cd "$CODEGEN_DIR" && dart run build_runner clean && dart run build_runner build --delete-conflicting-outputs)
 
 echo "→ Copying generated files to main project..."
 cp "$CODEGEN_DIR/lib/app_settings.g.dart"         "$REPO_ROOT/lib/data/database/app_settings.g.dart"
@@ -41,5 +41,6 @@ cp "$CODEGEN_DIR/lib/flare_isar.g.dart"          "$REPO_ROOT/lib/data/models/fla
 cp "$CODEGEN_DIR/lib/daily_checkin_isar.g.dart"  "$REPO_ROOT/lib/data/models/daily_checkin_isar.g.dart"
 cp "$CODEGEN_DIR/lib/appointment_isar.g.dart"    "$REPO_ROOT/lib/data/models/appointment_isar.g.dart"
 cp "$CODEGEN_DIR/lib/activity_entry_isar.g.dart" "$REPO_ROOT/lib/data/models/activity_entry_isar.g.dart"
+cp "$CODEGEN_DIR/lib/weather_snapshot_isar.g.dart" "$REPO_ROOT/lib/data/models/weather_snapshot_isar.g.dart"
 
 echo "✓ Done. Generated files written to lib/data/."

@@ -50,6 +50,12 @@ const SymptomEntryIsarSchema = CollectionSchema(
       name: r'userSymptomIsarId',
       type: IsarType.long,
     ),
+    r'weatherSnapshot': PropertySchema(
+      id: 9,
+      name: r'weatherSnapshot',
+      type: IsarType.object,
+      target: r'WeatherSnapshotIsar',
+    ),
   },
   estimateSize: _symptomEntryIsarEstimateSize,
   serialize: _symptomEntryIsarSerialize,
@@ -85,7 +91,7 @@ const SymptomEntryIsarSchema = CollectionSchema(
     ),
   },
   links: {},
-  embeddedSchemas: {},
+  embeddedSchemas: {r'WeatherSnapshotIsar': WeatherSnapshotIsarSchema},
   getId: _symptomEntryIsarGetId,
   getLinks: _symptomEntryIsarGetLinks,
   attach: _symptomEntryIsarAttach,
@@ -103,6 +109,18 @@ int _symptomEntryIsarEstimateSize(
     final value = object.notes;
     if (value != null) {
       bytesCount += 3 + value.length * 3;
+    }
+  }
+  {
+    final value = object.weatherSnapshot;
+    if (value != null) {
+      bytesCount +=
+          3 +
+          WeatherSnapshotIsarSchema.estimateSize(
+            value,
+            allOffsets[WeatherSnapshotIsar]!,
+            allOffsets,
+          );
     }
   }
   return bytesCount;
@@ -123,6 +141,12 @@ void _symptomEntryIsarSerialize(
   writer.writeLong(offsets[6], object.severity);
   writer.writeLong(offsets[7], object.userConditionIsarId);
   writer.writeLong(offsets[8], object.userSymptomIsarId);
+  writer.writeObject<WeatherSnapshotIsar>(
+    offsets[9],
+    allOffsets,
+    WeatherSnapshotIsarSchema.serialize,
+    object.weatherSnapshot,
+  );
 }
 
 SymptomEntryIsar _symptomEntryIsarDeserialize(
@@ -142,6 +166,11 @@ SymptomEntryIsar _symptomEntryIsarDeserialize(
   object.severity = reader.readLong(offsets[6]);
   object.userConditionIsarId = reader.readLongOrNull(offsets[7]);
   object.userSymptomIsarId = reader.readLongOrNull(offsets[8]);
+  object.weatherSnapshot = reader.readObjectOrNull<WeatherSnapshotIsar>(
+    offsets[9],
+    WeatherSnapshotIsarSchema.deserialize,
+    allOffsets,
+  );
   return object;
 }
 
@@ -170,6 +199,13 @@ P _symptomEntryIsarDeserializeProp<P>(
       return (reader.readLongOrNull(offset)) as P;
     case 8:
       return (reader.readLongOrNull(offset)) as P;
+    case 9:
+      return (reader.readObjectOrNull<WeatherSnapshotIsar>(
+            offset,
+            WeatherSnapshotIsarSchema.deserialize,
+            allOffsets,
+          ))
+          as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -1281,10 +1317,35 @@ extension SymptomEntryIsarQueryFilter
       );
     });
   }
+
+  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
+  weatherSnapshotIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'weatherSnapshot'),
+      );
+    });
+  }
+
+  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
+  weatherSnapshotIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'weatherSnapshot'),
+      );
+    });
+  }
 }
 
 extension SymptomEntryIsarQueryObject
-    on QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QFilterCondition> {}
+    on QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QFilterCondition> {
+  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
+  weatherSnapshot(FilterQuery<WeatherSnapshotIsar> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.object(q, r'weatherSnapshot');
+    });
+  }
+}
 
 extension SymptomEntryIsarQueryLinks
     on QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QFilterCondition> {}
@@ -1687,6 +1748,13 @@ extension SymptomEntryIsarQueryProperty
   userSymptomIsarIdProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'userSymptomIsarId');
+    });
+  }
+
+  QueryBuilder<SymptomEntryIsar, WeatherSnapshotIsar?, QQueryOperations>
+  weatherSnapshotProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'weatherSnapshot');
     });
   }
 }

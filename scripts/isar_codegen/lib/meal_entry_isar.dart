@@ -1,5 +1,7 @@
 import 'package:isar_community/isar.dart';
 
+import 'weather_snapshot_isar.dart';
+
 part 'meal_entry_isar.g.dart';
 
 @collection
@@ -25,4 +27,6 @@ class MealEntryIsar {
   DateTime? updatedAt;
 
   int? flareIsarId; // back-filled when FlareIsar lands in v9
+
+  WeatherSnapshotIsar? weatherSnapshot;
 }

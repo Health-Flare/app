@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 
+import 'package:health_flare/models/weather_snapshot.dart';
+
 @immutable
 class MealEntry {
   const MealEntry({
@@ -13,6 +15,7 @@ class MealEntry {
     required this.createdAt,
     this.updatedAt,
     this.flareIsarId,
+    this.weatherSnapshot,
   });
 
   final int id;
@@ -25,6 +28,7 @@ class MealEntry {
   final DateTime createdAt;
   final DateTime? updatedAt;
   final int? flareIsarId; // set when logged during an active flare
+  final WeatherSnapshot? weatherSnapshot;
 
   MealEntry copyWith({
     String? description,
@@ -34,6 +38,7 @@ class MealEntry {
     DateTime? loggedAt,
     DateTime? updatedAt,
     int? flareIsarId,
+    WeatherSnapshot? weatherSnapshot,
     bool clearNotes = false,
     bool clearPhotoPath = false,
   }) {
@@ -48,6 +53,7 @@ class MealEntry {
       createdAt: createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       flareIsarId: flareIsarId ?? this.flareIsarId,
+      weatherSnapshot: weatherSnapshot ?? this.weatherSnapshot,
     );
   }
 

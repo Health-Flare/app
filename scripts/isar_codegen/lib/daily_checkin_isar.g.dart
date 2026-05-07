@@ -52,8 +52,14 @@ const DailyCheckinIsarSchema = CollectionSchema(
       name: r'updatedAt',
       type: IsarType.dateTime,
     ),
-    r'wellbeing': PropertySchema(
+    r'weatherSnapshot': PropertySchema(
       id: 7,
+      name: r'weatherSnapshot',
+      type: IsarType.object,
+      target: r'WeatherSnapshotIsar',
+    ),
+    r'wellbeing': PropertySchema(
+      id: 8,
       name: r'wellbeing',
       type: IsarType.long,
     )
@@ -92,7 +98,7 @@ const DailyCheckinIsarSchema = CollectionSchema(
     )
   },
   links: {},
-  embeddedSchemas: {},
+  embeddedSchemas: {r'WeatherSnapshotIsar': WeatherSnapshotIsarSchema},
   getId: _dailyCheckinIsarGetId,
   getLinks: _dailyCheckinIsarGetLinks,
   attach: _dailyCheckinIsarAttach,
@@ -123,6 +129,14 @@ int _dailyCheckinIsarEstimateSize(
       bytesCount += 3 + value.length * 3;
     }
   }
+  {
+    final value = object.weatherSnapshot;
+    if (value != null) {
+      bytesCount += 3 +
+          WeatherSnapshotIsarSchema.estimateSize(
+              value, allOffsets[WeatherSnapshotIsar]!, allOffsets);
+    }
+  }
   return bytesCount;
 }
 
@@ -139,7 +153,13 @@ void _dailyCheckinIsarSerialize(
   writer.writeLong(offsets[4], object.profileId);
   writer.writeString(offsets[5], object.stressLevel);
   writer.writeDateTime(offsets[6], object.updatedAt);
-  writer.writeLong(offsets[7], object.wellbeing);
+  writer.writeObject<WeatherSnapshotIsar>(
+    offsets[7],
+    allOffsets,
+    WeatherSnapshotIsarSchema.serialize,
+    object.weatherSnapshot,
+  );
+  writer.writeLong(offsets[8], object.wellbeing);
 }
 
 DailyCheckinIsar _dailyCheckinIsarDeserialize(
@@ -157,7 +177,12 @@ DailyCheckinIsar _dailyCheckinIsarDeserialize(
   object.profileId = reader.readLong(offsets[4]);
   object.stressLevel = reader.readStringOrNull(offsets[5]);
   object.updatedAt = reader.readDateTimeOrNull(offsets[6]);
-  object.wellbeing = reader.readLong(offsets[7]);
+  object.weatherSnapshot = reader.readObjectOrNull<WeatherSnapshotIsar>(
+    offsets[7],
+    WeatherSnapshotIsarSchema.deserialize,
+    allOffsets,
+  );
+  object.wellbeing = reader.readLong(offsets[8]);
   return object;
 }
 
@@ -183,6 +208,12 @@ P _dailyCheckinIsarDeserializeProp<P>(
     case 6:
       return (reader.readDateTimeOrNull(offset)) as P;
     case 7:
+      return (reader.readObjectOrNull<WeatherSnapshotIsar>(
+        offset,
+        WeatherSnapshotIsarSchema.deserialize,
+        allOffsets,
+      )) as P;
+    case 8:
       return (reader.readLong(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -1247,6 +1278,24 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
+      weatherSnapshotIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'weatherSnapshot',
+      ));
+    });
+  }
+
+  QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
+      weatherSnapshotIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'weatherSnapshot',
+      ));
+    });
+  }
+
+  QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
       wellbeingEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -1304,7 +1353,14 @@ extension DailyCheckinIsarQueryFilter
 }
 
 extension DailyCheckinIsarQueryObject
-    on QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QFilterCondition> {}
+    on QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QFilterCondition> {
+  QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
+      weatherSnapshot(FilterQuery<WeatherSnapshotIsar> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.object(q, r'weatherSnapshot');
+    });
+  }
+}
 
 extension DailyCheckinIsarQueryLinks
     on QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QFilterCondition> {}
@@ -1661,6 +1717,13 @@ extension DailyCheckinIsarQueryProperty
       updatedAtProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'updatedAt');
+    });
+  }
+
+  QueryBuilder<DailyCheckinIsar, WeatherSnapshotIsar?, QQueryOperations>
+      weatherSnapshotProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'weatherSnapshot');
     });
   }
 

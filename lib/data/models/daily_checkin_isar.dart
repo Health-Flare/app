@@ -1,5 +1,6 @@
 import 'package:isar_community/isar.dart';
 
+import 'package:health_flare/data/models/weather_snapshot_isar.dart';
 import 'package:health_flare/models/daily_checkin.dart';
 
 part 'daily_checkin_isar.g.dart';
@@ -32,6 +33,8 @@ class DailyCheckinIsar {
 
   DateTime? updatedAt;
 
+  WeatherSnapshotIsar? weatherSnapshot;
+
   // ── Conversion ────────────────────────────────────────────────────────────
 
   DailyCheckin toDomain() => DailyCheckin(
@@ -44,6 +47,7 @@ class DailyCheckinIsar {
     notes: notes,
     createdAt: createdAt,
     updatedAt: updatedAt,
+    weatherSnapshot: weatherSnapshot?.toDomain(),
   );
 
   static DailyCheckinIsar fromDomain(DailyCheckin c) => DailyCheckinIsar()
@@ -55,5 +59,8 @@ class DailyCheckinIsar {
     ..cyclePhase = c.cyclePhase
     ..notes = c.notes
     ..createdAt = c.createdAt
-    ..updatedAt = c.updatedAt;
+    ..updatedAt = c.updatedAt
+    ..weatherSnapshot = c.weatherSnapshot != null
+        ? WeatherSnapshotIsar.fromDomain(c.weatherSnapshot!)
+        : null;
 }

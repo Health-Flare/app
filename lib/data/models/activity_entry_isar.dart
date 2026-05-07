@@ -1,5 +1,6 @@
 import 'package:isar_community/isar.dart';
 
+import 'package:health_flare/data/models/weather_snapshot_isar.dart';
 import 'package:health_flare/models/activity_entry.dart';
 
 part 'activity_entry_isar.g.dart';
@@ -35,6 +36,8 @@ class ActivityEntryIsar {
   /// Set when logged during an active flare.
   int? flareIsarId;
 
+  WeatherSnapshotIsar? weatherSnapshot;
+
   ActivityEntry toDomain() => ActivityEntry(
     id: id,
     profileId: profileId,
@@ -49,5 +52,6 @@ class ActivityEntryIsar {
     updatedAt: updatedAt,
     notes: notes,
     flareIsarId: flareIsarId,
+    weatherSnapshot: weatherSnapshot?.toDomain(),
   );
 }

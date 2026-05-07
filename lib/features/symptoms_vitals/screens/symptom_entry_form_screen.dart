@@ -5,7 +5,9 @@ import 'package:intl/intl.dart';
 
 import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/core/providers/symptom_entry_provider.dart';
+import 'package:health_flare/core/providers/weather_provider.dart';
 import 'package:health_flare/models/symptom_entry.dart';
+import 'package:health_flare/models/weather_snapshot.dart';
 
 /// Full-screen form for creating or editing a symptom entry.
 ///
@@ -31,6 +33,9 @@ class _SymptomEntryFormScreenState
   bool _submitting = false;
   bool _nameError = false;
   bool _severityError = false;
+
+  // Captured once when the form opens (new entry only).
+  WeatherSnapshot? _capturedWeather;
 
   @override
   void initState() {
@@ -101,6 +106,7 @@ class _SymptomEntryFormScreenState
             severity: _severity!,
             loggedAt: _loggedAt,
             notes: notes,
+            weatherSnapshot: _capturedWeather,
           );
     } else {
       await ref
@@ -153,6 +159,16 @@ class _SymptomEntryFormScreenState
     final activeProfile = ref.watch(activeProfileDataProvider);
     final isEdit = widget.entry != null;
 
+    // Watch weather for new entries — capture and display when available.
+    final weatherAsync = isEdit ? null : ref.watch(currentWeatherProvider);
+    weatherAsync?.whenData((w) {
+      if (w != null && _capturedWeather == null) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) setState(() => _capturedWeather = w);
+        });
+      }
+    });
+
     return Scaffold(
       appBar: AppBar(
         title: Text(isEdit ? 'Edit symptom' : 'Log symptom'),
@@ -179,6 +195,15 @@ class _SymptomEntryFormScreenState
                   style: tt.labelLarge?.copyWith(color: cs.primary),
                 ),
               ),
+
+            // ── Weather chip ──────────────────────────────────────────────
+            // New entries: show live weather when available.
+            // Edit entries: show the snapshot captured at time of logging.
+            _WeatherChip(
+              snapshot: isEdit
+                  ? widget.entry?.weatherSnapshot
+                  : _capturedWeather,
+            ),
 
             // ── Symptom name ──────────────────────────────────────────────
             const _SectionLabel(label: 'Symptom name'),
@@ -260,6 +285,38 @@ class _SymptomEntryFormScreenState
                 : Text(isEdit ? 'Save changes' : 'Add to profile'),
           ),
         ),
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Weather chip — shown on new entries when weather tracking is enabled
+// ---------------------------------------------------------------------------
+
+class _WeatherChip extends StatelessWidget {
+  const _WeatherChip({required this.snapshot});
+
+  final WeatherSnapshot? snapshot;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    if (snapshot == null) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(snapshot!.icon, size: 16, color: cs.onSurfaceVariant),
+          const SizedBox(width: 6),
+          Text(
+            snapshot!.displayString,
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+          ),
+        ],
       ),
     );
   }

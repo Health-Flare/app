@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 
+import 'package:health_flare/models/weather_snapshot.dart';
+
 /// Activity type options — chronic-illness appropriate, not fitness-focused.
 enum ActivityType {
   walking('walking', 'Walking'),
@@ -50,6 +52,7 @@ class ActivityEntry {
     this.updatedAt,
     this.notes,
     this.flareIsarId,
+    this.weatherSnapshot,
   });
 
   final int id;
@@ -70,6 +73,7 @@ class ActivityEntry {
   final DateTime? updatedAt;
   final String? notes;
   final int? flareIsarId;
+  final WeatherSnapshot? weatherSnapshot;
 
   /// Human-readable effort label, e.g. "3 – Moderate".
   String? get effortLabel => effortLevel != null
@@ -85,6 +89,7 @@ class ActivityEntry {
     DateTime? updatedAt,
     String? notes,
     int? flareIsarId,
+    WeatherSnapshot? weatherSnapshot,
     bool clearActivityType = false,
     bool clearEffortLevel = false,
     bool clearDurationMinutes = false,
@@ -106,6 +111,7 @@ class ActivityEntry {
       updatedAt: updatedAt ?? this.updatedAt,
       notes: clearNotes ? null : (notes ?? this.notes),
       flareIsarId: flareIsarId ?? this.flareIsarId,
+      weatherSnapshot: weatherSnapshot ?? this.weatherSnapshot,
     );
   }
 

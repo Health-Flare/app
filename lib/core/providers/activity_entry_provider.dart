@@ -2,7 +2,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar_community/isar.dart';
 
 import 'package:health_flare/data/models/activity_entry_isar.dart';
+import 'package:health_flare/data/models/weather_snapshot_isar.dart';
 import 'package:health_flare/models/activity_entry.dart';
+import 'package:health_flare/models/weather_snapshot.dart';
 import 'package:health_flare/core/providers/database_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 
@@ -50,6 +52,7 @@ class ActivityEntryListNotifier extends Notifier<List<ActivityEntry>> {
     required DateTime loggedAt,
     String? notes,
     int? flareIsarId,
+    WeatherSnapshot? weatherSnapshot,
   }) async {
     final isar = ref.read(isarProvider);
     final now = DateTime.now();
@@ -62,7 +65,10 @@ class ActivityEntryListNotifier extends Notifier<List<ActivityEntry>> {
       ..loggedAt = loggedAt
       ..createdAt = now
       ..notes = notes
-      ..flareIsarId = flareIsarId;
+      ..flareIsarId = flareIsarId
+      ..weatherSnapshot = weatherSnapshot != null
+          ? WeatherSnapshotIsar.fromDomain(weatherSnapshot)
+          : null;
 
     late int id;
     await isar.writeTxn(() async {
@@ -85,7 +91,10 @@ class ActivityEntryListNotifier extends Notifier<List<ActivityEntry>> {
       ..createdAt = entry.createdAt
       ..updatedAt = DateTime.now()
       ..notes = entry.notes
-      ..flareIsarId = entry.flareIsarId;
+      ..flareIsarId = entry.flareIsarId
+      ..weatherSnapshot = entry.weatherSnapshot != null
+          ? WeatherSnapshotIsar.fromDomain(entry.weatherSnapshot!)
+          : null;
 
     await isar.writeTxn(() async {
       await isar.activityEntryIsars.put(row);

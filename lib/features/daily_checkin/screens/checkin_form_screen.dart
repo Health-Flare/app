@@ -5,7 +5,9 @@ import 'package:intl/intl.dart';
 
 import 'package:health_flare/core/providers/daily_checkin_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
+import 'package:health_flare/core/providers/weather_provider.dart';
 import 'package:health_flare/models/daily_checkin.dart';
+import 'package:health_flare/models/weather_snapshot.dart';
 
 /// Full-screen form to record or edit a daily check-in.
 ///
@@ -28,6 +30,9 @@ class _CheckInFormScreenState extends ConsumerState<CheckInFormScreen> {
   late TextEditingController _notesController;
   late DateTime _date;
   bool _submitting = false;
+
+  // Captured once when the form opens (new check-in only).
+  WeatherSnapshot? _capturedWeather;
 
   bool get _isEdit => widget.checkin != null;
 
@@ -99,6 +104,7 @@ class _CheckInFormScreenState extends ConsumerState<CheckInFormScreen> {
           stressLevel: _stressLevel,
           cyclePhase: _cyclePhase,
           notes: notes.isEmpty ? null : notes,
+          weatherSnapshot: _capturedWeather,
         );
       }
       if (!mounted) return;
@@ -120,6 +126,16 @@ class _CheckInFormScreenState extends ConsumerState<CheckInFormScreen> {
     final tt = Theme.of(context).textTheme;
     final fmt = DateFormat('d MMM yyyy');
 
+    // Watch weather for new check-ins — capture when available.
+    final weatherAsync = _isEdit ? null : ref.watch(currentWeatherProvider);
+    weatherAsync?.whenData((w) {
+      if (w != null && _capturedWeather == null) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) setState(() => _capturedWeather = w);
+        });
+      }
+    });
+
     return Scaffold(
       appBar: AppBar(title: Text(_isEdit ? 'Edit check-in' : 'Daily check-in')),
       body: SingleChildScrollView(
@@ -135,6 +151,13 @@ class _CheckInFormScreenState extends ConsumerState<CheckInFormScreen> {
                   'Logging for ${activeProfile.name}',
                   style: tt.labelMedium?.copyWith(color: cs.onSurfaceVariant),
                 ),
+              ),
+
+            // Weather chip (new check-ins only)
+            if (!_isEdit && _capturedWeather != null)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: _WeatherChip(snapshot: _capturedWeather!),
               ),
 
             // Date picker (only shown when creating from history)
@@ -224,6 +247,34 @@ class _CheckInFormScreenState extends ConsumerState<CheckInFormScreen> {
 }
 
 DateTime _dateOnly(DateTime dt) => DateTime(dt.year, dt.month, dt.day);
+
+// ---------------------------------------------------------------------------
+// Weather chip
+// ---------------------------------------------------------------------------
+
+class _WeatherChip extends StatelessWidget {
+  const _WeatherChip({required this.snapshot});
+
+  final WeatherSnapshot snapshot;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(snapshot.icon, size: 16, color: cs.onSurfaceVariant),
+        const SizedBox(width: 6),
+        Text(
+          snapshot.displayString,
+          style: Theme.of(
+            context,
+          ).textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+        ),
+      ],
+    );
+  }
+}
 
 // ---------------------------------------------------------------------------
 // Wellbeing picker (1–10)

@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 
+import 'package:health_flare/models/weather_snapshot.dart';
+
 /// Immutable domain model for a single daily check-in.
 ///
 /// One check-in per profile per calendar day. The wellbeing field (1–10) is
@@ -16,6 +18,7 @@ class DailyCheckin {
     this.notes,
     required this.createdAt,
     this.updatedAt,
+    this.weatherSnapshot,
   });
 
   final int id;
@@ -36,6 +39,7 @@ class DailyCheckin {
   final String? notes;
   final DateTime createdAt;
   final DateTime? updatedAt;
+  final WeatherSnapshot? weatherSnapshot;
 
   DailyCheckin copyWith({
     DateTime? checkinDate,
@@ -44,6 +48,7 @@ class DailyCheckin {
     String? cyclePhase,
     String? notes,
     DateTime? updatedAt,
+    WeatherSnapshot? weatherSnapshot,
     bool clearStress = false,
     bool clearCyclePhase = false,
     bool clearNotes = false,
@@ -58,6 +63,7 @@ class DailyCheckin {
       notes: clearNotes ? null : (notes ?? this.notes),
       createdAt: createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      weatherSnapshot: weatherSnapshot ?? this.weatherSnapshot,
     );
   }
 

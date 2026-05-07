@@ -2,7 +2,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar_community/isar.dart';
 
 import 'package:health_flare/data/models/meal_entry_isar.dart';
+import 'package:health_flare/data/models/weather_snapshot_isar.dart';
 import 'package:health_flare/models/meal_entry.dart';
+import 'package:health_flare/models/weather_snapshot.dart';
 import 'package:health_flare/core/providers/database_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 
@@ -49,6 +51,7 @@ class MealEntryListNotifier extends Notifier<List<MealEntry>> {
     required bool hasReaction,
     required DateTime loggedAt,
     int? flareIsarId,
+    WeatherSnapshot? weatherSnapshot,
   }) async {
     final isar = ref.read(isarProvider);
     final row = MealEntryIsar()
@@ -60,7 +63,10 @@ class MealEntryListNotifier extends Notifier<List<MealEntry>> {
       ..hasReaction = hasReaction
       ..loggedAt = loggedAt
       ..createdAt = DateTime.now()
-      ..flareIsarId = flareIsarId;
+      ..flareIsarId = flareIsarId
+      ..weatherSnapshot = weatherSnapshot != null
+          ? WeatherSnapshotIsar.fromDomain(weatherSnapshot)
+          : null;
     await isar.writeTxn(() async {
       await isar.mealEntryIsars.put(row);
     });

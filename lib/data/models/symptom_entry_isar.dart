@@ -1,4 +1,6 @@
 import 'package:isar_community/isar.dart';
+
+import 'package:health_flare/data/models/weather_snapshot_isar.dart';
 import 'package:health_flare/models/symptom_entry.dart';
 
 part 'symptom_entry_isar.g.dart';
@@ -27,6 +29,8 @@ class SymptomEntryIsar {
 
   int? flareIsarId;
 
+  WeatherSnapshotIsar? weatherSnapshot;
+
   SymptomEntry toDomain() => SymptomEntry(
     id: id,
     profileId: profileId,
@@ -38,6 +42,7 @@ class SymptomEntryIsar {
     loggedAt: loggedAt,
     createdAt: createdAt,
     flareIsarId: flareIsarId,
+    weatherSnapshot: weatherSnapshot?.toDomain(),
   );
 
   static SymptomEntryIsar fromDomain(SymptomEntry e) => SymptomEntryIsar()
@@ -50,5 +55,8 @@ class SymptomEntryIsar {
     ..notes = e.notes
     ..loggedAt = e.loggedAt
     ..createdAt = e.createdAt
-    ..flareIsarId = e.flareIsarId;
+    ..flareIsarId = e.flareIsarId
+    ..weatherSnapshot = e.weatherSnapshot != null
+        ? WeatherSnapshotIsar.fromDomain(e.weatherSnapshot!)
+        : null;
 }

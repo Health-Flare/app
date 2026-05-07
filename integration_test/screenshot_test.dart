@@ -234,7 +234,8 @@ final _flares = [
     endedAt: DateTime(2026, 4, 24),
     initialSeverity: 7,
     peakSeverity: 8,
-    notes: 'Triggered after the cold front came through. Joint pain and fatigue.',
+    notes:
+        'Triggered after the cold front came through. Joint pain and fatigue.',
     createdAt: DateTime(2026, 4, 20),
   ),
   Flare(
@@ -287,7 +288,10 @@ final _userConditions = [
     diagnosedAt: DateTime(2023, 7, 1),
     status: ConditionStatus.inRecovery,
     statusHistory: [
-      ConditionStatusEvent(eventType: 'recovery', date: DateTime.utc(2026, 1, 15)),
+      ConditionStatusEvent(
+        eventType: 'recovery',
+        date: DateTime.utc(2026, 1, 15),
+      ),
     ],
   ),
   UserCondition(
@@ -554,16 +558,12 @@ List<Override> _overrides() => [
   dailyCheckinListProvider.overrideWith(_FakeCheckinList.new),
   todayCheckinProvider.overrideWith((ref) => null),
   appointmentListProvider.overrideWith(_FakeAppointmentList.new),
-  activeProfileAppointmentsProvider.overrideWith(
-    (ref) => _appointments,
-  ),
+  activeProfileAppointmentsProvider.overrideWith((ref) => _appointments),
   upcomingAppointmentsProvider.overrideWith(
     (ref) => _appointments.where((a) => a.isUpcoming).toList(),
   ),
   symptomEntryListProvider.overrideWith(_FakeSymptomEntryList.new),
-  activeProfileSymptomEntriesProvider.overrideWith(
-    (ref) => _symptomEntries,
-  ),
+  activeProfileSymptomEntriesProvider.overrideWith((ref) => _symptomEntries),
   vitalEntryListProvider.overrideWith(_FakeVitalEntryList.new),
   activeProfileVitalEntriesProvider.overrideWith((ref) => []),
   doseLogListProvider.overrideWith(_FakeDoseLogList.new),
@@ -573,9 +573,7 @@ List<Override> _overrides() => [
   medicationListProvider.overrideWith(_FakeMedicationList.new),
   activeProfileMedicationsProvider.overrideWith((ref) => _medications),
   activityEntryListProvider.overrideWith(_FakeActivityEntryList.new),
-  activeProfileActivityEntriesProvider.overrideWith(
-    (ref) => _activities,
-  ),
+  activeProfileActivityEntriesProvider.overrideWith((ref) => _activities),
   dashboardActivityProvider.overrideWith((ref) => _dashboardFeed()),
   dashboardHasActivityProvider.overrideWith((ref) => true),
 ];
@@ -666,10 +664,7 @@ void main() {
 
     testWidgets('02_dashboard', (tester) async {
       await tester.pumpWidget(
-        ProviderScope(
-          overrides: _overrides(),
-          child: const HealthFlareApp(),
-        ),
+        ProviderScope(overrides: _overrides(), child: const HealthFlareApp()),
       );
       await _settle(tester);
       await _screenshot(binding, tester, '02_dashboard');
@@ -678,10 +673,7 @@ void main() {
     // Tracking — Symptoms tab (default view when tapping Tracking in nav)
     testWidgets('03_tracking_symptoms', (tester) async {
       await tester.pumpWidget(
-        ProviderScope(
-          overrides: _overrides(),
-          child: const HealthFlareApp(),
-        ),
+        ProviderScope(overrides: _overrides(), child: const HealthFlareApp()),
       );
       await _settle(tester);
       await tester.tap(find.text('Tracking'));
@@ -692,10 +684,7 @@ void main() {
     // Tracking — Illnesses tab showing Active + In recovery sections
     testWidgets('04_tracking_illnesses', (tester) async {
       await tester.pumpWidget(
-        ProviderScope(
-          overrides: _overrides(),
-          child: const HealthFlareApp(),
-        ),
+        ProviderScope(overrides: _overrides(), child: const HealthFlareApp()),
       );
       await _settle(tester);
       await tester.tap(find.text('Tracking'));
@@ -708,10 +697,7 @@ void main() {
     // Condition detail — Fibromyalgia (in recovery, has diagnosis date + history)
     testWidgets('05_condition_detail', (tester) async {
       await tester.pumpWidget(
-        ProviderScope(
-          overrides: _overrides(),
-          child: const HealthFlareApp(),
-        ),
+        ProviderScope(overrides: _overrides(), child: const HealthFlareApp()),
       );
       await _settle(tester);
       await tester.tap(find.text('Tracking'));
@@ -725,10 +711,7 @@ void main() {
 
     testWidgets('06_medications', (tester) async {
       await tester.pumpWidget(
-        ProviderScope(
-          overrides: _overrides(),
-          child: const HealthFlareApp(),
-        ),
+        ProviderScope(overrides: _overrides(), child: const HealthFlareApp()),
       );
       await _settle(tester);
       await tester.tap(find.text('Medications'));
@@ -738,10 +721,7 @@ void main() {
 
     testWidgets('07_meals', (tester) async {
       await tester.pumpWidget(
-        ProviderScope(
-          overrides: _overrides(),
-          child: const HealthFlareApp(),
-        ),
+        ProviderScope(overrides: _overrides(), child: const HealthFlareApp()),
       );
       await _settle(tester);
       await tester.tap(find.text('Meals'));
@@ -751,10 +731,7 @@ void main() {
 
     testWidgets('08_journal', (tester) async {
       await tester.pumpWidget(
-        ProviderScope(
-          overrides: _overrides(),
-          child: const HealthFlareApp(),
-        ),
+        ProviderScope(overrides: _overrides(), child: const HealthFlareApp()),
       );
       await _settle(tester);
       await tester.tap(find.text('Journal'));
@@ -764,10 +741,7 @@ void main() {
 
     testWidgets('09_journal_composer', (tester) async {
       await tester.pumpWidget(
-        ProviderScope(
-          overrides: _overrides(),
-          child: const HealthFlareApp(),
-        ),
+        ProviderScope(overrides: _overrides(), child: const HealthFlareApp()),
       );
       await _settle(tester);
       await tester.tap(find.text('Journal'));
@@ -779,10 +753,7 @@ void main() {
 
     testWidgets('10_medication_form', (tester) async {
       await tester.pumpWidget(
-        ProviderScope(
-          overrides: _overrides(),
-          child: const HealthFlareApp(),
-        ),
+        ProviderScope(overrides: _overrides(), child: const HealthFlareApp()),
       );
       await _settle(tester);
       await tester.tap(find.text('Medications'));
@@ -794,10 +765,7 @@ void main() {
 
     testWidgets('11_meal_form', (tester) async {
       await tester.pumpWidget(
-        ProviderScope(
-          overrides: _overrides(),
-          child: const HealthFlareApp(),
-        ),
+        ProviderScope(overrides: _overrides(), child: const HealthFlareApp()),
       );
       await _settle(tester);
       await tester.tap(find.text('Meals'));

@@ -2,7 +2,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar_community/isar.dart';
 
 import 'package:health_flare/data/models/daily_checkin_isar.dart';
+import 'package:health_flare/data/models/weather_snapshot_isar.dart';
 import 'package:health_flare/models/daily_checkin.dart';
+import 'package:health_flare/models/weather_snapshot.dart';
 import 'package:health_flare/core/providers/database_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 
@@ -48,6 +50,7 @@ class DailyCheckinListNotifier extends Notifier<List<DailyCheckin>> {
     String? stressLevel,
     String? cyclePhase,
     String? notes,
+    WeatherSnapshot? weatherSnapshot,
   }) async {
     final dateOnly = _dateOnly(checkinDate);
     final existing = _findForDate(profileId, dateOnly);
@@ -66,7 +69,10 @@ class DailyCheckinListNotifier extends Notifier<List<DailyCheckin>> {
       ..stressLevel = stressLevel
       ..cyclePhase = cyclePhase
       ..notes = notes
-      ..createdAt = DateTime.now();
+      ..createdAt = DateTime.now()
+      ..weatherSnapshot = weatherSnapshot != null
+          ? WeatherSnapshotIsar.fromDomain(weatherSnapshot)
+          : null;
     await isar.writeTxn(() async {
       await isar.dailyCheckinIsars.put(row);
     });

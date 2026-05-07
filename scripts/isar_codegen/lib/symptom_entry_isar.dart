@@ -1,5 +1,7 @@
 import 'package:isar_community/isar.dart';
 
+import 'weather_snapshot_isar.dart';
+
 part 'symptom_entry_isar.g.dart';
 
 @collection
@@ -25,4 +27,6 @@ class SymptomEntryIsar {
   late DateTime createdAt;
 
   int? flareIsarId;
+
+  WeatherSnapshotIsar? weatherSnapshot;
 }

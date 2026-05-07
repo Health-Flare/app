@@ -49,6 +49,8 @@
 	</dict>
 	<key>NSCameraUsageDescription</key>
 	<string>Health Flare uses the camera so you can take a profile photo.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Health Flare uses your location to capture weather conditions at the time of each log entry. Location is never stored or transmitted — only the resulting weather data is saved on your device.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Health Flare accesses your photo library so you can choose a profile photo.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>

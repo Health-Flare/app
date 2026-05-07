@@ -36,6 +36,10 @@ dependencies:
   # Open URLs in browser (privacy policy link)
   url_launcher: ^6.3.1
 
+  # Location (for weather capture — the only network call the app makes)
+  geolocator: ^13.0.2
+  http: ^1.3.2
+
   # Date formatting (used in journal entry list and detail views)
   intl: ^0.19.0
   pdf: ^3.12.0

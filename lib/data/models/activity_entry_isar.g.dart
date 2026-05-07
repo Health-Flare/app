@@ -63,6 +63,12 @@ const ActivityEntryIsarSchema = CollectionSchema(
       name: r'updatedAt',
       type: IsarType.dateTime,
     ),
+    r'weatherSnapshot': PropertySchema(
+      id: 10,
+      name: r'weatherSnapshot',
+      type: IsarType.object,
+      target: r'WeatherSnapshotIsar',
+    ),
   },
   estimateSize: _activityEntryIsarEstimateSize,
   serialize: _activityEntryIsarSerialize,
@@ -98,7 +104,7 @@ const ActivityEntryIsarSchema = CollectionSchema(
     ),
   },
   links: {},
-  embeddedSchemas: {},
+  embeddedSchemas: {r'WeatherSnapshotIsar': WeatherSnapshotIsarSchema},
   getId: _activityEntryIsarGetId,
   getLinks: _activityEntryIsarGetLinks,
   attach: _activityEntryIsarAttach,
@@ -124,6 +130,18 @@ int _activityEntryIsarEstimateSize(
       bytesCount += 3 + value.length * 3;
     }
   }
+  {
+    final value = object.weatherSnapshot;
+    if (value != null) {
+      bytesCount +=
+          3 +
+          WeatherSnapshotIsarSchema.estimateSize(
+            value,
+            allOffsets[WeatherSnapshotIsar]!,
+            allOffsets,
+          );
+    }
+  }
   return bytesCount;
 }
 
@@ -143,6 +161,12 @@ void _activityEntryIsarSerialize(
   writer.writeString(offsets[7], object.notes);
   writer.writeLong(offsets[8], object.profileId);
   writer.writeDateTime(offsets[9], object.updatedAt);
+  writer.writeObject<WeatherSnapshotIsar>(
+    offsets[10],
+    allOffsets,
+    WeatherSnapshotIsarSchema.serialize,
+    object.weatherSnapshot,
+  );
 }
 
 ActivityEntryIsar _activityEntryIsarDeserialize(
@@ -163,6 +187,11 @@ ActivityEntryIsar _activityEntryIsarDeserialize(
   object.notes = reader.readStringOrNull(offsets[7]);
   object.profileId = reader.readLong(offsets[8]);
   object.updatedAt = reader.readDateTimeOrNull(offsets[9]);
+  object.weatherSnapshot = reader.readObjectOrNull<WeatherSnapshotIsar>(
+    offsets[10],
+    WeatherSnapshotIsarSchema.deserialize,
+    allOffsets,
+  );
   return object;
 }
 
@@ -193,6 +222,13 @@ P _activityEntryIsarDeserializeProp<P>(
       return (reader.readLong(offset)) as P;
     case 9:
       return (reader.readDateTimeOrNull(offset)) as P;
+    case 10:
+      return (reader.readObjectOrNull<WeatherSnapshotIsar>(
+            offset,
+            WeatherSnapshotIsarSchema.deserialize,
+            allOffsets,
+          ))
+          as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -1485,10 +1521,35 @@ extension ActivityEntryIsarQueryFilter
       );
     });
   }
+
+  QueryBuilder<ActivityEntryIsar, ActivityEntryIsar, QAfterFilterCondition>
+  weatherSnapshotIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'weatherSnapshot'),
+      );
+    });
+  }
+
+  QueryBuilder<ActivityEntryIsar, ActivityEntryIsar, QAfterFilterCondition>
+  weatherSnapshotIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'weatherSnapshot'),
+      );
+    });
+  }
 }
 
 extension ActivityEntryIsarQueryObject
-    on QueryBuilder<ActivityEntryIsar, ActivityEntryIsar, QFilterCondition> {}
+    on QueryBuilder<ActivityEntryIsar, ActivityEntryIsar, QFilterCondition> {
+  QueryBuilder<ActivityEntryIsar, ActivityEntryIsar, QAfterFilterCondition>
+  weatherSnapshot(FilterQuery<WeatherSnapshotIsar> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.object(q, r'weatherSnapshot');
+    });
+  }
+}
 
 extension ActivityEntryIsarQueryLinks
     on QueryBuilder<ActivityEntryIsar, ActivityEntryIsar, QFilterCondition> {}
@@ -1938,6 +1999,13 @@ extension ActivityEntryIsarQueryProperty
   updatedAtProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'updatedAt');
+    });
+  }
+
+  QueryBuilder<ActivityEntryIsar, WeatherSnapshotIsar?, QQueryOperations>
+  weatherSnapshotProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'weatherSnapshot');
     });
   }
 }

@@ -94,6 +94,9 @@ class _ActivityTile extends StatelessWidget {
     if (entry.durationMinutes != null) {
       parts.add('${entry.durationMinutes} min');
     }
+    if (entry.weatherSnapshot != null) {
+      parts.add(entry.weatherSnapshot!.displayString);
+    }
     return parts.join(' · ');
   }
 

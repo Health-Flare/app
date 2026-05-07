@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 
+import 'package:health_flare/models/weather_snapshot.dart';
+
 @immutable
 class SymptomEntry {
   const SymptomEntry({
@@ -13,6 +15,7 @@ class SymptomEntry {
     required this.loggedAt,
     required this.createdAt,
     this.flareIsarId,
+    this.weatherSnapshot,
   });
 
   final int id;
@@ -25,6 +28,7 @@ class SymptomEntry {
   final DateTime loggedAt;
   final DateTime createdAt;
   final int? flareIsarId;
+  final WeatherSnapshot? weatherSnapshot;
 
   SymptomEntry copyWith({
     String? name,
@@ -33,6 +37,7 @@ class SymptomEntry {
     int? severity,
     String? notes,
     DateTime? loggedAt,
+    WeatherSnapshot? weatherSnapshot,
     bool clearNotes = false,
     bool clearUserSymptomIsarId = false,
   }) {
@@ -49,6 +54,7 @@ class SymptomEntry {
       loggedAt: loggedAt ?? this.loggedAt,
       createdAt: createdAt,
       flareIsarId: flareIsarId,
+      weatherSnapshot: weatherSnapshot ?? this.weatherSnapshot,
     );
   }
 

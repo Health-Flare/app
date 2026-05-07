@@ -1,5 +1,7 @@
 import 'package:isar_community/isar.dart';
 
+import 'weather_snapshot_isar.dart';
+
 part 'daily_checkin_isar.g.dart';
 
 @collection
@@ -29,4 +31,6 @@ class DailyCheckinIsar {
   late DateTime createdAt;
 
   DateTime? updatedAt;
+
+  WeatherSnapshotIsar? weatherSnapshot;
 }

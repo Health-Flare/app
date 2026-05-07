@@ -1,5 +1,7 @@
 import 'package:isar_community/isar.dart';
 
+import 'weather_snapshot_isar.dart';
+
 part 'activity_entry_isar.g.dart';
 
 @collection
@@ -32,4 +34,6 @@ class ActivityEntryIsar {
 
   /// Set when logged during an active flare.
   int? flareIsarId;
+
+  WeatherSnapshotIsar? weatherSnapshot;
 }

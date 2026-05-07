@@ -17,3 +17,4 @@
 # dependencies. The app remains fully offline — these URLs are only opened by
 # the OS browser on explicit user tap, never called by app code.
 healthflare\.org  # Justification: first-party domain, opened by OS browser on user action only
+api\.open-meteo\.com  # Justification: weather API — the only network call the app makes; fetches current conditions at time of entry logging, no API key or personal data sent

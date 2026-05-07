@@ -5,8 +5,10 @@ import 'package:intl/intl.dart';
 
 import 'package:health_flare/core/providers/activity_entry_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
+import 'package:health_flare/core/providers/weather_provider.dart';
 import 'package:health_flare/core/router/app_router.dart';
 import 'package:health_flare/models/activity_entry.dart';
+import 'package:health_flare/models/weather_snapshot.dart';
 
 /// Full-screen form for creating or editing an activity entry.
 ///
@@ -33,6 +35,9 @@ class _ActivityEntryFormScreenState
   int? _effortLevel;
   bool _submitting = false;
   bool _descriptionError = false;
+
+  // Captured once when the form opens (new entry only).
+  WeatherSnapshot? _capturedWeather;
 
   bool get _isEdit => widget.entry != null;
 
@@ -137,6 +142,7 @@ class _ActivityEntryFormScreenState
         durationMinutes: durationMinutes,
         loggedAt: _loggedAt,
         notes: notes.isEmpty ? null : notes,
+        weatherSnapshot: _capturedWeather,
       );
     }
 
@@ -177,6 +183,16 @@ class _ActivityEntryFormScreenState
     final cs = Theme.of(context).colorScheme;
     final fmt = DateFormat('d MMM yyyy, HH:mm');
 
+    // Watch weather for new entries — capture when available.
+    final weatherAsync = _isEdit ? null : ref.watch(currentWeatherProvider);
+    weatherAsync?.whenData((w) {
+      if (w != null && _capturedWeather == null) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) setState(() => _capturedWeather = w);
+        });
+      }
+    });
+
     return Scaffold(
       appBar: AppBar(
         title: Text(_isEdit ? 'Edit activity' : 'Log activity'),
@@ -204,6 +220,13 @@ class _ActivityEntryFormScreenState
                     context,
                   ).textTheme.labelMedium?.copyWith(color: cs.onSurfaceVariant),
                 ),
+              ),
+
+            // Weather chip (new entries only)
+            if (!_isEdit && _capturedWeather != null)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: _WeatherChip(snapshot: _capturedWeather!),
               ),
 
             // Description
@@ -314,6 +337,34 @@ class _ActivityEntryFormScreenState
           ),
         ),
       ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Weather chip
+// ---------------------------------------------------------------------------
+
+class _WeatherChip extends StatelessWidget {
+  const _WeatherChip({required this.snapshot});
+
+  final WeatherSnapshot snapshot;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(snapshot.icon, size: 16, color: cs.onSurfaceVariant),
+        const SizedBox(width: 6),
+        Text(
+          snapshot.displayString,
+          style: Theme.of(
+            context,
+          ).textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+        ),
+      ],
     );
   }
 }

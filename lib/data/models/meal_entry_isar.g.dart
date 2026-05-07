@@ -58,6 +58,12 @@ const MealEntryIsarSchema = CollectionSchema(
       name: r'updatedAt',
       type: IsarType.dateTime,
     ),
+    r'weatherSnapshot': PropertySchema(
+      id: 9,
+      name: r'weatherSnapshot',
+      type: IsarType.object,
+      target: r'WeatherSnapshotIsar',
+    ),
   },
   estimateSize: _mealEntryIsarEstimateSize,
   serialize: _mealEntryIsarSerialize,
@@ -93,7 +99,7 @@ const MealEntryIsarSchema = CollectionSchema(
     ),
   },
   links: {},
-  embeddedSchemas: {},
+  embeddedSchemas: {r'WeatherSnapshotIsar': WeatherSnapshotIsarSchema},
   getId: _mealEntryIsarGetId,
   getLinks: _mealEntryIsarGetLinks,
   attach: _mealEntryIsarAttach,
@@ -119,6 +125,18 @@ int _mealEntryIsarEstimateSize(
       bytesCount += 3 + value.length * 3;
     }
   }
+  {
+    final value = object.weatherSnapshot;
+    if (value != null) {
+      bytesCount +=
+          3 +
+          WeatherSnapshotIsarSchema.estimateSize(
+            value,
+            allOffsets[WeatherSnapshotIsar]!,
+            allOffsets,
+          );
+    }
+  }
   return bytesCount;
 }
 
@@ -137,6 +155,12 @@ void _mealEntryIsarSerialize(
   writer.writeString(offsets[6], object.photoPath);
   writer.writeLong(offsets[7], object.profileId);
   writer.writeDateTime(offsets[8], object.updatedAt);
+  writer.writeObject<WeatherSnapshotIsar>(
+    offsets[9],
+    allOffsets,
+    WeatherSnapshotIsarSchema.serialize,
+    object.weatherSnapshot,
+  );
 }
 
 MealEntryIsar _mealEntryIsarDeserialize(
@@ -156,6 +180,11 @@ MealEntryIsar _mealEntryIsarDeserialize(
   object.photoPath = reader.readStringOrNull(offsets[6]);
   object.profileId = reader.readLong(offsets[7]);
   object.updatedAt = reader.readDateTimeOrNull(offsets[8]);
+  object.weatherSnapshot = reader.readObjectOrNull<WeatherSnapshotIsar>(
+    offsets[9],
+    WeatherSnapshotIsarSchema.deserialize,
+    allOffsets,
+  );
   return object;
 }
 
@@ -184,6 +213,13 @@ P _mealEntryIsarDeserializeProp<P>(
       return (reader.readLong(offset)) as P;
     case 8:
       return (reader.readDateTimeOrNull(offset)) as P;
+    case 9:
+      return (reader.readObjectOrNull<WeatherSnapshotIsar>(
+            offset,
+            WeatherSnapshotIsarSchema.deserialize,
+            allOffsets,
+          ))
+          as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -1342,10 +1378,35 @@ extension MealEntryIsarQueryFilter
       );
     });
   }
+
+  QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
+  weatherSnapshotIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'weatherSnapshot'),
+      );
+    });
+  }
+
+  QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
+  weatherSnapshotIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'weatherSnapshot'),
+      );
+    });
+  }
 }
 
 extension MealEntryIsarQueryObject
-    on QueryBuilder<MealEntryIsar, MealEntryIsar, QFilterCondition> {}
+    on QueryBuilder<MealEntryIsar, MealEntryIsar, QFilterCondition> {
+  QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
+  weatherSnapshot(FilterQuery<WeatherSnapshotIsar> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.object(q, r'weatherSnapshot');
+    });
+  }
+}
 
 extension MealEntryIsarQueryLinks
     on QueryBuilder<MealEntryIsar, MealEntryIsar, QFilterCondition> {}
@@ -1724,6 +1785,13 @@ extension MealEntryIsarQueryProperty
   QueryBuilder<MealEntryIsar, DateTime?, QQueryOperations> updatedAtProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'updatedAt');
+    });
+  }
+
+  QueryBuilder<MealEntryIsar, WeatherSnapshotIsar?, QQueryOperations>
+  weatherSnapshotProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'weatherSnapshot');
     });
   }
 }
