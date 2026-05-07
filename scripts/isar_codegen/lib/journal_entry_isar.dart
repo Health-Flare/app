@@ -1,4 +1,5 @@
 import 'package:isar_community/isar.dart';
+import 'weather_snapshot_isar.dart';
 
 part 'journal_entry_isar.g.dart';
 
@@ -20,4 +21,5 @@ class JournalEntryIsar {
   late List<JournalSnapshotIsar> snapshots;
   int? mood;
   int? energyLevel;
+  WeatherSnapshotIsar? weather;
 }

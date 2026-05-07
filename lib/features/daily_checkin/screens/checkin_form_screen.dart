@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:health_flare/core/providers/daily_checkin_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/core/providers/weather_provider.dart';
+import 'package:health_flare/features/shared/widgets/weather_chip.dart';
 import 'package:health_flare/models/daily_checkin.dart';
 import 'package:health_flare/models/weather_snapshot.dart';
 
@@ -153,11 +154,18 @@ class _CheckInFormScreenState extends ConsumerState<CheckInFormScreen> {
                 ),
               ),
 
-            // Weather chip (new check-ins only)
-            if (!_isEdit && _capturedWeather != null)
+            // Weather chip (new check-ins show live weather; edit shows saved snapshot)
+            if ((_isEdit
+                    ? widget.checkin?.weatherSnapshot
+                    : _capturedWeather) !=
+                null)
               Padding(
                 padding: const EdgeInsets.only(bottom: 12),
-                child: _WeatherChip(snapshot: _capturedWeather!),
+                child: WeatherChip(
+                  snapshot: _isEdit
+                      ? widget.checkin?.weatherSnapshot
+                      : _capturedWeather,
+                ),
               ),
 
             // Date picker (only shown when creating from history)
@@ -247,34 +255,6 @@ class _CheckInFormScreenState extends ConsumerState<CheckInFormScreen> {
 }
 
 DateTime _dateOnly(DateTime dt) => DateTime(dt.year, dt.month, dt.day);
-
-// ---------------------------------------------------------------------------
-// Weather chip
-// ---------------------------------------------------------------------------
-
-class _WeatherChip extends StatelessWidget {
-  const _WeatherChip({required this.snapshot});
-
-  final WeatherSnapshot snapshot;
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(snapshot.icon, size: 16, color: cs.onSurfaceVariant),
-        const SizedBox(width: 6),
-        Text(
-          snapshot.displayString,
-          style: Theme.of(
-            context,
-          ).textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant),
-        ),
-      ],
-    );
-  }
-}
 
 // ---------------------------------------------------------------------------
 // Wellbeing picker (1–10)

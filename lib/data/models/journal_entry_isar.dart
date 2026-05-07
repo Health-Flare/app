@@ -1,5 +1,6 @@
 import 'package:isar_community/isar.dart';
 
+import 'package:health_flare/data/models/weather_snapshot_isar.dart';
 import 'package:health_flare/models/journal_entry.dart';
 
 part 'journal_entry_isar.g.dart';
@@ -59,6 +60,9 @@ class JournalEntryIsar {
   /// Optional energy level: 1 (exhausted) to 5 (good energy).
   int? energyLevel;
 
+  /// Weather conditions captured at the time of writing, if enabled.
+  WeatherSnapshotIsar? weather;
+
   // ── Conversion ────────────────────────────────────────────────────────────
 
   JournalEntry toDomain() => JournalEntry(
@@ -68,6 +72,7 @@ class JournalEntryIsar {
     snapshots: snapshots.map((s) => s.toDomain()).toList(),
     mood: mood,
     energyLevel: energyLevel,
+    weatherSnapshot: weather?.toDomain(),
   );
 
   static JournalEntryIsar fromDomain(JournalEntry e) => JournalEntryIsar()
@@ -76,5 +81,8 @@ class JournalEntryIsar {
     ..createdAt = e.createdAt
     ..snapshots = e.snapshots.map(JournalSnapshotIsar.fromDomain).toList()
     ..mood = e.mood
-    ..energyLevel = e.energyLevel;
+    ..energyLevel = e.energyLevel
+    ..weather = e.weatherSnapshot != null
+        ? WeatherSnapshotIsar.fromDomain(e.weatherSnapshot!)
+        : null;
 }

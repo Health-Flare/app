@@ -6,8 +6,11 @@ import 'package:intl/intl.dart';
 
 import 'package:health_flare/core/providers/journal_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
-import 'package:health_flare/models/journal_entry.dart';
+import 'package:health_flare/core/providers/weather_provider.dart';
 import 'package:health_flare/features/journal/widgets/journal_enrichment_bar.dart';
+import 'package:health_flare/features/shared/widgets/weather_chip.dart';
+import 'package:health_flare/models/journal_entry.dart';
+import 'package:health_flare/models/weather_snapshot.dart';
 
 /// Full-screen journal entry composer — used for both creating a new entry
 /// and editing an existing one.
@@ -45,6 +48,10 @@ class _JournalComposerScreenState extends ConsumerState<JournalComposerScreen> {
 
   // The id of the in-progress entry. Null until first autosave in create mode.
   int? _entryId;
+
+  // Weather captured when the form opens. Pre-populated from the saved entry
+  // in edit mode; resolved from the provider in create mode.
+  WeatherSnapshot? _capturedWeather;
 
   // Autosave debounce timer.
   Timer? _debounce;
@@ -134,6 +141,7 @@ class _JournalComposerScreenState extends ConsumerState<JournalComposerScreen> {
                 snapshots: entry.snapshots,
                 mood: entry.mood,
                 energyLevel: entry.energyLevel,
+                weatherSnapshot: entry.weatherSnapshot,
               ),
             );
       }
@@ -152,6 +160,7 @@ class _JournalComposerScreenState extends ConsumerState<JournalComposerScreen> {
         _bodyController.text = entry.body;
         _lastSavedBody = entry.body;
         _lastSavedAt = entry.lastSavedAt;
+        _capturedWeather = entry.weatherSnapshot;
         if (entry.title != null && entry.title!.trim().isNotEmpty) {
           _titleController.text = entry.title!;
           _lastSavedTitle = entry.title!;
@@ -246,6 +255,7 @@ class _JournalComposerScreenState extends ConsumerState<JournalComposerScreen> {
             firstSnapshot: snapshot,
             mood: ref.read(journalComposerStateProvider).mood?.index,
             energyLevel: ref.read(journalComposerStateProvider).energyLevel,
+            weatherSnapshot: _capturedWeather,
           );
     } else {
       await ref
@@ -256,6 +266,15 @@ class _JournalComposerScreenState extends ConsumerState<JournalComposerScreen> {
     _lastSavedBody = bodyText;
     _lastSavedTitle = titleText;
     if (mounted) setState(() => _lastSavedAt = now);
+  }
+
+  Future<void> _maybeAttachWeather(WeatherSnapshot weather) async {
+    if (_entryId == null) return;
+    final entry = ref.read(journalEntryListProvider.notifier).byId(_entryId!);
+    if (entry == null || entry.weatherSnapshot != null) return;
+    await ref
+        .read(journalEntryListProvider.notifier)
+        .update(entry.withWeather(weather));
   }
 
   Future<void> _undo() async {
@@ -351,6 +370,21 @@ class _JournalComposerScreenState extends ConsumerState<JournalComposerScreen> {
     final canUndo = liveEntry?.canUndo ?? false;
     final undoLabel = liveEntry != null ? _undoLabel(liveEntry) : '';
 
+    // Watch weather for new entries; attach to entry when it resolves.
+    if (widget.entryId == null) {
+      final weatherAsync = ref.watch(currentWeatherProvider);
+      weatherAsync.whenData((w) {
+        if (w != null && _capturedWeather == null) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              setState(() => _capturedWeather = w);
+              _maybeAttachWeather(w);
+            }
+          });
+        }
+      });
+    }
+
     return PopScope(
       canPop: true,
       child: Scaffold(
@@ -389,6 +423,11 @@ class _JournalComposerScreenState extends ConsumerState<JournalComposerScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    if (_capturedWeather != null)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: WeatherChip(snapshot: _capturedWeather),
+                      ),
                     if (_titleVisible)
                       TextField(
                         controller: _titleController,

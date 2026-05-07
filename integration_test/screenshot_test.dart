@@ -38,12 +38,23 @@ import 'package:health_flare/models/symptom_entry.dart';
 import 'package:health_flare/models/user_condition.dart';
 import 'package:health_flare/models/user_symptom.dart';
 import 'package:health_flare/models/vital_entry.dart';
+import 'package:health_flare/models/weather_snapshot.dart';
+import 'package:health_flare/core/providers/weather_provider.dart';
 
 // ---------------------------------------------------------------------------
 // Sample data
 // ---------------------------------------------------------------------------
 
-final _sarah = Profile(id: 1, name: 'Sarah Chen');
+final _sarah = Profile(id: 1, name: 'Sarah Chen', weatherTrackingEnabled: true);
+
+final _fakeWeather = WeatherSnapshot(
+  temperatureCelsius: 18.0,
+  weatherCode: 2,
+  pressureHPa: 1013.0,
+  humidityPercent: 62,
+  windSpeedKmh: 14.0,
+  capturedAt: DateTime(2026, 5, 4, 9, 30),
+);
 
 final _now = DateTime(2026, 5, 4, 9, 30);
 
@@ -133,6 +144,14 @@ final _journalEntries = [
     ],
     mood: 3,
     energyLevel: 2,
+    weatherSnapshot: WeatherSnapshot(
+      temperatureCelsius: 11.0,
+      weatherCode: 61,
+      pressureHPa: 1008.0,
+      humidityPercent: 78,
+      windSpeedKmh: 22.0,
+      capturedAt: DateTime(2026, 5, 3, 20, 15),
+    ),
   ),
   JournalEntry(
     id: 2,
@@ -576,6 +595,7 @@ List<Override> _overrides() => [
   activeProfileActivityEntriesProvider.overrideWith((ref) => _activities),
   dashboardActivityProvider.overrideWith((ref) => _dashboardFeed()),
   dashboardHasActivityProvider.overrideWith((ref) => true),
+  currentWeatherProvider.overrideWith((ref) async => _fakeWeather),
 ];
 
 List<Override> _onboardingOverrides() => [
@@ -748,7 +768,22 @@ void main() {
       await _settle(tester);
       await tester.tap(find.byTooltip('New journal entry'));
       await _settle(tester);
+      // Extra pump for the weather postFrameCallback to fire.
+      await tester.pump();
       await _screenshot(binding, tester, '09_journal_composer');
+    });
+
+    // Journal detail showing saved weather snapshot
+    testWidgets('09b_journal_detail', (tester) async {
+      await tester.pumpWidget(
+        ProviderScope(overrides: _overrides(), child: const HealthFlareApp()),
+      );
+      await _settle(tester);
+      await tester.tap(find.text('Journal'));
+      await _settle(tester);
+      await tester.tap(find.text('Rough Saturday'));
+      await _settle(tester);
+      await _screenshot(binding, tester, '09b_journal_detail');
     });
 
     testWidgets('10_medication_form', (tester) async {
@@ -773,6 +808,21 @@ void main() {
       await tester.tap(find.byTooltip('Log meal'));
       await _settle(tester);
       await _screenshot(binding, tester, '11_meal_form');
+    });
+
+    // Symptom form with weather chip — requires weatherTrackingEnabled + provider override
+    testWidgets('12_symptom_form_weather', (tester) async {
+      await tester.pumpWidget(
+        ProviderScope(overrides: _overrides(), child: const HealthFlareApp()),
+      );
+      await _settle(tester);
+      await tester.tap(find.text('Tracking'));
+      await _settle(tester);
+      await tester.tap(find.byTooltip('Log symptom'));
+      await _settle(tester);
+      // Extra pump for the weather postFrameCallback to fire.
+      await tester.pump();
+      await _screenshot(binding, tester, '12_symptom_form_weather');
     });
   });
 }

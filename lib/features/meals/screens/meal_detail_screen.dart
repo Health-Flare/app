@@ -8,9 +8,9 @@ import 'package:intl/intl.dart';
 import 'package:health_flare/core/providers/meal_entry_provider.dart';
 import 'package:health_flare/core/providers/symptom_entry_provider.dart';
 import 'package:health_flare/core/router/app_router.dart';
+import 'package:health_flare/features/shared/widgets/weather_chip.dart';
 import 'package:health_flare/models/meal_entry.dart';
 import 'package:health_flare/models/symptom_entry.dart';
-import 'package:health_flare/models/weather_snapshot.dart';
 
 /// Detail view for a single meal entry.
 ///
@@ -140,7 +140,7 @@ class MealDetailScreen extends ConsumerWidget {
                   // Weather snapshot
                   if (entry.weatherSnapshot != null) ...[
                     const SizedBox(height: 12),
-                    _WeatherRow(snapshot: entry.weatherSnapshot!),
+                    WeatherChip(snapshot: entry.weatherSnapshot),
                   ],
 
                   // Notes
@@ -198,33 +198,6 @@ class MealDetailScreen extends ConsumerWidget {
           const SliverToBoxAdapter(child: SizedBox(height: 24)),
         ],
       ),
-    );
-  }
-}
-
-// ---------------------------------------------------------------------------
-// Weather row
-// ---------------------------------------------------------------------------
-
-class _WeatherRow extends StatelessWidget {
-  const _WeatherRow({required this.snapshot});
-
-  final WeatherSnapshot snapshot;
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    return Row(
-      children: [
-        Icon(snapshot.icon, size: 16, color: cs.onSurfaceVariant),
-        const SizedBox(width: 6),
-        Text(
-          snapshot.displayString,
-          style: Theme.of(
-            context,
-          ).textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant),
-        ),
-      ],
     );
   }
 }

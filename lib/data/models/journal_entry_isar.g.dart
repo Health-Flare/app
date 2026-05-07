@@ -39,6 +39,12 @@ const JournalEntryIsarSchema = CollectionSchema(
       type: IsarType.objectList,
       target: r'JournalSnapshotIsar',
     ),
+    r'weather': PropertySchema(
+      id: 5,
+      name: r'weather',
+      type: IsarType.object,
+      target: r'WeatherSnapshotIsar',
+    ),
   },
   estimateSize: _journalEntryIsarEstimateSize,
   serialize: _journalEntryIsarSerialize,
@@ -74,7 +80,10 @@ const JournalEntryIsarSchema = CollectionSchema(
     ),
   },
   links: {},
-  embeddedSchemas: {r'JournalSnapshotIsar': JournalSnapshotIsarSchema},
+  embeddedSchemas: {
+    r'JournalSnapshotIsar': JournalSnapshotIsarSchema,
+    r'WeatherSnapshotIsar': WeatherSnapshotIsarSchema,
+  },
   getId: _journalEntryIsarGetId,
   getLinks: _journalEntryIsarGetLinks,
   attach: _journalEntryIsarAttach,
@@ -99,6 +108,18 @@ int _journalEntryIsarEstimateSize(
       );
     }
   }
+  {
+    final value = object.weather;
+    if (value != null) {
+      bytesCount +=
+          3 +
+          WeatherSnapshotIsarSchema.estimateSize(
+            value,
+            allOffsets[WeatherSnapshotIsar]!,
+            allOffsets,
+          );
+    }
+  }
   return bytesCount;
 }
 
@@ -117,6 +138,12 @@ void _journalEntryIsarSerialize(
     allOffsets,
     JournalSnapshotIsarSchema.serialize,
     object.snapshots,
+  );
+  writer.writeObject<WeatherSnapshotIsar>(
+    offsets[5],
+    allOffsets,
+    WeatherSnapshotIsarSchema.serialize,
+    object.weather,
   );
 }
 
@@ -140,6 +167,11 @@ JournalEntryIsar _journalEntryIsarDeserialize(
         JournalSnapshotIsar(),
       ) ??
       [];
+  object.weather = reader.readObjectOrNull<WeatherSnapshotIsar>(
+    offsets[5],
+    WeatherSnapshotIsarSchema.deserialize,
+    allOffsets,
+  );
   return object;
 }
 
@@ -166,6 +198,13 @@ P _journalEntryIsarDeserializeProp<P>(
                 JournalSnapshotIsar(),
               ) ??
               [])
+          as P;
+    case 5:
+      return (reader.readObjectOrNull<WeatherSnapshotIsar>(
+            offset,
+            WeatherSnapshotIsarSchema.deserialize,
+            allOffsets,
+          ))
           as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -848,6 +887,24 @@ extension JournalEntryIsarQueryFilter
       );
     });
   }
+
+  QueryBuilder<JournalEntryIsar, JournalEntryIsar, QAfterFilterCondition>
+  weatherIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'weather'),
+      );
+    });
+  }
+
+  QueryBuilder<JournalEntryIsar, JournalEntryIsar, QAfterFilterCondition>
+  weatherIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'weather'),
+      );
+    });
+  }
 }
 
 extension JournalEntryIsarQueryObject
@@ -856,6 +913,13 @@ extension JournalEntryIsarQueryObject
   snapshotsElement(FilterQuery<JournalSnapshotIsar> q) {
     return QueryBuilder.apply(this, (query) {
       return query.object(q, r'snapshots');
+    });
+  }
+
+  QueryBuilder<JournalEntryIsar, JournalEntryIsar, QAfterFilterCondition>
+  weather(FilterQuery<WeatherSnapshotIsar> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.object(q, r'weather');
     });
   }
 }
@@ -1059,6 +1123,13 @@ extension JournalEntryIsarQueryProperty
   snapshotsProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'snapshots');
+    });
+  }
+
+  QueryBuilder<JournalEntryIsar, WeatherSnapshotIsar?, QQueryOperations>
+  weatherProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'weather');
     });
   }
 }

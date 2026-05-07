@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 
 import 'package:health_flare/core/providers/journal_provider.dart';
 import 'package:health_flare/core/router/app_router.dart';
+import 'package:health_flare/features/shared/widgets/weather_chip.dart';
 import 'package:health_flare/models/journal_entry.dart';
 
 /// Full detail view for a single journal entry.
@@ -62,6 +63,12 @@ class JournalDetailScreen extends ConsumerWidget {
               style: tt.labelSmall?.copyWith(color: cs.onSurfaceVariant),
             ),
             const SizedBox(height: 8),
+
+            // Weather (if captured at time of writing)
+            if (entry.weatherSnapshot != null) ...[
+              WeatherChip(snapshot: entry.weatherSnapshot),
+              const SizedBox(height: 8),
+            ],
 
             // Mood and energy chips (only shown if set)
             if (entry.moodValue != null || entry.energyLevel != null) ...[

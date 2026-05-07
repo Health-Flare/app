@@ -26,6 +26,7 @@ class _FakeJournalList extends JournalEntryListNotifier {
     required JournalSnapshot firstSnapshot,
     int? mood,
     int? energyLevel,
+    weatherSnapshot,
   }) async => 42;
 
   @override

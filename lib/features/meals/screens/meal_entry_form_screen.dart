@@ -10,6 +10,7 @@ import 'package:health_flare/core/providers/meal_entry_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/core/providers/weather_provider.dart';
 import 'package:health_flare/core/router/app_router.dart';
+import 'package:health_flare/features/shared/widgets/weather_chip.dart';
 import 'package:health_flare/models/meal_entry.dart';
 import 'package:health_flare/models/weather_snapshot.dart';
 
@@ -247,11 +248,16 @@ class _MealEntryFormScreenState extends ConsumerState<MealEntryFormScreen> {
                 ),
               ),
 
-            // Weather chip (new entries only)
-            if (!_isEdit && _capturedWeather != null)
+            // Weather chip (new entries show live weather; edit shows saved snapshot)
+            if ((_isEdit ? widget.entry?.weatherSnapshot : _capturedWeather) !=
+                null)
               Padding(
                 padding: const EdgeInsets.only(bottom: 12),
-                child: _WeatherChip(snapshot: _capturedWeather!),
+                child: WeatherChip(
+                  snapshot: _isEdit
+                      ? widget.entry?.weatherSnapshot
+                      : _capturedWeather,
+                ),
               ),
 
             // Description
@@ -335,34 +341,6 @@ class _MealEntryFormScreenState extends ConsumerState<MealEntryFormScreen> {
           ),
         ),
       ),
-    );
-  }
-}
-
-// ---------------------------------------------------------------------------
-// Weather chip
-// ---------------------------------------------------------------------------
-
-class _WeatherChip extends StatelessWidget {
-  const _WeatherChip({required this.snapshot});
-
-  final WeatherSnapshot snapshot;
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(snapshot.icon, size: 16, color: cs.onSurfaceVariant),
-        const SizedBox(width: 6),
-        Text(
-          snapshot.displayString,
-          style: Theme.of(
-            context,
-          ).textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant),
-        ),
-      ],
     );
   }
 }

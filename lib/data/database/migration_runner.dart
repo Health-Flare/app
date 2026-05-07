@@ -21,6 +21,7 @@ import 'package:health_flare/data/seed_data.dart';
 /// Schema v12 = registered ActivityEntryIsar collection.
 /// Schema v13 = added status + statusHistory (ConditionStatusEventIsar) to UserConditionIsar.
 /// Schema v14 = added weatherSnapshot embedded field to SymptomEntryIsar, MealEntryIsar, ActivityEntryIsar, DailyCheckinIsar.
+/// Schema v15 = added weather embedded field to JournalEntryIsar.
 ///
 /// How to add a future migration:
 ///   1. Increment [_targetVersion].
@@ -34,7 +35,7 @@ import 'package:health_flare/data/seed_data.dart';
 class MigrationRunner {
   MigrationRunner._();
 
-  static const int _targetVersion = 14;
+  static const int _targetVersion = 15;
 
   /// Run all pending migrations and update [AppSettings.schemaVersion].
   ///
@@ -207,6 +208,17 @@ class MigrationRunner {
       await isar.writeTxn(() async {
         final s = await isar.appSettings.get(1) ?? (AppSettings()..id = 1);
         s.schemaVersion = 14;
+        await isar.appSettings.put(s);
+      });
+    }
+
+    // ── v14 → v15: weather added to JournalEntryIsar ──────────────────────
+    // Isar handles the new nullable embedded field automatically (null default).
+    // No data transformation needed.
+    if (currentVersion < 15) {
+      await isar.writeTxn(() async {
+        final s = await isar.appSettings.get(1) ?? (AppSettings()..id = 1);
+        s.schemaVersion = 15;
         await isar.appSettings.put(s);
       });
     }

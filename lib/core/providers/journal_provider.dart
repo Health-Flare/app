@@ -2,7 +2,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar_community/isar.dart';
 
 import 'package:health_flare/data/models/journal_entry_isar.dart';
+import 'package:health_flare/data/models/weather_snapshot_isar.dart';
 import 'package:health_flare/models/journal_entry.dart';
+import 'package:health_flare/models/weather_snapshot.dart';
 import 'package:health_flare/core/providers/database_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 
@@ -48,6 +50,7 @@ class JournalEntryListNotifier extends Notifier<List<JournalEntry>> {
     required JournalSnapshot firstSnapshot,
     int? mood,
     int? energyLevel,
+    WeatherSnapshot? weatherSnapshot,
   }) async {
     final isar = ref.read(isarProvider);
     final row = JournalEntryIsar()
@@ -56,7 +59,10 @@ class JournalEntryListNotifier extends Notifier<List<JournalEntry>> {
       ..createdAt = createdAt
       ..snapshots = [JournalSnapshotIsar.fromDomain(firstSnapshot)]
       ..mood = mood
-      ..energyLevel = energyLevel;
+      ..energyLevel = energyLevel
+      ..weather = weatherSnapshot != null
+          ? WeatherSnapshotIsar.fromDomain(weatherSnapshot)
+          : null;
     await isar.writeTxn(() async {
       await isar.journalEntryIsars.put(row);
     });

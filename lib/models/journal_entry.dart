@@ -1,3 +1,5 @@
+import 'package:health_flare/models/weather_snapshot.dart';
+
 /// A point-in-time snapshot of a journal entry's text content.
 ///
 /// Every autosave appends a new snapshot. This gives the user an undo
@@ -42,6 +44,7 @@ class JournalEntry {
     required this.snapshots,
     this.mood,
     this.energyLevel,
+    this.weatherSnapshot,
   }) : assert(snapshots.isNotEmpty, 'snapshots must not be empty');
 
   /// Stable local identifier. Isar auto-id when DB is wired.
@@ -66,6 +69,9 @@ class JournalEntry {
 
   /// Optional energy level: 1 (exhausted) to 5 (good energy).
   final int? energyLevel;
+
+  /// Weather conditions at the time of writing, if weather tracking is enabled.
+  final WeatherSnapshot? weatherSnapshot;
 
   // ── Derived from latest snapshot ─────────────────────────────────────────
 
@@ -110,6 +116,7 @@ class JournalEntry {
       snapshots: [...snapshots, snapshot],
       mood: mood,
       energyLevel: energyLevel,
+      weatherSnapshot: weatherSnapshot,
     );
   }
 
@@ -126,6 +133,21 @@ class JournalEntry {
       snapshots: snapshots.sublist(0, snapshots.length - 1),
       mood: mood,
       energyLevel: energyLevel,
+      weatherSnapshot: weatherSnapshot,
+    );
+  }
+
+  /// Returns a new entry with [weather] attached.
+  /// Used to retroactively attach a snapshot after the entry was first saved.
+  JournalEntry withWeather(WeatherSnapshot weather) {
+    return JournalEntry(
+      id: id,
+      profileId: profileId,
+      createdAt: createdAt,
+      snapshots: snapshots,
+      mood: mood,
+      energyLevel: energyLevel,
+      weatherSnapshot: weather,
     );
   }
 
@@ -148,6 +170,7 @@ class JournalEntry {
       snapshots: snapshots,
       mood: clearMood ? null : (mood ?? this.mood),
       energyLevel: clearEnergyLevel ? null : (energyLevel ?? this.energyLevel),
+      weatherSnapshot: weatherSnapshot,
     );
   }
 
