@@ -112,6 +112,10 @@ class UserConditionListNotifier extends Notifier<List<UserCondition>> {
         .listen((_) => _reload(isar));
     ref.onDispose(sub.cancel);
 
+    // Reload whenever the active profile changes so each profile sees only
+    // its own tracked conditions.
+    ref.listen(activeProfileProvider, (_, _) => _reload(isar));
+
     _reload(isar);
     return [];
   }
@@ -203,6 +207,10 @@ class UserSymptomListNotifier extends Notifier<List<UserSymptom>> {
         .watchLazy(fireImmediately: false)
         .listen((_) => _reload(isar));
     ref.onDispose(sub.cancel);
+
+    // Reload whenever the active profile changes so each profile sees only
+    // its own tracked symptoms.
+    ref.listen(activeProfileProvider, (_, _) => _reload(isar));
 
     _reload(isar);
     return [];
