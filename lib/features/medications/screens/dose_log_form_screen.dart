@@ -7,6 +7,7 @@ import 'package:health_flare/core/providers/dose_log_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/models/dose_log.dart';
 import 'package:health_flare/models/medication.dart';
+import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 
 /// Full-screen form for logging or editing a dose entry.
 ///
@@ -192,7 +193,7 @@ class _DoseLogFormScreenState extends ConsumerState<DoseLogFormScreen> {
     final showReasonField = _status == 'skipped' || _status == 'missed';
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: HFAppBar(
         title: Text(
           isEdit ? 'Edit dose' : 'Log dose — ${widget.medication.name}',
         ),

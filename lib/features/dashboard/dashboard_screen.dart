@@ -13,6 +13,7 @@ import 'package:health_flare/features/flare/widgets/active_flare_banner.dart';
 import 'package:health_flare/features/daily_checkin/widgets/daily_checkin_card.dart';
 import 'package:health_flare/features/appointments/widgets/upcoming_appointments_card.dart';
 import 'package:health_flare/features/onboarding/widgets/weather_opt_in_sheet.dart';
+import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 
 /// Dashboard — the home tab.
 ///
@@ -88,7 +89,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     final title = activeProfile != null ? activeProfile.name : 'Health Flare';
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: HFAppBar(
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
@@ -115,7 +116,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             onPressed: () => context.push(AppRoutes.settings),
           ),
           // Leave space for the shell overlay avatar (top-right corner).
-          const SizedBox(width: 56),
         ],
       ),
       body: const _DashboardBody(),

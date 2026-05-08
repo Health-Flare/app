@@ -1,19 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/core/router/app_router.dart';
-import 'package:health_flare/features/profiles/widgets/profile_avatar.dart';
-import 'package:health_flare/features/profiles/widgets/profile_switcher_sheet.dart';
 
 /// Persistent shell wrapping all tab destinations.
 ///
-/// Provides:
-///   • [NavigationBar] for the 6 main sections
-///   • A persistent profile avatar button at the top-right, accessible
-///     from every screen, that opens the [ProfileSwitcherSheet].
-class AppShell extends ConsumerWidget {
+/// Provides the [NavigationBar] for the main sections. Each screen is
+/// responsible for its own [AppBar] via [HFAppBar], which automatically
+/// includes the [ProfileIconButton] as its rightmost action.
+class AppShell extends StatelessWidget {
   const AppShell({super.key, required this.child});
 
   final Widget child;
@@ -53,8 +48,6 @@ class AppShell extends ConsumerWidget {
 
   int _currentIndex(BuildContext context) {
     final location = GoRouterState.of(context).matchedLocation;
-    // Use prefix match so sub-routes (e.g. /journal/new, /journal/1/edit)
-    // keep the parent tab highlighted.
     final index = _destinations.indexWhere(
       (d) => d.route == '/'
           ? location == '/'
@@ -63,61 +56,10 @@ class AppShell extends ConsumerWidget {
     return index < 0 ? 0 : index;
   }
 
-  /// Returns true when the current location is a root-level tab screen.
-  ///
-  /// Detail and form sub-routes (e.g. /medications/1, /meals/1/edit) have
-  /// their own AppBar actions in the same top-right region, so we suppress
-  /// the overlay to avoid covering those buttons.
-  bool _isRootRoute(String location) {
-    final segments = location.split('/').where((s) => s.isNotEmpty).toList();
-    return segments.length <= 1;
-  }
-
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final activeProfile = ref.watch(activeProfileDataProvider);
-    final location = GoRouterState.of(context).matchedLocation;
-    final showProfileButton = _isRootRoute(location);
-
+  Widget build(BuildContext context) {
     return Scaffold(
-      // The individual tab screens each supply their own AppBar. The shell
-      // injects the persistent profile button via an overlay so it appears
-      // on every screen without each screen needing to know about it.
-      body: Stack(
-        children: [
-          child,
-          // Persistent profile indicator — top-right, shown only on root tab
-          // screens so it does not cover AppBar actions on detail/form screens.
-          if (showProfileButton)
-            Positioned(
-              top: MediaQuery.of(context).padding.top + 8,
-              right: 8,
-              child: Semantics(
-                button: true,
-                label: activeProfile != null
-                    ? 'Switch profile. Current: ${activeProfile.name}'
-                    : 'Switch profile',
-                child: Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    onTap: () => showProfileSwitcher(context),
-                    borderRadius: BorderRadius.circular(24),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: activeProfile != null
-                          ? ProfileAvatar(
-                              profile: activeProfile,
-                              radius: 18,
-                              showBorder: false,
-                            )
-                          : const _DefaultProfileButton(),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-        ],
-      ),
+      body: child,
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex(context),
         onDestinationSelected: (index) =>
@@ -131,26 +73,6 @@ class AppShell extends ConsumerWidget {
               ),
             )
             .toList(),
-      ),
-    );
-  }
-}
-
-/// Fallback button when no profile exists (should not normally be visible
-/// after onboarding, but guards against edge cases).
-class _DefaultProfileButton extends StatelessWidget {
-  const _DefaultProfileButton();
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    return CircleAvatar(
-      radius: 18,
-      backgroundColor: cs.surfaceContainerHighest,
-      child: Icon(
-        Icons.person_outline_rounded,
-        size: 20,
-        color: cs.onSurfaceVariant,
       ),
     );
   }

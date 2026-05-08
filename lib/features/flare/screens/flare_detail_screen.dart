@@ -12,6 +12,7 @@ import 'package:health_flare/models/flare.dart';
 import 'package:health_flare/models/meal_entry.dart';
 import 'package:health_flare/models/symptom_entry.dart';
 import 'package:health_flare/models/vital_entry.dart';
+import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 
 /// Detail view for a single flare period.
 ///
@@ -29,9 +30,9 @@ class FlareDetailScreen extends ConsumerWidget {
         (ModalRoute.of(context)?.settings.arguments as Flare?);
 
     if (flare == null) {
-      return Scaffold(
-        appBar: AppBar(),
-        body: const Center(child: Text('Flare not found')),
+      return const Scaffold(
+        appBar: HFAppBar(),
+        body: Center(child: Text('Flare not found')),
       );
     }
 
@@ -60,7 +61,7 @@ class FlareDetailScreen extends ConsumerWidget {
     final totalEntries = symptoms.length + vitals.length + meals.length;
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: HFAppBar(
         title: Text(flare.isActive ? 'Active flare' : 'Flare detail'),
         actions: [
           IconButton(

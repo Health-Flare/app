@@ -7,6 +7,7 @@ import 'package:health_flare/core/providers/flare_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/core/router/app_router.dart';
 import 'package:health_flare/models/flare.dart';
+import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 
 /// Full flare history for the active profile, reverse-chronological.
 class FlareHistoryScreen extends ConsumerWidget {
@@ -18,7 +19,7 @@ class FlareHistoryScreen extends ConsumerWidget {
     final flares = ref.watch(activeProfileFlaresProvider);
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: HFAppBar(
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

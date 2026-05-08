@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:health_flare/core/providers/appointment_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/models/appointment.dart';
+import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 
 /// Screen to create a new appointment or edit an existing one.
 ///
@@ -128,7 +129,7 @@ class _AppointmentFormScreenState extends ConsumerState<AppointmentFormScreen> {
     final fmt = DateFormat('d MMM yyyy, HH:mm');
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: HFAppBar(
         title: Text(_isEdit ? 'Edit appointment' : 'New appointment'),
       ),
       body: SingleChildScrollView(

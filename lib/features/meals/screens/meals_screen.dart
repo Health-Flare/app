@@ -9,6 +9,7 @@ import 'package:health_flare/core/providers/meal_entry_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/core/router/app_router.dart';
 import 'package:health_flare/models/meal_entry.dart';
+import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 
 /// Main screen showing the meal log for the active profile.
 class MealsScreen extends ConsumerWidget {
@@ -20,7 +21,7 @@ class MealsScreen extends ConsumerWidget {
     final entries = ref.watch(activeProfileMealEntriesProvider);
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: HFAppBar(
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

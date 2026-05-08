@@ -7,6 +7,7 @@ import 'package:health_flare/core/router/app_router.dart';
 import 'package:health_flare/models/condition.dart';
 import 'package:health_flare/models/symptom.dart';
 import 'package:health_flare/core/providers/condition_provider.dart';
+import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 
 /// Screen for selecting illnesses (conditions) and quick-adding symptoms.
 ///
@@ -156,7 +157,7 @@ class _IllnessScreenState extends ConsumerState<IllnessScreen> {
         _pendingConditionIds.isNotEmpty || _pendingSymptomIds.isNotEmpty;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Track Illnesses')),
+      appBar: const HFAppBar(title: Text('Track Illnesses')),
       bottomNavigationBar: SafeArea(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),

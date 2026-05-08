@@ -7,6 +7,7 @@ import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/core/providers/sleep_provider.dart';
 import 'package:health_flare/features/sleep/widgets/sleep_quality_selector.dart';
 import 'package:health_flare/models/sleep_entry.dart';
+import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 
 /// Full-screen form for creating or editing a sleep entry.
 ///
@@ -163,7 +164,7 @@ class _SleepEntryScreenState extends ConsumerState<SleepEntryScreen> {
     final fmt = DateFormat('EEE d MMM, HH:mm');
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: HFAppBar(
         title: Text(widget.entry == null ? 'Log sleep' : 'Edit sleep'),
       ),
       body: SingleChildScrollView(

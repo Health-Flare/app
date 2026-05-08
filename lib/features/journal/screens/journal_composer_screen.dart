@@ -9,6 +9,7 @@ import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/core/providers/weather_provider.dart';
 import 'package:health_flare/features/journal/widgets/journal_enrichment_bar.dart';
 import 'package:health_flare/features/shared/widgets/weather_chip.dart';
+import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 import 'package:health_flare/models/journal_entry.dart';
 import 'package:health_flare/models/weather_snapshot.dart';
 
@@ -388,7 +389,7 @@ class _JournalComposerScreenState extends ConsumerState<JournalComposerScreen> {
     return PopScope(
       canPop: true,
       child: Scaffold(
-        appBar: AppBar(
+        appBar: HFAppBar(
           leading: const BackButton(),
           // AppBar title shows saved state — the only feedback the user needs.
           title: _lastSavedAt != null
@@ -412,7 +413,6 @@ class _JournalComposerScreenState extends ConsumerState<JournalComposerScreen> {
                 ),
               ),
             // Leave space for the shell overlay profile avatar.
-            const SizedBox(width: 56),
           ],
         ),
         body: Column(

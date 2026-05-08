@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:health_flare/core/providers/report_provider.dart';
 import 'package:health_flare/core/router/app_router.dart';
 import 'package:health_flare/features/reports/models/report_config.dart';
+import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 
 /// Report configuration and generation screen.
 ///
@@ -45,7 +46,7 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
     final tt = Theme.of(context).textTheme;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Reports')),
+      appBar: const HFAppBar(title: Text('Reports')),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [

@@ -11,6 +11,7 @@ import 'package:health_flare/core/router/app_router.dart';
 import 'package:health_flare/features/shared/widgets/weather_chip.dart';
 import 'package:health_flare/models/meal_entry.dart';
 import 'package:health_flare/models/symptom_entry.dart';
+import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 
 /// Detail view for a single meal entry.
 ///
@@ -31,9 +32,9 @@ class MealDetailScreen extends ConsumerWidget {
         (ModalRoute.of(context)?.settings.arguments as MealEntry?);
 
     if (entry == null) {
-      return Scaffold(
-        appBar: AppBar(),
-        body: const Center(child: Text('Meal entry not found')),
+      return const Scaffold(
+        appBar: HFAppBar(),
+        body: Center(child: Text('Meal entry not found')),
       );
     }
 
@@ -49,7 +50,7 @@ class MealDetailScreen extends ConsumerWidget {
     final fmt = DateFormat('d MMM yyyy, HH:mm');
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: HFAppBar(
         title: const Text('Meal detail'),
         actions: [
           IconButton(

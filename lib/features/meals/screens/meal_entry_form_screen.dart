@@ -13,6 +13,7 @@ import 'package:health_flare/core/router/app_router.dart';
 import 'package:health_flare/features/shared/widgets/weather_chip.dart';
 import 'package:health_flare/models/meal_entry.dart';
 import 'package:health_flare/models/weather_snapshot.dart';
+import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 
 /// Full-screen form for creating or editing a meal entry.
 ///
@@ -220,7 +221,7 @@ class _MealEntryFormScreenState extends ConsumerState<MealEntryFormScreen> {
     });
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: HFAppBar(
         title: Text(_isEdit ? 'Edit meal' : 'Log meal'),
         actions: [
           if (_isEdit)

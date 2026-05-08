@@ -4,8 +4,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:health_flare/core/providers/journal_provider.dart';
+import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/features/journal/screens/journal_detail_screen.dart';
 import 'package:health_flare/models/journal_entry.dart';
+import 'package:health_flare/models/profile.dart';
 
 // ---------------------------------------------------------------------------
 // Fakes
@@ -73,7 +75,12 @@ Widget _buildDetail(_FakeJournalList fakeList, JournalEntry entry) {
   );
 
   return ProviderScope(
-    overrides: [journalEntryListProvider.overrideWith(() => fakeList)],
+    overrides: [
+      journalEntryListProvider.overrideWith(() => fakeList),
+      activeProfileDataProvider.overrideWith(
+        (ref) => Profile(id: 1, name: 'Sarah'),
+      ),
+    ],
     child: MaterialApp.router(routerConfig: router),
   );
 }

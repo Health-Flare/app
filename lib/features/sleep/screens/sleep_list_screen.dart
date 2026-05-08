@@ -6,6 +6,7 @@ import 'package:health_flare/core/providers/sleep_provider.dart';
 import 'package:health_flare/core/router/app_router.dart';
 import 'package:health_flare/features/sleep/widgets/sleep_entry_card.dart';
 import 'package:health_flare/models/sleep_entry.dart';
+import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 
 /// Reverse-chronological list of sleep entries for the active profile.
 ///
@@ -18,7 +19,7 @@ class SleepListScreen extends ConsumerWidget {
     final entries = ref.watch(activeSleepEntriesProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Sleep')),
+      appBar: const HFAppBar(title: Text('Sleep')),
       body: entries.isEmpty
           ? const _EmptyState()
           : CustomScrollView(

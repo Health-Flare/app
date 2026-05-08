@@ -9,6 +9,7 @@ import 'package:health_flare/features/reports/services/insights_query_service.da
 import 'package:health_flare/features/reports/widgets/food_triggers_card.dart';
 import 'package:health_flare/features/reports/widgets/sleep_correlation_card.dart';
 import 'package:health_flare/features/reports/widgets/trend_chart.dart';
+import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 
 /// Pattern insights screen — shows in-app charts and correlations.
 ///
@@ -94,7 +95,7 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
     final profileName = profile?.name ?? 'Profile';
 
     return Scaffold(
-      appBar: AppBar(title: Text('Insights — $profileName')),
+      appBar: HFAppBar(title: Text('Insights — $profileName')),
       body: Column(
         children: [
           // ── Date window selector ──────────────────────────────────────────

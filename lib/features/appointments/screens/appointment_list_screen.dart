@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:health_flare/core/providers/appointment_provider.dart';
 import 'package:health_flare/core/router/app_router.dart';
 import 'package:health_flare/models/appointment.dart';
+import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 
 /// Shows all appointments for the active profile, grouped by upcoming / past.
 class AppointmentListScreen extends ConsumerWidget {
@@ -24,7 +25,7 @@ class AppointmentListScreen extends ConsumerWidget {
         .toList();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Appointments')),
+      appBar: const HFAppBar(title: Text('Appointments')),
       body: all.isEmpty
           ? const Center(
               child: Padding(

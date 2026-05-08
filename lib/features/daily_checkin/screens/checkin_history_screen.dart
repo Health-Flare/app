@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:health_flare/core/providers/daily_checkin_provider.dart';
 import 'package:health_flare/core/router/app_router.dart';
 import 'package:health_flare/models/daily_checkin.dart';
+import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 
 /// Shows a reverse-chronological list of daily check-ins for the active profile.
 class CheckInHistoryScreen extends ConsumerWidget {
@@ -16,7 +17,7 @@ class CheckInHistoryScreen extends ConsumerWidget {
     final checkins = ref.watch(activeProfileCheckinsProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Check-in history')),
+      appBar: const HFAppBar(title: Text('Check-in history')),
       body: checkins.isEmpty
           ? const Center(
               child: Padding(

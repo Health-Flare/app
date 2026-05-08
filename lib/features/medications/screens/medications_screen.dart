@@ -7,6 +7,7 @@ import 'package:health_flare/core/providers/medication_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/core/router/app_router.dart';
 import 'package:health_flare/models/medication.dart';
+import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 
 /// Main medications screen — lists active medications and supplements,
 /// with a collapsed section for discontinued entries.
@@ -32,7 +33,7 @@ class MedicationsScreen extends ConsumerWidget {
         discontinuedSupps.isNotEmpty;
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: HFAppBar(
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

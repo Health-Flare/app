@@ -10,6 +10,7 @@ import 'package:health_flare/core/router/app_router.dart';
 import 'package:health_flare/features/shared/widgets/weather_chip.dart';
 import 'package:health_flare/models/activity_entry.dart';
 import 'package:health_flare/models/weather_snapshot.dart';
+import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 
 /// Full-screen form for creating or editing an activity entry.
 ///
@@ -195,7 +196,7 @@ class _ActivityEntryFormScreenState
     });
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: HFAppBar(
         title: Text(_isEdit ? 'Edit activity' : 'Log activity'),
         actions: [
           if (_isEdit)

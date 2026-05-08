@@ -6,6 +6,7 @@ import 'package:health_flare/core/providers/backup_provider.dart';
 import 'package:health_flare/core/providers/database_provider.dart';
 import 'package:health_flare/data/database/app_settings.dart';
 import 'package:health_flare/data/database/import_service.dart';
+import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 
 // ---------------------------------------------------------------------------
 // Local provider — reads schema version from AppSettings singleton.
@@ -27,7 +28,7 @@ class SettingsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Settings')),
+      appBar: const HFAppBar(title: Text('Settings')),
       body: ListView(
         children: [
           // ── Data & backup ─────────────────────────────────────────────────

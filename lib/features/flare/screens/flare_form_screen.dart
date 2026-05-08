@@ -7,6 +7,7 @@ import 'package:health_flare/core/providers/condition_provider.dart';
 import 'package:health_flare/core/providers/flare_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/models/flare.dart';
+import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 
 /// Screen to start a new flare or edit an existing (active) one.
 ///
@@ -126,7 +127,7 @@ class _FlareFormScreenState extends ConsumerState<FlareFormScreen> {
     final fmt = DateFormat('d MMM yyyy, HH:mm');
 
     return Scaffold(
-      appBar: AppBar(title: Text(_isEdit ? 'Edit flare' : 'Start flare')),
+      appBar: HFAppBar(title: Text(_isEdit ? 'Edit flare' : 'Start flare')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
         child: Column(

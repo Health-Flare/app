@@ -7,6 +7,7 @@ import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/core/providers/vital_entry_provider.dart';
 import 'package:health_flare/models/vital_entry.dart';
 import 'package:health_flare/models/vital_type.dart';
+import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 
 /// Full-screen form for creating or editing a vital measurement entry.
 ///
@@ -181,7 +182,7 @@ class _VitalEntryFormScreenState extends ConsumerState<VitalEntryFormScreen> {
     final isEdit = widget.entry != null;
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: HFAppBar(
         title: Text(isEdit ? 'Edit vital' : 'Log vital'),
         actions: [
           if (isEdit)

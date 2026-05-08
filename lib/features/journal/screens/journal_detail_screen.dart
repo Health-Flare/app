@@ -7,6 +7,7 @@ import 'package:health_flare/core/providers/journal_provider.dart';
 import 'package:health_flare/core/router/app_router.dart';
 import 'package:health_flare/features/shared/widgets/weather_chip.dart';
 import 'package:health_flare/models/journal_entry.dart';
+import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 
 /// Full detail view for a single journal entry.
 ///
@@ -29,14 +30,14 @@ class JournalDetailScreen extends ConsumerWidget {
 
     // Entry may have been deleted — pop back gracefully.
     if (entry == null) {
-      return Scaffold(
-        appBar: AppBar(),
-        body: const Center(child: Text('Entry not found.')),
+      return const Scaffold(
+        appBar: HFAppBar(),
+        body: Center(child: Text('Entry not found.')),
       );
     }
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: HFAppBar(
         actions: [
           IconButton(
             icon: const Icon(Icons.edit_outlined),
@@ -49,7 +50,6 @@ class JournalDetailScreen extends ConsumerWidget {
             onPressed: () => _confirmDelete(context, ref, entry),
           ),
           // Leave space for the shell overlay profile avatar.
-          const SizedBox(width: 56),
         ],
       ),
       body: SingleChildScrollView(

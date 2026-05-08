@@ -9,6 +9,7 @@ import 'package:health_flare/core/providers/vital_entry_provider.dart';
 import 'package:health_flare/core/router/app_router.dart';
 import 'package:health_flare/models/symptom_entry.dart';
 import 'package:health_flare/models/vital_entry.dart';
+import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 
 /// Tabbed screen showing the Symptoms and Vitals logs for the active profile.
 class SymptomsVitalsScreen extends ConsumerStatefulWidget {
@@ -45,7 +46,7 @@ class _SymptomsVitalsScreenState extends ConsumerState<SymptomsVitalsScreen>
     final isSymptomTab = _tabController.index == 0;
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: HFAppBar(
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

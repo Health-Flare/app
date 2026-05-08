@@ -7,6 +7,7 @@ import 'package:health_flare/core/providers/medication_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/core/router/app_router.dart';
 import 'package:health_flare/models/medication.dart';
+import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 
 /// Full-screen form for adding or editing a medication/supplement.
 ///
@@ -225,7 +226,7 @@ class _MedicationFormScreenState extends ConsumerState<MedicationFormScreen> {
     final isEdit = widget.medication != null;
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: HFAppBar(
         title: Text(isEdit ? 'Edit medication' : 'Add medication'),
         actions: [
           if (isEdit)

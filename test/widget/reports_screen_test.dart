@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/core/providers/report_provider.dart';
 import 'package:health_flare/features/reports/models/report_config.dart';
 import 'package:health_flare/features/reports/screens/reports_screen.dart';
+import 'package:health_flare/models/profile.dart';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -17,6 +19,9 @@ Widget _buildScreen({ReportConfig? config}) {
         reportConfigProvider.overrideWith(
           (ref) => ReportConfigNotifier()..update(config),
         ),
+      activeProfileDataProvider.overrideWith(
+        (ref) => Profile(id: 1, name: 'Sarah'),
+      ),
     ],
     child: const MaterialApp(home: ReportsScreen()),
   );

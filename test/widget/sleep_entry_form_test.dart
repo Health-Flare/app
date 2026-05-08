@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/core/providers/sleep_provider.dart';
 import 'package:health_flare/features/sleep/screens/sleep_entry_screen.dart';
+import 'package:health_flare/models/profile.dart';
 import 'package:health_flare/models/sleep_entry.dart';
 
 // ---------------------------------------------------------------------------
@@ -31,6 +32,9 @@ Widget _buildScreen({SleepEntry? entry}) {
       sleepEntryListProvider.overrideWith(_FakeSleepList.new),
       activeProfileProvider.overrideWith(_FakeActiveProfile.new),
       activeSleepEntriesProvider.overrideWith((ref) => []),
+      activeProfileDataProvider.overrideWith(
+        (ref) => Profile(id: 1, name: 'Sarah'),
+      ),
     ],
     child: MaterialApp(home: SleepEntryScreen(entry: entry)),
   );

@@ -9,6 +9,7 @@ import 'package:health_flare/core/providers/weather_provider.dart';
 import 'package:health_flare/features/shared/widgets/weather_chip.dart';
 import 'package:health_flare/models/symptom_entry.dart';
 import 'package:health_flare/models/weather_snapshot.dart';
+import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 
 /// Full-screen form for creating or editing a symptom entry.
 ///
@@ -171,7 +172,7 @@ class _SymptomEntryFormScreenState
     });
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: HFAppBar(
         title: Text(isEdit ? 'Edit symptom' : 'Log symptom'),
         actions: [
           if (isEdit)

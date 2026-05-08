@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:health_flare/core/providers/condition_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/models/user_condition.dart';
+import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 
 class ConditionDetailScreen extends ConsumerStatefulWidget {
   const ConditionDetailScreen({super.key, required this.condition});
@@ -139,7 +140,7 @@ class _ConditionDetailScreenState extends ConsumerState<ConditionDetailScreen> {
     final timeline = _timeline;
 
     return Scaffold(
-      appBar: AppBar(title: Text(widget.condition.conditionName)),
+      appBar: HFAppBar(title: Text(widget.condition.conditionName)),
       bottomNavigationBar: SafeArea(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),

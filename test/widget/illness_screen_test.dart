@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:health_flare/features/illness/screens/illness_screen.dart';
 import 'package:health_flare/core/providers/condition_provider.dart';
+import 'package:health_flare/core/providers/profile_provider.dart';
+import 'package:health_flare/features/illness/screens/illness_screen.dart';
 import 'package:health_flare/models/condition.dart';
+import 'package:health_flare/models/profile.dart';
 import 'package:health_flare/models/symptom.dart';
 import 'package:health_flare/models/user_condition.dart';
 import 'package:health_flare/models/user_symptom.dart';
@@ -52,6 +54,9 @@ Widget buildIllnessScreen({List<Condition> conditions = const []}) {
       symptomCatalogProvider.overrideWith(_FakeSymptomCatalog.new),
       userConditionListProvider.overrideWith(_FakeUserConditions.new),
       userSymptomListProvider.overrideWith(_FakeUserSymptoms.new),
+      activeProfileDataProvider.overrideWith(
+        (ref) => Profile(id: 1, name: 'Sarah'),
+      ),
     ],
     child: const MaterialApp(home: IllnessScreen()),
   );

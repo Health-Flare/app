@@ -7,6 +7,7 @@ import 'package:health_flare/core/providers/activity_entry_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/core/router/app_router.dart';
 import 'package:health_flare/models/activity_entry.dart';
+import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 
 /// Main screen showing the activity log for the active profile.
 class ActivityListScreen extends ConsumerWidget {
@@ -18,7 +19,7 @@ class ActivityListScreen extends ConsumerWidget {
     final entries = ref.watch(activeProfileActivityEntriesProvider);
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: HFAppBar(
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

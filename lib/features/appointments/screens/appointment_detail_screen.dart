@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:health_flare/core/providers/appointment_provider.dart';
 import 'package:health_flare/core/router/app_router.dart';
 import 'package:health_flare/models/appointment.dart';
+import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 
 /// Full detail view for an appointment.
 ///
@@ -196,7 +197,7 @@ class _AppointmentDetailViewState
     final tt = Theme.of(context).textTheme;
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: HFAppBar(
         title: Text(
           appt.isUpcoming ? 'Upcoming appointment' : 'Appointment detail',
         ),

@@ -8,6 +8,7 @@ import 'package:health_flare/core/providers/medication_provider.dart';
 import 'package:health_flare/core/router/app_router.dart';
 import 'package:health_flare/models/dose_log.dart';
 import 'package:health_flare/models/medication.dart';
+import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 
 /// Detail screen for a medication — shows metadata, effectiveness summary,
 /// and full dose history.
@@ -24,16 +25,16 @@ class MedicationDetailScreen extends ConsumerWidget {
         .firstWhere((m) => m?.id == medicationId, orElse: () => null);
 
     if (med == null) {
-      return Scaffold(
-        appBar: AppBar(),
-        body: const Center(child: Text('Medication not found')),
+      return const Scaffold(
+        appBar: HFAppBar(),
+        body: Center(child: Text('Medication not found')),
       );
     }
 
     final logs = ref.watch(medicationDoseLogsProvider(medicationId));
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: HFAppBar(
         title: Text(med.name),
         actions: [
           IconButton(

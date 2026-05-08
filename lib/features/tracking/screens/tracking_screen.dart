@@ -11,6 +11,7 @@ import 'package:health_flare/core/router/app_router.dart';
 import 'package:health_flare/models/symptom_entry.dart';
 import 'package:health_flare/models/user_condition.dart';
 import 'package:health_flare/models/vital_entry.dart';
+import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 
 class TrackingScreen extends ConsumerStatefulWidget {
   const TrackingScreen({super.key});
@@ -46,7 +47,7 @@ class _TrackingScreenState extends ConsumerState<TrackingScreen>
     final tabIndex = _tabController.index;
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: HFAppBar(
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

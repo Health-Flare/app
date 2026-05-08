@@ -9,6 +9,7 @@ import 'package:health_flare/core/providers/weather_provider.dart';
 import 'package:health_flare/features/shared/widgets/weather_chip.dart';
 import 'package:health_flare/models/daily_checkin.dart';
 import 'package:health_flare/models/weather_snapshot.dart';
+import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 
 /// Full-screen form to record or edit a daily check-in.
 ///
@@ -138,7 +139,9 @@ class _CheckInFormScreenState extends ConsumerState<CheckInFormScreen> {
     });
 
     return Scaffold(
-      appBar: AppBar(title: Text(_isEdit ? 'Edit check-in' : 'Daily check-in')),
+      appBar: HFAppBar(
+        title: Text(_isEdit ? 'Edit check-in' : 'Daily check-in'),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
         child: Column(

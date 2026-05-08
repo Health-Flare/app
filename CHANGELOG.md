@@ -39,10 +39,15 @@ Subsection meanings (from Keep a Changelog):
 ## [Unreleased]
 
 ### Added
-- _Nothing yet._
+- **Profile icon button** — persistent `ProfileIconButton` in every app bar replaces the floating overlay. Tap opens the profile switcher; swipe up cycles to the previous profile (wrapping from first to last), swipe down cycles to the next (wrapping from last to first). No-op when only one profile exists.
+- `HFAppBar` — shared `PreferredSizeWidget` app bar component that always appends `ProfileIconButton` as the rightmost action. All screens now use this single component, so the profile icon behaviour is defined once and applied everywhere.
+- `docs/features/profile-icon.feature` — full Gherkin spec for profile icon placement, tap, swipe gesture, and single-profile guard behaviour.
+- Code-reuse scenarios added to `docs/features/developer-experience.feature` (shared widget extraction, single-source-of-truth for behaviour, no duplicated constants, theme tokens, `AppRoutes`, layout workarounds in the shared component only).
 
 ### Changed
-- _Nothing yet._
+- `AppShell` simplified from `ConsumerWidget` to `StatelessWidget` — the profile avatar overlay and `_isRootRoute` heuristic are removed. The profile icon is now layout-participating (inside each screen's app bar) rather than floating above all content.
+- All 32 screens migrated from bare `AppBar` to `HFAppBar`.
+- Removed `SizedBox(width: 56)` spacer hacks from dashboard, journal list, journal detail, and journal composer screens.
 
 ### Deprecated
 - _Nothing yet._
@@ -51,7 +56,7 @@ Subsection meanings (from Keep a Changelog):
 - _Nothing yet._
 
 ### Fixed
-- _Nothing yet._
+- Profile avatar no longer obscures app bar action buttons (edit, delete, etc.) on detail and form screens. Closes #83.
 
 ### Security
 - _Nothing yet._
