@@ -159,6 +159,47 @@ Feature: Developer Experience
     And the pipeline warns (but does not fail) if the format is not followed
 
   # ---------------------------------------------------------------------------
+  # Code reuse — single-source definitions
+  # ---------------------------------------------------------------------------
+
+  Scenario: UI patterns that appear on more than one screen are extracted into shared widgets
+    Given any visual or interactive pattern that is needed on two or more screens
+    Then the pattern is implemented as a named widget class in a shared location
+    And each screen imports and renders that widget rather than duplicating its build logic
+    And any change to the pattern requires editing only one file
+
+  Scenario: A shared widget is the single source of truth for its behaviour and appearance
+    Given a widget class that encapsulates a reusable pattern
+    Then all styling, gesture handling, and state logic for that pattern live inside the widget
+    And no screen reimplements or overrides that logic inline
+    And if a screen needs a variation, it passes parameters to the shared widget rather than copying code
+
+  Scenario: Hardcoded constant values are not duplicated across files
+    Given a value such as a spacing amount, animation duration, icon size, or border radius
+    When that value is needed in more than one file
+    Then it is defined as a named Dart constant in a single shared location
+    And all usages reference the constant by name
+    And no two files independently hardcode the same numeric or string literal for the same conceptual value
+
+  Scenario: Theme tokens are used in preference to hardcoded colour or typography values
+    Given any widget that applies a colour, text style, or elevation
+    Then it reads the value from Theme.of(context).colorScheme or Theme.of(context).textTheme
+    And not from a hardcoded Color(...) or TextStyle(...) literal
+    Unless the override is intentional and the reason is documented in a comment
+
+  Scenario: Route path strings are referenced through AppRoutes, not duplicated inline
+    Given any code that constructs or compares a navigation path
+    Then it uses the AppRoutes constant (e.g. AppRoutes.journal, AppRoutes.journalEdit(id))
+    And not a hardcoded string literal
+    And the CI pipeline fails if a bare path string (e.g. '/journal') appears outside AppRoutes
+
+  Scenario: Layout workarounds are not propagated across screens
+    Given a layout conflict that requires a workaround (e.g. a spacer to avoid overlap)
+    Then the workaround is applied inside the shared component responsible for the conflict
+    And not copied into every screen that is affected
+    And when the underlying conflict is resolved, there is only one place to remove the workaround
+
+  # ---------------------------------------------------------------------------
   # Visual regression testing and screenshot capture
   # ---------------------------------------------------------------------------
 
