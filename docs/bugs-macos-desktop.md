@@ -4,7 +4,7 @@ Known issues when running Health Flare on macOS. These do not affect iOS or Andr
 
 ---
 
-## BUG-01 — Weather capture silently fails on macOS
+## BUG-01 — Weather capture silently fails on macOS ✓ FIXED (PR #88)
 
 **Symptom:** Weather is never attached to log entries on macOS. The app appears to work normally but `weatherSnapshot` is always null.
 
@@ -25,7 +25,7 @@ Known issues when running Health Flare on macOS. These do not affect iOS or Andr
 
 ---
 
-## BUG-02 — Profile picture selection crashes / does nothing on macOS
+## BUG-02 — Profile picture selection crashes / does nothing on macOS ✓ FIXED (PR #88, #89)
 
 **Symptom:** Tapping "Choose from gallery" or "Take photo" on the profile sheet does nothing or throws `UnimplementedError` on macOS.
 
