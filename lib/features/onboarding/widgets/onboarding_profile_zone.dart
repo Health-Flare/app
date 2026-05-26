@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
@@ -353,15 +354,23 @@ class _AvatarPickerState extends State<_AvatarPicker> {
   XFile? _pickedFile;
 
   Future<void> _pick(ImageSource source) async {
-    final file = await _picker.pickImage(
-      source: source,
-      maxWidth: 512,
-      maxHeight: 512,
-      imageQuality: 85,
-    );
-    if (file == null) return;
-    setState(() => _pickedFile = file);
-    widget.onChanged(file.path);
+    String? path;
+    if (Platform.isMacOS) {
+      final result = await FilePicker.platform.pickFiles(type: FileType.image);
+      path = result?.files.single.path;
+    } else {
+      final file = await _picker.pickImage(
+        source: source,
+        maxWidth: 512,
+        maxHeight: 512,
+        imageQuality: 85,
+      );
+      path = file?.path;
+    }
+    if (path == null) return;
+    final xfile = XFile(path);
+    setState(() => _pickedFile = xfile);
+    widget.onChanged(path);
   }
 
   @override
@@ -409,6 +418,10 @@ class _AvatarPickerState extends State<_AvatarPicker> {
   }
 
   void _showPhotoOptions(BuildContext context) {
+    if (Platform.isMacOS) {
+      _pick(ImageSource.gallery);
+      return;
+    }
     showModalBottomSheet<void>(
       context: context,
       shape: const RoundedRectangleBorder(

@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
@@ -79,14 +82,21 @@ class _AddProfileSheetState extends ConsumerState<AddProfileSheet> {
   }
 
   Future<void> _pickAvatar(ImageSource source) async {
-    final file = await _picker.pickImage(
-      source: source,
-      maxWidth: 512,
-      maxHeight: 512,
-      imageQuality: 85,
-    );
-    if (file == null || !mounted) return;
-    setState(() => _avatarPath = file.path);
+    String? path;
+    if (Platform.isMacOS) {
+      final result = await FilePicker.platform.pickFiles(type: FileType.image);
+      path = result?.files.single.path;
+    } else {
+      final file = await _picker.pickImage(
+        source: source,
+        maxWidth: 512,
+        maxHeight: 512,
+        imageQuality: 85,
+      );
+      path = file?.path;
+    }
+    if (path == null || !mounted) return;
+    setState(() => _avatarPath = path);
   }
 
   Future<void> _save() async {
@@ -353,6 +363,10 @@ class _AddProfileSheetState extends ConsumerState<AddProfileSheet> {
   }
 
   void _showPhotoOptions(BuildContext context) {
+    if (Platform.isMacOS) {
+      _pickAvatar(ImageSource.gallery);
+      return;
+    }
     showModalBottomSheet<void>(
       context: context,
       shape: const RoundedRectangleBorder(

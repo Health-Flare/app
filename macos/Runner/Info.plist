@@ -26,6 +26,8 @@
 	<string>$(MACOSX_DEPLOYMENT_TARGET)</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>$(PRODUCT_COPYRIGHT)</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Health Flare uses your location to log local weather conditions alongside your health data.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Health Flare uses the camera so you can take a profile photo.</string>
 	<key>NSMainNibFile</key>
