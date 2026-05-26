@@ -124,6 +124,11 @@ class _SymptomEntryTile extends StatelessWidget {
     final tt = Theme.of(context).textTheme;
     final fmt = DateFormat('d MMM yyyy, HH:mm');
 
+    final subtitleParts = <String>[fmt.format(entry.loggedAt)];
+    if (entry.weatherSnapshot != null) {
+      subtitleParts.add(entry.weatherSnapshot!.displayString);
+    }
+
     return ListTile(
       key: Key('symptom_tile_${entry.id}'),
       leading: CircleAvatar(
@@ -134,7 +139,7 @@ class _SymptomEntryTile extends StatelessWidget {
         ),
       ),
       title: Text(entry.name),
-      subtitle: Text(fmt.format(entry.loggedAt)),
+      subtitle: Text(subtitleParts.join(' · ')),
       trailing: const Icon(Icons.chevron_right),
       onTap: () => context.push(AppRoutes.symptomsEdit(entry.id), extra: entry),
     );

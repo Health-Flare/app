@@ -12,6 +12,7 @@ import 'package:health_flare/models/profile.dart';
 import 'package:health_flare/models/symptom_entry.dart';
 import 'package:health_flare/models/vital_entry.dart';
 import 'package:health_flare/models/vital_type.dart';
+import 'package:health_flare/models/weather_snapshot.dart';
 
 // ---------------------------------------------------------------------------
 // Fakes
@@ -123,6 +124,55 @@ void main() {
       await tester.pump(const Duration(milliseconds: 100));
 
       expect(find.text('No vitals logged yet'), findsOneWidget);
+    });
+
+    testWidgets('shows weather snapshot in symptom tile subtitle', (
+      tester,
+    ) async {
+      final snapshot = WeatherSnapshot(
+        temperatureCelsius: 16,
+        weatherCode: 2, // Mainly clear
+        pressureHPa: 1013,
+        humidityPercent: 60,
+        windSpeedKmh: 10,
+        capturedAt: DateTime(2026, 2, 15, 8, 0),
+      );
+      final entry = SymptomEntry(
+        id: 1,
+        profileId: 1,
+        name: 'Headache',
+        severity: 7,
+        loggedAt: DateTime(2026, 2, 15, 8, 0),
+        createdAt: DateTime(2026, 2, 15, 8, 0),
+        weatherSnapshot: snapshot,
+      );
+
+      await tester.pumpWidget(_buildListScreen(symptoms: [entry]));
+      await tester.pump();
+
+      expect(find.textContaining('Mainly clear, 16°C'), findsOneWidget);
+    });
+
+    testWidgets('symptom tile subtitle shows only date when no weather', (
+      tester,
+    ) async {
+      final entry = SymptomEntry(
+        id: 1,
+        profileId: 1,
+        name: 'Fatigue',
+        severity: 4,
+        loggedAt: DateTime(2026, 2, 15, 8, 0),
+        createdAt: DateTime(2026, 2, 15, 8, 0),
+      );
+
+      await tester.pumpWidget(_buildListScreen(symptoms: [entry]));
+      await tester.pump();
+
+      // Subtitle text should contain the date but not a weather separator
+      final subtitleFinder = find.textContaining('15 Feb 2026');
+      expect(subtitleFinder, findsOneWidget);
+      final subtitleWidget = tester.widget<Text>(subtitleFinder);
+      expect(subtitleWidget.data, isNot(contains('·')));
     });
 
     testWidgets('shows symptom entries in reverse chronological order', (

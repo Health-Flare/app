@@ -64,6 +64,11 @@ Feature: Weather context on log entries
     When I open that entry for editing
     Then the weather chip shows "Rain, 12°C"
 
+  Scenario: Weather snapshot is shown in the symptom list
+    Given a saved symptom entry with weather snapshot "Partly cloudy, 16°C"
+    When I view the symptoms list screen
+    Then "Partly cloudy, 16°C" appears in the subtitle of that symptom row
+
   # ── Meal entry ────────────────────────────────────────────────────────────
 
   Scenario: Weather chip appears on new meal entry form
@@ -90,6 +95,11 @@ Feature: Weather context on log entries
     Given the weather chip shows "Drizzle, 10°C"
     When I save the activity entry
     Then the saved entry includes the weather snapshot "Drizzle, 10°C"
+
+  Scenario: Weather snapshot is shown in the activity list
+    Given a saved activity entry with weather snapshot "Drizzle, 10°C"
+    When I view the activity list screen
+    Then "Drizzle, 10°C" appears in the subtitle of that activity row
 
   # ── Daily check-in ────────────────────────────────────────────────────────
 
