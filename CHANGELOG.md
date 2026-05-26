@@ -57,6 +57,8 @@ Subsection meanings (from Keep a Changelog):
 
 ### Fixed
 - Profile avatar no longer obscures app bar action buttons (edit, delete, etc.) on detail and form screens. Closes #83.
+- **macOS — weather capture:** outbound network requests and location access were silently blocked by the app sandbox. Added the required entitlements (`network.client`, `personal-information.location`) and `NSLocationWhenInUseUsageDescription` so weather snapshots are captured correctly.
+- **macOS — profile picture:** tapping the avatar crashed or did nothing because `image_picker` has no macOS implementation. The profile sheet and onboarding zone now use the system file picker on macOS instead.
 
 ### Security
 - _Nothing yet._
