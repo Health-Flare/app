@@ -39,6 +39,26 @@ Subsection meanings (from Keep a Changelog):
 ## [Unreleased]
 
 ### Added
+- _Nothing yet._
+
+### Changed
+- _Nothing yet._
+
+### Deprecated
+- _Nothing yet._
+
+### Removed
+- _Nothing yet._
+
+### Fixed
+- _Nothing yet._
+
+### Security
+- _Nothing yet._
+
+## [1.3.0] - 2026-05-26
+
+### Added
 - **Profile icon button** — persistent `ProfileIconButton` in every app bar replaces the floating overlay. Tap opens the profile switcher; swipe up cycles to the previous profile (wrapping from first to last), swipe down cycles to the next (wrapping from last to first). No-op when only one profile exists.
 - `HFAppBar` — shared `PreferredSizeWidget` app bar component that always appends `ProfileIconButton` as the rightmost action. All screens now use this single component, so the profile icon behaviour is defined once and applied everywhere.
 - `docs/features/profile-icon.feature` — full Gherkin spec for profile icon placement, tap, swipe gesture, and single-profile guard behaviour.
@@ -108,7 +128,8 @@ Subsection meanings (from Keep a Changelog):
 - Offline-first guarantee: zero outbound network requests at runtime, enforced
   by the `url-scan` CI check.
 
-[Unreleased]: https://git.ahosking.com/HealthFlare/app/compare/v1.2.0...HEAD
+[Unreleased]: https://git.ahosking.com/HealthFlare/app/compare/v1.3.0...HEAD
+[1.3.0]: https://git.ahosking.com/HealthFlare/app/compare/v1.2.0...v1.3.0
 [1.2.0]: https://git.ahosking.com/HealthFlare/app/compare/v1.1.0...v1.2.0
 [1.1.0]: https://git.ahosking.com/HealthFlare/app/compare/v1.0.0...v1.1.0
 [1.0.0]: https://git.ahosking.com/HealthFlare/app/releases/tag/v1.0.0
