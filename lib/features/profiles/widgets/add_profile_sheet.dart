@@ -84,8 +84,11 @@ class _AddProfileSheetState extends ConsumerState<AddProfileSheet> {
   Future<void> _pickAvatar(ImageSource source) async {
     String? path;
     if (Platform.isMacOS) {
-      final result = await FilePicker.platform.pickFiles(type: FileType.image);
-      path = result?.files.single.path;
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.image,
+        allowMultiple: false,
+      );
+      path = result?.files.first.path;
     } else {
       final file = await _picker.pickImage(
         source: source,
