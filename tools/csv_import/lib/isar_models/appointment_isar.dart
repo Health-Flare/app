@@ -7,7 +7,6 @@ class AppointmentQuestionIsar {
   late String questionId;
   late String question;
   bool discussed = false;
-
 }
 
 @embedded
@@ -15,7 +14,6 @@ class MedicationChangeIsar {
   late String changeId;
   late String description;
   int? linkedMedicationIsarId;
-
 }
 
 @collection
@@ -43,5 +41,4 @@ class AppointmentIsar {
   late DateTime createdAt;
 
   DateTime? updatedAt;
-
 }

@@ -9,6 +9,7 @@ import 'package:health_flare/features/reports/services/insights_query_service.da
 import 'package:health_flare/features/reports/widgets/food_triggers_card.dart';
 import 'package:health_flare/features/reports/widgets/sleep_correlation_card.dart';
 import 'package:health_flare/features/reports/widgets/trend_chart.dart';
+import 'package:health_flare/features/reports/widgets/weather_impact_card.dart';
 import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 
 /// Pattern insights screen — shows in-app charts and correlations.
@@ -153,6 +154,8 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
                         _WellbeingSection(data: _data!),
                       _FoodTriggersSection(data: _data!),
                       _SleepSection(data: _data!),
+                      if (_data!.weatherImpact.isNotEmpty)
+                        _WeatherSection(data: _data!),
                     ],
                   ),
           ),
@@ -311,6 +314,22 @@ class _SleepSection extends StatelessWidget {
     return _InsightCard(
       title: 'Sleep & Symptoms',
       child: SleepCorrelationCard(correlation: data.sleepCorrelation),
+    );
+  }
+}
+
+// ── Section: Weather impact ───────────────────────────────────────────────────
+
+class _WeatherSection extends StatelessWidget {
+  const _WeatherSection({required this.data});
+
+  final InsightData data;
+
+  @override
+  Widget build(BuildContext context) {
+    return _InsightCard(
+      title: 'Weather & Symptoms',
+      child: WeatherImpactCard(conditions: data.weatherImpact),
     );
   }
 }

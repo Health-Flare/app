@@ -32,5 +32,4 @@ class MedicationIsar {
   late DateTime createdAt;
 
   DateTime? updatedAt;
-
 }

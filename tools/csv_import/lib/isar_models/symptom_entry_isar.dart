@@ -25,5 +25,4 @@ class SymptomEntryIsar {
   late DateTime createdAt;
 
   int? flareIsarId;
-
 }

@@ -30,6 +30,7 @@ class _SymptomEntryFormScreenState
     extends ConsumerState<SymptomEntryFormScreen> {
   late TextEditingController _nameController;
   late TextEditingController _notesController;
+  late FocusNode _nameFocusNode;
   int? _severity;
   late DateTime _loggedAt;
   bool _submitting = false;
@@ -42,6 +43,7 @@ class _SymptomEntryFormScreenState
   @override
   void initState() {
     super.initState();
+    _nameFocusNode = FocusNode();
     if (widget.entry != null) {
       final e = widget.entry!;
       _nameController = TextEditingController(text: e.name);
@@ -57,6 +59,7 @@ class _SymptomEntryFormScreenState
 
   @override
   void dispose() {
+    _nameFocusNode.dispose();
     _nameController.dispose();
     _notesController.dispose();
     super.dispose();
@@ -160,6 +163,7 @@ class _SymptomEntryFormScreenState
     final fmt = DateFormat('EEE d MMM yyyy, HH:mm');
     final activeProfile = ref.watch(activeProfileDataProvider);
     final isEdit = widget.entry != null;
+    final suggestionNames = ref.watch(recentSymptomNamesProvider);
 
     // Watch weather for new entries — capture and display when available.
     final weatherAsync = isEdit ? null : ref.watch(currentWeatherProvider);
@@ -215,19 +219,68 @@ class _SymptomEntryFormScreenState
             // ── Symptom name ──────────────────────────────────────────────
             const _SectionLabel(label: 'Symptom name'),
             const SizedBox(height: 8),
-            TextFormField(
-              key: const Key('symptom_name_field'),
-              controller: _nameController,
-              textCapitalization: TextCapitalization.sentences,
-              decoration: InputDecoration(
-                hintText: 'e.g. Headache, Fatigue, Nausea',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                errorText: _nameError ? 'Symptom name is required' : null,
-              ),
-              onChanged: (_) {
-                if (_nameError) setState(() => _nameError = false);
+            RawAutocomplete<String>(
+              textEditingController: _nameController,
+              focusNode: _nameFocusNode,
+              optionsBuilder: (textEditingValue) {
+                if (suggestionNames.isEmpty) {
+                  return const Iterable<String>.empty();
+                }
+                if (textEditingValue.text.isEmpty) {
+                  return suggestionNames.take(8);
+                }
+                final query = textEditingValue.text.toLowerCase();
+                return suggestionNames.where(
+                  (name) => name.toLowerCase().contains(query),
+                );
+              },
+              fieldViewBuilder: (context, controller, focusNode, _) {
+                return TextFormField(
+                  key: const Key('symptom_name_field'),
+                  controller: controller,
+                  focusNode: focusNode,
+                  textCapitalization: TextCapitalization.sentences,
+                  decoration: InputDecoration(
+                    hintText: 'e.g. Headache, Fatigue, Nausea',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    errorText: _nameError ? 'Symptom name is required' : null,
+                  ),
+                  onChanged: (_) {
+                    if (_nameError) setState(() => _nameError = false);
+                  },
+                );
+              },
+              optionsViewBuilder: (context, onSelected, options) {
+                return Align(
+                  alignment: Alignment.topLeft,
+                  child: Material(
+                    elevation: 4,
+                    borderRadius: BorderRadius.circular(12),
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxHeight: 220),
+                      child: ListView.builder(
+                        padding: const EdgeInsets.symmetric(vertical: 4),
+                        shrinkWrap: true,
+                        itemCount: options.length,
+                        itemBuilder: (context, index) {
+                          final option = options.elementAt(index);
+                          return InkWell(
+                            onTap: () => onSelected(option),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 12,
+                              ),
+                              child: Text(option),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                );
               },
             ),
 

@@ -25,5 +25,4 @@ class FlareIsar {
   late DateTime createdAt;
 
   DateTime? updatedAt;
-
 }

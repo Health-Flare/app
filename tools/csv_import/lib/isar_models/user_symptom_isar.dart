@@ -22,5 +22,4 @@ class UserSymptomIsar {
 
   /// When the user started tracking this symptom.
   late DateTime trackedSince;
-
 }

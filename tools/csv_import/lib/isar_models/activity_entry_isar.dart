@@ -32,5 +32,4 @@ class ActivityEntryIsar {
 
   /// Set when logged during an active flare.
   int? flareIsarId;
-
 }

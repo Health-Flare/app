@@ -7,18 +7,28 @@ import 'package:health_flare_csv_import/importer.dart';
 
 void main(List<String> arguments) async {
   final parser = ArgParser()
-    ..addOption('profile',
-        abbr: 'p',
-        help: 'Profile name to import into (required, case-insensitive).')
-    ..addOption('db',
-        abbr: 'd',
-        help: 'Path to healthflare.isar. Auto-detected on macOS if omitted.')
-    ..addFlag('dry-run',
-        abbr: 'n',
-        negatable: false,
-        help: 'Preview what would be imported without writing anything.')
-    ..addFlag('help',
-        abbr: 'h', negatable: false, help: 'Show this help message.');
+    ..addOption(
+      'profile',
+      abbr: 'p',
+      help: 'Profile name to import into (required, case-insensitive).',
+    )
+    ..addOption(
+      'db',
+      abbr: 'd',
+      help: 'Path to healthflare.isar. Auto-detected on macOS if omitted.',
+    )
+    ..addFlag(
+      'dry-run',
+      abbr: 'n',
+      negatable: false,
+      help: 'Preview what would be imported without writing anything.',
+    )
+    ..addFlag(
+      'help',
+      abbr: 'h',
+      negatable: false,
+      help: 'Show this help message.',
+    );
 
   ArgResults args;
   try {
@@ -37,7 +47,9 @@ void main(List<String> arguments) async {
     _die('Missing input CSV file.\n\n${_usage(parser)}');
   }
   if (rest.length > 1) {
-    _die('Too many arguments — expected a single CSV file path.\n\n${_usage(parser)}');
+    _die(
+      'Too many arguments — expected a single CSV file path.\n\n${_usage(parser)}',
+    );
   }
 
   final csvPath = rest.first;
@@ -70,7 +82,9 @@ void main(List<String> arguments) async {
 
   final journal = rows.where((r) => r.type == CsvEntryType.journal).length;
   final symptom = rows.where((r) => r.type == CsvEntryType.symptom).length;
-  stdout.writeln('Parsed ${rows.length} rows  ($journal journal, $symptom symptom)');
+  stdout.writeln(
+    'Parsed ${rows.length} rows  ($journal journal, $symptom symptom)',
+  );
   stdout.writeln('');
 
   if (rows.isEmpty) {
@@ -104,7 +118,9 @@ void main(List<String> arguments) async {
     stdout.writeln('  Would import : ${result.totalImported} records');
     stdout.writeln('    Journal    : ${result.journalImported}');
     stdout.writeln('    Symptom    : ${result.symptomImported}');
-    stdout.writeln('  Duplicates   : ${result.skippedDuplicates} (already exist, would skip)');
+    stdout.writeln(
+      '  Duplicates   : ${result.skippedDuplicates} (already exist, would skip)',
+    );
   } else {
     stdout.writeln('Import complete.');
     stdout.writeln('');

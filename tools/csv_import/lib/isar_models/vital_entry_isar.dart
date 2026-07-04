@@ -25,5 +25,4 @@ class VitalEntryIsar {
   late DateTime createdAt;
 
   int? flareIsarId;
-
 }

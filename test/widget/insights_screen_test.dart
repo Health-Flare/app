@@ -33,6 +33,7 @@ void main() {
         flarePeriods: const [],
         foodTriggers: const [],
         sleepCorrelation: const SleepCorrelation(),
+        weatherImpact: const [],
       );
       expect(data.isEmpty, isTrue);
     });
@@ -51,6 +52,7 @@ void main() {
         flarePeriods: const [],
         foodTriggers: const [],
         sleepCorrelation: const SleepCorrelation(),
+        weatherImpact: const [],
       );
       expect(data.isEmpty, isFalse);
     });
@@ -67,6 +69,7 @@ void main() {
           poorSleepAvg: 7.0,
           poorSleepDays: 3,
         ),
+        weatherImpact: const [],
       );
       expect(data.isEmpty, isFalse);
     });

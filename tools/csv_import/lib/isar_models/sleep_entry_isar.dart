@@ -27,5 +27,4 @@ class SleepEntryIsar {
   late bool isNap;
 
   late DateTime createdAt;
-
 }
