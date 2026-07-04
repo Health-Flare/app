@@ -42,7 +42,7 @@ const WeatherSnapshotIsarSchema = Schema(
       id: 5,
       name: r'windSpeedKmh',
       type: IsarType.double,
-    )
+    ),
   },
   estimateSize: _weatherSnapshotIsarEstimateSize,
   serialize: _weatherSnapshotIsarSerialize,
@@ -113,222 +113,228 @@ P _weatherSnapshotIsarDeserializeProp<P>(
   }
 }
 
-extension WeatherSnapshotIsarQueryFilter on QueryBuilder<WeatherSnapshotIsar,
-    WeatherSnapshotIsar, QFilterCondition> {
+extension WeatherSnapshotIsarQueryFilter
+    on
+        QueryBuilder<
+          WeatherSnapshotIsar,
+          WeatherSnapshotIsar,
+          QFilterCondition
+        > {
   QueryBuilder<WeatherSnapshotIsar, WeatherSnapshotIsar, QAfterFilterCondition>
-      capturedAtIsNull() {
+  capturedAtIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'capturedAt',
-      ));
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'capturedAt'),
+      );
     });
   }
 
   QueryBuilder<WeatherSnapshotIsar, WeatherSnapshotIsar, QAfterFilterCondition>
-      capturedAtIsNotNull() {
+  capturedAtIsNotNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'capturedAt',
-      ));
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'capturedAt'),
+      );
     });
   }
 
   QueryBuilder<WeatherSnapshotIsar, WeatherSnapshotIsar, QAfterFilterCondition>
-      capturedAtEqualTo(DateTime? value) {
+  capturedAtEqualTo(DateTime? value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'capturedAt',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'capturedAt', value: value),
+      );
     });
   }
 
   QueryBuilder<WeatherSnapshotIsar, WeatherSnapshotIsar, QAfterFilterCondition>
-      capturedAtGreaterThan(
-    DateTime? value, {
-    bool include = false,
-  }) {
+  capturedAtGreaterThan(DateTime? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'capturedAt',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'capturedAt',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<WeatherSnapshotIsar, WeatherSnapshotIsar, QAfterFilterCondition>
-      capturedAtLessThan(
-    DateTime? value, {
-    bool include = false,
-  }) {
+  capturedAtLessThan(DateTime? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'capturedAt',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'capturedAt',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<WeatherSnapshotIsar, WeatherSnapshotIsar, QAfterFilterCondition>
-      capturedAtBetween(
+  capturedAtBetween(
     DateTime? lower,
     DateTime? upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'capturedAt',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'capturedAt',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<WeatherSnapshotIsar, WeatherSnapshotIsar, QAfterFilterCondition>
-      humidityPercentIsNull() {
+  humidityPercentIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'humidityPercent',
-      ));
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'humidityPercent'),
+      );
     });
   }
 
   QueryBuilder<WeatherSnapshotIsar, WeatherSnapshotIsar, QAfterFilterCondition>
-      humidityPercentIsNotNull() {
+  humidityPercentIsNotNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'humidityPercent',
-      ));
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'humidityPercent'),
+      );
     });
   }
 
   QueryBuilder<WeatherSnapshotIsar, WeatherSnapshotIsar, QAfterFilterCondition>
-      humidityPercentEqualTo(int? value) {
+  humidityPercentEqualTo(int? value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'humidityPercent',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'humidityPercent', value: value),
+      );
     });
   }
 
   QueryBuilder<WeatherSnapshotIsar, WeatherSnapshotIsar, QAfterFilterCondition>
-      humidityPercentGreaterThan(
-    int? value, {
-    bool include = false,
-  }) {
+  humidityPercentGreaterThan(int? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'humidityPercent',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'humidityPercent',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<WeatherSnapshotIsar, WeatherSnapshotIsar, QAfterFilterCondition>
-      humidityPercentLessThan(
-    int? value, {
-    bool include = false,
-  }) {
+  humidityPercentLessThan(int? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'humidityPercent',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'humidityPercent',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<WeatherSnapshotIsar, WeatherSnapshotIsar, QAfterFilterCondition>
-      humidityPercentBetween(
+  humidityPercentBetween(
     int? lower,
     int? upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'humidityPercent',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'humidityPercent',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<WeatherSnapshotIsar, WeatherSnapshotIsar, QAfterFilterCondition>
-      pressureHPaIsNull() {
+  pressureHPaIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'pressureHPa',
-      ));
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'pressureHPa'),
+      );
     });
   }
 
   QueryBuilder<WeatherSnapshotIsar, WeatherSnapshotIsar, QAfterFilterCondition>
-      pressureHPaIsNotNull() {
+  pressureHPaIsNotNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'pressureHPa',
-      ));
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'pressureHPa'),
+      );
     });
   }
 
   QueryBuilder<WeatherSnapshotIsar, WeatherSnapshotIsar, QAfterFilterCondition>
-      pressureHPaEqualTo(
-    double? value, {
-    double epsilon = Query.epsilon,
-  }) {
+  pressureHPaEqualTo(double? value, {double epsilon = Query.epsilon}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'pressureHPa',
-        value: value,
-        epsilon: epsilon,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'pressureHPa',
+          value: value,
+          epsilon: epsilon,
+        ),
+      );
     });
   }
 
   QueryBuilder<WeatherSnapshotIsar, WeatherSnapshotIsar, QAfterFilterCondition>
-      pressureHPaGreaterThan(
-    double? value, {
-    bool include = false,
-    double epsilon = Query.epsilon,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'pressureHPa',
-        value: value,
-        epsilon: epsilon,
-      ));
-    });
-  }
-
-  QueryBuilder<WeatherSnapshotIsar, WeatherSnapshotIsar, QAfterFilterCondition>
-      pressureHPaLessThan(
+  pressureHPaGreaterThan(
     double? value, {
     bool include = false,
     double epsilon = Query.epsilon,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'pressureHPa',
-        value: value,
-        epsilon: epsilon,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'pressureHPa',
+          value: value,
+          epsilon: epsilon,
+        ),
+      );
     });
   }
 
   QueryBuilder<WeatherSnapshotIsar, WeatherSnapshotIsar, QAfterFilterCondition>
-      pressureHPaBetween(
+  pressureHPaLessThan(
+    double? value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'pressureHPa',
+          value: value,
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<WeatherSnapshotIsar, WeatherSnapshotIsar, QAfterFilterCondition>
+  pressureHPaBetween(
     double? lower,
     double? upper, {
     bool includeLower = true,
@@ -336,83 +342,88 @@ extension WeatherSnapshotIsarQueryFilter on QueryBuilder<WeatherSnapshotIsar,
     double epsilon = Query.epsilon,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'pressureHPa',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        epsilon: epsilon,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'pressureHPa',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          epsilon: epsilon,
+        ),
+      );
     });
   }
 
   QueryBuilder<WeatherSnapshotIsar, WeatherSnapshotIsar, QAfterFilterCondition>
-      temperatureCelsiusIsNull() {
+  temperatureCelsiusIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'temperatureCelsius',
-      ));
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'temperatureCelsius'),
+      );
     });
   }
 
   QueryBuilder<WeatherSnapshotIsar, WeatherSnapshotIsar, QAfterFilterCondition>
-      temperatureCelsiusIsNotNull() {
+  temperatureCelsiusIsNotNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'temperatureCelsius',
-      ));
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'temperatureCelsius'),
+      );
     });
   }
 
   QueryBuilder<WeatherSnapshotIsar, WeatherSnapshotIsar, QAfterFilterCondition>
-      temperatureCelsiusEqualTo(
-    double? value, {
-    double epsilon = Query.epsilon,
-  }) {
+  temperatureCelsiusEqualTo(double? value, {double epsilon = Query.epsilon}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'temperatureCelsius',
-        value: value,
-        epsilon: epsilon,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'temperatureCelsius',
+          value: value,
+          epsilon: epsilon,
+        ),
+      );
     });
   }
 
   QueryBuilder<WeatherSnapshotIsar, WeatherSnapshotIsar, QAfterFilterCondition>
-      temperatureCelsiusGreaterThan(
-    double? value, {
-    bool include = false,
-    double epsilon = Query.epsilon,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'temperatureCelsius',
-        value: value,
-        epsilon: epsilon,
-      ));
-    });
-  }
-
-  QueryBuilder<WeatherSnapshotIsar, WeatherSnapshotIsar, QAfterFilterCondition>
-      temperatureCelsiusLessThan(
+  temperatureCelsiusGreaterThan(
     double? value, {
     bool include = false,
     double epsilon = Query.epsilon,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'temperatureCelsius',
-        value: value,
-        epsilon: epsilon,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'temperatureCelsius',
+          value: value,
+          epsilon: epsilon,
+        ),
+      );
     });
   }
 
   QueryBuilder<WeatherSnapshotIsar, WeatherSnapshotIsar, QAfterFilterCondition>
-      temperatureCelsiusBetween(
+  temperatureCelsiusLessThan(
+    double? value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'temperatureCelsius',
+          value: value,
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<WeatherSnapshotIsar, WeatherSnapshotIsar, QAfterFilterCondition>
+  temperatureCelsiusBetween(
     double? lower,
     double? upper, {
     bool includeLower = true,
@@ -420,157 +431,161 @@ extension WeatherSnapshotIsarQueryFilter on QueryBuilder<WeatherSnapshotIsar,
     double epsilon = Query.epsilon,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'temperatureCelsius',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        epsilon: epsilon,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'temperatureCelsius',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          epsilon: epsilon,
+        ),
+      );
     });
   }
 
   QueryBuilder<WeatherSnapshotIsar, WeatherSnapshotIsar, QAfterFilterCondition>
-      weatherCodeIsNull() {
+  weatherCodeIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'weatherCode',
-      ));
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'weatherCode'),
+      );
     });
   }
 
   QueryBuilder<WeatherSnapshotIsar, WeatherSnapshotIsar, QAfterFilterCondition>
-      weatherCodeIsNotNull() {
+  weatherCodeIsNotNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'weatherCode',
-      ));
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'weatherCode'),
+      );
     });
   }
 
   QueryBuilder<WeatherSnapshotIsar, WeatherSnapshotIsar, QAfterFilterCondition>
-      weatherCodeEqualTo(int? value) {
+  weatherCodeEqualTo(int? value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'weatherCode',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'weatherCode', value: value),
+      );
     });
   }
 
   QueryBuilder<WeatherSnapshotIsar, WeatherSnapshotIsar, QAfterFilterCondition>
-      weatherCodeGreaterThan(
-    int? value, {
-    bool include = false,
-  }) {
+  weatherCodeGreaterThan(int? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'weatherCode',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'weatherCode',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<WeatherSnapshotIsar, WeatherSnapshotIsar, QAfterFilterCondition>
-      weatherCodeLessThan(
-    int? value, {
-    bool include = false,
-  }) {
+  weatherCodeLessThan(int? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'weatherCode',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'weatherCode',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<WeatherSnapshotIsar, WeatherSnapshotIsar, QAfterFilterCondition>
-      weatherCodeBetween(
+  weatherCodeBetween(
     int? lower,
     int? upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'weatherCode',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'weatherCode',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<WeatherSnapshotIsar, WeatherSnapshotIsar, QAfterFilterCondition>
-      windSpeedKmhIsNull() {
+  windSpeedKmhIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'windSpeedKmh',
-      ));
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'windSpeedKmh'),
+      );
     });
   }
 
   QueryBuilder<WeatherSnapshotIsar, WeatherSnapshotIsar, QAfterFilterCondition>
-      windSpeedKmhIsNotNull() {
+  windSpeedKmhIsNotNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'windSpeedKmh',
-      ));
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'windSpeedKmh'),
+      );
     });
   }
 
   QueryBuilder<WeatherSnapshotIsar, WeatherSnapshotIsar, QAfterFilterCondition>
-      windSpeedKmhEqualTo(
-    double? value, {
-    double epsilon = Query.epsilon,
-  }) {
+  windSpeedKmhEqualTo(double? value, {double epsilon = Query.epsilon}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'windSpeedKmh',
-        value: value,
-        epsilon: epsilon,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'windSpeedKmh',
+          value: value,
+          epsilon: epsilon,
+        ),
+      );
     });
   }
 
   QueryBuilder<WeatherSnapshotIsar, WeatherSnapshotIsar, QAfterFilterCondition>
-      windSpeedKmhGreaterThan(
-    double? value, {
-    bool include = false,
-    double epsilon = Query.epsilon,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'windSpeedKmh',
-        value: value,
-        epsilon: epsilon,
-      ));
-    });
-  }
-
-  QueryBuilder<WeatherSnapshotIsar, WeatherSnapshotIsar, QAfterFilterCondition>
-      windSpeedKmhLessThan(
+  windSpeedKmhGreaterThan(
     double? value, {
     bool include = false,
     double epsilon = Query.epsilon,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'windSpeedKmh',
-        value: value,
-        epsilon: epsilon,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'windSpeedKmh',
+          value: value,
+          epsilon: epsilon,
+        ),
+      );
     });
   }
 
   QueryBuilder<WeatherSnapshotIsar, WeatherSnapshotIsar, QAfterFilterCondition>
-      windSpeedKmhBetween(
+  windSpeedKmhLessThan(
+    double? value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'windSpeedKmh',
+          value: value,
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<WeatherSnapshotIsar, WeatherSnapshotIsar, QAfterFilterCondition>
+  windSpeedKmhBetween(
     double? lower,
     double? upper, {
     bool includeLower = true,
@@ -578,17 +593,24 @@ extension WeatherSnapshotIsarQueryFilter on QueryBuilder<WeatherSnapshotIsar,
     double epsilon = Query.epsilon,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'windSpeedKmh',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        epsilon: epsilon,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'windSpeedKmh',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          epsilon: epsilon,
+        ),
+      );
     });
   }
 }
 
-extension WeatherSnapshotIsarQueryObject on QueryBuilder<WeatherSnapshotIsar,
-    WeatherSnapshotIsar, QFilterCondition> {}
+extension WeatherSnapshotIsarQueryObject
+    on
+        QueryBuilder<
+          WeatherSnapshotIsar,
+          WeatherSnapshotIsar,
+          QFilterCondition
+        > {}

@@ -16,5 +16,4 @@ class ConditionIsar {
 
   /// True for seed data; false for user-created custom conditions.
   late bool global;
-
 }

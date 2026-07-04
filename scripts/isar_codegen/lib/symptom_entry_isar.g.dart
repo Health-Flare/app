@@ -32,26 +32,14 @@ const SymptomEntryIsarSchema = CollectionSchema(
       name: r'loggedAt',
       type: IsarType.dateTime,
     ),
-    r'name': PropertySchema(
-      id: 3,
-      name: r'name',
-      type: IsarType.string,
-    ),
-    r'notes': PropertySchema(
-      id: 4,
-      name: r'notes',
-      type: IsarType.string,
-    ),
+    r'name': PropertySchema(id: 3, name: r'name', type: IsarType.string),
+    r'notes': PropertySchema(id: 4, name: r'notes', type: IsarType.string),
     r'profileId': PropertySchema(
       id: 5,
       name: r'profileId',
       type: IsarType.long,
     ),
-    r'severity': PropertySchema(
-      id: 6,
-      name: r'severity',
-      type: IsarType.long,
-    ),
+    r'severity': PropertySchema(id: 6, name: r'severity', type: IsarType.long),
     r'userConditionIsarId': PropertySchema(
       id: 7,
       name: r'userConditionIsarId',
@@ -67,7 +55,7 @@ const SymptomEntryIsarSchema = CollectionSchema(
       name: r'weatherSnapshot',
       type: IsarType.object,
       target: r'WeatherSnapshotIsar',
-    )
+    ),
   },
   estimateSize: _symptomEntryIsarEstimateSize,
   serialize: _symptomEntryIsarSerialize,
@@ -85,7 +73,7 @@ const SymptomEntryIsarSchema = CollectionSchema(
           name: r'profileId',
           type: IndexType.value,
           caseSensitive: false,
-        )
+        ),
       ],
     ),
     r'loggedAt': IndexSchema(
@@ -98,9 +86,9 @@ const SymptomEntryIsarSchema = CollectionSchema(
           name: r'loggedAt',
           type: IndexType.value,
           caseSensitive: false,
-        )
+        ),
       ],
-    )
+    ),
   },
   links: {},
   embeddedSchemas: {r'WeatherSnapshotIsar': WeatherSnapshotIsarSchema},
@@ -126,9 +114,13 @@ int _symptomEntryIsarEstimateSize(
   {
     final value = object.weatherSnapshot;
     if (value != null) {
-      bytesCount += 3 +
+      bytesCount +=
+          3 +
           WeatherSnapshotIsarSchema.estimateSize(
-              value, allOffsets[WeatherSnapshotIsar]!, allOffsets);
+            value,
+            allOffsets[WeatherSnapshotIsar]!,
+            allOffsets,
+          );
     }
   }
   return bytesCount;
@@ -209,10 +201,11 @@ P _symptomEntryIsarDeserializeProp<P>(
       return (reader.readLongOrNull(offset)) as P;
     case 9:
       return (reader.readObjectOrNull<WeatherSnapshotIsar>(
-        offset,
-        WeatherSnapshotIsarSchema.deserialize,
-        allOffsets,
-      )) as P;
+            offset,
+            WeatherSnapshotIsarSchema.deserialize,
+            allOffsets,
+          ))
+          as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -227,7 +220,10 @@ List<IsarLinkBase<dynamic>> _symptomEntryIsarGetLinks(SymptomEntryIsar object) {
 }
 
 void _symptomEntryIsarAttach(
-    IsarCollection<dynamic> col, Id id, SymptomEntryIsar object) {
+  IsarCollection<dynamic> col,
+  Id id,
+  SymptomEntryIsar object,
+) {
   object.id = id;
 }
 
@@ -259,17 +255,15 @@ extension SymptomEntryIsarQueryWhereSort
 extension SymptomEntryIsarQueryWhere
     on QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QWhereClause> {
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterWhereClause> idEqualTo(
-      Id id) {
+    Id id,
+  ) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.between(
-        lower: id,
-        upper: id,
-      ));
+      return query.addWhereClause(IdWhereClause.between(lower: id, upper: id));
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterWhereClause>
-      idNotEqualTo(Id id) {
+  idNotEqualTo(Id id) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -292,7 +286,7 @@ extension SymptomEntryIsarQueryWhere
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterWhereClause>
-      idGreaterThan(Id id, {bool include = false}) {
+  idGreaterThan(Id id, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.greaterThan(lower: id, includeLower: include),
@@ -301,7 +295,7 @@ extension SymptomEntryIsarQueryWhere
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterWhereClause>
-      idLessThan(Id id, {bool include = false}) {
+  idLessThan(Id id, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.lessThan(upper: id, includeUpper: include),
@@ -316,198 +310,214 @@ extension SymptomEntryIsarQueryWhere
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.between(
-        lower: lowerId,
-        includeLower: includeLower,
-        upper: upperId,
-        includeUpper: includeUpper,
-      ));
+      return query.addWhereClause(
+        IdWhereClause.between(
+          lower: lowerId,
+          includeLower: includeLower,
+          upper: upperId,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterWhereClause>
-      profileIdEqualTo(int profileId) {
+  profileIdEqualTo(int profileId) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.equalTo(
-        indexName: r'profileId',
-        value: [profileId],
-      ));
+      return query.addWhereClause(
+        IndexWhereClause.equalTo(indexName: r'profileId', value: [profileId]),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterWhereClause>
-      profileIdNotEqualTo(int profileId) {
+  profileIdNotEqualTo(int profileId) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'profileId',
-              lower: [],
-              upper: [profileId],
-              includeUpper: false,
-            ))
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'profileId',
-              lower: [profileId],
-              includeLower: false,
-              upper: [],
-            ));
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'profileId',
+                lower: [],
+                upper: [profileId],
+                includeUpper: false,
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'profileId',
+                lower: [profileId],
+                includeLower: false,
+                upper: [],
+              ),
+            );
       } else {
         return query
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'profileId',
-              lower: [profileId],
-              includeLower: false,
-              upper: [],
-            ))
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'profileId',
-              lower: [],
-              upper: [profileId],
-              includeUpper: false,
-            ));
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'profileId',
+                lower: [profileId],
+                includeLower: false,
+                upper: [],
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'profileId',
+                lower: [],
+                upper: [profileId],
+                includeUpper: false,
+              ),
+            );
       }
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterWhereClause>
-      profileIdGreaterThan(
-    int profileId, {
-    bool include = false,
-  }) {
+  profileIdGreaterThan(int profileId, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.between(
-        indexName: r'profileId',
-        lower: [profileId],
-        includeLower: include,
-        upper: [],
-      ));
+      return query.addWhereClause(
+        IndexWhereClause.between(
+          indexName: r'profileId',
+          lower: [profileId],
+          includeLower: include,
+          upper: [],
+        ),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterWhereClause>
-      profileIdLessThan(
-    int profileId, {
-    bool include = false,
-  }) {
+  profileIdLessThan(int profileId, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.between(
-        indexName: r'profileId',
-        lower: [],
-        upper: [profileId],
-        includeUpper: include,
-      ));
+      return query.addWhereClause(
+        IndexWhereClause.between(
+          indexName: r'profileId',
+          lower: [],
+          upper: [profileId],
+          includeUpper: include,
+        ),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterWhereClause>
-      profileIdBetween(
+  profileIdBetween(
     int lowerProfileId,
     int upperProfileId, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.between(
-        indexName: r'profileId',
-        lower: [lowerProfileId],
-        includeLower: includeLower,
-        upper: [upperProfileId],
-        includeUpper: includeUpper,
-      ));
+      return query.addWhereClause(
+        IndexWhereClause.between(
+          indexName: r'profileId',
+          lower: [lowerProfileId],
+          includeLower: includeLower,
+          upper: [upperProfileId],
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterWhereClause>
-      loggedAtEqualTo(DateTime loggedAt) {
+  loggedAtEqualTo(DateTime loggedAt) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.equalTo(
-        indexName: r'loggedAt',
-        value: [loggedAt],
-      ));
+      return query.addWhereClause(
+        IndexWhereClause.equalTo(indexName: r'loggedAt', value: [loggedAt]),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterWhereClause>
-      loggedAtNotEqualTo(DateTime loggedAt) {
+  loggedAtNotEqualTo(DateTime loggedAt) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'loggedAt',
-              lower: [],
-              upper: [loggedAt],
-              includeUpper: false,
-            ))
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'loggedAt',
-              lower: [loggedAt],
-              includeLower: false,
-              upper: [],
-            ));
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'loggedAt',
+                lower: [],
+                upper: [loggedAt],
+                includeUpper: false,
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'loggedAt',
+                lower: [loggedAt],
+                includeLower: false,
+                upper: [],
+              ),
+            );
       } else {
         return query
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'loggedAt',
-              lower: [loggedAt],
-              includeLower: false,
-              upper: [],
-            ))
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'loggedAt',
-              lower: [],
-              upper: [loggedAt],
-              includeUpper: false,
-            ));
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'loggedAt',
+                lower: [loggedAt],
+                includeLower: false,
+                upper: [],
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'loggedAt',
+                lower: [],
+                upper: [loggedAt],
+                includeUpper: false,
+              ),
+            );
       }
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterWhereClause>
-      loggedAtGreaterThan(
-    DateTime loggedAt, {
-    bool include = false,
-  }) {
+  loggedAtGreaterThan(DateTime loggedAt, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.between(
-        indexName: r'loggedAt',
-        lower: [loggedAt],
-        includeLower: include,
-        upper: [],
-      ));
+      return query.addWhereClause(
+        IndexWhereClause.between(
+          indexName: r'loggedAt',
+          lower: [loggedAt],
+          includeLower: include,
+          upper: [],
+        ),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterWhereClause>
-      loggedAtLessThan(
-    DateTime loggedAt, {
-    bool include = false,
-  }) {
+  loggedAtLessThan(DateTime loggedAt, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.between(
-        indexName: r'loggedAt',
-        lower: [],
-        upper: [loggedAt],
-        includeUpper: include,
-      ));
+      return query.addWhereClause(
+        IndexWhereClause.between(
+          indexName: r'loggedAt',
+          lower: [],
+          upper: [loggedAt],
+          includeUpper: include,
+        ),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterWhereClause>
-      loggedAtBetween(
+  loggedAtBetween(
     DateTime lowerLoggedAt,
     DateTime upperLoggedAt, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.between(
-        indexName: r'loggedAt',
-        lower: [lowerLoggedAt],
-        includeLower: includeLower,
-        upper: [upperLoggedAt],
-        includeUpper: includeUpper,
-      ));
+      return query.addWhereClause(
+        IndexWhereClause.between(
+          indexName: r'loggedAt',
+          lower: [lowerLoggedAt],
+          includeLower: includeLower,
+          upper: [upperLoggedAt],
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 }
@@ -515,295 +525,294 @@ extension SymptomEntryIsarQueryWhere
 extension SymptomEntryIsarQueryFilter
     on QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QFilterCondition> {
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      createdAtEqualTo(DateTime value) {
+  createdAtEqualTo(DateTime value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'createdAt',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'createdAt', value: value),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      createdAtGreaterThan(
-    DateTime value, {
-    bool include = false,
-  }) {
+  createdAtGreaterThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'createdAt',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'createdAt',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      createdAtLessThan(
-    DateTime value, {
-    bool include = false,
-  }) {
+  createdAtLessThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'createdAt',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'createdAt',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      createdAtBetween(
+  createdAtBetween(
     DateTime lower,
     DateTime upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'createdAt',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'createdAt',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      flareIsarIdIsNull() {
+  flareIsarIdIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'flareIsarId',
-      ));
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'flareIsarId'),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      flareIsarIdIsNotNull() {
+  flareIsarIdIsNotNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'flareIsarId',
-      ));
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'flareIsarId'),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      flareIsarIdEqualTo(int? value) {
+  flareIsarIdEqualTo(int? value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'flareIsarId',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'flareIsarId', value: value),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      flareIsarIdGreaterThan(
-    int? value, {
-    bool include = false,
-  }) {
+  flareIsarIdGreaterThan(int? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'flareIsarId',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'flareIsarId',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      flareIsarIdLessThan(
-    int? value, {
-    bool include = false,
-  }) {
+  flareIsarIdLessThan(int? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'flareIsarId',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'flareIsarId',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      flareIsarIdBetween(
+  flareIsarIdBetween(
     int? lower,
     int? upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'flareIsarId',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'flareIsarId',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      idEqualTo(Id value) {
+  idEqualTo(Id value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'id',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'id', value: value),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      idGreaterThan(
-    Id value, {
-    bool include = false,
-  }) {
+  idGreaterThan(Id value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'id',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'id',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      idLessThan(
-    Id value, {
-    bool include = false,
-  }) {
+  idLessThan(Id value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'id',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'id',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      idBetween(
+  idBetween(
     Id lower,
     Id upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'id',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'id',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      loggedAtEqualTo(DateTime value) {
+  loggedAtEqualTo(DateTime value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'loggedAt',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'loggedAt', value: value),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      loggedAtGreaterThan(
-    DateTime value, {
-    bool include = false,
-  }) {
+  loggedAtGreaterThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'loggedAt',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'loggedAt',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      loggedAtLessThan(
-    DateTime value, {
-    bool include = false,
-  }) {
+  loggedAtLessThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'loggedAt',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'loggedAt',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      loggedAtBetween(
+  loggedAtBetween(
     DateTime lower,
     DateTime upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'loggedAt',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'loggedAt',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      nameEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  nameEqualTo(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'name',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'name',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      nameGreaterThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'name',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      nameLessThan(
+  nameGreaterThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'name',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'name',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      nameBetween(
+  nameLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'name',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
+  nameBetween(
     String lower,
     String upper, {
     bool includeLower = true,
@@ -811,153 +820,158 @@ extension SymptomEntryIsarQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'name',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'name',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      nameStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  nameStartsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'name',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'name',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      nameEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  nameEndsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'name',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'name',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      nameContains(String value, {bool caseSensitive = true}) {
+  nameContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'name',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'name',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      nameMatches(String pattern, {bool caseSensitive = true}) {
+  nameMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'name',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'name',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      nameIsEmpty() {
+  nameIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'name',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'name', value: ''),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      nameIsNotEmpty() {
+  nameIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'name',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'name', value: ''),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      notesIsNull() {
+  notesIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'notes',
-      ));
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'notes'),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      notesIsNotNull() {
+  notesIsNotNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'notes',
-      ));
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'notes'),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      notesEqualTo(
-    String? value, {
-    bool caseSensitive = true,
-  }) {
+  notesEqualTo(String? value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'notes',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'notes',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      notesGreaterThan(
-    String? value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'notes',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      notesLessThan(
+  notesGreaterThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'notes',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'notes',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      notesBetween(
+  notesLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'notes',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
+  notesBetween(
     String? lower,
     String? upper, {
     bool includeLower = true,
@@ -965,362 +979,360 @@ extension SymptomEntryIsarQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'notes',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'notes',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      notesStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  notesStartsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'notes',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'notes',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      notesEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  notesEndsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'notes',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'notes',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      notesContains(String value, {bool caseSensitive = true}) {
+  notesContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'notes',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'notes',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      notesMatches(String pattern, {bool caseSensitive = true}) {
+  notesMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'notes',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'notes',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      notesIsEmpty() {
+  notesIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'notes',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'notes', value: ''),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      notesIsNotEmpty() {
+  notesIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'notes',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'notes', value: ''),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      profileIdEqualTo(int value) {
+  profileIdEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'profileId',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'profileId', value: value),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      profileIdGreaterThan(
-    int value, {
-    bool include = false,
-  }) {
+  profileIdGreaterThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'profileId',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'profileId',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      profileIdLessThan(
-    int value, {
-    bool include = false,
-  }) {
+  profileIdLessThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'profileId',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'profileId',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      profileIdBetween(
+  profileIdBetween(
     int lower,
     int upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'profileId',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'profileId',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      severityEqualTo(int value) {
+  severityEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'severity',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'severity', value: value),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      severityGreaterThan(
-    int value, {
-    bool include = false,
-  }) {
+  severityGreaterThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'severity',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'severity',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      severityLessThan(
-    int value, {
-    bool include = false,
-  }) {
+  severityLessThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'severity',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'severity',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      severityBetween(
+  severityBetween(
     int lower,
     int upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'severity',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'severity',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      userConditionIsarIdIsNull() {
+  userConditionIsarIdIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'userConditionIsarId',
-      ));
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'userConditionIsarId'),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      userConditionIsarIdIsNotNull() {
+  userConditionIsarIdIsNotNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'userConditionIsarId',
-      ));
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'userConditionIsarId'),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      userConditionIsarIdEqualTo(int? value) {
+  userConditionIsarIdEqualTo(int? value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'userConditionIsarId',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'userConditionIsarId', value: value),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      userConditionIsarIdGreaterThan(
-    int? value, {
-    bool include = false,
-  }) {
+  userConditionIsarIdGreaterThan(int? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'userConditionIsarId',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'userConditionIsarId',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      userConditionIsarIdLessThan(
-    int? value, {
-    bool include = false,
-  }) {
+  userConditionIsarIdLessThan(int? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'userConditionIsarId',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'userConditionIsarId',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      userConditionIsarIdBetween(
+  userConditionIsarIdBetween(
     int? lower,
     int? upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'userConditionIsarId',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'userConditionIsarId',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      userSymptomIsarIdIsNull() {
+  userSymptomIsarIdIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'userSymptomIsarId',
-      ));
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'userSymptomIsarId'),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      userSymptomIsarIdIsNotNull() {
+  userSymptomIsarIdIsNotNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'userSymptomIsarId',
-      ));
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'userSymptomIsarId'),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      userSymptomIsarIdEqualTo(int? value) {
+  userSymptomIsarIdEqualTo(int? value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'userSymptomIsarId',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'userSymptomIsarId', value: value),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      userSymptomIsarIdGreaterThan(
-    int? value, {
-    bool include = false,
-  }) {
+  userSymptomIsarIdGreaterThan(int? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'userSymptomIsarId',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'userSymptomIsarId',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      userSymptomIsarIdLessThan(
-    int? value, {
-    bool include = false,
-  }) {
+  userSymptomIsarIdLessThan(int? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'userSymptomIsarId',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'userSymptomIsarId',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      userSymptomIsarIdBetween(
+  userSymptomIsarIdBetween(
     int? lower,
     int? upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'userSymptomIsarId',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'userSymptomIsarId',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      weatherSnapshotIsNull() {
+  weatherSnapshotIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'weatherSnapshot',
-      ));
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'weatherSnapshot'),
+      );
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      weatherSnapshotIsNotNull() {
+  weatherSnapshotIsNotNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'weatherSnapshot',
-      ));
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'weatherSnapshot'),
+      );
     });
   }
 }
@@ -1328,7 +1340,7 @@ extension SymptomEntryIsarQueryFilter
 extension SymptomEntryIsarQueryObject
     on QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QFilterCondition> {
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-      weatherSnapshot(FilterQuery<WeatherSnapshotIsar> q) {
+  weatherSnapshot(FilterQuery<WeatherSnapshotIsar> q) {
     return QueryBuilder.apply(this, (query) {
       return query.object(q, r'weatherSnapshot');
     });
@@ -1341,42 +1353,42 @@ extension SymptomEntryIsarQueryLinks
 extension SymptomEntryIsarQuerySortBy
     on QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QSortBy> {
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-      sortByCreatedAt() {
+  sortByCreatedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'createdAt', Sort.asc);
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-      sortByCreatedAtDesc() {
+  sortByCreatedAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'createdAt', Sort.desc);
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-      sortByFlareIsarId() {
+  sortByFlareIsarId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'flareIsarId', Sort.asc);
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-      sortByFlareIsarIdDesc() {
+  sortByFlareIsarIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'flareIsarId', Sort.desc);
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-      sortByLoggedAt() {
+  sortByLoggedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'loggedAt', Sort.asc);
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-      sortByLoggedAtDesc() {
+  sortByLoggedAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'loggedAt', Sort.desc);
     });
@@ -1389,7 +1401,7 @@ extension SymptomEntryIsarQuerySortBy
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-      sortByNameDesc() {
+  sortByNameDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'name', Sort.desc);
     });
@@ -1402,63 +1414,63 @@ extension SymptomEntryIsarQuerySortBy
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-      sortByNotesDesc() {
+  sortByNotesDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'notes', Sort.desc);
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-      sortByProfileId() {
+  sortByProfileId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'profileId', Sort.asc);
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-      sortByProfileIdDesc() {
+  sortByProfileIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'profileId', Sort.desc);
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-      sortBySeverity() {
+  sortBySeverity() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'severity', Sort.asc);
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-      sortBySeverityDesc() {
+  sortBySeverityDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'severity', Sort.desc);
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-      sortByUserConditionIsarId() {
+  sortByUserConditionIsarId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'userConditionIsarId', Sort.asc);
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-      sortByUserConditionIsarIdDesc() {
+  sortByUserConditionIsarIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'userConditionIsarId', Sort.desc);
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-      sortByUserSymptomIsarId() {
+  sortByUserSymptomIsarId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'userSymptomIsarId', Sort.asc);
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-      sortByUserSymptomIsarIdDesc() {
+  sortByUserSymptomIsarIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'userSymptomIsarId', Sort.desc);
     });
@@ -1468,28 +1480,28 @@ extension SymptomEntryIsarQuerySortBy
 extension SymptomEntryIsarQuerySortThenBy
     on QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QSortThenBy> {
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-      thenByCreatedAt() {
+  thenByCreatedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'createdAt', Sort.asc);
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-      thenByCreatedAtDesc() {
+  thenByCreatedAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'createdAt', Sort.desc);
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-      thenByFlareIsarId() {
+  thenByFlareIsarId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'flareIsarId', Sort.asc);
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-      thenByFlareIsarIdDesc() {
+  thenByFlareIsarIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'flareIsarId', Sort.desc);
     });
@@ -1502,21 +1514,21 @@ extension SymptomEntryIsarQuerySortThenBy
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-      thenByIdDesc() {
+  thenByIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.desc);
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-      thenByLoggedAt() {
+  thenByLoggedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'loggedAt', Sort.asc);
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-      thenByLoggedAtDesc() {
+  thenByLoggedAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'loggedAt', Sort.desc);
     });
@@ -1529,7 +1541,7 @@ extension SymptomEntryIsarQuerySortThenBy
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-      thenByNameDesc() {
+  thenByNameDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'name', Sort.desc);
     });
@@ -1542,63 +1554,63 @@ extension SymptomEntryIsarQuerySortThenBy
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-      thenByNotesDesc() {
+  thenByNotesDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'notes', Sort.desc);
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-      thenByProfileId() {
+  thenByProfileId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'profileId', Sort.asc);
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-      thenByProfileIdDesc() {
+  thenByProfileIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'profileId', Sort.desc);
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-      thenBySeverity() {
+  thenBySeverity() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'severity', Sort.asc);
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-      thenBySeverityDesc() {
+  thenBySeverityDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'severity', Sort.desc);
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-      thenByUserConditionIsarId() {
+  thenByUserConditionIsarId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'userConditionIsarId', Sort.asc);
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-      thenByUserConditionIsarIdDesc() {
+  thenByUserConditionIsarIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'userConditionIsarId', Sort.desc);
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-      thenByUserSymptomIsarId() {
+  thenByUserSymptomIsarId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'userSymptomIsarId', Sort.asc);
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-      thenByUserSymptomIsarIdDesc() {
+  thenByUserSymptomIsarIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'userSymptomIsarId', Sort.desc);
     });
@@ -1608,63 +1620,65 @@ extension SymptomEntryIsarQuerySortThenBy
 extension SymptomEntryIsarQueryWhereDistinct
     on QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QDistinct> {
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QDistinct>
-      distinctByCreatedAt() {
+  distinctByCreatedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'createdAt');
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QDistinct>
-      distinctByFlareIsarId() {
+  distinctByFlareIsarId() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'flareIsarId');
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QDistinct>
-      distinctByLoggedAt() {
+  distinctByLoggedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'loggedAt');
     });
   }
 
-  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QDistinct> distinctByName(
-      {bool caseSensitive = true}) {
+  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QDistinct> distinctByName({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'name', caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QDistinct> distinctByNotes(
-      {bool caseSensitive = true}) {
+  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QDistinct> distinctByNotes({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'notes', caseSensitive: caseSensitive);
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QDistinct>
-      distinctByProfileId() {
+  distinctByProfileId() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'profileId');
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QDistinct>
-      distinctBySeverity() {
+  distinctBySeverity() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'severity');
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QDistinct>
-      distinctByUserConditionIsarId() {
+  distinctByUserConditionIsarId() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'userConditionIsarId');
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QDistinct>
-      distinctByUserSymptomIsarId() {
+  distinctByUserSymptomIsarId() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'userSymptomIsarId');
     });
@@ -1680,7 +1694,7 @@ extension SymptomEntryIsarQueryProperty
   }
 
   QueryBuilder<SymptomEntryIsar, DateTime, QQueryOperations>
-      createdAtProperty() {
+  createdAtProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'createdAt');
     });
@@ -1693,7 +1707,7 @@ extension SymptomEntryIsarQueryProperty
   }
 
   QueryBuilder<SymptomEntryIsar, DateTime, QQueryOperations>
-      loggedAtProperty() {
+  loggedAtProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'loggedAt');
     });
@@ -1724,21 +1738,21 @@ extension SymptomEntryIsarQueryProperty
   }
 
   QueryBuilder<SymptomEntryIsar, int?, QQueryOperations>
-      userConditionIsarIdProperty() {
+  userConditionIsarIdProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'userConditionIsarId');
     });
   }
 
   QueryBuilder<SymptomEntryIsar, int?, QQueryOperations>
-      userSymptomIsarIdProperty() {
+  userSymptomIsarIdProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'userSymptomIsarId');
     });
   }
 
   QueryBuilder<SymptomEntryIsar, WeatherSnapshotIsar?, QQueryOperations>
-      weatherSnapshotProperty() {
+  weatherSnapshotProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'weatherSnapshot');
     });

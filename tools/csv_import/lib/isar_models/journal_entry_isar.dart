@@ -14,7 +14,6 @@ class JournalSnapshotIsar {
   late String body;
   String? title;
   late DateTime savedAt;
-
 }
 
 /// Isar-annotated storage representation of a [JournalEntry].
@@ -46,5 +45,4 @@ class JournalEntryIsar {
 
   /// Optional energy level: 1 (exhausted) to 5 (good energy).
   int? energyLevel;
-
 }

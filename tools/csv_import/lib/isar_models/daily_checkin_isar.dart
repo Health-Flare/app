@@ -29,5 +29,4 @@ class DailyCheckinIsar {
   late DateTime createdAt;
 
   DateTime? updatedAt;
-
 }

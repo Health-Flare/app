@@ -25,5 +25,4 @@ class MealEntryIsar {
   DateTime? updatedAt;
 
   int? flareIsarId; // back-filled when FlareIsar lands in v9
-
 }

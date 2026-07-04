@@ -109,9 +109,12 @@ class Importer {
   }) async {
     // Find profile (case-insensitive).
     final allProfiles = await isar.profileIsars.where().findAll();
-    final profile = allProfiles.where(
-      (p) => p.name.toLowerCase().trim() == profileName.toLowerCase().trim(),
-    ).firstOrNull;
+    final profile = allProfiles
+        .where(
+          (p) =>
+              p.name.toLowerCase().trim() == profileName.toLowerCase().trim(),
+        )
+        .firstOrNull;
 
     if (profile == null) {
       final names = allProfiles.map((p) => '"${p.name}"').join(', ');
@@ -131,7 +134,9 @@ class Importer {
 
     final existingSymptom = (await isar.symptomEntryIsars.where().findAll())
         .where((e) => e.profileId == profileId)
-        .map((e) => '${e.loggedAt.millisecondsSinceEpoch}_${e.name.toLowerCase()}')
+        .map(
+          (e) => '${e.loggedAt.millisecondsSinceEpoch}_${e.name.toLowerCase()}',
+        )
         .toSet();
 
     final warnings = <String>[];
@@ -161,7 +166,8 @@ class Importer {
           );
 
         case CsvEntryType.symptom:
-          final key = '${row.date.millisecondsSinceEpoch}_${row.title!.toLowerCase()}';
+          final key =
+              '${row.date.millisecondsSinceEpoch}_${row.title!.toLowerCase()}';
           if (existingSymptom.contains(key)) {
             skipped++;
             continue;

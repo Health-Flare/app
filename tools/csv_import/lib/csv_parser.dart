@@ -46,16 +46,20 @@ List<CsvRow> parseCsv(String filePath) {
   }
 
   // Parse header row (case-insensitive).
-  final header = rows.first.map((h) => h.toString().trim().toLowerCase()).toList();
-  final colType     = header.indexOf('type');
-  final colDate     = header.indexOf('date');
-  final colTitle    = header.indexOf('title');
-  final colBody     = header.indexOf('body');
+  final header = rows.first
+      .map((h) => h.toString().trim().toLowerCase())
+      .toList();
+  final colType = header.indexOf('type');
+  final colDate = header.indexOf('date');
+  final colTitle = header.indexOf('title');
+  final colBody = header.indexOf('body');
   final colSeverity = header.indexOf('severity');
 
   if (colDate == -1) {
-    throw FormatException('CSV is missing required "date" column. '
-        'Header row found: ${header.join(', ')}');
+    throw FormatException(
+      'CSV is missing required "date" column. '
+      'Header row found: ${header.join(', ')}',
+    );
   }
 
   final results = <CsvRow>[];
@@ -78,7 +82,9 @@ List<CsvRow> parseCsv(String filePath) {
       case 'symptom':
         entryType = CsvEntryType.symptom;
       default:
-        stderr.writeln('  ⚠  Line $lineNum: unknown type "$typeRaw" — skipped.');
+        stderr.writeln(
+          '  ⚠  Line $lineNum: unknown type "$typeRaw" — skipped.',
+        );
         continue;
     }
 
@@ -90,8 +96,10 @@ List<CsvRow> parseCsv(String filePath) {
     }
     final date = _parseDate(dateRaw);
     if (date == null) {
-      stderr.writeln('  ⚠  Line $lineNum: cannot parse date "$dateRaw" — skipped. '
-          'Expected YYYY-MM-DD or YYYY-MM-DD HH:MM:SS.');
+      stderr.writeln(
+        '  ⚠  Line $lineNum: cannot parse date "$dateRaw" — skipped. '
+        'Expected YYYY-MM-DD or YYYY-MM-DD HH:MM:SS.',
+      );
       continue;
     }
 
@@ -120,22 +128,28 @@ List<CsvRow> parseCsv(String filePath) {
 
     // Validate required fields per type.
     if (entryType == CsvEntryType.journal && body == null && title == null) {
-      stderr.writeln('  ⚠  Line $lineNum: journal row has no title or body — skipped.');
+      stderr.writeln(
+        '  ⚠  Line $lineNum: journal row has no title or body — skipped.',
+      );
       continue;
     }
     if (entryType == CsvEntryType.symptom && title == null) {
-      stderr.writeln('  ⚠  Line $lineNum: symptom row has no name (title column) — skipped.');
+      stderr.writeln(
+        '  ⚠  Line $lineNum: symptom row has no name (title column) — skipped.',
+      );
       continue;
     }
 
-    results.add(CsvRow(
-      lineNumber: lineNum,
-      type: entryType,
-      date: date,
-      title: title,
-      body: body,
-      severity: severity,
-    ));
+    results.add(
+      CsvRow(
+        lineNumber: lineNum,
+        type: entryType,
+        date: date,
+        title: title,
+        body: body,
+        severity: severity,
+      ),
+    );
   }
 
   return results;

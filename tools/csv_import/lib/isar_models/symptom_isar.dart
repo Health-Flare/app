@@ -16,5 +16,4 @@ class SymptomIsar {
 
   /// True for seed data; false for user-created custom symptoms.
   late bool global;
-
 }

@@ -30,5 +30,4 @@ class UserConditionIsar {
 
   /// Optional free-text notes.
   String? notes;
-
 }
