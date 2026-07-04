@@ -193,6 +193,27 @@ abstract final class InsightsQueryService {
           : null,
     );
 
+    // ── Compute weather impact ────────────────────────────────────────────────
+
+    final weatherGroups = <String, List<int>>{};
+    for (final s in allSymptoms) {
+      if (s.weatherSnapshot == null) continue;
+      final condition = s.weatherSnapshot!.conditionLabel;
+      (weatherGroups[condition] ??= []).add(s.severity);
+    }
+    final weatherImpact =
+        weatherGroups.entries
+            .where((e) => e.value.length >= 2)
+            .map(
+              (e) => WeatherConditionSeverity(
+                condition: e.key,
+                avgSeverity: e.value.reduce((a, b) => a + b) / e.value.length,
+                sampleCount: e.value.length,
+              ),
+            )
+            .toList()
+          ..sort((a, b) => b.avgSeverity.compareTo(a.avgSeverity));
+
     return InsightData(
       start: windowStart,
       end: windowEnd,
@@ -201,6 +222,7 @@ abstract final class InsightsQueryService {
       flarePeriods: flarePeriods,
       foodTriggers: foodTriggers,
       sleepCorrelation: sleepCorrelation,
+      weatherImpact: weatherImpact,
     );
   }
 }

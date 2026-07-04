@@ -120,3 +120,30 @@ final activeProfileSymptomEntriesProvider = Provider<List<SymptomEntry>>((ref) {
   return entries.where((e) => e.profileId == profileId).toList()
     ..sort((a, b) => b.loggedAt.compareTo(a.loggedAt));
 });
+
+/// Unique symptom names for the active profile, ranked by frequency descending
+/// then by most recently logged. Used to power autocomplete in the symptom form.
+final recentSymptomNamesProvider = Provider<List<String>>((ref) {
+  final entries = ref.watch(activeProfileSymptomEntriesProvider);
+  final nameStats = <String, ({int count, DateTime recent})>{};
+  for (final e in entries) {
+    final existing = nameStats[e.name];
+    if (existing == null) {
+      nameStats[e.name] = (count: 1, recent: e.loggedAt);
+    } else {
+      nameStats[e.name] = (
+        count: existing.count + 1,
+        recent: e.loggedAt.isAfter(existing.recent)
+            ? e.loggedAt
+            : existing.recent,
+      );
+    }
+  }
+  final sorted = nameStats.entries.toList()
+    ..sort((a, b) {
+      final countCmp = b.value.count.compareTo(a.value.count);
+      if (countCmp != 0) return countCmp;
+      return b.value.recent.compareTo(a.value.recent);
+    });
+  return sorted.map((e) => e.key).toList();
+});

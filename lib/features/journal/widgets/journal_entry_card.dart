@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import 'package:health_flare/features/shared/widgets/weather_chip.dart';
 import 'package:health_flare/models/journal_entry.dart';
 
 /// A single journal entry row in the [JournalListScreen].
@@ -55,6 +56,10 @@ class JournalEntryCard extends StatelessWidget {
                     ),
                 ],
               ),
+              if (entry.weatherSnapshot != null) ...[
+                const SizedBox(height: 4),
+                WeatherChip(snapshot: entry.weatherSnapshot),
+              ],
               const SizedBox(height: 6),
               // Title or preview
               Text(

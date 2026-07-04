@@ -1,6 +1,19 @@
 import 'package:health_flare/models/meal_entry.dart';
 import 'package:health_flare/models/symptom_entry.dart';
 
+/// Average symptom severity for a specific weather condition.
+class WeatherConditionSeverity {
+  const WeatherConditionSeverity({
+    required this.condition,
+    required this.avgSeverity,
+    required this.sampleCount,
+  });
+
+  final String condition;
+  final double avgSeverity; // 1–10 average severity
+  final int sampleCount;
+}
+
 /// A single (date, value) point on a trend chart.
 class TrendPoint {
   const TrendPoint({required this.date, required this.value});
@@ -64,6 +77,7 @@ class InsightData {
     required this.flarePeriods,
     required this.foodTriggers,
     required this.sleepCorrelation,
+    required this.weatherImpact,
   });
 
   final DateTime start;
@@ -84,9 +98,14 @@ class InsightData {
 
   final SleepCorrelation sleepCorrelation;
 
+  /// Average symptom severity per weather condition (requires ≥2 samples per condition).
+  /// Sorted by avg severity descending (most impactful conditions first).
+  final List<WeatherConditionSeverity> weatherImpact;
+
   bool get isEmpty =>
       symptomTrends.isEmpty &&
       wellbeingTrend.isEmpty &&
       foodTriggers.isEmpty &&
-      !sleepCorrelation.hasData;
+      !sleepCorrelation.hasData &&
+      weatherImpact.isEmpty;
 }
