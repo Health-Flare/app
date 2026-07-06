@@ -378,18 +378,52 @@ Feature: Quick Log
     When I save a quick log entry classified as "Vital"
     Then the entry appears in the Symptoms & Vitals section
 
+  Scenario: A blood-pressure quick entry saves structured values
+    When I save the quick log entry "Blood pressure was 128 over 84 this morning"
+    Then a Blood Pressure vital entry is saved with systolic 128 and diastolic 84 mmHg
+    And the original text is preserved in the entry's notes
+
+  Scenario: A heart-rate quick entry saves a structured value
+    When I save the quick log entry "Resting heart rate 72 bpm before breakfast"
+    Then a Heart Rate vital entry is saved with value 72 BPM
+    And the original text is preserved in the entry's notes
+
+  Scenario: Vital text whose values cannot be parsed saves as a general note
+    When I save a quick log entry classified as "Vital" whose values cannot be extracted
+    Then the entry is saved as a journal entry
+    And no text the user typed is lost
+
   Scenario: A Medication-typed entry is visible in the Medications section
     When I save a quick log entry classified as "Medication"
     Then the entry appears in the Medications log
+
+  Scenario: A Medication-typed entry logs a dose of a known medication
+    Given the active profile has a medication named "Ibuprofen"
+    When I save the quick log entry "Took ibuprofen after lunch"
+    Then a dose log with status "Taken" is recorded against "Ibuprofen"
+    And the dose amount and unit default to the medication's usual dose
+    And the original text is preserved in the dose log's notes
+
+  Scenario: Medication text with no matching medication saves as a general note
+    Given the active profile has no medication whose name appears in the text
+    When I save the quick log entry "Took something for the pain"
+    Then the entry is saved as a journal entry
+    And no text the user typed is lost
 
   Scenario: A Doctor Visit-typed entry is accessible from the dashboard
     When I save a quick log entry classified as "Doctor Visit"
     Then the entry appears in a "Doctor Visits" section on the dashboard
 
-  Scenario: A Sleep-typed entry is visible in the sleep log
-    When I save a quick log entry classified as "Sleep"
-    Then the entry appears in the sleep log alongside fully-formed sleep entries
-    And the duration is shown as "Unknown" until the user expands and provides bedtime/wake time
+  Scenario: A Sleep-typed entry with a stated duration is visible in the sleep log
+    When I save the quick log entry "Slept for 6 hours last night, woke up twice"
+    Then a sleep entry appears in the sleep log alongside fully-formed sleep entries
+    And its duration is 6 hours, ending at the entry's timestamp
+    And the original text is preserved in the entry's notes
+
+  Scenario: Sleep text without a stated duration saves as a general note
+    When I save the quick log entry "Terrible night, kept waking up"
+    Then the entry is saved as a journal entry
+    And no text the user typed is lost
 
   # ---------------------------------------------------------------------------
   # Accessibility

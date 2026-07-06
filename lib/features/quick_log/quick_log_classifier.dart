@@ -6,6 +6,7 @@ enum QuickLogEntryType {
   medication,
   doctorVisit,
   activity,
+  sleep,
   journal,
 }
 
@@ -15,7 +16,7 @@ enum QuickLogEntryType {
 /// too short or too ambiguous to classify confidently.
 ///
 /// Priority order (first match wins):
-///   Vital > Medication > Doctor > Meal > Symptom > Journal (fallback)
+///   Vital > Sleep > Medication > Doctor > Meal > Symptom > Journal (fallback)
 abstract final class QuickLogClassifier {
   /// Minimum word count before classification is attempted.
   static const _minWords = 3;
@@ -33,6 +34,7 @@ abstract final class QuickLogClassifier {
     final lower = trimmed.toLowerCase();
 
     if (_matchesVital(lower)) return QuickLogEntryType.vital;
+    if (_matchesSleep(lower)) return QuickLogEntryType.sleep;
     if (_matchesMedication(lower)) return QuickLogEntryType.medication;
     if (_matchesDoctor(lower)) return QuickLogEntryType.doctorVisit;
     if (_matchesMeal(lower)) return QuickLogEntryType.meal;
@@ -53,6 +55,21 @@ abstract final class QuickLogClassifier {
       caseSensitive: false,
     ).hasMatch(lower);
   }
+
+  // Checked before medication so "took a nap" is not read as a dose ('took'),
+  // and before meal so "slept badly after dinner" stays a sleep entry.
+  static bool _matchesSleep(String lower) => _any(lower, [
+    'slept',
+    'sleep',
+    'nap ',
+    'napped',
+    'a nap',
+    'insomnia',
+    'woke up',
+    'woke ',
+    'waking',
+    'overslept',
+  ]);
 
   static bool _matchesMedication(String lower) => _any(lower, [
     'took',
