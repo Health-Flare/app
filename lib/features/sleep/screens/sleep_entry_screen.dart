@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 
 import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/core/providers/sleep_provider.dart';
+import 'package:health_flare/features/shared/widgets/move_entry_action.dart';
 import 'package:health_flare/features/sleep/widgets/sleep_quality_selector.dart';
 import 'package:health_flare/models/sleep_entry.dart';
 import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
@@ -166,6 +167,14 @@ class _SleepEntryScreenState extends ConsumerState<SleepEntryScreen> {
     return Scaffold(
       appBar: HFAppBar(
         title: Text(widget.entry == null ? 'Log sleep' : 'Edit sleep'),
+        actions: [
+          if (widget.entry != null)
+            MoveEntryAction(
+              onMove: (target) => ref
+                  .read(sleepEntryListProvider.notifier)
+                  .moveToProfile(widget.entry!.id, target.id),
+            ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),

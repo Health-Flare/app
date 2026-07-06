@@ -87,6 +87,19 @@ class VitalEntryListNotifier extends Notifier<List<VitalEntry>> {
     });
   }
 
+  /// Reassign an entry to a different profile (wrong-profile recovery).
+  /// Any flare link is cleared — flares belong to the source profile.
+  Future<void> moveToProfile(int id, int newProfileId) async {
+    final isar = ref.read(isarProvider);
+    await isar.writeTxn(() async {
+      final row = await isar.vitalEntryIsars.get(id);
+      if (row == null) return;
+      row.profileId = newProfileId;
+      row.flareIsarId = null;
+      await isar.vitalEntryIsars.put(row);
+    });
+  }
+
   /// Convenience: look up an entry by id from the in-memory state cache.
   VitalEntry? byId(int id) {
     try {

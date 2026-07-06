@@ -32,6 +32,16 @@ class _FakeJournalList extends JournalEntryListNotifier {
   Future<void> update(JournalEntry updated) async {}
 }
 
+class _FakeActiveProfile extends ActiveProfileNotifier {
+  @override
+  int? build() => 1;
+}
+
+class _FakeProfileList extends ProfileListNotifier {
+  @override
+  List<Profile> build() => [Profile(id: 1, name: 'Sarah')];
+}
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -77,6 +87,8 @@ Widget _buildDetail(_FakeJournalList fakeList, JournalEntry entry) {
   return ProviderScope(
     overrides: [
       journalEntryListProvider.overrideWith(() => fakeList),
+      activeProfileProvider.overrideWith(_FakeActiveProfile.new),
+      profileListProvider.overrideWith(_FakeProfileList.new),
       activeProfileDataProvider.overrideWith(
         (ref) => Profile(id: 1, name: 'Sarah'),
       ),
