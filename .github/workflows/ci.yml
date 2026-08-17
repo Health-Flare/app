@@ -160,6 +160,8 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: true
       - run: flutter pub get
+      - name: Validate macOS app icon set
+        run: bash scripts/check_macos_icon.sh
       - name: Build macOS app (debug)
         run: flutter build macos --debug
       - name: Zip .app bundle
