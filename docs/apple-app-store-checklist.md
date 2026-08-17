@@ -23,7 +23,7 @@ stand today and a submitted build.
 | Signing | No iOS distribution certificate, provisioning profile, or App Store Connect API key configured anywhere in CI or docs. |
 | CI release automation | `release.yaml` (APK → Gitea/GitHub release), `release-playstore.yaml` (AAB → Play internal track), `release-macos.yaml` (DMG, ad-hoc notarized — **not** Mac App Store). **No iOS/App Store workflow exists.** |
 | App Store Connect record | Not created (no evidence of an existing app record — nothing references an Apple Team ID or ASC app ID anywhere in the repo). |
-| Screenshots | `scripts/take_screenshots.sh` + `integration_test/screenshot_test.dart` generate iPhone screenshots (currently defaults to iPhone 16 Pro / 6.3"). Uses the "Sarah Chen" persona already, matching the `app-store.feature` requirement. **No iPad screenshots exist**, despite the app being built as a universal iPhone+iPad target. |
+| Screenshots | `scripts/take_screenshots.sh` now sweeps all three required device classes (iPhone 6.9"/6.5", iPad 13") into `screenshots/appstore/<slug>/` in one run — see Phase 3. Uses the "Sarah Chen" persona already, matching the `app-store.feature` requirement. **Not yet run**: this Mac has Xcode but no simulator runtimes installed, so nothing has actually been captured or verified. |
 | Privacy policy | Published content exists at `docs/privacy-policy.md` / `.html`, referenced as `https://healthflare.org/privacy` in `docs/store-listing.md`. Confirm it's actually deployed and reachable at that URL before submitting — App Store Connect validates the link. |
 | Export compliance | `ios/Runner/Info.plist` does **not** set `ITSAppUsesNonExemptEncryption`. Without it, every App Store Connect / TestFlight upload prompts an export-compliance question manually. |
 
@@ -70,22 +70,43 @@ stand today and a submitted build.
 
 ## Phase 3 — Screenshots
 
-- [ ] Generate iPhone screenshots at the sizes `app-store.feature` requires: 6.9" (iPhone 16 Pro
-  Max or newer equivalent) and 6.5" (Plus), 3 each minimum. `scripts/take_screenshots.sh` already
-  takes a device name argument — run it once per required simulator:
-  ```bash
-  ./scripts/take_screenshots.sh "iPhone 16 Pro Max"
-  ./scripts/take_screenshots.sh "iPhone 11 Pro Max"   # or current 6.5" equivalent simulator
-  ```
-- [ ] Because `TARGETED_DEVICE_FAMILY` includes iPad (`"1,2"`), App Store Connect will also expect
-  iPad screenshots (13" class) if the listing offers the app on iPad. Either:
-  - generate them the same way against an iPad simulator, or
-  - restrict `TARGETED_DEVICE_FAMILY` to iPhone-only (`"1"`) if iPad was never an intentional
-    target — check with whoever set `UISupportedInterfaceOrientations~ipad` in `Info.plist`
-    before doing this, it's a product decision, not just a submission-checklist one.
-- [ ] Commit the new screenshot sets under `screenshots/` (matches the `v1`/`v2` pattern already
-  there) — `app-store.feature` requires screenshots come from the repeatable pipeline, not a
-  manual export.
+**Automation done (2026-08-17).** `scripts/take_screenshots.sh` now sweeps all three required App
+Store device classes in one run — iPhone 6.9", iPhone 6.5", and iPad 13" (the last one because
+`TARGETED_DEVICE_FAMILY = "1,2"` means the app targets iPad, not just iPhone) — and writes each
+class to its own subdirectory so runs don't clobber each other:
+
+```bash
+./scripts/take_screenshots.sh                # sweep: screenshots/appstore/<slug>/*.png
+./scripts/take_screenshots.sh "iPhone 16"     # single device: screenshots/adhoc/*.png
+./scripts/take_screenshots.sh --list          # list installed simulators
+```
+
+`test_driver/integration_test.dart` now reads `$SCREENSHOT_DIR` (set by the wrapper script per
+device) instead of hardcoding `screenshots/`, which is what makes the per-class subdirectories
+possible without touching the test file itself.
+
+Remaining work — **needs a real run, which needs simulators installed first:**
+
+- [ ] Install the iOS Simulator runtime (Xcode → Settings → Platforms, or
+  `xcodebuild -downloadPlatform iOS`) — as of this writing this Mac has Xcode installed but zero
+  simulator runtimes (`xcrun simctl list devices available` returns nothing), so nothing in this
+  phase has actually been run or verified yet.
+- [ ] Check what simulator models Xcode actually offers once runtimes are installed —
+  `./scripts/take_screenshots.sh --list` — and reconcile against `DEVICE_CLASS_NAMES` near the top
+  of `scripts/take_screenshots.sh` (currently `iPhone 16 Pro Max` / `iPhone 11 Pro Max` /
+  `iPad Pro 13-inch (M4)`). Apple renames simulator models most years; the script prints a clear
+  per-class skip warning rather than guessing if a name doesn't match, but the names may need a
+  one-line update.
+- [ ] Run `./scripts/take_screenshots.sh` and verify all three classes produce screenshots
+  (12 images each, matching the `testWidgets` count in `integration_test/screenshot_test.dart`)
+  with no visual glitches, overflow warnings, or placeholder content.
+- [ ] Decide whether `TARGETED_DEVICE_FAMILY = "1,2"` (iPad support) is actually intentional before
+  spending time on iPad screenshots — if not, dropping it to iPhone-only (`"1"`) removes the
+  `ipad-13` sweep entirely. This is a product decision, not a script change; see "Open questions"
+  below.
+- [ ] Commit the new screenshot sets under `screenshots/appstore/` (matches the `v1`/`v2` pattern
+  already there for older captures) — `app-store.feature` requires screenshots come from the
+  repeatable pipeline, not a manual export, which this now satisfies structurally.
 
 ## Phase 4 — CI: build & sign
 

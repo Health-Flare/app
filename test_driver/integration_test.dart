@@ -4,25 +4,27 @@ import 'package:integration_test/integration_test_driver_extended.dart';
 
 /// Driver entry-point for screenshot capture.
 ///
-/// Run via scripts/take_screenshots.sh or:
+/// Run via scripts/take_screenshots.sh (recommended — sweeps every required
+/// App Store device class into its own subdirectory) or directly:
 ///
-///   flutter drive
-///     --driver=test_driver/integration_test.dart
-///     --target=integration_test/screenshot_test.dart
+///   SCREENSHOT_DIR=screenshots/adhoc flutter drive \
+///     --driver=test_driver/integration_test.dart \
+///     --target=integration_test/screenshot_test.dart \
 ///     -d DEVICE_ID
 ///
-/// Screenshots are written to screenshots/NAME.png.
+/// Screenshots are written to $SCREENSHOT_DIR/NAME.png (default: screenshots/).
 Future<void> main() => integrationDriver(
   // Save screenshots even when individual tests fail.
   writeResponseOnFailure: true,
   // onScreenshot is called once per takeScreenshot() call with name + bytes.
   onScreenshot:
       (String name, List<int> bytes, [Map<String, Object?>? args]) async {
-        final dir = Directory('screenshots');
+        final outDir = Platform.environment['SCREENSHOT_DIR'] ?? 'screenshots';
+        final dir = Directory(outDir);
         if (!dir.existsSync()) dir.createSync(recursive: true);
-        File('screenshots/$name.png').writeAsBytesSync(bytes);
+        File('$outDir/$name.png').writeAsBytesSync(bytes);
         // ignore: avoid_print
-        print('  saved  screenshots/$name.png');
+        print('  saved  $outDir/$name.png');
         return true;
       },
 );
