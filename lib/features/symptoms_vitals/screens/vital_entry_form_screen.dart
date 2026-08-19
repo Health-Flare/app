@@ -14,9 +14,12 @@ import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 ///
 /// Pass [entry] to open in edit mode; leave null for a new entry.
 class VitalEntryFormScreen extends ConsumerStatefulWidget {
-  const VitalEntryFormScreen({super.key, this.entry});
+  const VitalEntryFormScreen({super.key, this.entry, this.initialNotes});
 
   final VitalEntry? entry;
+
+  /// Pre-fills the notes field for a new entry (quick-log "Add details").
+  final String? initialNotes;
 
   @override
   ConsumerState<VitalEntryFormScreen> createState() =>
@@ -60,7 +63,7 @@ class _VitalEntryFormScreenState extends ConsumerState<VitalEntryFormScreen> {
       _valueController = TextEditingController();
       _value2Controller = TextEditingController();
       _unit = VitalType.heartRate.defaultUnit;
-      _notesController = TextEditingController();
+      _notesController = TextEditingController(text: widget.initialNotes ?? '');
       _loggedAt = DateTime.now();
     }
   }

@@ -1,75 +1,170 @@
 #!/usr/bin/env bash
-# take_screenshots.sh — capture app screenshots on an iOS simulator.
+# take_screenshots.sh — capture App Store screenshots on iOS simulators.
 #
 # Usage:
-#   ./scripts/take_screenshots.sh                   # default: iPhone 16 Pro
-#   ./scripts/take_screenshots.sh "iPhone 16"
-#   ./scripts/take_screenshots.sh "iPad Pro 13-inch (M4)"
+#   ./scripts/take_screenshots.sh                    # sweep every required App Store device class
+#   ./scripts/take_screenshots.sh "iPhone 16"         # capture one named simulator only
+#   ./scripts/take_screenshots.sh --list              # list available simulators and exit
 #
 # Output:
-#   screenshots/<name>.png   (one file per testWidgets call)
+#   screenshots/appstore/<slug>/<NAME>.png   one subdir per device class, sweep mode
+#   screenshots/adhoc/<NAME>.png             single-device mode (explicit device name given)
 #
 # Requirements:
-#   • Xcode + iOS Simulator
+#   • Xcode + the iOS Simulator runtime downloaded — Xcode → Settings → Platforms,
+#     or `xcodebuild -downloadPlatform iOS`. `xcrun simctl list devices available`
+#     must show at least one iOS runtime before this script can do anything.
 #   • flutter in $PATH
 #   • jq  (brew install jq)
+#
+# App Store Connect screenshot requirements (docs/apple-app-store-checklist.md, Phase 3):
+#   6.9" iPhone (Pro Max class) — required
+#   6.5" iPhone (Plus class)    — required
+#   13"  iPad   (Pro class)     — required because TARGETED_DEVICE_FAMILY = "1,2" in
+#                                  ios/Runner.xcodeproj (the app is built as universal)
+#
+# The simulator names below match Xcode's current device-class naming. Apple
+# renames simulators every hardware generation, so if `xcrun simctl list`
+# doesn't have an exact match, this script prints the closest available
+# devices instead of guessing — update DEVICE_CLASS_NAMES below to match
+# whatever's actually installed.
 
 set -euo pipefail
 
-DEVICE_NAME="${1:-iPhone 16 Pro}"
-OUT_DIR="screenshots"
+OUT_ROOT="screenshots"
 
-# ── Find the simulator UDID ────────────────────────────────────────────────
+# Parallel arrays (bash 3.2 on macOS has no associative arrays).
+DEVICE_CLASS_SLUGS=("iphone-6.9" "iphone-6.5" "ipad-13")
+DEVICE_CLASS_NAMES=("iPhone 16 Pro Max" "iPhone 11 Pro Max" "iPad Pro 13-inch (M4)")
 
-echo "Looking for simulator: $DEVICE_NAME"
+# ── Helpers ──────────────────────────────────────────────────────────────
 
-DEVICE_ID=$(xcrun simctl list devices available -j \
-  | jq -r --arg name "$DEVICE_NAME" \
-    '[.devices | to_entries[] | .value[] | select(.name == $name and .isAvailable == true)] | first | .udid // empty')
-
-if [[ -z "$DEVICE_ID" ]]; then
-  echo "❌  Could not find an available simulator named \"$DEVICE_NAME\"."
-  echo ""
+list_available_simulators() {
   echo "Available iOS simulators:"
   xcrun simctl list devices available -j \
     | jq -r '.devices | to_entries[] | select(.key | contains("iOS")) | .value[] | select(.isAvailable) | "  \(.name)  (\(.udid))"'
+}
+
+find_device_id() {
+  local device_name="$1"
+  xcrun simctl list devices available -j \
+    | jq -r --arg name "$device_name" \
+      '[.devices | to_entries[] | .value[] | select(.name == $name and .isAvailable == true)] | first | .udid // empty'
+}
+
+boot_device() {
+  local device_id="$1"
+  local current_state
+  current_state=$(xcrun simctl list devices -j \
+    | jq -r --arg udid "$device_id" \
+      '[.devices | to_entries[] | .value[] | select(.udid == $udid)] | first | .state // "Unknown"')
+
+  if [[ "$current_state" != "Booted" ]]; then
+    echo "Booting simulator..."
+    xcrun simctl boot "$device_id"
+    # Give the SpringBoard time to fully load before running tests.
+    sleep 5
+  fi
+  open -a Simulator --args -CurrentDeviceUDID "$device_id" 2>/dev/null || true
+}
+
+# Runs the screenshot integration test against $1 (device id), writing
+# output to $2 (directory).
+run_screenshot_suite() {
+  local device_id="$1"
+  local out_dir="$2"
+
+  mkdir -p "$out_dir"
+  SCREENSHOT_DIR="$out_dir" flutter drive \
+    --driver=test_driver/integration_test.dart \
+    --target=integration_test/screenshot_test.dart \
+    --device-id="$device_id"
+}
+
+# ── --list ───────────────────────────────────────────────────────────────
+
+if [[ "${1:-}" == "--list" ]]; then
+  list_available_simulators
+  exit 0
+fi
+
+# ── Single-device mode (explicit device name passed) ───────────────────────
+
+if [[ $# -ge 1 ]]; then
+  DEVICE_NAME="$1"
+  echo "Looking for simulator: $DEVICE_NAME"
+  DEVICE_ID=$(find_device_id "$DEVICE_NAME")
+
+  if [[ -z "$DEVICE_ID" ]]; then
+    echo "❌  Could not find an available simulator named \"$DEVICE_NAME\"."
+    echo ""
+    list_available_simulators
+    exit 1
+  fi
+
+  echo "Found: $DEVICE_NAME  ($DEVICE_ID)"
+  boot_device "$DEVICE_ID"
+
+  OUT_DIR="$OUT_ROOT/adhoc"
+  echo ""
+  echo "Running screenshot tests..."
+  echo ""
+  run_screenshot_suite "$DEVICE_ID" "$OUT_DIR"
+
+  echo ""
+  echo "✅  Done. Screenshots written to $OUT_DIR/"
+  ls -1 "$OUT_DIR"/*.png 2>/dev/null | while read -r f; do
+    echo "   $f"
+  done
+  exit 0
+fi
+
+# ── Sweep mode (default — every required App Store device class) ──────────
+
+echo "No device given — sweeping all required App Store device classes."
+echo "(Pass a device name, e.g. \"iPhone 16\", to capture just one.)"
+echo ""
+
+FAILED_CLASSES=()
+CAPTURED_CLASSES=()
+
+for i in "${!DEVICE_CLASS_SLUGS[@]}"; do
+  SLUG="${DEVICE_CLASS_SLUGS[$i]}"
+  DEVICE_NAME="${DEVICE_CLASS_NAMES[$i]}"
+
+  echo "── ${SLUG}  (${DEVICE_NAME}) ──────────────────────────────"
+
+  DEVICE_ID=$(find_device_id "$DEVICE_NAME")
+  if [[ -z "$DEVICE_ID" ]]; then
+    echo "⚠️   Simulator \"$DEVICE_NAME\" not installed — skipping ${SLUG}."
+    echo "     Install it via Xcode → Settings → Platforms, or update"
+    echo "     DEVICE_CLASS_NAMES in this script if Xcode renamed it."
+    FAILED_CLASSES+=("$SLUG")
+    echo ""
+    continue
+  fi
+
+  echo "Found: $DEVICE_NAME  ($DEVICE_ID)"
+  boot_device "$DEVICE_ID"
+
+  OUT_DIR="$OUT_ROOT/appstore/$SLUG"
+  run_screenshot_suite "$DEVICE_ID" "$OUT_DIR"
+  CAPTURED_CLASSES+=("$SLUG")
+  echo ""
+done
+
+# ── Summary ──────────────────────────────────────────────────────────────
+
+echo "──────────────────────────────────────────────"
+if [[ ${#CAPTURED_CLASSES[@]} -gt 0 ]]; then
+  echo "✅  Captured: ${CAPTURED_CLASSES[*]}"
+  for slug in "${CAPTURED_CLASSES[@]}"; do
+    echo "   $OUT_ROOT/appstore/$slug/"
+  done
+fi
+if [[ ${#FAILED_CLASSES[@]} -gt 0 ]]; then
+  echo "⚠️   Skipped (simulator not installed): ${FAILED_CLASSES[*]}"
+  echo ""
+  list_available_simulators
   exit 1
 fi
-
-echo "Found: $DEVICE_NAME  ($DEVICE_ID)"
-
-# ── Boot the simulator if needed ───────────────────────────────────────────
-
-CURRENT_STATE=$(xcrun simctl list devices -j \
-  | jq -r --arg udid "$DEVICE_ID" \
-    '[.devices | to_entries[] | .value[] | select(.udid == $udid)] | first | .state // "Unknown"')
-
-if [[ "$CURRENT_STATE" != "Booted" ]]; then
-  echo "Booting simulator..."
-  xcrun simctl boot "$DEVICE_ID"
-  # Give the SpringBoard time to fully load before running tests.
-  sleep 5
-fi
-
-open -a Simulator --args -CurrentDeviceUDID "$DEVICE_ID" 2>/dev/null || true
-
-# ── Run the tests ─────────────────────────────────────────────────────────
-
-mkdir -p "$OUT_DIR"
-
-echo ""
-echo "Running screenshot tests..."
-echo ""
-
-flutter drive \
-  --driver=test_driver/integration_test.dart \
-  --target=integration_test/screenshot_test.dart \
-  --device-id="$DEVICE_ID"
-
-# ── Summary ───────────────────────────────────────────────────────────────
-
-echo ""
-echo "✅  Done. Screenshots written to $OUT_DIR/"
-ls -1 "$OUT_DIR"/*.png 2>/dev/null | while read -r f; do
-  echo "   $f"
-done
