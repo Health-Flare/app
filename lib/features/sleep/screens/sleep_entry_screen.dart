@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 
 import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/core/providers/sleep_provider.dart';
+import 'package:health_flare/features/shared/widgets/move_entry_action.dart';
 import 'package:health_flare/features/sleep/widgets/sleep_quality_selector.dart';
 import 'package:health_flare/models/sleep_entry.dart';
 import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
@@ -14,9 +15,12 @@ import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 /// Pass [entry] to open in edit mode; leave null for a new entry.
 /// Defaults: bedtime = yesterday 23:00, wake = today 07:00.
 class SleepEntryScreen extends ConsumerStatefulWidget {
-  const SleepEntryScreen({super.key, this.entry});
+  const SleepEntryScreen({super.key, this.entry, this.initialNotes});
 
   final SleepEntry? entry;
+
+  /// Pre-fills the notes field for a new entry (quick-log "Add details").
+  final String? initialNotes;
 
   @override
   ConsumerState<SleepEntryScreen> createState() => _SleepEntryScreenState();
@@ -44,7 +48,7 @@ class _SleepEntryScreenState extends ConsumerState<SleepEntryScreen> {
       final yesterday = today.subtract(const Duration(days: 1));
       _bedtime = yesterday.add(const Duration(hours: 23));
       _wakeTime = today.add(const Duration(hours: 7));
-      _notesController = TextEditingController();
+      _notesController = TextEditingController(text: widget.initialNotes ?? '');
     }
   }
 
@@ -166,6 +170,14 @@ class _SleepEntryScreenState extends ConsumerState<SleepEntryScreen> {
     return Scaffold(
       appBar: HFAppBar(
         title: Text(widget.entry == null ? 'Log sleep' : 'Edit sleep'),
+        actions: [
+          if (widget.entry != null)
+            MoveEntryAction(
+              onMove: (target) => ref
+                  .read(sleepEntryListProvider.notifier)
+                  .moveToProfile(widget.entry!.id, target.id),
+            ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),

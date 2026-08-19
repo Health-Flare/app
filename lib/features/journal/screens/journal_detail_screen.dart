@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 
 import 'package:health_flare/core/providers/journal_provider.dart';
 import 'package:health_flare/core/router/app_router.dart';
+import 'package:health_flare/features/shared/widgets/move_entry_action.dart';
 import 'package:health_flare/features/shared/widgets/weather_chip.dart';
 import 'package:health_flare/models/journal_entry.dart';
 import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
@@ -43,6 +44,11 @@ class JournalDetailScreen extends ConsumerWidget {
             icon: const Icon(Icons.edit_outlined),
             tooltip: 'Edit entry',
             onPressed: () => context.push(AppRoutes.journalEdit(entry.id)),
+          ),
+          MoveEntryAction(
+            onMove: (target) => ref
+                .read(journalEntryListProvider.notifier)
+                .moveToProfile(entry.id, target.id),
           ),
           IconButton(
             icon: const Icon(Icons.delete_outline_rounded),

@@ -7,6 +7,7 @@ import 'package:health_flare/core/providers/activity_entry_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/core/providers/weather_provider.dart';
 import 'package:health_flare/core/router/app_router.dart';
+import 'package:health_flare/features/shared/widgets/move_entry_action.dart';
 import 'package:health_flare/features/shared/widgets/weather_chip.dart';
 import 'package:health_flare/models/activity_entry.dart';
 import 'package:health_flare/models/weather_snapshot.dart';
@@ -199,6 +200,12 @@ class _ActivityEntryFormScreenState
       appBar: HFAppBar(
         title: Text(_isEdit ? 'Edit activity' : 'Log activity'),
         actions: [
+          if (_isEdit)
+            MoveEntryAction(
+              onMove: (target) => ref
+                  .read(activityEntryListProvider.notifier)
+                  .moveToProfile(widget.entry!.id, target.id),
+            ),
           if (_isEdit)
             IconButton(
               onPressed: _submitting ? null : _delete,
