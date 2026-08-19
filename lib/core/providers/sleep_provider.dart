@@ -88,6 +88,18 @@ class SleepEntryListNotifier extends Notifier<List<SleepEntry>> {
       await isar.sleepEntryIsars.delete(id);
     });
   }
+
+  /// Reassign an entry to a different profile (wrong-profile recovery).
+  /// The entry keeps its id, times, and notes.
+  Future<void> moveToProfile(int id, int newProfileId) async {
+    final isar = ref.read(isarProvider);
+    await isar.writeTxn(() async {
+      final row = await isar.sleepEntryIsars.get(id);
+      if (row == null) return;
+      row.profileId = newProfileId;
+      await isar.sleepEntryIsars.put(row);
+    });
+  }
 }
 
 final sleepEntryListProvider =

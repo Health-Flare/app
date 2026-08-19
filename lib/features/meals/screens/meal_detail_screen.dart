@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:health_flare/core/providers/meal_entry_provider.dart';
 import 'package:health_flare/core/providers/symptom_entry_provider.dart';
 import 'package:health_flare/core/router/app_router.dart';
+import 'package:health_flare/features/shared/widgets/move_entry_action.dart';
 import 'package:health_flare/features/shared/widgets/weather_chip.dart';
 import 'package:health_flare/models/meal_entry.dart';
 import 'package:health_flare/models/symptom_entry.dart';
@@ -58,6 +59,11 @@ class MealDetailScreen extends ConsumerWidget {
                 context.push(AppRoutes.mealsEdit(entry.id), extra: entry),
             icon: const Icon(Icons.edit_outlined),
             tooltip: 'Edit entry',
+          ),
+          MoveEntryAction(
+            onMove: (target) => ref
+                .read(mealEntryListProvider.notifier)
+                .moveToProfile(entry.id, target.id),
           ),
         ],
       ),

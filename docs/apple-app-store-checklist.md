@@ -1,0 +1,165 @@
+# Apple App Store Submission Checklist
+
+Health Flare is live on Google Play (`.github/workflows/release-playstore.yaml`, signed with a
+Play upload keystore). This document tracks what's still needed to get the same app onto the
+Apple App Store. It complements two docs that already exist and should **not** be duplicated:
+
+- `docs/features/app-store.feature` — the BDD acceptance criteria for both stores. Treat every
+  scenario in the "Apple App Store" section as a submission gate.
+- `docs/store-listing.md` — the actual copy (description, keywords, subtitle) to paste into App
+  Store Connect. Reuse it; update the version number to the current release before pasting.
+
+This file is the **gap list and sequencing** — what's missing between where the repo/account
+stand today and a submitted build.
+
+---
+
+## Current state (verified against the repo, 2026-08-17)
+
+| Item | Status |
+|---|---|
+| iOS project | `ios/` exists, builds via standard Flutter tooling. Bundle ID `org.healthflare.app.healthflare`, deployment target 13.0, `TARGETED_DEVICE_FAMILY = "1,2"` (iPhone **and** iPad). |
+| App icon | Full `AppIcon.appiconset` present, including the required 1024×1024 marketing icon. |
+| Signing | No iOS distribution certificate, provisioning profile, or App Store Connect API key configured anywhere in CI or docs. |
+| CI release automation | `release.yaml` (APK → Gitea/GitHub release), `release-playstore.yaml` (AAB → Play internal track), `release-macos.yaml` (DMG, ad-hoc notarized — **not** Mac App Store). **No iOS/App Store workflow exists.** |
+| App Store Connect record | Not created (no evidence of an existing app record — nothing references an Apple Team ID or ASC app ID anywhere in the repo). |
+| Screenshots | `scripts/take_screenshots.sh` now sweeps all three required device classes (iPhone 6.9"/6.5", iPad 13") into `screenshots/appstore/<slug>/` in one run — see Phase 3. Uses the "Sarah Chen" persona already, matching the `app-store.feature` requirement. **Not yet run**: this Mac has Xcode but no simulator runtimes installed, so nothing has actually been captured or verified. |
+| Privacy policy | Published content exists at `docs/privacy-policy.md` / `.html`, referenced as `https://healthflare.org/privacy` in `docs/store-listing.md`. Confirm it's actually deployed and reachable at that URL before submitting — App Store Connect validates the link. |
+| Export compliance | `ios/Runner/Info.plist` does **not** set `ITSAppUsesNonExemptEncryption`. Without it, every App Store Connect / TestFlight upload prompts an export-compliance question manually. |
+
+---
+
+## Phase 1 — Account & legal (do first — has lead time)
+
+- [ ] Confirm Apple Developer Program enrollment is active for the entity used in
+  `docs/store-listing.md` ("Automated Bytes Incorporated"). An organization account needs a
+  D-U-N-S number and legal-entity verification — this can take **days**, so start it before
+  anything else. (If enrolling as an individual instead, the seller name in the store listing
+  changes from the org name to your legal name — decide this now, it's hard to change later.)
+- [ ] Accept the current Apple Developer Program License Agreement in App Store Connect (re-accept
+  whenever Apple updates it — this silently blocks builds/TestFlight if missed).
+- [ ] Accept the free "Apps" Paid Applications Agreement equivalent — for a free app this is just
+  the base agreement, already covered by enrollment, but confirm no banking/tax section is
+  outstanding (App Store Connect flags this under Agreements, Tax, and Banking even for $0 apps in
+  some regions).
+
+## Phase 2 — App Store Connect record
+
+- [ ] Register the App ID `org.healthflare.app.healthflare` in the Apple Developer portal
+  (Certificates, Identifiers & Profiles → Identifiers) if not already present — note the macOS
+  DMG workflow (`release-macos.yaml`) notarizes ad-hoc and never required a registered App ID, so
+  this is likely a genuinely new step, not something reused from the macOS work.
+- [ ] Create the app record in App Store Connect: name "Health Flare", primary language,
+  bundle ID above, SKU (any internal string, e.g. `healthflare-ios`).
+- [ ] Fill in App Information: category **Health & Fitness** (`docs/store-listing.md` and
+  `docs/features/app-store.feature` now agree on this — Medical would carry extra review
+  scrutiny around clinical claims), content rights, age rating questionnaire (expected
+  result: 4+).
+- [ ] Paste in Name / Subtitle / Description / Keywords / Promotional text / Support URL / Privacy
+  Policy URL from `docs/store-listing.md` — update the "Version 1.0.0" references there to match
+  the actual current `pubspec.yaml` version (currently `1.3.0`) since this will be a first
+  submission at a version well past 1.0.0.
+- [ ] Complete the App Privacy (nutrition label) questionnaire per the table already drafted in
+  `docs/store-listing.md` ("App privacy" section) — all "No" except general on-device use.
+- [ ] Write App Review notes explaining offline-first / no-account behavior and give reviewers a
+  concrete test flow (add a profile → log a symptom → view dashboard). `app-store.feature` already
+  specifies this as a gate — use it as the acceptance check.
+- [ ] Add `ITSAppUsesNonExemptEncryption` = `false` to `ios/Runner/Info.plist` (the app only makes
+  standard HTTPS calls to the weather API — no proprietary encryption) so export-compliance isn't
+  a manual per-build prompt.
+
+## Phase 3 — Screenshots
+
+**Automation done (2026-08-17).** `scripts/take_screenshots.sh` now sweeps all three required App
+Store device classes in one run — iPhone 6.9", iPhone 6.5", and iPad 13" (the last one because
+`TARGETED_DEVICE_FAMILY = "1,2"` means the app targets iPad, not just iPhone) — and writes each
+class to its own subdirectory so runs don't clobber each other:
+
+```bash
+./scripts/take_screenshots.sh                # sweep: screenshots/appstore/<slug>/*.png
+./scripts/take_screenshots.sh "iPhone 16"     # single device: screenshots/adhoc/*.png
+./scripts/take_screenshots.sh --list          # list installed simulators
+```
+
+`test_driver/integration_test.dart` now reads `$SCREENSHOT_DIR` (set by the wrapper script per
+device) instead of hardcoding `screenshots/`, which is what makes the per-class subdirectories
+possible without touching the test file itself.
+
+Remaining work — **needs a real run, which needs simulators installed first:**
+
+- [ ] Install the iOS Simulator runtime (Xcode → Settings → Platforms, or
+  `xcodebuild -downloadPlatform iOS`) — as of this writing this Mac has Xcode installed but zero
+  simulator runtimes (`xcrun simctl list devices available` returns nothing), so nothing in this
+  phase has actually been run or verified yet.
+- [ ] Check what simulator models Xcode actually offers once runtimes are installed —
+  `./scripts/take_screenshots.sh --list` — and reconcile against `DEVICE_CLASS_NAMES` near the top
+  of `scripts/take_screenshots.sh` (currently `iPhone 16 Pro Max` / `iPhone 11 Pro Max` /
+  `iPad Pro 13-inch (M4)`). Apple renames simulator models most years; the script prints a clear
+  per-class skip warning rather than guessing if a name doesn't match, but the names may need a
+  one-line update.
+- [ ] Run `./scripts/take_screenshots.sh` and verify all three classes produce screenshots
+  (12 images each, matching the `testWidgets` count in `integration_test/screenshot_test.dart`)
+  with no visual glitches, overflow warnings, or placeholder content.
+- [ ] Decide whether `TARGETED_DEVICE_FAMILY = "1,2"` (iPad support) is actually intentional before
+  spending time on iPad screenshots — if not, dropping it to iPhone-only (`"1"`) removes the
+  `ipad-13` sweep entirely. This is a product decision, not a script change; see "Open questions"
+  below.
+- [ ] Commit the new screenshot sets under `screenshots/appstore/` (matches the `v1`/`v2` pattern
+  already there for older captures) — `app-store.feature` requires screenshots come from the
+  repeatable pipeline, not a manual export, which this now satisfies structurally.
+
+## Phase 4 — CI: build & sign
+
+No workflow currently builds a signed `.ipa`. Mirror the existing `release-playstore.yaml`
+pattern (macOS runner instead of ubuntu, since Xcode builds require macOS):
+
+- [ ] Decide signing approach — two viable options:
+  - **Fastlane match / manual certs**: export a Distribution certificate (.p12) + App Store
+    provisioning profile, store as base64 secrets (same pattern as `MACOS_CERTIFICATE_BASE64` in
+    `release-macos.yaml`).
+  - **App Store Connect API key + automatic signing**: generate an API key in App Store Connect
+    (Users and Access → Integrations), store the `.p8` key + Key ID + Issuer ID as secrets, let
+    `xcodebuild -allowProvisioningUpdates` handle signing during CI.
+- [ ] Add `.github/workflows/release-appstore.yaml`, triggered on the same `v*.*.*` tag as the
+  other release workflows (`scripts/release.sh` already tags and pushes — no changes needed there,
+  the new workflow just needs to listen for the same tag). Steps: checkout → Flutter install →
+  `flutter build ipa --release` → upload via `xcrun altool` / `xcrun notarytool` equivalent for App
+  Store (`altool --upload-app` or `App Store Connect API` via `fastlane pilot upload` /
+  `xcrun altool --upload-package`).
+- [ ] Document the new secrets at the top of the workflow file, following the existing comment
+  convention in `release-playstore.yaml` and `release-macos.yaml` (each secret named, with a
+  one-line "how to generate it" note).
+- [ ] First upload must be done manually (same caveat as the Play Store workflow's comment about
+  needing one manual upload before the API will accept subsequent ones) — verify whether this
+  applies to App Store Connect too before assuming the automated path works untested.
+
+## Phase 5 — TestFlight (recommended before public submission)
+
+- [ ] Upload a build to TestFlight first — internal testing only, no App Review required.
+- [ ] Verify on a real device (or at minimum a fresh simulator) that: onboarding works, a profile
+  can be created, data persists after force-quit, and the export-compliance flag suppressed the
+  manual prompt.
+- [ ] Optionally invite a couple of external testers (requires a lightweight Beta App Review, much
+  faster than full App Review) to catch anything the automated CI can't.
+
+## Phase 6 — Submit for review
+
+- [ ] Attach the build from Phase 4/5 to the App Store Connect version record.
+- [ ] Final pass through every scenario in `docs/features/app-store.feature` under "Apple App
+  Store" and "Shared metadata" — treat it as the literal submission gate, not just a spec.
+- [ ] Submit for review. Typical Apple review turnaround is 24–48 hours; a Health & Fitness app
+  with no accounts/network/medical claims is low-risk for rejection as long as the review notes
+  (Phase 2) clearly explain the offline, no-login behavior up front.
+
+---
+
+## Open questions to resolve before starting (not code — need a decision from you)
+
+- Individual vs. organization Apple Developer account — affects the seller name shown in the
+  store and how long enrollment takes.
+- Whether iPad support (`TARGETED_DEVICE_FAMILY = "1,2"`) is intentional. If not, dropping it to
+  iPhone-only removes the iPad screenshot requirement in Phase 3.
+- If the Play Store listing is already live under a "Medical" category, note that fixing
+  `docs/store-listing.md` to say Health & Fitness (done 2026-08-17) only affects future copy/paste
+  — updating the *live* Play Console listing to match is a separate manual step, not implied by
+  this doc.

@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/core/providers/symptom_entry_provider.dart';
 import 'package:health_flare/core/providers/weather_provider.dart';
+import 'package:health_flare/features/shared/widgets/move_entry_action.dart';
 import 'package:health_flare/features/shared/widgets/weather_chip.dart';
 import 'package:health_flare/models/symptom_entry.dart';
 import 'package:health_flare/models/weather_snapshot.dart';
@@ -179,6 +180,12 @@ class _SymptomEntryFormScreenState
       appBar: HFAppBar(
         title: Text(isEdit ? 'Edit symptom' : 'Log symptom'),
         actions: [
+          if (isEdit)
+            MoveEntryAction(
+              onMove: (target) => ref
+                  .read(symptomEntryListProvider.notifier)
+                  .moveToProfile(widget.entry!.id, target.id),
+            ),
           if (isEdit)
             IconButton(
               icon: const Icon(Icons.delete_outline),

@@ -111,6 +111,18 @@ class JournalEntryListNotifier extends Notifier<List<JournalEntry>> {
     });
   }
 
+  /// Reassign an entry to a different profile (wrong-profile recovery).
+  /// The entry keeps its id, content, and timestamps.
+  Future<void> moveToProfile(int id, int newProfileId) async {
+    final isar = ref.read(isarProvider);
+    await isar.writeTxn(() async {
+      final row = await isar.journalEntryIsars.get(id);
+      if (row == null) return;
+      row.profileId = newProfileId;
+      await isar.journalEntryIsars.put(row);
+    });
+  }
+
   /// Convenience: look up an entry by id from the in-memory state cache.
   JournalEntry? byId(int id) {
     try {

@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 
 import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/core/providers/vital_entry_provider.dart';
+import 'package:health_flare/features/shared/widgets/move_entry_action.dart';
 import 'package:health_flare/models/vital_entry.dart';
 import 'package:health_flare/models/vital_type.dart';
 import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
@@ -13,9 +14,12 @@ import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 ///
 /// Pass [entry] to open in edit mode; leave null for a new entry.
 class VitalEntryFormScreen extends ConsumerStatefulWidget {
-  const VitalEntryFormScreen({super.key, this.entry});
+  const VitalEntryFormScreen({super.key, this.entry, this.initialNotes});
 
   final VitalEntry? entry;
+
+  /// Pre-fills the notes field for a new entry (quick-log "Add details").
+  final String? initialNotes;
 
   @override
   ConsumerState<VitalEntryFormScreen> createState() =>
@@ -59,7 +63,7 @@ class _VitalEntryFormScreenState extends ConsumerState<VitalEntryFormScreen> {
       _valueController = TextEditingController();
       _value2Controller = TextEditingController();
       _unit = VitalType.heartRate.defaultUnit;
-      _notesController = TextEditingController();
+      _notesController = TextEditingController(text: widget.initialNotes ?? '');
       _loggedAt = DateTime.now();
     }
   }
@@ -185,6 +189,12 @@ class _VitalEntryFormScreenState extends ConsumerState<VitalEntryFormScreen> {
       appBar: HFAppBar(
         title: Text(isEdit ? 'Edit vital' : 'Log vital'),
         actions: [
+          if (isEdit)
+            MoveEntryAction(
+              onMove: (target) => ref
+                  .read(vitalEntryListProvider.notifier)
+                  .moveToProfile(widget.entry!.id, target.id),
+            ),
           if (isEdit)
             IconButton(
               icon: const Icon(Icons.delete_outline),

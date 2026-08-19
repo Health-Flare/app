@@ -102,7 +102,10 @@ class FirstLogPrompt extends ConsumerWidget {
                       physics: const NeverScrollableScrollPhysics(),
                       mainAxisSpacing: 12,
                       crossAxisSpacing: 12,
-                      childAspectRatio: 1.35,
+                      // Tiles hold an emoji, a label, and a two-line
+                      // sublabel; anything above ~1.15 clips on narrow
+                      // screens or at larger text sizes.
+                      childAspectRatio: 1.15,
                       children: [
                         _LogOptionCard(
                           emoji: '🩺',

@@ -198,7 +198,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: 'new-vital',
                 name: 'vitals-new',
-                builder: (context, state) => const VitalEntryFormScreen(),
+                builder: (context, state) =>
+                    VitalEntryFormScreen(initialNotes: state.extra as String?),
               ),
               GoRoute(
                 path: ':vid/edit-vital',
@@ -410,7 +411,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: 'new',
                 name: 'sleep-new',
-                builder: (context, state) => const SleepEntryScreen(),
+                builder: (context, state) =>
+                    SleepEntryScreen(initialNotes: state.extra as String?),
               ),
               GoRoute(
                 path: ':id/edit',
