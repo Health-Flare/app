@@ -16,7 +16,7 @@ Character counts are noted where limits apply.
 | Version | 1.0.0 |
 | Privacy policy URL | https://healthflare.org/privacy |
 | Support URL | https://healthflare.org |
-| Category (primary) | Medical |
+| Category (primary) | Health & Fitness |
 | Content rating | 4+ (iOS) / Everyone (Android) |
 
 ---
@@ -159,7 +159,7 @@ Health Flare is not a medical device and does not provide medical advice. Always
 
 ### Category
 ```
-Medical
+Health & Fitness
 ```
 
 ### Tags (Play Store)
@@ -207,7 +207,7 @@ Justification: all data is stored locally in a sandboxed Isar database. No netwo
 
 ## Notes for submission
 
-- **Medical category review:** Apple may request additional review for apps in the Medical category. The app does not diagnose, treat, or provide clinical recommendations — state this clearly if asked.
+- **Category:** Health & Fitness on both stores (not Medical) — the app does not diagnose, treat, or provide clinical recommendations, and Medical would trigger extra Apple review scrutiny around clinical claims that Health & Fitness avoids.
 - **iOS minimum deployment target:** check Xcode project settings before submitting.
 - **macOS:** submit as a separate listing or use the "Also available on Mac" option via Mac Catalyst / universal purchase if supported.
 - **Android:** ensure `targetSdk` matches the current Play Store requirement before submitting.

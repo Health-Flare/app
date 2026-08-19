@@ -3,17 +3,27 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:health_flare/core/providers/appointment_provider.dart';
+import 'package:health_flare/core/providers/dose_log_provider.dart';
 import 'package:health_flare/core/providers/journal_provider.dart';
 import 'package:health_flare/core/providers/meal_entry_provider.dart';
+import 'package:health_flare/core/providers/medication_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
+import 'package:health_flare/core/providers/sleep_provider.dart';
 import 'package:health_flare/core/providers/symptom_entry_provider.dart';
+import 'package:health_flare/core/providers/vital_entry_provider.dart';
 import 'package:health_flare/features/quick_log/quick_log_classifier.dart';
 import 'package:health_flare/features/quick_log/widgets/quick_log_sheet.dart';
 import 'package:health_flare/models/appointment.dart';
+import 'package:health_flare/models/dose_log.dart';
 import 'package:health_flare/models/journal_entry.dart';
 import 'package:health_flare/models/meal_entry.dart';
+import 'package:health_flare/models/medication.dart';
 import 'package:health_flare/models/profile.dart';
+import 'package:health_flare/models/sleep_entry.dart';
 import 'package:health_flare/models/symptom_entry.dart';
+import 'package:health_flare/models/vital_entry.dart';
+import 'package:health_flare/models/vital_type.dart';
+import 'package:health_flare/models/weather_snapshot.dart';
 
 // ---------------------------------------------------------------------------
 // Fakes
@@ -42,6 +52,102 @@ class _FakeSymptomList extends SymptomEntryListNotifier {
 class _FakeJournalList extends JournalEntryListNotifier {
   @override
   List<JournalEntry> build() => [];
+
+  @override
+  Future<int> add({
+    required int profileId,
+    required DateTime createdAt,
+    required JournalSnapshot firstSnapshot,
+    int? mood,
+    int? energyLevel,
+    WeatherSnapshot? weatherSnapshot,
+  }) async {
+    journalCalls.add({'profileId': profileId, 'body': firstSnapshot.body});
+    return 1;
+  }
+}
+
+// Recorded add() calls, cleared before each structured-save test.
+final journalCalls = <Map<String, Object?>>[];
+final vitalCalls = <Map<String, Object?>>[];
+final doseCalls = <Map<String, Object?>>[];
+final sleepCalls = <Map<String, Object?>>[];
+
+class _RecordingVitalList extends VitalEntryListNotifier {
+  @override
+  List<VitalEntry> build() => [];
+
+  @override
+  Future<int> add({
+    required int profileId,
+    required VitalType vitalType,
+    required double value,
+    double? value2,
+    required String unit,
+    required DateTime loggedAt,
+    String? notes,
+    int? flareIsarId,
+  }) async {
+    vitalCalls.add({
+      'profileId': profileId,
+      'vitalType': vitalType,
+      'value': value,
+      'value2': value2,
+      'unit': unit,
+      'notes': notes,
+    });
+    return 1;
+  }
+}
+
+class _RecordingDoseList extends DoseLogListNotifier {
+  @override
+  List<DoseLog> build() => [];
+
+  @override
+  Future<int> add({
+    required int profileId,
+    required int medicationIsarId,
+    required DateTime loggedAt,
+    required double amount,
+    required String unit,
+    required String status,
+    String? reason,
+    String? effectiveness,
+    String? notes,
+    int? flareIsarId,
+  }) async {
+    doseCalls.add({
+      'profileId': profileId,
+      'medicationIsarId': medicationIsarId,
+      'amount': amount,
+      'unit': unit,
+      'status': status,
+      'notes': notes,
+    });
+    return 1;
+  }
+}
+
+class _RecordingSleepList extends SleepEntryListNotifier {
+  @override
+  List<SleepEntry> build() => [];
+
+  @override
+  Future<void> add({
+    required int profileId,
+    required DateTime bedtime,
+    required DateTime wakeTime,
+    int? qualityRating,
+    String? notes,
+  }) async {
+    sleepCalls.add({
+      'profileId': profileId,
+      'bedtime': bedtime,
+      'wakeTime': wakeTime,
+      'notes': notes,
+    });
+  }
 }
 
 class _FakeAppointmentList extends AppointmentListNotifier {
@@ -53,7 +159,7 @@ class _FakeAppointmentList extends AppointmentListNotifier {
 // Helper
 // ---------------------------------------------------------------------------
 
-List<Override> _overrides() => [
+List<Override> _overrides({List<Medication> medications = const []}) => [
   activeProfileProvider.overrideWith(_FakeActiveProfile.new),
   profileListProvider.overrideWith(_FakeProfileList.new),
   activeProfileDataProvider.overrideWith(
@@ -65,11 +171,15 @@ List<Override> _overrides() => [
   appointmentListProvider.overrideWith(_FakeAppointmentList.new),
   activeProfileAppointmentsProvider.overrideWith((ref) => []),
   upcomingAppointmentsProvider.overrideWith((ref) => []),
+  vitalEntryListProvider.overrideWith(_RecordingVitalList.new),
+  doseLogListProvider.overrideWith(_RecordingDoseList.new),
+  sleepEntryListProvider.overrideWith(_RecordingSleepList.new),
+  activeProfileMedicationsProvider.overrideWith((ref) => medications),
 ];
 
-Widget _buildSheet() {
+Widget _buildSheet({List<Medication> medications = const []}) {
   return ProviderScope(
-    overrides: _overrides(),
+    overrides: _overrides(medications: medications),
     child: MaterialApp(
       home: Scaffold(
         body: Builder(
@@ -83,12 +193,34 @@ Widget _buildSheet() {
   );
 }
 
-Future<void> _openSheet(WidgetTester tester) async {
-  await tester.pumpWidget(_buildSheet());
+Future<void> _openSheet(
+  WidgetTester tester, {
+  List<Medication> medications = const [],
+}) async {
+  await tester.pumpWidget(_buildSheet(medications: medications));
   await tester.pump();
   await tester.tap(find.text('Open'));
   await tester.pumpAndSettle();
 }
+
+Future<void> _typeAndSave(WidgetTester tester, String text) async {
+  await tester.enterText(find.byType(TextField), text);
+  await tester.pump();
+  await tester.tap(find.text('Save'));
+  await tester.pumpAndSettle();
+}
+
+Medication _medication(int id, String name) => Medication(
+  id: id,
+  profileId: 1,
+  name: name,
+  medicationType: 'medication',
+  doseAmount: 400,
+  doseUnit: 'mg',
+  frequency: 'asNeeded',
+  startDate: DateTime(2026),
+  createdAt: DateTime(2026),
+);
 
 // ---------------------------------------------------------------------------
 // QuickLogClassifier — unit tests
@@ -372,6 +504,101 @@ void main() {
       await tester.tap(find.text('Discard entry'));
       await tester.pumpAndSettle();
       expect(find.text('Logging for Sarah'), findsNothing);
+    });
+  });
+
+  group('QuickLogSheet — structured saves', () {
+    setUp(() {
+      journalCalls.clear();
+      vitalCalls.clear();
+      doseCalls.clear();
+      sleepCalls.clear();
+    });
+
+    testWidgets('Sleep chip appears for sleep text', (tester) async {
+      await _openSheet(tester);
+      await tester.enterText(
+        find.byType(TextField),
+        'Slept for 6 hours last night, woke up twice',
+      );
+      await tester.pump();
+      expect(find.text('Sleep'), findsOneWidget);
+    });
+
+    testWidgets('blood pressure text saves a structured vital', (tester) async {
+      await _openSheet(tester);
+      await _typeAndSave(tester, 'Blood pressure was 128 over 84 this morning');
+
+      expect(vitalCalls, hasLength(1));
+      expect(vitalCalls.single['vitalType'], VitalType.bloodPressure);
+      expect(vitalCalls.single['value'], 128);
+      expect(vitalCalls.single['value2'], 84);
+      expect(
+        vitalCalls.single['notes'],
+        'Blood pressure was 128 over 84 this morning',
+      );
+      expect(journalCalls, isEmpty);
+    });
+
+    testWidgets('unparseable vital text falls back to a journal entry', (
+      tester,
+    ) async {
+      await _openSheet(tester);
+      await _typeAndSave(tester, 'Reading was 500/400 somehow today');
+
+      expect(vitalCalls, isEmpty);
+      expect(journalCalls, hasLength(1));
+      expect(journalCalls.single['body'], 'Reading was 500/400 somehow today');
+    });
+
+    testWidgets('known medication text logs a taken dose', (tester) async {
+      await _openSheet(tester, medications: [_medication(7, 'Ibuprofen')]);
+      await _typeAndSave(tester, 'Took ibuprofen after lunch');
+
+      expect(doseCalls, hasLength(1));
+      expect(doseCalls.single['medicationIsarId'], 7);
+      expect(doseCalls.single['status'], 'taken');
+      expect(doseCalls.single['amount'], 400);
+      expect(doseCalls.single['unit'], 'mg');
+      expect(doseCalls.single['notes'], 'Took ibuprofen after lunch');
+      expect(journalCalls, isEmpty);
+    });
+
+    testWidgets('unknown medication text falls back to a journal entry', (
+      tester,
+    ) async {
+      await _openSheet(tester, medications: [_medication(7, 'Ibuprofen')]);
+      await _typeAndSave(tester, 'Took something for the pain');
+
+      expect(doseCalls, isEmpty);
+      expect(journalCalls, hasLength(1));
+    });
+
+    testWidgets('sleep text with a duration saves a sleep entry', (
+      tester,
+    ) async {
+      await _openSheet(tester);
+      await _typeAndSave(tester, 'Slept for 6 hours last night, woke up twice');
+
+      expect(sleepCalls, hasLength(1));
+      final bedtime = sleepCalls.single['bedtime'] as DateTime;
+      final wakeTime = sleepCalls.single['wakeTime'] as DateTime;
+      expect(wakeTime.difference(bedtime), const Duration(hours: 6));
+      expect(
+        sleepCalls.single['notes'],
+        'Slept for 6 hours last night, woke up twice',
+      );
+      expect(journalCalls, isEmpty);
+    });
+
+    testWidgets('sleep text without a duration falls back to a journal entry', (
+      tester,
+    ) async {
+      await _openSheet(tester);
+      await _typeAndSave(tester, 'Terrible night, kept waking up');
+
+      expect(sleepCalls, isEmpty);
+      expect(journalCalls, hasLength(1));
     });
   });
 }
