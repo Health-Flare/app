@@ -5,12 +5,17 @@ import 'package:intl/intl.dart';
 
 import 'package:health_flare/core/providers/activity_entry_provider.dart';
 import 'package:health_flare/core/providers/appointment_provider.dart';
+import 'package:health_flare/core/providers/dose_log_provider.dart';
 import 'package:health_flare/core/providers/journal_provider.dart';
 import 'package:health_flare/core/providers/meal_entry_provider.dart';
+import 'package:health_flare/core/providers/medication_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
+import 'package:health_flare/core/providers/sleep_provider.dart';
 import 'package:health_flare/core/providers/symptom_entry_provider.dart';
+import 'package:health_flare/core/providers/vital_entry_provider.dart';
 import 'package:health_flare/core/router/app_router.dart';
 import 'package:health_flare/features/quick_log/quick_log_classifier.dart';
+import 'package:health_flare/features/quick_log/quick_log_parser.dart';
 import 'package:health_flare/models/journal_entry.dart';
 
 /// Opens the quick-log bottom sheet. Call from any screen that has a FAB.
@@ -110,18 +115,72 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
               loggedAt: _timestamp,
             );
       case QuickLogEntryType.vital:
-      case QuickLogEntryType.medication:
-      case QuickLogEntryType.journal:
-      case null:
-        final now = DateTime.now();
+        final parsed = QuickLogParser.parseVital(_text);
+        if (parsed == null) {
+          await _saveJournal(profileId);
+          return;
+        }
         await ref
-            .read(journalEntryListProvider.notifier)
+            .read(vitalEntryListProvider.notifier)
             .add(
               profileId: profileId,
-              createdAt: _timestamp,
-              firstSnapshot: JournalSnapshot(body: _text, savedAt: now),
+              vitalType: parsed.vitalType,
+              value: parsed.value,
+              value2: parsed.value2,
+              unit: parsed.unit,
+              loggedAt: _timestamp,
+              notes: _text,
             );
+      case QuickLogEntryType.medication:
+        final medication = QuickLogParser.matchMedication(
+          _text,
+          ref.read(activeProfileMedicationsProvider),
+        );
+        if (medication == null) {
+          await _saveJournal(profileId);
+          return;
+        }
+        await ref
+            .read(doseLogListProvider.notifier)
+            .add(
+              profileId: profileId,
+              medicationIsarId: medication.id,
+              loggedAt: _timestamp,
+              amount: medication.doseAmount,
+              unit: medication.doseUnit,
+              status: 'taken',
+              notes: _text,
+            );
+      case QuickLogEntryType.sleep:
+        final duration = QuickLogParser.parseSleepDuration(_text);
+        if (duration == null) {
+          await _saveJournal(profileId);
+          return;
+        }
+        await ref
+            .read(sleepEntryListProvider.notifier)
+            .add(
+              profileId: profileId,
+              bedtime: _timestamp.subtract(duration),
+              wakeTime: _timestamp,
+              notes: _text,
+            );
+      case QuickLogEntryType.journal:
+      case null:
+        await _saveJournal(profileId);
     }
+  }
+
+  /// Fallback for classifications whose values could not be extracted —
+  /// the user's text is preserved as a journal entry rather than dropped.
+  Future<void> _saveJournal(int profileId) {
+    return ref
+        .read(journalEntryListProvider.notifier)
+        .add(
+          profileId: profileId,
+          createdAt: _timestamp,
+          firstSnapshot: JournalSnapshot(body: _text, savedAt: DateTime.now()),
+        );
   }
 
   // ── Add details ─────────────────────────────────────────────────────────
@@ -138,7 +197,11 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
       case QuickLogEntryType.activity:
         context.push(AppRoutes.activityNew, extra: _text);
       case QuickLogEntryType.vital:
+        context.push(AppRoutes.vitalsNew, extra: _text);
+      case QuickLogEntryType.sleep:
+        context.push(AppRoutes.sleepNew, extra: _text);
       case QuickLogEntryType.medication:
+        context.push(AppRoutes.medicationsNew);
       case QuickLogEntryType.journal:
       case null:
         context.push(AppRoutes.journalNew, extra: _text);
@@ -345,6 +408,7 @@ String _chipLabel(QuickLogEntryType type) => switch (type) {
   QuickLogEntryType.medication => 'Medication',
   QuickLogEntryType.doctorVisit => 'Doctor Visit',
   QuickLogEntryType.activity => 'Activity',
+  QuickLogEntryType.sleep => 'Sleep',
   QuickLogEntryType.journal => 'Journal',
 };
 
@@ -355,5 +419,6 @@ IconData _chipIcon(QuickLogEntryType type) => switch (type) {
   QuickLogEntryType.medication => Icons.medication_outlined,
   QuickLogEntryType.doctorVisit => Icons.local_hospital_outlined,
   QuickLogEntryType.activity => Icons.directions_walk_outlined,
+  QuickLogEntryType.sleep => Icons.bedtime_outlined,
   QuickLogEntryType.journal => Icons.book_outlined,
 };
