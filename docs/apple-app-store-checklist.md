@@ -14,16 +14,16 @@ stand today and a submitted build.
 
 ---
 
-## Current state (verified against the repo, 2026-08-17)
+## Current state (verified against the repo, 2026-08-18)
 
 | Item | Status |
 |---|---|
-| iOS project | `ios/` exists, builds via standard Flutter tooling. Bundle ID `org.healthflare.app.healthflare`, deployment target 13.0, `TARGETED_DEVICE_FAMILY = "1,2"` (iPhone **and** iPad). |
+| iOS project | `ios/` exists, builds via standard Flutter tooling. Bundle ID `org.healthflare.app.healthflare`, deployment target 13.0, `TARGETED_DEVICE_FAMILY = "1,2"` (iPhone **and** iPad). Turns out the iOS target had never actually been built in this repo before 2026-08-18 — `ios/Runner.xcworkspace` never referenced `Pods.xcodeproj` and `ios/Podfile.lock` didn't exist, both since the initial commit. First `flutter build ios` / `pod install` now committed. |
 | App icon | Full `AppIcon.appiconset` present, including the required 1024×1024 marketing icon. |
 | Signing | No iOS distribution certificate, provisioning profile, or App Store Connect API key configured anywhere in CI or docs. |
 | CI release automation | `release.yaml` (APK → Gitea/GitHub release), `release-playstore.yaml` (AAB → Play internal track), `release-macos.yaml` (DMG, ad-hoc notarized — **not** Mac App Store). **No iOS/App Store workflow exists.** |
 | App Store Connect record | Not created (no evidence of an existing app record — nothing references an Apple Team ID or ASC app ID anywhere in the repo). |
-| Screenshots | `scripts/take_screenshots.sh` now sweeps all three required device classes (iPhone 6.9"/6.5", iPad 13") into `screenshots/appstore/<slug>/` in one run — see Phase 3. Uses the "Sarah Chen" persona already, matching the `app-store.feature` requirement. **Not yet run**: this Mac has Xcode but no simulator runtimes installed, so nothing has actually been captured or verified. |
+| Screenshots | **Verified 2026-08-18** — `scripts/take_screenshots.sh` sweeps all three required device classes (iPhone 6.9"/6.5", iPad 13") into `screenshots/appstore/<slug>/`, 13/13 real screenshots per class, committed. See Phase 3 for how the first run surfaced and fixed a real app bug along the way. |
 | Privacy policy | Published content exists at `docs/privacy-policy.md` / `.html`, referenced as `https://healthflare.org/privacy` in `docs/store-listing.md`. Confirm it's actually deployed and reachable at that URL before submitting — App Store Connect validates the link. |
 | Export compliance | `ios/Runner/Info.plist` does **not** set `ITSAppUsesNonExemptEncryption`. Without it, every App Store Connect / TestFlight upload prompts an export-compliance question manually. |
 
@@ -85,28 +85,30 @@ class to its own subdirectory so runs don't clobber each other:
 device) instead of hardcoding `screenshots/`, which is what makes the per-class subdirectories
 possible without touching the test file itself.
 
-Remaining work — **needs a real run, which needs simulators installed first:**
+**Verified end-to-end (2026-08-18).** Installed the iOS 26.3 Simulator runtime
+(`xcodebuild -downloadPlatform iOS`, ~8.4 GB) and created the three simulators
+`DEVICE_CLASS_NAMES` expects (`xcrun simctl create` — Xcode only auto-provisions its newest
+device lineup, but the older device *types* still exist and can be created directly). The first
+sweep surfaced a real bug: `integration_test/screenshot_test.dart`'s `09b_journal_detail` test
+used `find.text('Rough Saturday')`, which was ambiguous — `AppShell`'s nested `ShellRoute`
+Navigator keeps the previous tab mounted offstage on `context.go()` rather than disposing it, and
+the fixture's dashboard activity feed shows the same journal entries, so the same title text
+existed twice in the tree. Fixed by scoping the tap to
+`find.descendant(of: find.byType(JournalEntryCard), matching: find.text(...))`. Also fixed
+`take_screenshots.sh`'s sweep loop, which previously aborted entirely on the first device's test
+failure under `set -e` instead of continuing to the next device class.
 
-- [ ] Install the iOS Simulator runtime (Xcode → Settings → Platforms, or
-  `xcodebuild -downloadPlatform iOS`) — as of this writing this Mac has Xcode installed but zero
-  simulator runtimes (`xcrun simctl list devices available` returns nothing), so nothing in this
-  phase has actually been run or verified yet.
-- [ ] Check what simulator models Xcode actually offers once runtimes are installed —
-  `./scripts/take_screenshots.sh --list` — and reconcile against `DEVICE_CLASS_NAMES` near the top
-  of `scripts/take_screenshots.sh` (currently `iPhone 16 Pro Max` / `iPhone 11 Pro Max` /
-  `iPad Pro 13-inch (M4)`). Apple renames simulator models most years; the script prints a clear
-  per-class skip warning rather than guessing if a name doesn't match, but the names may need a
-  one-line update.
-- [ ] Run `./scripts/take_screenshots.sh` and verify all three classes produce screenshots
-  (12 images each, matching the `testWidgets` count in `integration_test/screenshot_test.dart`)
-  with no visual glitches, overflow warnings, or placeholder content.
-- [ ] Decide whether `TARGETED_DEVICE_FAMILY = "1,2"` (iPad support) is actually intentional before
-  spending time on iPad screenshots — if not, dropping it to iPhone-only (`"1"`) removes the
-  `ipad-13` sweep entirely. This is a product decision, not a script change; see "Open questions"
-  below.
-- [ ] Commit the new screenshot sets under `screenshots/appstore/` (matches the `v1`/`v2` pattern
-  already there for older captures) — `app-store.feature` requires screenshots come from the
-  repeatable pipeline, not a manual export, which this now satisfies structurally.
+Re-ran after both fixes: **all three device classes captured cleanly, 13/13 screenshots each**,
+verified visually (correct Sarah Chen persona content, correct per-device resolutions, no
+placeholder/lorem-ipsum content, iPad layout renders sensibly rather than breaking). Committed
+under `screenshots/appstore/<slug>/` (matches the existing `v1`/`v2` pattern for older captures).
+
+- [ ] Decide whether `TARGETED_DEVICE_FAMILY = "1,2"` (iPad support) is actually intentional —
+  the iPad screenshots exist and look fine, but this is still a product decision, not something
+  settled by the screenshots working. See "Open questions" below.
+- [ ] Building iOS at all turned out to be a first for this repo — see the CocoaPods integration
+  note under "Current state" above. Re-run the sweep again before final submission once the app
+  has changed further, since these screenshots are a point-in-time capture, not a live artifact.
 
 ## Phase 4 — CI: build & sign
 

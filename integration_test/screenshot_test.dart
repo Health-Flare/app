@@ -40,6 +40,7 @@ import 'package:health_flare/models/user_symptom.dart';
 import 'package:health_flare/models/vital_entry.dart';
 import 'package:health_flare/models/weather_snapshot.dart';
 import 'package:health_flare/core/providers/weather_provider.dart';
+import 'package:health_flare/features/journal/widgets/journal_entry_card.dart';
 
 // ---------------------------------------------------------------------------
 // Sample data
@@ -781,7 +782,12 @@ void main() {
       await _settle(tester);
       await tester.tap(find.text('Journal'));
       await _settle(tester);
-      await tester.tap(find.text('Rough Saturday'));
+      await tester.tap(
+        find.descendant(
+          of: find.byType(JournalEntryCard),
+          matching: find.text('Rough Saturday'),
+        ),
+      );
       await _settle(tester);
       await _screenshot(binding, tester, '09b_journal_detail');
     });

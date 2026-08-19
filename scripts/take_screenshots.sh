@@ -125,8 +125,12 @@ echo "No device given — sweeping all required App Store device classes."
 echo "(Pass a device name, e.g. \"iPhone 16\", to capture just one.)"
 echo ""
 
-FAILED_CLASSES=()
-CAPTURED_CLASSES=()
+SKIPPED_CLASSES=()   # simulator not installed — never attempted
+CAPTURED_CLASSES=()  # ran cleanly, every screenshot test passed
+PARTIAL_CLASSES=()   # ran, but one or more screenshot tests failed —
+                      # screenshots up to and including the failure are
+                      # still written (integration_test saves on failure),
+                      # but the set may be incomplete.
 
 for i in "${!DEVICE_CLASS_SLUGS[@]}"; do
   SLUG="${DEVICE_CLASS_SLUGS[$i]}"
@@ -139,7 +143,7 @@ for i in "${!DEVICE_CLASS_SLUGS[@]}"; do
     echo "⚠️   Simulator \"$DEVICE_NAME\" not installed — skipping ${SLUG}."
     echo "     Install it via Xcode → Settings → Platforms, or update"
     echo "     DEVICE_CLASS_NAMES in this script if Xcode renamed it."
-    FAILED_CLASSES+=("$SLUG")
+    SKIPPED_CLASSES+=("$SLUG")
     echo ""
     continue
   fi
@@ -148,8 +152,15 @@ for i in "${!DEVICE_CLASS_SLUGS[@]}"; do
   boot_device "$DEVICE_ID"
 
   OUT_DIR="$OUT_ROOT/appstore/$SLUG"
-  run_screenshot_suite "$DEVICE_ID" "$OUT_DIR"
-  CAPTURED_CLASSES+=("$SLUG")
+  # A failed screenshot test (e.g. a widget-finder issue on this specific
+  # device) shouldn't abort the whole sweep — move on to the next device
+  # class and report the partial result in the summary below.
+  if run_screenshot_suite "$DEVICE_ID" "$OUT_DIR"; then
+    CAPTURED_CLASSES+=("$SLUG")
+  else
+    echo "⚠️   One or more screenshot tests failed on ${SLUG} — see log above."
+    PARTIAL_CLASSES+=("$SLUG")
+  fi
   echo ""
 done
 
@@ -157,14 +168,22 @@ done
 
 echo "──────────────────────────────────────────────"
 if [[ ${#CAPTURED_CLASSES[@]} -gt 0 ]]; then
-  echo "✅  Captured: ${CAPTURED_CLASSES[*]}"
+  echo "✅  Captured cleanly: ${CAPTURED_CLASSES[*]}"
   for slug in "${CAPTURED_CLASSES[@]}"; do
     echo "   $OUT_ROOT/appstore/$slug/"
   done
 fi
-if [[ ${#FAILED_CLASSES[@]} -gt 0 ]]; then
-  echo "⚠️   Skipped (simulator not installed): ${FAILED_CLASSES[*]}"
+if [[ ${#PARTIAL_CLASSES[@]} -gt 0 ]]; then
+  echo "⚠️   Ran with test failures (screenshots may be incomplete): ${PARTIAL_CLASSES[*]}"
+  for slug in "${PARTIAL_CLASSES[@]}"; do
+    echo "   $OUT_ROOT/appstore/$slug/"
+  done
+fi
+if [[ ${#SKIPPED_CLASSES[@]} -gt 0 ]]; then
+  echo "⚠️   Skipped (simulator not installed): ${SKIPPED_CLASSES[*]}"
   echo ""
   list_available_simulators
+fi
+if [[ ${#PARTIAL_CLASSES[@]} -gt 0 || ${#SKIPPED_CLASSES[@]} -gt 0 ]]; then
   exit 1
 fi
