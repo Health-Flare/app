@@ -218,6 +218,56 @@ Feature: Profile Management
     Then the profile switcher is reachable without closing the form or losing my place in navigation
 
   # ---------------------------------------------------------------------------
+  # Wrong-profile recovery — moving an entry to another profile
+  # ---------------------------------------------------------------------------
+
+  Scenario: An existing entry can be moved to another profile
+    Given profiles "Sarah" and "Dad" exist
+    And "Sarah" is the active profile
+    And Sarah's record has a symptom entry "Sore knee after walking"
+    When I open that entry
+    And I tap "Move to another profile"
+    And I choose "Dad"
+    Then the entry now belongs to Dad's record
+    And the entry no longer appears in Sarah's history
+    And the entry keeps its original date, time, and details
+
+  Scenario: Moving an entry shows which profile it went to
+    Given profiles "Sarah" and "Dad" exist
+    When I move one of Sarah's entries to "Dad"
+    Then a confirmation appears saying the entry was moved to "Dad"
+    And I am returned to the screen I came from
+
+  Scenario: The move action lists every profile except the current one
+    Given profiles "Sarah", "Dad", and "Mia" exist
+    And "Sarah" is the active profile
+    When I tap "Move to another profile" on one of Sarah's entries
+    Then I see "Dad" and "Mia" as destinations
+    And I do not see "Sarah"
+
+  Scenario: The move action is hidden when only one profile exists
+    Given only the profile "Sarah" exists
+    When I open one of Sarah's entries
+    Then no "Move to another profile" action is shown
+
+  Scenario: Moving an entry clears any flare link
+    Given "Sarah" has an active flare
+    And a symptom entry linked to that flare
+    When I move that symptom entry to "Dad"
+    Then the entry no longer references Sarah's flare
+
+  Scenario: Journal, meal, symptom, vital, sleep, and activity entries can all be moved
+    Given profiles "Sarah" and "Dad" exist
+    Then the "Move to another profile" action is available on:
+      | Entry type | Where                    |
+      | Journal    | journal detail screen    |
+      | Meal       | meal detail screen       |
+      | Symptom    | symptom edit screen      |
+      | Vital      | vital edit screen        |
+      | Sleep      | sleep edit screen        |
+      | Activity   | activity edit screen     |
+
+  # ---------------------------------------------------------------------------
   # First launch / onboarding
   # ---------------------------------------------------------------------------
 

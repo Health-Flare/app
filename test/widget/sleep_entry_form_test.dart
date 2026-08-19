@@ -22,6 +22,11 @@ class _FakeActiveProfile extends ActiveProfileNotifier {
   int? build() => 1;
 }
 
+class _FakeProfileList extends ProfileListNotifier {
+  @override
+  List<Profile> build() => [Profile(id: 1, name: 'Sarah')];
+}
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -31,6 +36,7 @@ Widget _buildScreen({SleepEntry? entry}) {
     overrides: [
       sleepEntryListProvider.overrideWith(_FakeSleepList.new),
       activeProfileProvider.overrideWith(_FakeActiveProfile.new),
+      profileListProvider.overrideWith(_FakeProfileList.new),
       activeSleepEntriesProvider.overrideWith((ref) => []),
       activeProfileDataProvider.overrideWith(
         (ref) => Profile(id: 1, name: 'Sarah'),

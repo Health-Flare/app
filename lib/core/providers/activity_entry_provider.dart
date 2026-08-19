@@ -108,6 +108,19 @@ class ActivityEntryListNotifier extends Notifier<List<ActivityEntry>> {
       await isar.activityEntryIsars.delete(id);
     });
   }
+
+  /// Reassign an entry to a different profile (wrong-profile recovery).
+  /// Any flare link is cleared — flares belong to the source profile.
+  Future<void> moveToProfile(int id, int newProfileId) async {
+    final isar = ref.read(isarProvider);
+    await isar.writeTxn(() async {
+      final row = await isar.activityEntryIsars.get(id);
+      if (row == null) return;
+      row.profileId = newProfileId;
+      row.flareIsarId = null;
+      await isar.activityEntryIsars.put(row);
+    });
+  }
 }
 
 final activityEntryListProvider =
