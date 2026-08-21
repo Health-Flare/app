@@ -56,6 +56,26 @@ Subsection meanings (from Keep a Changelog):
 ### Security
 - _Nothing yet._
 
+## [1.5.0] - 2026-08-21
+
+### Added
+- _Nothing yet._
+
+### Changed
+- _Nothing yet._
+
+### Deprecated
+- _Nothing yet._
+
+### Removed
+- _Nothing yet._
+
+### Fixed
+- _Nothing yet._
+
+### Security
+- _Nothing yet._
+
 ## [1.3.0] - 2026-05-26
 
 ### Added
@@ -128,7 +148,8 @@ Subsection meanings (from Keep a Changelog):
 - Offline-first guarantee: zero outbound network requests at runtime, enforced
   by the `url-scan` CI check.
 
-[Unreleased]: https://git.ahosking.com/HealthFlare/app/compare/v1.3.0...HEAD
+[Unreleased]: https://git.ahosking.com/HealthFlare/app/compare/v1.5.0...HEAD
+[1.5.0]: https://git.ahosking.com/HealthFlare/app/compare/v1.3.0...v1.5.0
 [1.3.0]: https://git.ahosking.com/HealthFlare/app/compare/v1.2.0...v1.3.0
 [1.2.0]: https://git.ahosking.com/HealthFlare/app/compare/v1.1.0...v1.2.0
 [1.1.0]: https://git.ahosking.com/HealthFlare/app/compare/v1.0.0...v1.1.0
