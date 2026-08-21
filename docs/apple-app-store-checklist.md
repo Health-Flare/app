@@ -20,9 +20,9 @@ stand today and a submitted build.
 |---|---|
 | iOS project | `ios/` exists, builds via standard Flutter tooling. Bundle ID `org.healthflare.app.healthflare`, deployment target 13.0, `TARGETED_DEVICE_FAMILY = "1,2"` (iPhone **and** iPad). Turns out the iOS target had never actually been built in this repo before 2026-08-18 — `ios/Runner.xcworkspace` never referenced `Pods.xcodeproj` and `ios/Podfile.lock` didn't exist, both since the initial commit. First `flutter build ios` / `pod install` now committed. |
 | App icon | Full `AppIcon.appiconset` present, including the required 1024×1024 marketing icon. |
-| Signing | No iOS distribution certificate, provisioning profile, or App Store Connect API key configured anywhere in CI or docs. |
-| CI release automation | `release.yaml` (APK → Gitea/GitHub release), `release-playstore.yaml` (AAB → Play internal track), `release-macos.yaml` (DMG, ad-hoc notarized — **not** Mac App Store). **No iOS/App Store workflow exists.** |
-| App Store Connect record | Not created (no evidence of an existing app record — nothing references an Apple Team ID or ASC app ID anywhere in the repo). |
+| Signing | App Store Connect API key configured (2026-08-21) as GitHub Actions secrets on the `Health-Flare/app` mirror — `APPSTORE_API_KEY_BASE64`, `APPSTORE_API_KEY_ID`, `APPSTORE_API_ISSUER_ID`, `APPLE_TEAM_ID`. **No Distribution certificate or App Store provisioning profile exists yet** — see Phase 4, this is the current blocker. |
+| CI release automation | `release.yaml` (APK), `release-playstore.yaml` (AAB → Play internal track — **verified working 2026-08-21**, first real run succeeded), `release-macos.yaml` (DMG, ad-hoc notarized — **not** Mac App Store), `release-appstore.yaml` (IPA → App Store Connect, added 2026-08-21, **still failing on signing**, see Phase 4). All four trigger off the same `v*.*.*` tag push; `release-appstore.yaml` also supports manual `workflow_dispatch` for iterating without cutting a new tag. Runs on the `Health-Flare/app` GitHub mirror, not Gitea directly — Gitea Actions only reads `.gitea/workflows/` (just `ci.yaml`/`release.yaml`, both currently disabled there) and the mirror syncs from Gitea within seconds of a push. |
+| App Store Connect record | Believed created (Phases 1/2) as of 2026-08-21 — not independently re-verified in this doc. |
 | Screenshots | **Verified 2026-08-18** — `scripts/take_screenshots.sh` sweeps all three required device classes (iPhone 6.9"/6.5", iPad 13") into `screenshots/appstore/<slug>/`, 13/13 real screenshots per class, committed. See Phase 3 for how the first run surfaced and fixed a real app bug along the way. |
 | Privacy policy | Published content exists at `docs/privacy-policy.md` / `.html`, referenced as `https://healthflare.org/privacy` in `docs/store-listing.md`. Confirm it's actually deployed and reachable at that URL before submitting — App Store Connect validates the link. |
 | Export compliance | **Done (2026-08-21).** `ios/Runner/Info.plist` sets `ITSAppUsesNonExemptEncryption` = `false` — the app's only network call (weather lookup, see `.url-scan-ignore`) is standard HTTPS, which is export-exempt. |
@@ -128,14 +128,38 @@ under `screenshots/appstore/<slug>/` (matches the existing `v1`/`v2` pattern for
   convention in `release-playstore.yaml` and `release-macos.yaml`. **Done** — secrets are
   `APPSTORE_API_KEY_BASE64`, `APPSTORE_API_KEY_ID`, `APPSTORE_API_ISSUER_ID`, `APPLE_TEAM_ID`, each
   documented inline with where to generate it.
-- [ ] **Untested — this workflow has never run.** It can't be exercised until Phase 1 (Developer
-  Program enrollment) and Phase 2 (App Store Connect app record + the four secrets above) exist.
-  Treat the first tag push through it as a dry run: watch the Actions/Gitea log closely, and
-  budget time to debug — automatic-signing CI setups commonly fail on the first attempt over
-  provisioning-profile scope or missing capabilities.
+- [x] `release-playstore.yaml` — **verified 2026-08-21**, first real run (tag `v1.5.0`) succeeded.
+  It also turned out to have been sitting untracked/never pushed to git this whole time despite
+  the secret existing since 2026-07-14 — Play releases hadn't actually been running through CI
+  until this session committed it.
+- [ ] **`release-appstore.yaml` — dry run in progress, not yet working.** Four attempts against
+  `v1.5.0`'s build so far, each fixing the exact error the previous one surfaced:
+  1. `requires a development team` → added `DEVELOPMENT_TEAM` build-setting override.
+  2. `No Account for Team` + wants a **Development** profile → tried pinning
+     `CODE_SIGN_IDENTITY=Apple Distribution`.
+  3. `conflicting provisioning settings... automatically signed for development` → removed the
+     pinned identity (Automatic signing rejects any manual `CODE_SIGN_IDENTITY`).
+  4. Back to `No Account for Team` + wants Development, same as attempt 2 — ruled out the Xcode
+     scheme (Archive action correctly targets `Release`), xcconfig files, and target-level build
+     settings as the cause.
+
+  5. Regenerated the API key as Admin and updated the GitHub secrets — **identical error
+     persisted** (attempt 5). Rules out "wrong key role" as the sole cause. `GatherProvisioningInputs`
+     completes in ~1.4s each time, too fast for a real round-trip to Apple's API — points to
+     `xcodebuild archive`'s automatic-signing resolution not actually invoking the API-key auth
+     path at all. This matches a documented Xcode CLI quirk: API-key `-allowProvisioningUpdates`
+     is reliably supported for `xcodebuild -exportArchive`, but has had inconsistent behavior for
+     the `archive` action itself across Xcode versions (this runner: Xcode 26.6).
+
+  **Next step (in progress):** create the Distribution certificate + App Store provisioning
+  profile once via Xcode locally — open `ios/Runner.xcworkspace`, sign in under Xcode → Settings →
+  Accounts, select the team in Signing & Capabilities with "Automatically manage signing" checked.
+  Xcode's own signing engine creates these reliably where the CLI-only path hasn't. CI's API key
+  should then only need to *fetch* the already-existing profile on the next `workflow_dispatch`
+  run, which is the well-supported path.
 - [ ] First upload must be done manually (same caveat as the Play Store workflow's comment about
   needing one manual upload before the API will accept subsequent ones) — verify whether this
-  applies to App Store Connect too before assuming the automated path works untested.
+  applies to App Store Connect too, once the signing issue above is resolved.
 
 ## Phase 5 — TestFlight (recommended before public submission)
 
