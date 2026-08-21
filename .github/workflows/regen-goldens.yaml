@@ -1,0 +1,36 @@
+name: Regenerate goldens
+
+# Manual only. Golden images in test/goldens/ must be captured on the same
+# platform CI compares them against (ubuntu-latest) — generating them
+# locally on macOS produces small but real pixel diffs from anti-aliasing on
+# rounded/circular shapes and icons, even with a platform-stable test font
+# for text. Run this after an intentional visual change, then download the
+# "goldens" artifact from the run and copy the PNGs into test/goldens/.
+on:
+  workflow_dispatch: {}
+
+env:
+  FLUTTER_VERSION: "3.41.1"
+
+jobs:
+  regen-goldens:
+    name: Update golden files
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      - run: flutter pub get
+
+      - name: Update goldens
+        run: flutter test --update-goldens test/golden
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: goldens
+          path: test/goldens/*.png

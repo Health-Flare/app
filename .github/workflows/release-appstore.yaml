@@ -4,10 +4,16 @@ name: Release App Store
 # NOTE: Each upload needs a higher CFBundleVersion (the "+N" build number in
 # pubspec.yaml's `version:`) than the last, same as the Play Store workflow.
 # Bump it before tagging or App Store Connect rejects the upload.
+#
+# Also supports manual dispatch — useful while iterating on the signing/build
+# setup, since it lets you re-run against the current build number without
+# cutting a new version tag each time. A manual run still uploads for real if
+# it gets that far, so only dispatch it when you actually mean to.
 on:
   push:
     tags:
       - "v*.*.*"
+  workflow_dispatch: {}
 
 # Flutter version kept in sync with ci.yml — update both together.
 env:
@@ -86,10 +92,17 @@ jobs:
       - name: Prepare Flutter build
         run: flutter build ios --release --no-codesign
 
+      # DEVELOPMENT_TEAM is passed as a build-setting override rather than
+      # edited into project.pbxproj: the Xcode project has never been opened
+      # with a team selected in Signing & Capabilities (first CI run failed
+      # with "Signing for 'Runner' requires a development team" even with
+      # -allowProvisioningUpdates — that flag lets xcodebuild fetch/renew the
+      # profile, but it still needs to be told which team to ask).
       - name: Archive
         env:
           APPSTORE_API_KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
           APPSTORE_API_ISSUER_ID: ${{ secrets.APPSTORE_API_ISSUER_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         run: |
           xcodebuild archive \
             -workspace ios/Runner.xcworkspace \
@@ -99,7 +112,9 @@ jobs:
             -allowProvisioningUpdates \
             -authenticationKeyPath "$HOME/.appstoreconnect/private_keys/AuthKey_${APPSTORE_API_KEY_ID}.p8" \
             -authenticationKeyID "$APPSTORE_API_KEY_ID" \
-            -authenticationKeyIssuerID "$APPSTORE_API_ISSUER_ID"
+            -authenticationKeyIssuerID "$APPSTORE_API_ISSUER_ID" \
+            DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
+            CODE_SIGN_STYLE=Automatic
 
       - name: Export IPA
         env:
