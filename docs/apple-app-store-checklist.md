@@ -25,7 +25,7 @@ stand today and a submitted build.
 | App Store Connect record | Not created (no evidence of an existing app record — nothing references an Apple Team ID or ASC app ID anywhere in the repo). |
 | Screenshots | **Verified 2026-08-18** — `scripts/take_screenshots.sh` sweeps all three required device classes (iPhone 6.9"/6.5", iPad 13") into `screenshots/appstore/<slug>/`, 13/13 real screenshots per class, committed. See Phase 3 for how the first run surfaced and fixed a real app bug along the way. |
 | Privacy policy | Published content exists at `docs/privacy-policy.md` / `.html`, referenced as `https://healthflare.org/privacy` in `docs/store-listing.md`. Confirm it's actually deployed and reachable at that URL before submitting — App Store Connect validates the link. |
-| Export compliance | `ios/Runner/Info.plist` does **not** set `ITSAppUsesNonExemptEncryption`. Without it, every App Store Connect / TestFlight upload prompts an export-compliance question manually. |
+| Export compliance | **Done (2026-08-21).** `ios/Runner/Info.plist` sets `ITSAppUsesNonExemptEncryption` = `false` — the app's only network call (weather lookup, see `.url-scan-ignore`) is standard HTTPS, which is export-exempt. |
 
 ---
 
@@ -64,9 +64,9 @@ stand today and a submitted build.
 - [ ] Write App Review notes explaining offline-first / no-account behavior and give reviewers a
   concrete test flow (add a profile → log a symptom → view dashboard). `app-store.feature` already
   specifies this as a gate — use it as the acceptance check.
-- [ ] Add `ITSAppUsesNonExemptEncryption` = `false` to `ios/Runner/Info.plist` (the app only makes
+- [x] Add `ITSAppUsesNonExemptEncryption` = `false` to `ios/Runner/Info.plist` (the app only makes
   standard HTTPS calls to the weather API — no proprietary encryption) so export-compliance isn't
-  a manual per-build prompt.
+  a manual per-build prompt. **Done 2026-08-21.**
 
 ## Phase 3 — Screenshots
 
@@ -112,25 +112,27 @@ under `screenshots/appstore/<slug>/` (matches the existing `v1`/`v2` pattern for
 
 ## Phase 4 — CI: build & sign
 
-No workflow currently builds a signed `.ipa`. Mirror the existing `release-playstore.yaml`
-pattern (macOS runner instead of ubuntu, since Xcode builds require macOS):
-
-- [ ] Decide signing approach — two viable options:
-  - **Fastlane match / manual certs**: export a Distribution certificate (.p12) + App Store
-    provisioning profile, store as base64 secrets (same pattern as `MACOS_CERTIFICATE_BASE64` in
-    `release-macos.yaml`).
-  - **App Store Connect API key + automatic signing**: generate an API key in App Store Connect
-    (Users and Access → Integrations), store the `.p8` key + Key ID + Issuer ID as secrets, let
-    `xcodebuild -allowProvisioningUpdates` handle signing during CI.
-- [ ] Add `.github/workflows/release-appstore.yaml`, triggered on the same `v*.*.*` tag as the
-  other release workflows (`scripts/release.sh` already tags and pushes — no changes needed there,
-  the new workflow just needs to listen for the same tag). Steps: checkout → Flutter install →
-  `flutter build ipa --release` → upload via `xcrun altool` / `xcrun notarytool` equivalent for App
-  Store (`altool --upload-app` or `App Store Connect API` via `fastlane pilot upload` /
-  `xcrun altool --upload-package`).
-- [ ] Document the new secrets at the top of the workflow file, following the existing comment
-  convention in `release-playstore.yaml` and `release-macos.yaml` (each secret named, with a
-  one-line "how to generate it" note).
+- [x] Decide signing approach. **Chosen 2026-08-21: App Store Connect API key + automatic
+  signing** — generate an API key in App Store Connect (Users and Access → Integrations), store
+  the `.p8` key + Key ID + Issuer ID as secrets, let `xcodebuild -allowProvisioningUpdates` handle
+  cert/profile creation and renewal during CI. (Rejected: fastlane match / manual `.p12` +
+  provisioning profile — more secrets to rotate, manual yearly profile renewal, no upside here
+  since there's no existing fastlane setup in this repo to build on.)
+- [x] Add `.github/workflows/release-appstore.yaml`, triggered on the same `v*.*.*` tag as the
+  other release workflows. **Added 2026-08-21.** Note it does *not* go through `flutter build ipa`
+  — that command has no passthrough for `-allowProvisioningUpdates`/`-authenticationKeyPath`
+  (checked via `flutter build ipa --help`), so the workflow runs `flutter build ios --release
+  --no-codesign` for the Dart/Flutter half, then calls `xcodebuild archive` and `xcodebuild
+  -exportArchive` directly with the API-key auth flags, then `xcrun altool --upload-app`.
+- [x] Document the new secrets at the top of the workflow file, following the existing comment
+  convention in `release-playstore.yaml` and `release-macos.yaml`. **Done** — secrets are
+  `APPSTORE_API_KEY_BASE64`, `APPSTORE_API_KEY_ID`, `APPSTORE_API_ISSUER_ID`, `APPLE_TEAM_ID`, each
+  documented inline with where to generate it.
+- [ ] **Untested — this workflow has never run.** It can't be exercised until Phase 1 (Developer
+  Program enrollment) and Phase 2 (App Store Connect app record + the four secrets above) exist.
+  Treat the first tag push through it as a dry run: watch the Actions/Gitea log closely, and
+  budget time to debug — automatic-signing CI setups commonly fail on the first attempt over
+  provisioning-profile scope or missing capabilities.
 - [ ] First upload must be done manually (same caveat as the Play Store workflow's comment about
   needing one manual upload before the API will accept subsequent ones) — verify whether this
   applies to App Store Connect too before assuming the automated path works untested.

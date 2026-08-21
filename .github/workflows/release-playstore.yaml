@@ -1,0 +1,81 @@
+name: Release to Play Store
+
+# Triggers on any version tag, e.g. v0.1.0
+# NOTE: Each upload needs a higher versionCode than the last. Bump the build
+# number in pubspec.yaml (the "+N" in `version:`) before tagging, otherwise
+# Google Play rejects the bundle.
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+# Flutter version kept in sync with ci.yml — update both together.
+env:
+  FLUTTER_VERSION: "3.41.1"
+
+jobs:
+  build-and-publish-playstore:
+    name: Build & publish App Bundle to Play (internal)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Install Flutter
+        run: |
+          git clone --depth 1 --branch $FLUTTER_VERSION \
+            https://github.com/flutter/flutter.git $HOME/flutter
+          echo "$HOME/flutter/bin" >> $GITHUB_PATH
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      # ── Signing setup ────────────────────────────────────────────────────────
+      # Reuses the same secrets as release.yaml. This keystore is your Play
+      # *upload key* (Google re-signs with the app signing key it holds):
+      #   KEYSTORE_BASE64   base64-encoded .jks / .keystore file
+      #                     Generate with: base64 -i release.keystore | pbcopy
+      #   STORE_PASSWORD    storePassword value from key.properties
+      #   KEY_ALIAS         keyAlias value from key.properties
+      #   KEY_PASSWORD      keyPassword value from key.properties
+      - name: Decode keystore
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode \
+            > android/app/release.keystore
+
+      - name: Write key.properties
+        run: |
+          cat > android/key.properties <<EOF
+          storePassword=${{ secrets.STORE_PASSWORD }}
+          keyPassword=${{ secrets.KEY_PASSWORD }}
+          keyAlias=${{ secrets.KEY_ALIAS }}
+          storeFile=release.keystore
+          EOF
+
+      # ── Build ────────────────────────────────────────────────────────────────
+      # Play requires an App Bundle (.aab), not an APK.
+      - name: Build release App Bundle
+        run: flutter build appbundle --release
+
+      # ── Publish ──────────────────────────────────────────────────────────────
+      # Prerequisites (one-time, done outside CI):
+      #   1. Enable the "Google Play Android Developer API" in a Google Cloud
+      #      project and create a service account with a JSON key.
+      #   2. In Play Console → Users & permissions, invite the service account
+      #      email and grant it release permissions for this app.
+      #   3. Upload the first .aab manually in the Play Console — the API
+      #      rejects uploads until at least one release exists for the package.
+      #   4. Add the service-account JSON as the secret PLAY_SERVICE_ACCOUNT_JSON.
+      - name: Upload to Play Store (internal track)
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: org.healthflare.app.healthflare
+          releaseFiles: build/app/outputs/bundle/release/app-release.aab
+          track: internal
+          status: completed
