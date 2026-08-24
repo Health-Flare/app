@@ -60,7 +60,7 @@ alongside `tea`.
 ```bash
 tea issue create \
   --title "docs: document the real Gitea/GitHub Actions CI topology" \
-  --body "CLAUDE.md says Gitea-only but all release workflows execute on the GitHub mirror. Document the push-mirror relationship, where secrets live, and gh's actual read-only role. See docs/work-list.md BL-05." \
+  --description "CLAUDE.md says Gitea-only but all release workflows execute on the GitHub mirror. Document the push-mirror relationship, where secrets live, and gh's actual read-only role. See docs/work-list.md BL-05." \
   --label "priority:p1,type:infrastructure" \
   --login healthflare --repo HealthFlare/app
 ```
@@ -83,7 +83,7 @@ This isn't iOS-specific — it blocks every `flutter test` run, including on And
 ```bash
 tea issue create \
   --title "docs: document Xcode license prerequisite for flutter test" \
-  --body "flutter pub get fails via objective_c's native-asset hook until Xcode license is accepted, blocking ALL local test runs (not just iOS). Add to CLAUDE.md Quick Start. See docs/work-list.md BL-06." \
+  --description "flutter pub get fails via objective_c's native-asset hook until Xcode license is accepted, blocking ALL local test runs (not just iOS). Add to CLAUDE.md Quick Start. See docs/work-list.md BL-06." \
   --label "priority:p1,type:infrastructure" \
   --login healthflare --repo HealthFlare/app
 ```
@@ -103,7 +103,7 @@ already — this entry exists so it's visible in the general backlog, not duplic
 ```bash
 tea issue create \
   --title "ci(ios): finish App Store Connect signing for release-appstore.yaml" \
-  --body "5 failed attempts so far, full log in docs/apple-app-store-checklist.md Phase 4. Root cause: xcodebuild archive automatic-signing not reliably invoking API-key auth for a first-ever Distribution profile. See docs/work-list.md BL-07." \
+  --description "5 failed attempts so far, full log in docs/apple-app-store-checklist.md Phase 4. Root cause: xcodebuild archive automatic-signing not reliably invoking API-key auth for a first-ever Distribution profile. See docs/work-list.md BL-07." \
   --label "priority:p1,type:infrastructure" \
   --login healthflare --repo HealthFlare/app
 ```
@@ -122,7 +122,7 @@ future Dart/Flutter SDK bump could break codegen with no warning.
 ```bash
 tea issue create \
   --title "chore: dependency upgrade pass (2 discontinued build_runner packages)" \
-  --body "flutter pub outdated shows 19 constrained-below-resolvable deps; build_resolvers and build_runner_core are discontinued upstream. See docs/work-list.md BL-08." \
+  --description "flutter pub outdated shows 19 constrained-below-resolvable deps; build_resolvers and build_runner_core are discontinued upstream. See docs/work-list.md BL-08." \
   --label "priority:p2,type:infrastructure" \
   --login healthflare --repo HealthFlare/app
 ```
@@ -140,7 +140,7 @@ for children's data on a shared family device (Sam hands the phone to Rose).
 ```bash
 tea issue create \
   --title "Feature: app lock (PIN/biometric via local_auth)" \
-  --body "No app lock exists today — whoever holds the device reads two children's health histories. Add local_auth PIN/biometric gate, Settings toggle. Closes persona-evaluation.md G1. See docs/work-list.md BL-01." \
+  --description "No app lock exists today — whoever holds the device reads two children's health histories. Add local_auth PIN/biometric gate, Settings toggle. Closes persona-evaluation.md G1. See docs/work-list.md BL-01." \
   --label "priority:p0,type:feature" \
   --login healthflare --repo HealthFlare/app
 ```
@@ -155,7 +155,7 @@ auto-backup so Claire never has to remember to export manually. Directly neutral
 ```bash
 tea issue create \
   --title "Feature: pre-migration snapshot + scheduled auto-backup" \
-  --body "migration_runner.dart has no snapshot-before-migrate step; backup is manual-only. Add automatic pre-migration snapshot (keep last N) and scheduled auto-backup. Closes persona-evaluation.md G2. See docs/work-list.md BL-02." \
+  --description "migration_runner.dart has no snapshot-before-migrate step; backup is manual-only. Add automatic pre-migration snapshot (keep last N) and scheduled auto-backup. Closes persona-evaluation.md G2. See docs/work-list.md BL-02." \
   --label "priority:p0,type:feature" \
   --login healthflare --repo HealthFlare/app
 ```
@@ -173,7 +173,7 @@ back-date correctly.
 ```bash
 tea issue create \
   --title "Feature: caregiver-usable import path for external data" \
-  --body "tools/csv_import exists but is a developer-only CLI with no README, journal+symptom only. Build an in-app import flow or a documented runbook. Depends on editable journal dates (G14). Closes persona-evaluation.md G3. See docs/work-list.md BL-03." \
+  --description "tools/csv_import exists but is a developer-only CLI with no README, journal+symptom only. Build an in-app import flow or a documented runbook. Depends on editable journal dates (G14). Closes persona-evaluation.md G3. See docs/work-list.md BL-03." \
   --label "priority:p0,type:feature" \
   --login healthflare --repo HealthFlare/app
 ```
@@ -188,7 +188,7 @@ enabled" to the opt-in sheet. Cheap, protects the app's strongest asset — its 
 ```bash
 tea issue create \
   --title "fix: privacy copy audit against the weather network path" \
-  --body "CLAUDE.md and onboarding copy say 'fully offline / no network calls' but weather (opt-in) sends coordinates to api.open-meteo.com. Audit and correct every privacy claim. Closes persona-evaluation.md G6. See docs/work-list.md BL-04." \
+  --description "CLAUDE.md and onboarding copy say 'fully offline / no network calls' but weather (opt-in) sends coordinates to api.open-meteo.com. Audit and correct every privacy claim. Closes persona-evaluation.md G6. See docs/work-list.md BL-04." \
   --label "priority:p1,type:fix" \
   --login healthflare --repo HealthFlare/app
 ```
@@ -202,7 +202,7 @@ preserving the original timestamp. Closes the loop when Sam's preventive defence
 ```bash
 tea issue create \
   --title "Feature: move entry to another profile" \
-  --body "No recovery path when an entry is logged to the wrong profile — only delete + re-enter, losing the original timestamp. Add a 'Move to profile...' action on entry detail screens. Closes persona-evaluation.md G5. See docs/work-list.md BL-09." \
+  --description "No recovery path when an entry is logged to the wrong profile — only delete + re-enter, losing the original timestamp. Add a 'Move to profile...' action on entry detail screens. Closes persona-evaluation.md G5. See docs/work-list.md BL-09." \
   --label "priority:p1,type:feature" \
   --login healthflare --repo HealthFlare/app
 ```
@@ -218,7 +218,7 @@ recur.
 ```bash
 tea issue create \
   --title "fix: migration smoke test should delete its own fixture files" \
-  --body "The WL-17 migration smoke test never cleans up its timestamped .isar/.isar-lck fixtures. 84 had accumulated at the repo root before a manual cleanup on 2026-08-24. Add teardown. See docs/work-list.md BL-10." \
+  --description "The WL-17 migration smoke test never cleans up its timestamped .isar/.isar-lck fixtures. 84 had accumulated at the repo root before a manual cleanup on 2026-08-24. Add teardown. See docs/work-list.md BL-10." \
   --label "priority:p2,type:fix" \
   --login healthflare --repo HealthFlare/app
 ```
@@ -234,7 +234,7 @@ rather than leaving it to rot further.
 ```bash
 tea issue create \
   --title "chore: close out stale feature/spec-updates branch" \
-  --body "68 commits behind main, last touched 2026-04-28; its content already shipped separately via PR #93/#95. Verify nothing unique remains, then delete. Closes persona-evaluation.md G13. See docs/work-list.md BL-11." \
+  --description "68 commits behind main, last touched 2026-04-28; its content already shipped separately via PR #93/#95. Verify nothing unique remains, then delete. Closes persona-evaluation.md G13. See docs/work-list.md BL-11." \
   --label "priority:p2,type:infrastructure" \
   --login healthflare --repo HealthFlare/app
 ```
