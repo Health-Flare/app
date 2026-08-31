@@ -122,6 +122,29 @@ jobs:
           cp /tmp/profile.mobileprovision \
             ~/Library/MobileDevice/Provisioning\ Profiles/${UUID}.mobileprovision
 
+      # Temporary — attempts 7-10 all failed at Export with "No signing
+      # certificate found" despite three different theories (search list
+      # missing build.keychain, then missing System.keychain, then wrong
+      # signingCertificate selector). Print the actual state instead of
+      # guessing a fourth time.
+      - name: Debug signing state
+        run: |
+          echo "== keychain search list =="
+          security list-keychains -d user
+          echo "== valid codesigning identities (build.keychain) =="
+          security find-identity -v -p codesigning build.keychain || true
+          echo "== all identities incl. invalid (build.keychain) =="
+          security find-identity -p codesigning build.keychain || true
+          echo "== installed provisioning profiles =="
+          ls -la ~/Library/MobileDevice/Provisioning\ Profiles/
+          echo "== profile Name + TeamName =="
+          for f in ~/Library/MobileDevice/Provisioning\ Profiles/*.mobileprovision; do
+            echo "--- $f ---"
+            security cms -D -i "$f" > /tmp/profile_plist.xml
+            plutil -extract Name xml1 -o - /tmp/profile_plist.xml || true
+            plutil -extract TeamName xml1 -o - /tmp/profile_plist.xml || true
+          done
+
       - name: Write ExportOptions.plist
         env:
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
