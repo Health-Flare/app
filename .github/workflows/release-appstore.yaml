@@ -97,8 +97,18 @@ jobs:
           # from Archive's codesign lookup — attempt 7 archived successfully
           # (proving the cert/profile were valid) but Export still failed with
           # "No signing certificate 'iOS Distribution' found" until this list
-          # was set explicitly.
-          security list-keychains -d user -s build.keychain login.keychain-db
+          # includes build.keychain. Attempt 8 tried `-s build.keychain
+          # login.keychain-db`, which *replaced* the default search list
+          # instead of extending it — dropping /Library/Keychains/System.keychain,
+          # which holds Apple's WWDR intermediate cert needed to validate the
+          # trust chain for any Apple-issued certificate. Archive's codesign
+          # lookup tolerated the missing chain; Export's stricter
+          # `security find-identity -v` style check didn't, so it reported
+          # zero valid identities regardless of ExportOptions.plist's
+          # signingCertificate value. Preserve the existing list instead of
+          # overwriting it.
+          EXISTING_KEYCHAINS=$(security list-keychains -d user | sed 's/[",]//g')
+          security list-keychains -d user -s build.keychain $EXISTING_KEYCHAINS
 
       - name: Install provisioning profile
         env:
