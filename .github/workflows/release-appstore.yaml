@@ -36,21 +36,38 @@ jobs:
         run: flutter pub get
 
       # ── Signing setup ────────────────────────────────────────────────────────
-      # App Store Connect API key + automatic signing: xcodebuild resolves and
-      # renews the Distribution certificate + App Store provisioning profile
-      # itself via -allowProvisioningUpdates, so there's no manually-exported
-      # .p12/.mobileprovision pair to keep in sync (contrast with the .p12
-      # approach in release-macos.yaml).
-      #   APPSTORE_API_KEY_BASE64   base64-encoded .p8 private key.
-      #                             Generate in App Store Connect → Users and
-      #                             Access → Integrations → App Store Connect
-      #                             API → "+" (download once, Apple won't show
-      #                             it again). base64 -i AuthKey_XXXX.p8 | pbcopy
-      #   APPSTORE_API_KEY_ID       Key ID shown next to the key on that page.
-      #   APPSTORE_API_ISSUER_ID    Issuer ID shown at the top of the same page.
-      #   APPLE_TEAM_ID             10-char Developer Team ID (Developer portal
-      #                             → Membership, or App Store Connect → App
-      #                             Information → Apple ID/Team).
+      # Manual signing with a pre-created Distribution cert + provisioning
+      # profile. Automatic signing (-allowProvisioningUpdates + API key) was
+      # tried first and failed 6 straight times — see docs/apple-app-store-
+      # checklist.md Phase 4 for the full log. Root cause: xcodebuild's
+      # automatic-signing resolution doesn't reliably create a *first-ever*
+      # Distribution profile headlessly, and once the profile existed
+      # (created manually via Xcode locally), the command-line
+      # CODE_SIGN_STYLE=Automatic override then conflicted with the
+      # profile now committed into project.pbxproj. Manual signing matches
+      # exactly what was proven to work locally: Product → Archive with
+      # "Automatically manage signing" unchecked and the profile selected
+      # by hand.
+      #   APPSTORE_DISTRIBUTION_CERT_BASE64      base64-encoded .p12 export of
+      #                                           the Apple Distribution cert
+      #                                           + private key from Keychain
+      #                                           Access (right-click the
+      #                                           certificate → Export).
+      #   APPSTORE_DISTRIBUTION_CERT_PASSWORD    the export password chosen
+      #                                           for that .p12 — also reused
+      #                                           below as the ephemeral CI
+      #                                           keychain's unlock password.
+      #   APPSTORE_PROVISIONING_PROFILE_BASE64   base64-encoded .mobileprovision
+      #                                           for the "Health Flare App
+      #                                           Store" profile (Developer
+      #                                           portal → Profiles).
+      #   APPSTORE_API_KEY_BASE64/_KEY_ID/_ISSUER_ID   still used for the final
+      #                                           altool upload step only —
+      #                                           that step never failed, only
+      #                                           archiving did, so it's
+      #                                           unchanged. See git history
+      #                                           for how these were generated.
+      #   APPLE_TEAM_ID                          10-char Developer Team ID.
       - name: Install App Store Connect API key
         env:
           APPSTORE_API_KEY_BASE64: ${{ secrets.APPSTORE_API_KEY_BASE64 }}
@@ -59,6 +76,34 @@ jobs:
           mkdir -p ~/.appstoreconnect/private_keys
           echo "$APPSTORE_API_KEY_BASE64" | base64 --decode \
             > ~/.appstoreconnect/private_keys/AuthKey_${APPSTORE_API_KEY_ID}.p8
+
+      - name: Import Distribution certificate
+        env:
+          APPSTORE_DISTRIBUTION_CERT_BASE64: ${{ secrets.APPSTORE_DISTRIBUTION_CERT_BASE64 }}
+          APPSTORE_DISTRIBUTION_CERT_PASSWORD: ${{ secrets.APPSTORE_DISTRIBUTION_CERT_PASSWORD }}
+        run: |
+          echo "$APPSTORE_DISTRIBUTION_CERT_BASE64" | base64 --decode > distribution.p12
+          security create-keychain -p "$APPSTORE_DISTRIBUTION_CERT_PASSWORD" build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p "$APPSTORE_DISTRIBUTION_CERT_PASSWORD" build.keychain
+          security set-keychain-settings -lut 21600 build.keychain
+          security import distribution.p12 -k build.keychain \
+            -P "$APPSTORE_DISTRIBUTION_CERT_PASSWORD" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple: \
+            -s -k "$APPSTORE_DISTRIBUTION_CERT_PASSWORD" build.keychain
+          rm distribution.p12
+
+      - name: Install provisioning profile
+        env:
+          APPSTORE_PROVISIONING_PROFILE_BASE64: ${{ secrets.APPSTORE_PROVISIONING_PROFILE_BASE64 }}
+        run: |
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          echo "$APPSTORE_PROVISIONING_PROFILE_BASE64" | base64 --decode > /tmp/profile.mobileprovision
+          UUID=$(security cms -D -i /tmp/profile.mobileprovision \
+            | plutil -extract UUID xml1 -o - - \
+            | sed -n 's/.*<string>\(.*\)<\/string>.*/\1/p')
+          cp /tmp/profile.mobileprovision \
+            ~/Library/MobileDevice/Provisioning\ Profiles/${UUID}.mobileprovision
 
       - name: Write ExportOptions.plist
         env:
@@ -74,7 +119,12 @@ jobs:
             <key>teamID</key>
             <string>${APPLE_TEAM_ID}</string>
             <key>signingStyle</key>
-            <string>automatic</string>
+            <string>manual</string>
+            <key>provisioningProfiles</key>
+            <dict>
+              <key>org.healthflare.app.healthflare</key>
+              <string>Health Flare App Store</string>
+            </dict>
             <key>uploadSymbols</key>
             <true/>
           </dict>
@@ -82,53 +132,31 @@ jobs:
           EOF
 
       # ── Build ────────────────────────────────────────────────────────────────
-      # `flutter build ipa` doesn't expose -allowProvisioningUpdates or the
-      # authenticationKey* flags (checked via `flutter build ipa --help` —
-      # no passthrough exists), so the archive/export steps call xcodebuild
-      # directly instead. `flutter build ios --release --no-codesign` still
-      # does the Dart/Flutter half (compiles the app, writes
-      # Generated.xcconfig, embeds Flutter.framework) that xcodebuild needs
-      # before it can archive.
+      # `flutter build ios --release --no-codesign` does the Dart/Flutter half
+      # (compiles the app, writes Generated.xcconfig, embeds
+      # Flutter.framework) that xcodebuild needs before it can archive.
       - name: Prepare Flutter build
         run: flutter build ios --release --no-codesign
 
-      # DEVELOPMENT_TEAM is passed as a build-setting override rather than
-      # edited into project.pbxproj: the Xcode project has never been opened
-      # with a team selected in Signing & Capabilities (first CI run failed
-      # with "Signing for 'Runner' requires a development team" even with
-      # -allowProvisioningUpdates — that flag lets xcodebuild fetch/renew the
-      # profile, but it still needs to be told which team to ask).
+      # No signing flags/overrides needed here — project.pbxproj already has
+      # CODE_SIGN_STYLE=Manual, PROVISIONING_PROFILE_SPECIFIER, and
+      # DEVELOPMENT_TEAM committed for the Release configuration (see the
+      # "fix(ios): manual Distribution signing" commit), matching exactly
+      # what the certificate/profile installed above provide.
       - name: Archive
-        env:
-          APPSTORE_API_KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
-          APPSTORE_API_ISSUER_ID: ${{ secrets.APPSTORE_API_ISSUER_ID }}
-          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         run: |
           xcodebuild archive \
             -workspace ios/Runner.xcworkspace \
             -scheme Runner \
             -configuration Release \
-            -archivePath build/ios/Runner.xcarchive \
-            -allowProvisioningUpdates \
-            -authenticationKeyPath "$HOME/.appstoreconnect/private_keys/AuthKey_${APPSTORE_API_KEY_ID}.p8" \
-            -authenticationKeyID "$APPSTORE_API_KEY_ID" \
-            -authenticationKeyIssuerID "$APPSTORE_API_ISSUER_ID" \
-            DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
-            CODE_SIGN_STYLE=Automatic
+            -archivePath build/ios/Runner.xcarchive
 
       - name: Export IPA
-        env:
-          APPSTORE_API_KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
-          APPSTORE_API_ISSUER_ID: ${{ secrets.APPSTORE_API_ISSUER_ID }}
         run: |
           xcodebuild -exportArchive \
             -archivePath build/ios/Runner.xcarchive \
             -exportPath build/ios/ipa \
-            -exportOptionsPlist ios/ExportOptions.plist \
-            -allowProvisioningUpdates \
-            -authenticationKeyPath "$HOME/.appstoreconnect/private_keys/AuthKey_${APPSTORE_API_KEY_ID}.p8" \
-            -authenticationKeyID "$APPSTORE_API_KEY_ID" \
-            -authenticationKeyIssuerID "$APPSTORE_API_ISSUER_ID"
+            -exportOptionsPlist ios/ExportOptions.plist
 
       # Kept as a downloadable artifact regardless of whether the automated
       # upload below succeeds, so a failed/rejected altool run still leaves
