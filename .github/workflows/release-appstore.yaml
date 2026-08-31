@@ -92,6 +92,13 @@ jobs:
           security set-key-partition-list -S apple-tool:,apple: \
             -s -k "$APPSTORE_DISTRIBUTION_CERT_PASSWORD" build.keychain
           rm distribution.p12
+          # `security default-keychain` alone doesn't add build.keychain to the
+          # *search list* that `xcodebuild -exportArchive` consults separately
+          # from Archive's codesign lookup — attempt 7 archived successfully
+          # (proving the cert/profile were valid) but Export still failed with
+          # "No signing certificate 'iOS Distribution' found" until this list
+          # was set explicitly.
+          security list-keychains -d user -s build.keychain login.keychain-db
 
       - name: Install provisioning profile
         env:
