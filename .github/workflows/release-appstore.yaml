@@ -127,6 +127,8 @@ jobs:
             <string>${APPLE_TEAM_ID}</string>
             <key>signingStyle</key>
             <string>manual</string>
+            <key>signingCertificate</key>
+            <string>Apple Distribution</string>
             <key>provisioningProfiles</key>
             <dict>
               <key>org.healthflare.app.healthflare</key>
