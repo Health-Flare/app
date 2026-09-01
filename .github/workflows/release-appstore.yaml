@@ -110,6 +110,24 @@ jobs:
           EXISTING_KEYCHAINS=$(security list-keychains -d user | sed 's/[",]//g')
           security list-keychains -d user -s build.keychain $EXISTING_KEYCHAINS
 
+      # Attempt 11's diagnostic step proved the identity is valid
+      # (`security find-identity -v` finds it) and the profile is correctly
+      # installed, seconds before `xcodebuild -exportArchive` still reports
+      # both as not found. That gap between "security CLI says valid" and
+      # "Xcode's own export validation says not found" is the signature of
+      # a missing/outdated WWDR intermediate certificate in the trust
+      # chain — `security find-identity`'s validity check is more lenient
+      # than Xcode's internal App Store distribution trust validation.
+      # macos-latest runner images don't reliably ship the current
+      # intermediate. Install the known intermediates directly.
+      - name: Install Apple WWDR intermediate certificates
+        run: |
+          for cert in AppleWWDRCAG3 AppleWWDRCAG4 AppleWWDRCAG6; do
+            curl -sf -o "${cert}.cer" "https://www.apple.com/certificateauthority/${cert}.cer"
+            security import "${cert}.cer" -k build.keychain
+            rm "${cert}.cer"
+          done
+
       - name: Install provisioning profile
         env:
           APPSTORE_PROVISIONING_PROFILE_BASE64: ${{ secrets.APPSTORE_PROVISIONING_PROFILE_BASE64 }}
