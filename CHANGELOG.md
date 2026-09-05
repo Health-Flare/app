@@ -59,7 +59,29 @@ Subsection meanings (from Keep a Changelog):
 ## [1.5.0] - 2026-08-21
 
 ### Added
+- **Structured quick-log saves** — quick-log entries classified as Vital, Medication, or Sleep now save as structured records instead of plain journal text. Vital text is parsed into blood pressure, heart rate, temperature, SpO2, glucose, or weight (original text kept as notes); medication text logs a "taken" dose against the matching medication; a stated sleep duration saves a structured sleep entry. Anything unparseable still falls back to a journal entry so no text is lost. "Add details" now routes to the matching full form with notes pre-filled.
+- **Move an entry to another profile** — an entry logged under the wrong profile can now be moved instead of deleted and retyped, preserving its original timestamp. Available from the journal and meal detail screens and the symptom, vital, sleep, and activity edit forms. Flare links are cleared on move since flares belong to the source profile. Hidden when only one profile exists.
+- iOS App Store screenshot automation now sweeps all three required device classes (iPhone 6.9", iPhone 6.5", iPad 13") in a single run, each into its own subdirectory.
+- iOS release pipeline: App Store Connect release workflow added to CI (builds, signs, and uploads via `altool`), alongside the Play Store release workflow, which existed on disk but had never actually been committed or running in CI.
+- Golden-file visual-regression suite (journal empty state, sleep quality selector, weather chip, profile avatar, first-log prompt, app bar with profile icon) and app-bar/profile-icon placement tests. CI now runs the full test suite for the first time.
+
+### Changed
+- Apple App Store category aligned to Health & Fitness across the store listing and submission checklist (was inconsistently listed as "Medical").
+
+### Fixed
+- macOS app icon replaced the default Flutter logo with the Health Flare brand icon across all 7 icon sizes; CI now validates the icon set on every macOS build.
+- Onboarding first-log prompt tiles no longer clip their two-line sublabels (found via the new golden tests).
+- iOS screenshot test no longer fails intermittently on an ambiguous journal-entry finder; the screenshot sweep no longer aborts entirely when a single device fails.
+
+### Security
 - _Nothing yet._
+
+## [1.4.0] - 2026-07-04
+
+### Added
+- **Weather impact insights** — new section on the Insights screen showing a per-condition severity bar chart correlating symptom severity with weather conditions at the time of logging (requires at least 2 samples per condition).
+- **Symptom name autocomplete** — the symptom entry form now suggests previously used symptom names, ranked by frequency then recency.
+- Weather chip now appears on journal entry cards when the entry has a captured weather snapshot, matching the existing display on other entry types.
 
 ### Changed
 - _Nothing yet._
@@ -149,7 +171,8 @@ Subsection meanings (from Keep a Changelog):
   by the `url-scan` CI check.
 
 [Unreleased]: https://git.ahosking.com/HealthFlare/app/compare/v1.5.0...HEAD
-[1.5.0]: https://git.ahosking.com/HealthFlare/app/compare/v1.3.0...v1.5.0
+[1.5.0]: https://git.ahosking.com/HealthFlare/app/compare/v1.4.0...v1.5.0
+[1.4.0]: https://git.ahosking.com/HealthFlare/app/compare/v1.3.0...v1.4.0
 [1.3.0]: https://git.ahosking.com/HealthFlare/app/compare/v1.2.0...v1.3.0
 [1.2.0]: https://git.ahosking.com/HealthFlare/app/compare/v1.1.0...v1.2.0
 [1.1.0]: https://git.ahosking.com/HealthFlare/app/compare/v1.0.0...v1.1.0
