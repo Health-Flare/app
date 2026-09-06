@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'package:health_flare/core/theme/app_colors.dart';
-
 /// Zone 2 — Privacy & data promise.
 ///
 /// Shows a headline commitment, 4 supporting facts, and an expandable
@@ -55,7 +53,10 @@ class _OnboardingPrivacyZoneState extends State<OnboardingPrivacyZone>
     final tt = Theme.of(context).textTheme;
 
     return Container(
-      color: AppColors.surfaceVariant,
+      // Theme-adaptive, not AppColors.surfaceVariant — that constant is
+      // pinned light, which made onSurface text invisible in dark mode
+      // (both resolved to the same near-white colour).
+      color: cs.surfaceContainerHighest,
       padding: const EdgeInsets.fromLTRB(28, 40, 28, 40),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

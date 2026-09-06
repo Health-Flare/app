@@ -6,7 +6,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
 import 'package:health_flare/core/providers/condition_provider.dart';
-import 'package:health_flare/core/theme/app_colors.dart';
 import 'package:health_flare/models/condition.dart';
 
 /// Zone 3 — Profile creation form (inline, no navigation away).
@@ -114,7 +113,10 @@ class _OnboardingProfileZoneState extends ConsumerState<OnboardingProfileZone> {
     final results = _filteredResults(catalog);
 
     return Container(
-      color: AppColors.surface,
+      // Theme-adaptive, not AppColors.surface — that constant is pinned
+      // white, which made onSurface/onSurfaceVariant text nearly invisible
+      // in dark mode (near-white text on a white background).
+      color: cs.surface,
       padding: const EdgeInsets.fromLTRB(28, 40, 28, 32),
       child: Form(
         key: widget.formKey,

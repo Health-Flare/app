@@ -51,7 +51,7 @@ Subsection meanings (from Keep a Changelog):
 - _Nothing yet._
 
 ### Fixed
-- _Nothing yet._
+- **Dark mode — onboarding readability:** the privacy and profile-creation zones and the weather opt-in sheet used hardcoded light background colours (`AppColors.surfaceVariant`, `AppColors.surface`, `AppColors.paleSky`) while their text used theme-adaptive colours, so in dark mode the text rendered in a near-white shade against a background that stayed light — in the privacy zone this was the *same* colour as the background, making it fully invisible. Onboarding now uses `ColorScheme` tokens throughout so backgrounds track the active theme.
 
 ### Security
 - _Nothing yet._
