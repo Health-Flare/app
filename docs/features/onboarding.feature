@@ -98,7 +98,7 @@ Feature: Onboarding
     And I tap the primary action button
     Then a profile named "Sarah" is created
     And I am taken into the main app
-    And the first-log prompt is shown
+    And the quick-log sheet opens automatically, ready for a first entry
 
   Scenario: Complete onboarding with all profile fields filled
     Given I am on the onboarding screen
@@ -108,7 +108,7 @@ Feature: Onboarding
     And I tap the primary action button
     Then a profile named "Dad" is created with the date of birth and avatar saved
     And I am taken into the main app
-    And the first-log prompt is shown
+    And the quick-log sheet opens automatically, ready for a first entry
 
   Scenario: Cannot complete onboarding without entering a profile name
     Given I am on the onboarding screen
@@ -137,101 +137,53 @@ Feature: Onboarding
     And the profile creation form remains usable without a photo
 
   # ---------------------------------------------------------------------------
-  # Post-setup: first-log prompt
+  # Post-setup: first log
+  #
+  # There is no separate first-log prompt UI. The very first thing a new
+  # profile sees on the dashboard is the same quick-log sheet the "+" FAB
+  # opens for daily use — free text, classified live, save with one tap.
+  # Using the app's actual everyday entry point from the first second avoids
+  # teaching a second, throwaway interaction pattern that only ever appears
+  # once and then never matches how logging actually works afterwards.
   # ---------------------------------------------------------------------------
 
-  Scenario: First-log prompt is shown after the weather opt-in clears
-    Given I have just completed onboarding and the weather opt-in has been dismissed
-    When the dashboard loads
-    Then I am shown the first-log prompt
-    And the prompt acknowledges the profile by name
-    And the prompt frames the first entry as the start of a pattern,
-        not as a setup task
+  Scenario: The quick-log sheet opens automatically the first time a new profile reaches the dashboard
+    Given I have just completed onboarding and created my first profile
+    When I enter the main app
+    Then the dashboard loads behind the quick-log sheet
+    And the quick-log sheet is already open, ready for free text
+    And it behaves exactly like tapping the "+" button on any other day
 
-  Scenario: First-log prompt offers six entry options
-    Given the first-log prompt is visible
-    Then I can see six options:
-      | Option          |
-      | An illness      |
-      | A symptom       |
-      | A vital         |
-      | A meal          |
-      | A medication    |
-      | A journal entry |
-    And "An illness" is displayed prominently as the first option
-    And each option has a brief sub-label describing what it captures
+  Scenario: Dismissing or completing the automatic first log returns to the dashboard
+    Given the quick-log sheet opened automatically for a new profile
+    When I save an entry, or dismiss the sheet without saving
+    Then I am taken to (or remain on) the dashboard
+    And the sheet does not open automatically again for this profile
 
-  Scenario: Tapping "An illness" opens the illness screen and returns to the prompt
-    Given the first-log prompt is visible
-    When I tap "An illness"
-    Then the illness entry screen opens full-screen
-    When I finish on the illness screen (with or without saving)
-    Then I am returned to the first-log prompt
-    And I can now choose what to log next
-
-  Scenario: Prompt heading updates after an illness is added to encourage the next step
-    Given the first-log prompt is visible
-    When I add an illness and return to the prompt
-    Then the prompt heading updates to invite a related first log
-    Such as "What would you like to record for Sarah first?"
-    And the non-illness options are visually foregrounded
-
-  Scenario: Tapping a daily-use option opens the entry form and lands on the dashboard
-    Given the first-log prompt is visible
-    When I tap "A symptom"
-    Then the new symptom entry form opens
-    When I complete and save the entry
-    Then I am taken to the dashboard
-    And the saved entry is visible in my dashboard feed
-    And the first-log prompt is not shown again
-
-  Scenario: The same transition-to-dashboard applies for all non-illness options
-    Given the first-log prompt is visible
-    When I tap "A vital" and save a vital entry
-    Then I am taken to the dashboard
-    Given the first-log prompt is visible
-    When I tap "A meal" and save a meal entry
-    Then I am taken to the dashboard
-    Given the first-log prompt is visible
-    When I tap "A medication" and save a medication entry
-    Then I am taken to the dashboard
-    Given the first-log prompt is visible
-    When I tap "A journal entry" and save a journal entry
-    Then I am taken to the dashboard
-
-  Scenario: Navigating back from any entry form without saving returns to the prompt
-    Given the first-log prompt is visible
-    When I tap "A vital"
-    And I close the vital entry form without saving
-    Then I am returned to the first-log prompt
-    And the prompt is still visible
-
-  Scenario: First-log prompt can be dismissed to start using the app freely
-    Given the first-log prompt is visible
-    When I tap "I'll explore on my own"
-    Then I am taken to the dashboard
-    And the prompt does not appear again for this profile
-
-  Scenario: First-log prompt only appears once per profile
-    Given the first-log prompt was shown and dismissed for profile "Sarah"
+  Scenario: The automatic first log only appears once per profile
+    Given the automatic first log was already shown for profile "Sarah"
     When I close and reopen the app
-    Then the first-log prompt is not shown again
+    Then the quick-log sheet does not open automatically
     And I am taken directly to the dashboard for "Sarah"
 
-  Scenario: First-log prompt appears for each new profile
-    Given profile "Sarah" already exists and has completed the first-log prompt
+  Scenario: The automatic first log appears for each new profile
+    Given profile "Sarah" already exists and has already seen her automatic first log
     When I create a new profile "Dad"
-    Then the first-log prompt is shown for "Dad"
+    Then the quick-log sheet opens automatically once for "Dad"
     But the full onboarding screen is not shown again
 
   # ---------------------------------------------------------------------------
   # Post-setup: weather tracking opt-in
+  #
+  # Offered the first time a profile is about to log something — whether
+  # that's the automatic first log above or any later manual "+" tap — not
+  # as a blocking modal shown before the user has seen the app at all.
   # ---------------------------------------------------------------------------
 
-  Scenario: Weather tracking opt-in is offered after profile creation
+  Scenario: Weather tracking opt-in is offered the first time a profile is about to log something
     Given I have just completed onboarding and created my first profile
-    When I enter the main app
-    Then I am shown an optional prompt to enable weather tracking
+    When the quick-log sheet is about to open for the first time — automatically or via the "+" button
+    Then I am first shown an optional prompt to enable weather tracking
     And the prompt explains that temperature, humidity, and barometric pressure can correlate with chronic illness symptoms
     And the prompt is framed as a data point worth tracking, not a privacy concern
 
@@ -241,14 +193,14 @@ Feature: Onboarding
     Then the OS location permission dialog is shown
     When I grant location permission
     Then weather tracking is enabled for this profile
-    And the first-log prompt follows
+    And the quick-log sheet opens
 
-  Scenario: Declining weather tracking skips to the first-log prompt without asking again
+  Scenario: Declining weather tracking still opens the quick-log sheet, without asking again
     Given the weather tracking prompt is visible
     When I tap "No thanks"
     Then weather tracking is disabled for this profile
-    And the first-log prompt follows
-    And I am not asked about weather tracking again during this onboarding
+    And the quick-log sheet opens
+    And I am not asked about weather tracking again for this profile
 
   Scenario: Denying location permission after enabling disables the feature gracefully
     Given the weather tracking prompt is visible

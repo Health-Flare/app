@@ -168,42 +168,9 @@ Create profile and get started →
 
 ---
 
-## Post-Setup: First-Log Prompt
+## Post-Setup: First Log
 
-*Shown immediately after the primary action button is tapped and the profile is saved. Appears as a modal sheet or full-screen prompt over the dashboard.*
-
-### Heading
-```
-[Name]'s profile is ready.
-```
-
-*(Replace `[Name]` with the profile name entered during setup.)*
-
-### Body copy
-```
-The best way to spot patterns is to start logging now, while the day is fresh.
-What would you like to record for [Name] first?
-```
-
-*(Replace `[Name]` with the profile name.)*
-
-### Option cards (four, tappable)
-
-| Card | Icon suggestion | Label | Sublabel |
-|---|---|---|---|
-| Symptom | 🩺 | **A symptom** | How is [Name] feeling right now? |
-| Vital | 📊 | **A vital** | Blood pressure, heart rate, and more |
-| Meal | 🍽️ | **A meal** | What did [Name] last eat or drink? |
-| Medication | 💊 | **A medication** | Add something [Name] is currently taking |
-
-*(Replace `[Name]` with the profile name in all sublabels.)*
-
-### Dismiss link (below option cards)
-```
-I'll explore on my own →
-```
-
-*Small, clearly tappable, but visually secondary to the option cards. Not hidden.*
+*There is no separate first-log prompt screen or card grid. Immediately after the primary action button is tapped and the profile is saved, the dashboard loads with the same quick-log sheet the "+" button opens on any other day already presented on top of it — free text, classified live, one tap to save. This is deliberate: a new user's very first log should use the exact interaction they'll use every day after, not a bespoke onboarding-only widget. See `docs/features/onboarding.feature` › "Post-setup: first log".*
 
 ---
 

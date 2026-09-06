@@ -42,13 +42,13 @@ Subsection meanings (from Keep a Changelog):
 - _Nothing yet._
 
 ### Changed
-- _Nothing yet._
+- **First-time flow simplified.** The onboarding name field is now focused automatically with the keyboard visible on load, matching the long-specced-but-never-implemented behaviour in `docs/features/onboarding.feature`. The bespoke "first-log prompt" card grid (5 option cards, most of which navigated to a list screen instead of the entry form they advertised) has been replaced entirely: a brand-new profile's first log now opens the same quick-log sheet the "+" button uses every other day. The weather-tracking opt-in no longer blocks entry to the app immediately after profile creation — it's now offered the first time a profile is about to log something (automatically or via "+"), which is also the first place `weatherOptInProvider` and `showDashboardQuickEntrySheet` are checked together.
 
 ### Deprecated
 - _Nothing yet._
 
 ### Removed
-- _Nothing yet._
+- The onboarding "first-log prompt" card grid (`FirstLogPrompt` widget) — see Changed.
 
 ### Fixed
 - _Nothing yet._

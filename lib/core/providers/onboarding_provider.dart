@@ -28,26 +28,28 @@ final onboardingProvider = NotifierProvider<OnboardingNotifier, bool>(
   OnboardingNotifier.new,
 );
 
-/// Tracks whether the first-log prompt should be shown for the active profile.
+/// Tracks whether the quick-log sheet should open automatically for the
+/// active profile the next time it reaches the dashboard.
 ///
 /// ## Persistence
 /// The shown state is stored in [ProfileIsar.firstLogShown] so it survives
 /// app restarts. Each profile has its own flag — creating a second profile
-/// will show the prompt for that profile regardless of whether it was
-/// previously shown for the first.
+/// triggers the automatic open for that profile regardless of whether it
+/// was previously shown for the first.
 ///
 /// ## Automatic trigger
 /// [build] listens to [activeProfileProvider]. When the active profile
 /// changes (e.g. a new profile is created and made active), it asynchronously
 /// checks [ProfileIsar.firstLogShown] for the new profile and sets state to
-/// `true` if the prompt has not yet been shown.
+/// `true` if the sheet has not yet been shown automatically.
 ///
-/// ## Showing the prompt
-/// [DashboardScreen] watches this provider and shows [FirstLogPrompt] as a
-/// modal bottom sheet when state transitions to `true`. The Dashboard calls
-/// [markShown] immediately before displaying the sheet, which persists the
-/// flag and prevents the prompt from appearing again — even if the user
-/// swipes the sheet away without tapping any option.
+/// ## Opening the sheet
+/// `DashboardScreen` watches this provider and opens the same quick-log
+/// sheet the "+" FAB uses (via `showDashboardQuickEntrySheet`) when state
+/// transitions to `true`. The Dashboard calls [markShown] immediately
+/// before opening it, which persists the flag and prevents the automatic
+/// open from happening again — even if the user dismisses the sheet
+/// without saving anything.
 class FirstLogPromptNotifier extends Notifier<bool> {
   @override
   bool build() {
@@ -78,8 +80,9 @@ class FirstLogPromptNotifier extends Notifier<bool> {
 
   /// Persists [ProfileIsar.firstLogShown] = true and sets state to false.
   ///
-  /// Called by [DashboardScreen] immediately before displaying the sheet so
-  /// the prompt is never shown again — even if the user swipes the sheet away.
+  /// Called by `DashboardScreen` immediately before opening the sheet so
+  /// the automatic open never happens again — even if the user dismisses
+  /// the sheet without saving anything.
   Future<void> markShown() async {
     if (!state) return; // already marked
     state = false;
@@ -96,15 +99,6 @@ class FirstLogPromptNotifier extends Notifier<bool> {
       await isar.profileIsars.put(row);
     });
   }
-
-  // ── Backwards-compatibility stubs ─────────────────────────────────────────
-
-  /// No-op — prompt is triggered automatically via [activeProfileProvider].
-  /// Retained so [OnboardingScreen] compiles without changes.
-  void show() {}
-
-  /// Alias for [markShown] — used by option cards inside [FirstLogPrompt].
-  Future<void> dismiss() => markShown();
 }
 
 final firstLogPromptProvider = NotifierProvider<FirstLogPromptNotifier, bool>(

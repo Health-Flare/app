@@ -31,12 +31,6 @@ class _FakeFirstLogPrompt extends FirstLogPromptNotifier {
 
   @override
   Future<void> markShown() async {}
-
-  @override
-  void show() {}
-
-  @override
-  Future<void> dismiss() async {}
 }
 
 class _FakeFlareList extends FlareListNotifier {

@@ -5,7 +5,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/core/theme/app_theme.dart';
 import 'package:health_flare/features/journal/widgets/journal_empty_state.dart';
-import 'package:health_flare/features/onboarding/widgets/first_log_prompt.dart';
 import 'package:health_flare/features/profiles/widgets/profile_avatar.dart';
 import 'package:health_flare/features/shared/widgets/weather_chip.dart';
 import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
@@ -132,20 +131,6 @@ void main() {
     await expectLater(
       find.byType(MaterialApp),
       matchesGoldenFile('../goldens/profile_avatar.png'),
-    );
-  });
-
-  testWidgets('golden: first-log prompt uses the profile name', (tester) async {
-    await _pumpAtPhoneSize(
-      tester,
-      _harness(
-        const Scaffold(body: FirstLogPrompt(profileName: 'Ethan')),
-        overrides: _profileOverrides,
-      ),
-    );
-    await expectLater(
-      find.byType(MaterialApp),
-      matchesGoldenFile('../goldens/first_log_prompt.png'),
     );
   });
 

@@ -8,11 +8,9 @@ import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/core/router/app_router.dart';
 import 'package:health_flare/features/dashboard/widgets/dashboard_activity_feed.dart';
 import 'package:health_flare/features/dashboard/widgets/dashboard_quick_entry_sheet.dart';
-import 'package:health_flare/features/onboarding/widgets/first_log_prompt.dart';
 import 'package:health_flare/features/flare/widgets/active_flare_banner.dart';
 import 'package:health_flare/features/daily_checkin/widgets/daily_checkin_card.dart';
 import 'package:health_flare/features/appointments/widgets/upcoming_appointments_card.dart';
-import 'package:health_flare/features/onboarding/widgets/weather_opt_in_sheet.dart';
 import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 
 /// Dashboard — the home tab.
@@ -20,9 +18,12 @@ import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 /// Shows the active profile name in the app bar. All data sections
 /// will be scoped to the active profile once the data layer is wired up.
 ///
-/// Also owns the first-log prompt trigger: when [firstLogPromptProvider]
-/// becomes true (new profile created, not yet shown), it displays
-/// [FirstLogPrompt] as a modal bottom sheet once per profile.
+/// Also owns the first-log trigger: when [firstLogPromptProvider] becomes
+/// true (new profile created, not yet shown), it opens the same quick-log
+/// sheet as the FAB — see [showDashboardQuickEntrySheet] — once per profile,
+/// instead of a separate prompt UI. A brand-new user's very first log is
+/// then the same low-friction sheet they'll use every day after, rather
+/// than a bespoke card grid that behaves differently from daily use.
 class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
 
@@ -35,39 +36,24 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   void initState() {
     super.initState();
     // Check after the first frame is fully built.
-    WidgetsBinding.instance.addPostFrameCallback((_) => _maybeShowPrompts());
+    WidgetsBinding.instance.addPostFrameCallback((_) => _maybeShowFirstLog());
   }
 
-  /// Shows the weather opt-in prompt (if not yet seen), then the first-log
-  /// prompt (if not yet seen), in sequence.
+  /// Opens the quick-log sheet automatically the first time a profile lands
+  /// on the dashboard, then never again for that profile.
   ///
-  /// Both prompts are marked as shown *before* being displayed so that
-  /// swipe-dismiss or hot-restart cannot re-trigger them.
-  Future<void> _maybeShowPrompts() async {
+  /// Marked as shown *before* being displayed so that swipe-dismiss or
+  /// hot-restart cannot re-trigger it. The weather opt-in (if not yet seen)
+  /// is handled inside [showDashboardQuickEntrySheet] itself, since asking
+  /// about weather tracking makes more sense at the moment someone is about
+  /// to log something than as a blocking modal before they've seen the app.
+  Future<void> _maybeShowFirstLog() async {
     if (!mounted) return;
+    if (!ref.read(firstLogPromptProvider)) return;
 
-    // Weather opt-in first
-    if (ref.read(weatherOptInProvider)) {
-      await showWeatherOptIn(
-        context,
-        onResult: (enabled) async {
-          await ref
-              .read(weatherOptInProvider.notifier)
-              .dismiss(enabled: enabled);
-          if (mounted) Navigator.of(context).pop();
-        },
-      );
-    }
-
+    await ref.read(firstLogPromptProvider.notifier).markShown();
     if (!mounted) return;
-
-    // First-log prompt second
-    if (ref.read(firstLogPromptProvider)) {
-      await ref.read(firstLogPromptProvider.notifier).markShown();
-      if (!mounted) return;
-      final profile = ref.read(activeProfileDataProvider);
-      await showFirstLogPrompt(context, profileName: profile?.name ?? '');
-    }
+    await showDashboardQuickEntrySheet(context, ref);
   }
 
   @override
@@ -81,7 +67,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     ref.listen<bool>(firstLogPromptProvider, (prev, next) {
       if (next && !(prev ?? false)) {
         WidgetsBinding.instance.addPostFrameCallback(
-          (_) => _maybeShowPrompts(),
+          (_) => _maybeShowFirstLog(),
         );
       }
     });
@@ -120,7 +106,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       ),
       body: const _DashboardBody(),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => showDashboardQuickEntrySheet(context),
+        onPressed: () => showDashboardQuickEntrySheet(context, ref),
         tooltip: 'Log entry',
         child: const Icon(Icons.add_rounded),
       ),

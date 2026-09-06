@@ -49,11 +49,16 @@ class _OnboardingBodyState extends ConsumerState<_OnboardingBody> {
   @override
   void initState() {
     super.initState();
-    // Ensure the screen always starts at the very top, even on devices where
-    // the system tries to scroll to a focused field during the first frame.
+    // Focus the name field on load per docs/features/onboarding.feature
+    // ("the name input field has focus... the keyboard is visible"). This
+    // was previously undone by an unconditional jumpTo(0) immediately after
+    // load, which fought the field's natural scroll-into-view and left the
+    // form unfocused with no keyboard — the single biggest reason the first
+    // screen a new user sees requires reading two zones of copy before they
+    // can find the one thing they're meant to do.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      _scrollController.jumpTo(0);
+      _nameFocusNode.requestFocus();
     });
   }
 

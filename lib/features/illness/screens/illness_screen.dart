@@ -547,8 +547,8 @@ class _DiagnosisDateRow extends StatelessWidget {
 
 /// Shows [IllnessScreen] as a tall modal bottom sheet.
 ///
-/// Equivalent to navigating to the illness route but usable from
-/// bottom-sheet contexts like [FirstLogPrompt].
+/// Equivalent to navigating to the illness route but usable from other
+/// bottom-sheet contexts.
 Future<void> showIllnessSheet(BuildContext context) {
   return showModalBottomSheet<void>(
     context: context,
