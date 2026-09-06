@@ -72,7 +72,7 @@ void _expectReadableText(WidgetTester tester, Finder rootFinder) {
     if (background == null) continue;
 
     final fontSize = text.style?.fontSize ?? 14;
-    final isBold = (text.style?.fontWeight?.index ?? 3) >= FontWeight.w700.index;
+    final isBold = (text.style?.fontWeight?.value ?? FontWeight.w400.value) >= FontWeight.w700.value;
     final isLargeText = fontSize >= 18 || (fontSize >= 14 && isBold);
     final minRatio = isLargeText ? 3.0 : 4.5;
 
