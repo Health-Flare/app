@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'package:health_flare/core/theme/app_colors.dart';
-
 /// Modal sheet presented once per profile after onboarding completes.
 ///
 /// Explains why weather tracking is valuable for chronic illness
@@ -53,7 +51,10 @@ class WeatherTrackingOptInSheet extends StatelessWidget {
               height: 52,
               margin: const EdgeInsets.only(bottom: 16),
               decoration: BoxDecoration(
-                color: AppColors.paleSky,
+                // Theme-adaptive tertiaryContainer, not AppColors.paleSky —
+                // that constant is pinned light and looked like a stray
+                // light-mode chip against an otherwise dark sheet.
+                color: cs.tertiaryContainer,
                 borderRadius: BorderRadius.circular(14),
               ),
               child: Icon(Icons.cloud_outlined, size: 28, color: cs.primary),

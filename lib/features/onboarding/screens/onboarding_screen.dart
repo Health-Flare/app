@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:health_flare/core/providers/condition_provider.dart';
 import 'package:health_flare/core/providers/onboarding_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
-import 'package:health_flare/core/theme/app_colors.dart';
 import 'package:health_flare/features/onboarding/widgets/onboarding_welcome_zone.dart';
 import 'package:health_flare/features/onboarding/widgets/onboarding_privacy_zone.dart';
 import 'package:health_flare/features/onboarding/widgets/onboarding_profile_zone.dart';
@@ -24,10 +23,9 @@ class OnboardingScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return const Scaffold(
-      backgroundColor: AppColors.background,
-      body: _OnboardingBody(),
-    );
+    // No explicit backgroundColor — inherit ThemeData.scaffoldBackgroundColor
+    // so the screen tracks light/dark mode instead of staying pinned light.
+    return const Scaffold(body: _OnboardingBody());
   }
 }
 
