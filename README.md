@@ -173,3 +173,9 @@ Health Flare makes **zero** outbound network requests at runtime. Before opening
 ### Feature specifications
 
 All features are specced as Gherkin `.feature` files in `docs/features/`. Read the relevant spec before implementing or changing behaviour, and update it if the behaviour changes.
+
+
+## Testing
+`flutter devices` to list all available devices
+`flutter run -d E3FF8950-C173-4385-9753-887F2069844F` to run on this device ID
+`xcrun simctl list devices` to get xcode simulator devices
