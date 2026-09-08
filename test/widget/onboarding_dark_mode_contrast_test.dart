@@ -72,7 +72,9 @@ void _expectReadableText(WidgetTester tester, Finder rootFinder) {
     if (background == null) continue;
 
     final fontSize = text.style?.fontSize ?? 14;
-    final isBold = (text.style?.fontWeight?.value ?? FontWeight.w400.value) >= FontWeight.w700.value;
+    final isBold =
+        (text.style?.fontWeight?.value ?? FontWeight.w400.value) >=
+        FontWeight.w700.value;
     final isLargeText = fontSize >= 18 || (fontSize >= 14 && isBold);
     final minRatio = isLargeText ? 3.0 : 4.5;
 
@@ -114,34 +116,35 @@ void main() {
       _expectReadableText(tester, find.byType(OnboardingPrivacyZone));
     });
 
-    testWidgets('Profile-creation zone (Zone 3) text is readable in dark mode', (
-      tester,
-    ) async {
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            conditionCatalogProvider.overrideWith(_FakeConditionCatalog.new),
-          ],
-          child: MaterialApp(
-            theme: AppTheme.dark,
-            home: Scaffold(
-              body: SingleChildScrollView(
-                child: OnboardingProfileZone(
-                  formKey: GlobalKey<FormState>(),
-                  nameController: TextEditingController(),
-                  nameFocusNode: FocusNode(),
-                  isSubmitting: false,
-                  onSubmit: (dateOfBirth, avatarPath, conditions) {},
+    testWidgets(
+      'Profile-creation zone (Zone 3) text is readable in dark mode',
+      (tester) async {
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              conditionCatalogProvider.overrideWith(_FakeConditionCatalog.new),
+            ],
+            child: MaterialApp(
+              theme: AppTheme.dark,
+              home: Scaffold(
+                body: SingleChildScrollView(
+                  child: OnboardingProfileZone(
+                    formKey: GlobalKey<FormState>(),
+                    nameController: TextEditingController(),
+                    nameFocusNode: FocusNode(),
+                    isSubmitting: false,
+                    onSubmit: (dateOfBirth, avatarPath, conditions) {},
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-      );
-      await tester.pump();
+        );
+        await tester.pump();
 
-      _expectReadableText(tester, find.byType(OnboardingProfileZone));
-    });
+        _expectReadableText(tester, find.byType(OnboardingProfileZone));
+      },
+    );
 
     testWidgets('Weather opt-in sheet text is readable in dark mode', (
       tester,
@@ -149,9 +152,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.dark,
-          home: Scaffold(
-            body: WeatherTrackingOptInSheet(onResult: (_) {}),
-          ),
+          home: Scaffold(body: WeatherTrackingOptInSheet(onResult: (_) {})),
         ),
       );
       await tester.pump();
