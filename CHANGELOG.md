@@ -51,7 +51,7 @@ Subsection meanings (from Keep a Changelog):
 - _Nothing yet._
 
 ### Fixed
-- _Nothing yet._
+- **iOS App Store Connect warnings:** raised the minimum iOS version to 15.0 (Apple requires 15.0+ for new uploads starting Spring 2027) and added the `NSLocationAlwaysAndWhenInUseUsageDescription` purpose string alongside the existing when-in-use string, since the `geolocator` plugin's compiled binary references the always-authorization API even though the app only ever requests when-in-use access.
 
 ### Security
 - _Nothing yet._
