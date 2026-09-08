@@ -51,6 +51,26 @@ Subsection meanings (from Keep a Changelog):
 - _Nothing yet._
 
 ### Fixed
+- _Nothing yet._
+
+### Security
+- _Nothing yet._
+
+## [1.5.2] - 2026-09-08
+
+### Added
+- _Nothing yet._
+
+### Changed
+- _Nothing yet._
+
+### Deprecated
+- _Nothing yet._
+
+### Removed
+- _Nothing yet._
+
+### Fixed
 - **iOS App Store Connect warnings:** raised the minimum iOS version to 15.0 (Apple requires 15.0+ for new uploads starting Spring 2027) and added the `NSLocationAlwaysAndWhenInUseUsageDescription` purpose string alongside the existing when-in-use string, since the `geolocator` plugin's compiled binary references the always-authorization API even though the app only ever requests when-in-use access.
 
 ### Security
@@ -168,7 +188,8 @@ Subsection meanings (from Keep a Changelog):
 - Offline-first guarantee: zero outbound network requests at runtime, enforced
   by the `url-scan` CI check.
 
-[Unreleased]: https://git.ahosking.com/HealthFlare/app/compare/v1.5.1...HEAD
+[Unreleased]: https://git.ahosking.com/HealthFlare/app/compare/v1.5.2...HEAD
+[1.5.2]: https://git.ahosking.com/HealthFlare/app/compare/v1.5.1...v1.5.2
 [1.5.1]: https://git.ahosking.com/HealthFlare/app/compare/v1.5.0...v1.5.1
 [1.5.0]: https://git.ahosking.com/HealthFlare/app/compare/v1.3.0...v1.5.0
 [1.3.0]: https://git.ahosking.com/HealthFlare/app/compare/v1.2.0...v1.3.0
