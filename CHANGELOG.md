@@ -51,6 +51,26 @@ Subsection meanings (from Keep a Changelog):
 - _Nothing yet._
 
 ### Fixed
+- _Nothing yet._
+
+### Security
+- _Nothing yet._
+
+## [1.5.1] - 2026-09-08
+
+### Added
+- _Nothing yet._
+
+### Changed
+- _Nothing yet._
+
+### Deprecated
+- _Nothing yet._
+
+### Removed
+- _Nothing yet._
+
+### Fixed
 - **Dark mode — onboarding readability:** the privacy and profile-creation zones and the weather opt-in sheet used hardcoded light background colours (`AppColors.surfaceVariant`, `AppColors.surface`, `AppColors.paleSky`) while their text used theme-adaptive colours, so in dark mode the text rendered in a near-white shade against a background that stayed light — in the privacy zone this was the *same* colour as the background, making it fully invisible. Onboarding now uses `ColorScheme` tokens throughout so backgrounds track the active theme.
 
 ### Security
@@ -148,7 +168,8 @@ Subsection meanings (from Keep a Changelog):
 - Offline-first guarantee: zero outbound network requests at runtime, enforced
   by the `url-scan` CI check.
 
-[Unreleased]: https://git.ahosking.com/HealthFlare/app/compare/v1.5.0...HEAD
+[Unreleased]: https://git.ahosking.com/HealthFlare/app/compare/v1.5.1...HEAD
+[1.5.1]: https://git.ahosking.com/HealthFlare/app/compare/v1.5.0...v1.5.1
 [1.5.0]: https://git.ahosking.com/HealthFlare/app/compare/v1.3.0...v1.5.0
 [1.3.0]: https://git.ahosking.com/HealthFlare/app/compare/v1.2.0...v1.3.0
 [1.2.0]: https://git.ahosking.com/HealthFlare/app/compare/v1.1.0...v1.2.0
