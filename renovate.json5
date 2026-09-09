@@ -81,13 +81,19 @@
     // pluginManagement's includeBuild("$flutterSdkPath/packages/flutter_tools/gradle")
     // supplies it locally from the bundled Flutter SDK, and its version
     // tracks the Flutter SDK rather than an independent release train.
-    // Renovate's gradle manager doesn't know that and repeatedly fails
-    // trying to resolve it against the configured repositories (see the
+    // Renovate doesn't know that; since the plugin isn't in its registry of
+    // known Gradle plugins, it guesses the standard marker artifact
+    // coordinate (`<pluginId>:<pluginId>.gradle.plugin`) and repeatedly
+    // fails resolving *that* against the configured repositories (see the
     // "Package lookup failures" / "Dependency Lookup Warnings" repository
-    // problems on the dashboard) — disable lookups for it entirely.
+    // problems on the dashboard) — match on the marker coordinate, not the
+    // bare plugin id, to actually disable the lookup.
     {
       matchManagers: ['gradle'],
-      matchPackageNames: ['dev.flutter.flutter-plugin-loader'],
+      matchPackageNames: [
+        'dev.flutter.flutter-plugin-loader',
+        'dev.flutter.flutter-plugin-loader:dev.flutter.flutter-plugin-loader.gradle.plugin',
+      ],
       enabled: false,
     },
   ],
