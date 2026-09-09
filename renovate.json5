@@ -1,0 +1,106 @@
+{
+  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
+  extends: ['config:recommended'],
+
+  // This is a low-maintenance side project (see CLAUDE.md "Lightweight by
+  // Default") — batch updates into one weekly run instead of a steady drip
+  // of individual PRs.
+  schedule: ['before 6am on monday'],
+  timezone: 'UTC',
+
+  dependencyDashboard: true,
+  labels: ['dependencies'],
+
+  packageRules: [
+    // Runtime app dependencies (pubspec.yaml `dependencies:`) sit on top of
+    // platform channels — biometrics, secure storage, encrypted SQLite —
+    // where this repo has already hit real breakage from routine-looking
+    // bumps (see CLAUDE.md's biometric-gate notes). Never auto-merge these;
+    // always read the changelog first.
+    {
+      matchManagers: ['pub'],
+      matchDepTypes: ['dependencies'],
+      automerge: false,
+    },
+
+    // Dev-only tooling (lints, build_runner, test helpers): lower risk than
+    // runtime deps. Patch/minor can merge on their own once CI — analyze,
+    // format, the offline-URL scan, and the test suite — is green.
+    {
+      groupName: 'dev tooling (non-major)',
+      matchManagers: ['pub'],
+      matchDepTypes: ['dev_dependencies'],
+      matchUpdateTypes: ['patch', 'minor'],
+      automerge: true,
+      automergeType: 'pr',
+    },
+
+    // riverpod / flutter_riverpod / riverpod_annotation / riverpod_generator
+    // must move together (they span both dependencies: and
+    // dev_dependencies:, and a partial bump doesn't build — see the
+    // riverpod_generator 2.x -> 4.x migration in git history). Group into
+    // one PR; comes after the dev-tooling rule above so it overrides
+    // auto-merge for riverpod_generator specifically.
+    {
+      groupName: 'riverpod',
+      matchManagers: ['pub'],
+      matchPackageNames: [
+        'riverpod',
+        'flutter_riverpod',
+        'riverpod_annotation',
+        'riverpod_generator',
+        'riverpod_analyzer_utils',
+      ],
+      automerge: false,
+    },
+
+    // GitHub Actions patch/minor bumps (actions/checkout,
+    // subosito/flutter-action, etc.) don't touch app code and are low-risk.
+    {
+      groupName: 'github actions (non-major)',
+      matchManagers: ['github-actions'],
+      matchUpdateTypes: ['patch', 'minor'],
+      automerge: true,
+      automergeType: 'pr',
+    },
+
+    // Belt and suspenders: no major version bump, from any manager, ever
+    // auto-merges. This repo has had to migrate provider APIs, renamed
+    // AsyncValue members, and a Flutter framework deprecation
+    // (onReorder -> onReorderItem) from majors that looked routine going in.
+    {
+      matchManagers: ['pub', 'github-actions'],
+      matchUpdateTypes: ['major'],
+      automerge: false,
+      labels: ['dependencies', 'major-update'],
+    },
+
+    // android/settings.gradle.kts declares the standard `flutter create`
+    // boilerplate plugin `dev.flutter.flutter-plugin-loader` version
+    // "1.0.0". It isn't fetched from Maven/Gradle Plugin Portal at all —
+    // pluginManagement's includeBuild("$flutterSdkPath/packages/flutter_tools/gradle")
+    // supplies it locally from the bundled Flutter SDK, and its version
+    // tracks the Flutter SDK rather than an independent release train.
+    // Renovate's gradle manager doesn't know that and repeatedly fails
+    // trying to resolve it against the configured repositories (see the
+    // "Package lookup failures" / "Dependency Lookup Warnings" repository
+    // problems on the dashboard) — disable lookups for it entirely.
+    {
+      matchManagers: ['gradle'],
+      matchPackageNames: ['dev.flutter.flutter-plugin-loader'],
+      enabled: false,
+    },
+  ],
+
+  // Keeps pubspec.lock's transitive deps current even between direct
+  // version bumps in pubspec.yaml — exactly the kind of drift that let
+  // analyzer/build_runner fall out of sync with the Dart SDK before.
+  lockFileMaintenance: {
+    enabled: true,
+    schedule: ['before 6am on monday'],
+  },
+
+  vulnerabilityAlerts: {
+    labels: ['dependencies', 'security'],
+  },
+}
