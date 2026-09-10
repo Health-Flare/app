@@ -39,7 +39,7 @@ Subsection meanings (from Keep a Changelog):
 ## [Unreleased]
 
 ### Added
-- _Nothing yet._
+- Height as a loggable vital type, alongside the existing measurements.
 
 ### Changed
 - _Nothing yet._

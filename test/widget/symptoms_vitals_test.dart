@@ -489,6 +489,35 @@ void main() {
 
       expect(find.text('Taken after exercise'), findsOneWidget);
     });
+
+    testWidgets('vital type dropdown includes Height', (tester) async {
+      await tester.pumpWidget(_buildVitalForm());
+      await tester.pump();
+
+      await tester.tap(find.byKey(const Key('vital_type_dropdown')));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Height').last, findsOneWidget);
+    });
+
+    testWidgets('edit mode pre-fills height value and unit', (tester) async {
+      final entry = VitalEntry(
+        id: 1,
+        profileId: 1,
+        vitalType: VitalType.height,
+        value: 170,
+        unit: 'cm',
+        loggedAt: DateTime(2026, 2, 15, 8, 0),
+        createdAt: DateTime(2026, 2, 15, 8, 0),
+      );
+
+      await tester.pumpWidget(_buildVitalForm(entry: entry));
+      await tester.pump();
+
+      expect(find.text('Height'), findsOneWidget);
+      expect(find.text('170'), findsOneWidget);
+      expect(find.text('cm'), findsOneWidget);
+    });
   });
 
   // ---------------------------------------------------------------------------
