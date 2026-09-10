@@ -131,7 +131,7 @@ class _OnboardingPrivacyZoneState extends State<OnboardingPrivacyZone>
           // Expandable detail
           SizeTransition(
             sizeFactor: _expandAnimation,
-            axisAlignment: -1,
+            alignment: AlignmentDirectional.topCenter,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [const SizedBox(height: 20), _ExpandedPrivacyDetail()],
