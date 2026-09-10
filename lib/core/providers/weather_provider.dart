@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 
 import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/data/services/weather_service.dart';
