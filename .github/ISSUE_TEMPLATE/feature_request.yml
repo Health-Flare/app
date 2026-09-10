@@ -1,0 +1,34 @@
+name: Feature request
+description: Propose a new feature or behavior change
+labels: ["type:feature"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Health Flare follows a feature-file-first workflow — behavior is specified in
+        `docs/features/*.feature` before it's built. A good feature request sketches what
+        that spec would say.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: Who runs into this, and what do they do today instead?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+      description: Describe the feature. Gherkin-style scenarios are welcome but not required.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: constraints
+    attributes:
+      label: Fits the project's constraints
+      options:
+        - label: This does not require a network call, account, or cloud sync (the app is offline-first, with one documented exception for opt-in weather capture)
+        - label: This does not depend on a non-free/proprietary SDK

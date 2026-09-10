@@ -1,0 +1,58 @@
+name: Bug report
+description: Something in the app isn't working as expected
+labels: ["type:fix"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug. Please do **not** use this form for
+        security or privacy vulnerabilities — see `SECURITY.md` for how to report those
+        privately instead.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: A clear description of the bug, and what you expected instead.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Go to '...'
+        2. Log an entry with '...'
+        3. See error
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: App version
+      description: Settings → About, or `pubspec.yaml`'s version if building from source.
+      placeholder: "1.5.2"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      options:
+        - iOS
+        - Android
+        - macOS
+        - Windows
+        - Linux
+        - Web
+    validations:
+      required: true
+
+  - type: textarea
+    id: relevant-feature-file
+    attributes:
+      label: Related feature file (if known)
+      description: If this touches a documented behavior, which `docs/features/*.feature` scenario does it violate?
