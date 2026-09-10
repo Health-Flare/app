@@ -1,0 +1,45 @@
+name: Renovate
+
+# Self-hosted run of the Renovate CLI against this repo's Gitea instance.
+# There's no Renovate "app" for self-hosted Gitea the way there is for
+# GitHub — this workflow *is* the bot. renovate.json5 controls what it does
+# (schedule, grouping, automerge); this file controls when it runs.
+on:
+  schedule:
+    # Runs a few times before renovate.json5's "before 6am on monday" window
+    # closes, so a queued run still catches it even if the self-hosted
+    # runner (act_runner) happens to be offline at the top of the hour.
+    - cron: "0 3,5 * * 1"
+  workflow_dispatch:
+
+jobs:
+  renovate:
+    name: Run Renovate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install Renovate
+        run: npm install --global renovate
+
+      # ── Auth ─────────────────────────────────────────────────────────────────
+      # Requires a repo Actions secret RENOVATE_TOKEN: an access token for a
+      # dedicated Gitea bot account (e.g. renovate-bot) with write access to
+      # this repo. Generate it from that account's Settings > Applications
+      # with scopes: write:repository, write:issue, read:user.
+      #
+      # github.api_url resolves to this Gitea instance's API root
+      # (https://<instance>/api/v1) automatically, same as release.yaml.
+      - name: Run Renovate
+        env:
+          RENOVATE_PLATFORM: gitea
+          RENOVATE_ENDPOINT: ${{ github.api_url }}
+          RENOVATE_TOKEN: ${{ secrets.RENOVATE_TOKEN }}
+          RENOVATE_REPOSITORIES: ${{ github.repository }}
+          RENOVATE_GIT_AUTHOR: "Renovate Bot <renovate@ahosking.com>"
+          LOG_LEVEL: info
+        run: renovate
