@@ -268,22 +268,27 @@ class _OnboardingProfileZoneState extends ConsumerState<OnboardingProfileZone> {
                   border: Border.all(color: cs.outlineVariant),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: results
-                      .map(
-                        (c) => ListTile(
-                          dense: true,
-                          title: Text(
-                            c.name,
-                            style: tt.bodyMedium,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                child: Material(
+                  type: MaterialType.transparency,
+                  borderRadius: BorderRadius.circular(12),
+                  clipBehavior: Clip.antiAlias,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: results
+                        .map(
+                          (c) => ListTile(
+                            dense: true,
+                            title: Text(
+                              c.name,
+                              style: tt.bodyMedium,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            onTap: () => _selectCondition(c),
                           ),
-                          onTap: () => _selectCondition(c),
-                        ),
-                      )
-                      .toList(),
+                        )
+                        .toList(),
+                  ),
                 ),
               ),
 
