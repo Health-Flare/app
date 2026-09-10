@@ -14,7 +14,7 @@ permissions:
 
 # Flutter version pinned here — update in one place when upgrading.
 env:
-  FLUTTER_VERSION: "3.41.1"
+  FLUTTER_VERSION: "3.47.2"
 
 jobs:
   # ── 1. Dependencies ───────────────────────────────────────────────────────
