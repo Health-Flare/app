@@ -87,7 +87,7 @@ const JournalEntryIsarSchema = CollectionSchema(
   getId: _journalEntryIsarGetId,
   getLinks: _journalEntryIsarGetLinks,
   attach: _journalEntryIsarAttach,
-  version: '3.3.0',
+  version: '3.3.2',
 );
 
 int _journalEntryIsarEstimateSize(

@@ -91,7 +91,7 @@ const UserConditionIsarSchema = CollectionSchema(
   getId: _userConditionIsarGetId,
   getLinks: _userConditionIsarGetLinks,
   attach: _userConditionIsarAttach,
-  version: '3.3.0',
+  version: '3.3.2',
 );
 
 int _userConditionIsarEstimateSize(

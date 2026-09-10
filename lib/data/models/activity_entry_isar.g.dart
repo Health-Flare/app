@@ -108,7 +108,7 @@ const ActivityEntryIsarSchema = CollectionSchema(
   getId: _activityEntryIsarGetId,
   getLinks: _activityEntryIsarGetLinks,
   attach: _activityEntryIsarAttach,
-  version: '3.3.0',
+  version: '3.3.2',
 );
 
 int _activityEntryIsarEstimateSize(

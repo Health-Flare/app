@@ -104,7 +104,7 @@ const DoseLogIsarSchema = CollectionSchema(
   getId: _doseLogIsarGetId,
   getLinks: _doseLogIsarGetLinks,
   attach: _doseLogIsarAttach,
-  version: '3.3.0',
+  version: '3.3.2',
 );
 
 int _doseLogIsarEstimateSize(

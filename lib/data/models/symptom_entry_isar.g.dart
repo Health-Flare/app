@@ -95,7 +95,7 @@ const SymptomEntryIsarSchema = CollectionSchema(
   getId: _symptomEntryIsarGetId,
   getLinks: _symptomEntryIsarGetLinks,
   attach: _symptomEntryIsarAttach,
-  version: '3.3.0',
+  version: '3.3.2',
 );
 
 int _symptomEntryIsarEstimateSize(

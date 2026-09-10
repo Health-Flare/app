@@ -98,7 +98,7 @@ const DailyCheckinIsarSchema = CollectionSchema(
   getId: _dailyCheckinIsarGetId,
   getLinks: _dailyCheckinIsarGetLinks,
   attach: _dailyCheckinIsarAttach,
-  version: '3.3.0',
+  version: '3.3.2',
 );
 
 int _dailyCheckinIsarEstimateSize(
