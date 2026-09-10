@@ -77,6 +77,7 @@ Feature: Symptom and Vitals Logging
       | vital_type          | value  | unit  |
       | Heart Rate          | 72     | BPM   |
       | Weight              | 68     | kg    |
+      | Height              | 170    | cm    |
       | Temperature         | 37.2   | °C    |
       | Oxygen Saturation   | 98     | %     |
       | Respiratory Rate    | 16     | br/min|
