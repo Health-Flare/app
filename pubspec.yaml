@@ -19,7 +19,7 @@ dependencies:
   riverpod_annotation: ^2.6.1
 
   # Routing
-  go_router: ^14.8.1
+  go_router: ^18.0.1
 
   # Local database
   isar_community: ^3.3.2
