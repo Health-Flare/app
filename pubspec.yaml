@@ -80,6 +80,11 @@ flutter_launcher_icons:
 flutter:
   uses-material-design: true
 
+  assets:
+    - assets/fonts/DMSans-OFL.txt
+    - assets/fonts/DMMono-OFL.txt
+    - assets/fonts/Fraunces-OFL.txt
+
   fonts:
     - family: Fraunces
       fonts:

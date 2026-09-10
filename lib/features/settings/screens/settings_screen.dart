@@ -550,6 +550,29 @@ class _AboutTiles extends ConsumerWidget {
             subtitle: Text('v$version'),
           ),
         ),
+
+        // License
+        const ListTile(
+          leading: Icon(Icons.gavel_outlined),
+          title: Text('License'),
+          subtitle: Text(
+            'Health Flare is free software, licensed under the GNU GPL-3.0',
+          ),
+        ),
+
+        // Open source licenses
+        ListTile(
+          leading: const Icon(Icons.description_outlined),
+          title: const Text('Open source licenses'),
+          subtitle: const Text(
+            'Third-party packages and fonts used by this app',
+          ),
+          onTap: () => showLicensePage(
+            context: context,
+            applicationName: 'Health Flare',
+            applicationLegalese: '© 2026 Health Flare — GNU GPL-3.0',
+          ),
+        ),
       ],
     );
   }

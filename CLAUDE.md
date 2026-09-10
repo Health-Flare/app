@@ -1,6 +1,6 @@
 # Claude Code Project Guide — Health Flare
 
-Health Flare is a chronic illness tracking companion app for iOS and Android. It's built with Flutter, uses Riverpod for state management, Isar Community for local storage, and follows a feature-first architecture. The app is **fully offline** — no network calls, no cloud sync, all data stays on device.
+Health Flare is a chronic illness tracking companion app for iOS and Android. It's built with Flutter, uses Riverpod for state management, Isar Community for local storage, and follows a feature-first architecture. The app is **offline-first** — no accounts, no cloud sync, all data stays on device. The one exception is opt-in weather capture, which sends coordinates to the Open-Meteo API to fetch conditions at the time of a log entry (coordinates are never stored; only the resulting weather summary is saved).
 
 ## Quick Start Commands
 
@@ -201,7 +201,7 @@ flutter test test/widget/onboarding_screen_test.dart
 
 1. `flutter analyze` — zero warnings/errors
 2. `dart format --set-exit-if-changed .` — code is formatted
-3. No network URLs in Dart files (offline-only app) — **exception:** `healthflare.org` links are permitted (first-party domain, opened by the OS browser on explicit user tap, never called by app code). Add any new `healthflare.org` URLs to `.url-scan-ignore` with a justification comment.
+3. No network URLs in Dart files (offline-first app) — **exceptions (see `.url-scan-ignore`):** `healthflare.org` links (first-party domain, opened by the OS browser on explicit user tap, never called by app code) and `api.open-meteo.com` (the opt-in weather capture call — no API key or personal data sent). Add any new URL exception to `.url-scan-ignore` with a justification comment.
 4. No `google_fonts` package (fonts are bundled locally)
 
 ### Conventions
@@ -242,10 +242,12 @@ flutter test test/widget/onboarding_screen_test.dart
 
 ### Offline-First
 
-- No network permissions
+- No accounts, no cloud sync
 - No analytics or telemetry
 - All data stored in Isar on device
 - Export/share only when user explicitly requests
+- One narrow exception: opt-in weather capture calls the Open-Meteo API (coordinates sent,
+  never stored; see the README's Privacy section and `.url-scan-ignore`)
 
 ### Multi-Profile Support
 

@@ -1,4 +1,7 @@
+import 'package:flutter/foundation.dart'
+    show LicenseRegistry, LicenseEntryWithLineBreaks;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:health_flare/core/providers/database_provider.dart';
@@ -10,6 +13,8 @@ import 'package:health_flare/data/database/app_database.dart';
 void main() async {
   // Required before any async work that touches Flutter bindings.
   WidgetsFlutterBinding.ensureInitialized();
+
+  _registerBundledFontLicenses();
 
   // Open the database and run migrations. Completes before any UI is shown.
   final isar = await IsarService.open();
@@ -34,6 +39,25 @@ void main() async {
       child: const HealthFlareApp(),
     ),
   );
+}
+
+/// Registers the SIL OFL license text for the bundled font families
+/// (DM Sans, DM Mono, Fraunces) so they appear in the licenses page shown
+/// by `showLicensePage`, alongside the licenses Flutter collects
+/// automatically from pub dependencies.
+void _registerBundledFontLicenses() {
+  LicenseRegistry.addLicense(() async* {
+    final dmSans = await rootBundle.loadString('assets/fonts/DMSans-OFL.txt');
+    yield LicenseEntryWithLineBreaks(['DM Sans'], dmSans);
+
+    final dmMono = await rootBundle.loadString('assets/fonts/DMMono-OFL.txt');
+    yield LicenseEntryWithLineBreaks(['DM Mono'], dmMono);
+
+    final fraunces = await rootBundle.loadString(
+      'assets/fonts/Fraunces-OFL.txt',
+    );
+    yield LicenseEntryWithLineBreaks(['Fraunces'], fraunces);
+  });
 }
 
 /// Root application widget.
