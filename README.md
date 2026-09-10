@@ -31,7 +31,12 @@ Reports can be exported as PDF or CSV to share with a doctor or specialist.
 - **No cloud sync, no remote storage.** All data is written to the local device only.
 - **Data only leaves your device when you explicitly export or share it.**
 - **No analytics, no telemetry, no third-party SDKs that make network calls.**
-- All fonts are bundled as local assets — the app makes zero outbound network requests at runtime.
+- All fonts are bundled as local assets, so nothing is fetched over the network for UI or typography.
+- **The one exception:** if you enable weather capture, your coordinates are sent to the
+  [Open-Meteo](https://open-meteo.com) API to fetch current conditions at the time of the log
+  entry. No API key or personal identifier is sent, the coordinates themselves are never stored,
+  and only the resulting weather summary is saved on-device. This is the only network call the
+  app makes, and it never happens unless you turn the feature on.
 
 ---
 
@@ -164,10 +169,14 @@ ci: add weekly dependency audit job
 
 ### Offline-first rule
 
-Health Flare makes **zero** outbound network requests at runtime. Before opening a PR, ensure:
+Health Flare makes no outbound network requests at runtime, with one explicit, opt-in exception:
+weather capture calls the Open-Meteo API to fetch conditions at the time of a log entry (see
+`.url-scan-ignore` for the allowed domains and justification). There is no other network path —
+no accounts, no sync, no analytics. Before opening a PR, ensure:
 
-- No `http://` or `https://` URLs appear in `lib/` or `test/` outside of comments
-- No network-dependent packages (`http`, `dio`, `firebase_*`, `google_fonts`, etc.) are imported
+- No new `http://` or `https://` URLs appear in `lib/` or `test/` outside of comments, unless
+  added to `.url-scan-ignore` with a documented justification
+- No network-dependent packages (`dio`, `firebase_*`, `google_fonts`, etc.) are imported
 - Run `bash scripts/check_urls.sh` to verify — this is also enforced by CI
 
 ### Feature specifications
@@ -179,3 +188,22 @@ All features are specced as Gherkin `.feature` files in `docs/features/`. Read t
 `flutter devices` to list all available devices
 `flutter run -d E3FF8950-C173-4385-9753-887F2069844F` to run on this device ID
 `xcrun simctl list devices` to get xcode simulator devices
+
+---
+
+## License
+
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE.md)
+
+Health Flare is free software, licensed under the
+[GNU General Public License v3.0](LICENSE.md) (or, at your option, any later version).
+Forks and redistributions are welcome under the same terms — see `SECURITY.md`'s
+"Hardening notes for forks and self-builders" for what to change before you ship your own build.
+
+Third-party package and font licenses are listed in [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md)
+and are also viewable in-app under **Settings → Open source licenses**.
+
+The "Health Flare" name and logo are trademarks of Automated Bytes Incorporated and are not
+covered by the GPL-3.0 grant — see [`TRADEMARKS.md`](TRADEMARKS.md). This does not restrict your
+rights to the source code in any way; it only means a fork should use its own name and icon if it
+isn't an official Health Flare build.
