@@ -103,7 +103,7 @@ const MealEntryIsarSchema = CollectionSchema(
   getId: _mealEntryIsarGetId,
   getLinks: _mealEntryIsarGetLinks,
   attach: _mealEntryIsarAttach,
-  version: '3.3.0',
+  version: '3.3.2',
 );
 
 int _mealEntryIsarEstimateSize(

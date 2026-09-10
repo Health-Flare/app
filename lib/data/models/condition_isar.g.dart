@@ -45,7 +45,7 @@ const ConditionIsarSchema = CollectionSchema(
   getId: _conditionIsarGetId,
   getLinks: _conditionIsarGetLinks,
   attach: _conditionIsarAttach,
-  version: '3.3.0',
+  version: '3.3.2',
 );
 
 int _conditionIsarEstimateSize(

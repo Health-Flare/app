@@ -83,7 +83,7 @@ const SleepEntryIsarSchema = CollectionSchema(
   getId: _sleepEntryIsarGetId,
   getLinks: _sleepEntryIsarGetLinks,
   attach: _sleepEntryIsarAttach,
-  version: '3.3.0',
+  version: '3.3.2',
 );
 
 int _sleepEntryIsarEstimateSize(

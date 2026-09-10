@@ -103,7 +103,7 @@ const AppointmentIsarSchema = CollectionSchema(
   getId: _appointmentIsarGetId,
   getLinks: _appointmentIsarGetLinks,
   attach: _appointmentIsarAttach,
-  version: '3.3.0',
+  version: '3.3.2',
 );
 
 int _appointmentIsarEstimateSize(

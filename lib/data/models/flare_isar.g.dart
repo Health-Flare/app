@@ -97,7 +97,7 @@ const FlareIsarSchema = CollectionSchema(
   getId: _flareIsarGetId,
   getLinks: _flareIsarGetLinks,
   attach: _flareIsarAttach,
-  version: '3.3.0',
+  version: '3.3.2',
 );
 
 int _flareIsarEstimateSize(

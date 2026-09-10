@@ -85,7 +85,7 @@ const VitalEntryIsarSchema = CollectionSchema(
   getId: _vitalEntryIsarGetId,
   getLinks: _vitalEntryIsarGetLinks,
   attach: _vitalEntryIsarAttach,
-  version: '3.3.0',
+  version: '3.3.2',
 );
 
 int _vitalEntryIsarEstimateSize(

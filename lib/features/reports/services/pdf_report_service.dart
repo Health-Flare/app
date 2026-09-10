@@ -62,7 +62,10 @@ abstract final class PdfReportService {
           children: [
             pw.Text(
               'Health Report — ${data.profileName}',
-              style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold),
+              style: const pw.TextStyle(
+                fontSize: 16,
+                fontWeight: pw.FontWeight.bold,
+              ),
             ),
             pw.Text(
               'Generated ${_hdrFmt.format(DateTime.now())}',
@@ -86,7 +89,7 @@ abstract final class PdfReportService {
     padding: const pw.EdgeInsets.only(top: 12, bottom: 4),
     child: pw.Text(
       title,
-      style: pw.TextStyle(fontSize: 13, fontWeight: pw.FontWeight.bold),
+      style: const pw.TextStyle(fontSize: 13, fontWeight: pw.FontWeight.bold),
     ),
   );
 

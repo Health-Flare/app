@@ -108,7 +108,7 @@ const MedicationIsarSchema = CollectionSchema(
   getId: _medicationIsarGetId,
   getLinks: _medicationIsarGetLinks,
   attach: _medicationIsarAttach,
-  version: '3.3.0',
+  version: '3.3.2',
 );
 
 int _medicationIsarEstimateSize(
