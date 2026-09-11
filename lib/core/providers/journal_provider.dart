@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:isar_community/isar.dart';
 
 import 'package:health_flare/data/models/journal_entry_isar.dart';
