@@ -142,7 +142,7 @@ jobs:
       - name: Build debug APK
         run: flutter build apk --debug
       - name: Archive APK
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: app-debug.apk
           path: build/app/outputs/flutter-apk/app-debug.apk
@@ -169,7 +169,7 @@ jobs:
           cd build/macos/Build/Products/Debug
           zip -r healthflare-macos-debug.zip "Health Flare.app"
       - name: Archive macOS app
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: healthflare-macos-debug.zip
           path: build/macos/Build/Products/Debug/healthflare-macos-debug.zip
@@ -225,7 +225,7 @@ jobs:
             -DestinationPath healthflare-windows-debug.zip
         shell: pwsh
       - name: Upload Windows artifact
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: healthflare-windows-debug.zip
           path: healthflare-windows-debug.zip
