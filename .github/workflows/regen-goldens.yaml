@@ -30,7 +30,7 @@ jobs:
       - name: Update goldens
         run: flutter test --update-goldens test/golden
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: goldens
           path: test/goldens/*.png
