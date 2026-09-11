@@ -76,9 +76,9 @@ class BackupNotifier extends Notifier<BackupResult> {
     try {
       final isar = ref.read(isarProvider);
       final backupPath = await BackupService.export(isar);
-      await Share.shareXFiles([
-        XFile(backupPath),
-      ], subject: 'Health Flare backup');
+      await SharePlus.instance.share(
+        ShareParams(files: [XFile(backupPath)], subject: 'Health Flare backup'),
+      );
       state = const BackupExportDone();
     } catch (e) {
       state = BackupError('Export failed: $e');
@@ -94,18 +94,14 @@ class BackupNotifier extends Notifier<BackupResult> {
     state = const BackupInProgress();
 
     try {
-      final result = await FilePicker.platform.pickFiles(
-        type: FileType.any,
-        withData: false,
-        withReadStream: false,
-      );
+      final result = await FilePicker.pickFile(type: FileType.any);
 
-      if (result == null || result.files.isEmpty) {
+      if (result == null) {
         state = const BackupCancelled();
         return false;
       }
 
-      final path = result.files.single.path;
+      final path = result.path;
       if (path == null) {
         state = const BackupError('Could not read the selected file.');
         return false;
@@ -127,18 +123,14 @@ class BackupNotifier extends Notifier<BackupResult> {
     state = const BackupInProgress();
 
     try {
-      final result = await FilePicker.platform.pickFiles(
-        type: FileType.any,
-        withData: false,
-        withReadStream: false,
-      );
+      final result = await FilePicker.pickFile(type: FileType.any);
 
-      if (result == null || result.files.isEmpty) {
+      if (result == null) {
         state = const BackupCancelled();
         return;
       }
 
-      final path = result.files.single.path;
+      final path = result.path;
       if (path == null) {
         state = const BackupError('Could not read the selected file.');
         return;
@@ -159,18 +151,14 @@ class BackupNotifier extends Notifier<BackupResult> {
     state = const BackupInProgress();
 
     try {
-      final result = await FilePicker.platform.pickFiles(
-        type: FileType.any,
-        withData: false,
-        withReadStream: false,
-      );
+      final result = await FilePicker.pickFile(type: FileType.any);
 
-      if (result == null || result.files.isEmpty) {
+      if (result == null) {
         state = const BackupCancelled();
         return;
       }
 
-      final path = result.files.single.path;
+      final path = result.path;
       if (path == null) {
         state = const BackupError('Could not read the selected file.');
         return;

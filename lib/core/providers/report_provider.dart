@@ -63,16 +63,22 @@ class _ReportGenerator {
         final bytes = await PdfReportService.generate(data);
         final file = File('${dir.path}/${safeName}_$dateStr.pdf');
         await file.writeAsBytes(bytes);
-        await Share.shareXFiles([
-          XFile(file.path, mimeType: 'application/pdf'),
-        ], subject: 'Health report — ${profile.name}');
+        await SharePlus.instance.share(
+          ShareParams(
+            files: [XFile(file.path, mimeType: 'application/pdf')],
+            subject: 'Health report — ${profile.name}',
+          ),
+        );
       } else {
         final csv = CsvReportService.generate(data);
         final file = File('${dir.path}/${safeName}_$dateStr.csv');
         await file.writeAsString(csv);
-        await Share.shareXFiles([
-          XFile(file.path, mimeType: 'text/csv'),
-        ], subject: 'Health data — ${profile.name}');
+        await SharePlus.instance.share(
+          ShareParams(
+            files: [XFile(file.path, mimeType: 'text/csv')],
+            subject: 'Health data — ${profile.name}',
+          ),
+        );
       }
 
       return null;
