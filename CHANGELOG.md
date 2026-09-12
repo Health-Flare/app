@@ -39,6 +39,26 @@ Subsection meanings (from Keep a Changelog):
 ## [Unreleased]
 
 ### Added
+- _Nothing yet._
+
+### Changed
+- _Nothing yet._
+
+### Deprecated
+- _Nothing yet._
+
+### Removed
+- _Nothing yet._
+
+### Fixed
+- _Nothing yet._
+
+### Security
+- _Nothing yet._
+
+## [1.6.0] - 2026-09-12
+
+### Added
 - Height as a loggable vital type, alongside the existing measurements.
 
 ### Changed
@@ -188,7 +208,8 @@ Subsection meanings (from Keep a Changelog):
 - Offline-first guarantee: zero outbound network requests at runtime, enforced
   by the `url-scan` CI check.
 
-[Unreleased]: https://git.ahosking.com/HealthFlare/app/compare/v1.5.2...HEAD
+[Unreleased]: https://git.ahosking.com/HealthFlare/app/compare/v1.6.0...HEAD
+[1.6.0]: https://git.ahosking.com/HealthFlare/app/compare/v1.5.2...v1.6.0
 [1.5.2]: https://git.ahosking.com/HealthFlare/app/compare/v1.5.1...v1.5.2
 [1.5.1]: https://git.ahosking.com/HealthFlare/app/compare/v1.5.0...v1.5.1
 [1.5.0]: https://git.ahosking.com/HealthFlare/app/compare/v1.3.0...v1.5.0
