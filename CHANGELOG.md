@@ -42,6 +42,31 @@ Subsection meanings (from Keep a Changelog):
 - _Nothing yet._
 
 ### Changed
+- _Nothing yet._
+
+### Deprecated
+- _Nothing yet._
+
+### Removed
+- _Nothing yet._
+
+### Fixed
+- _Nothing yet._
+
+### Security
+- _Nothing yet._
+
+## [1.7.0] - 2026-09-13
+
+### Added
+- **Guided onboarding redesign** — replaces the single long-scroll onboarding
+  screen with a 4-step flow (Welcome, What you can track, Your privacy,
+  Create profile) sharing one minimal progress-dot header. The first three
+  steps can be skipped straight to the mandatory Create profile step. The
+  weather opt-in and first-log prompts are now full-screen steps in the same
+  style, instead of one-off modal bottom sheets.
+
+### Changed
 - Quick log now recognises short vital readings (e.g. "74kg", "144cm",
   "4'8"") as a Vital entry without needing extra words of context.
 
@@ -54,6 +79,9 @@ Subsection meanings (from Keep a Changelog):
 ### Fixed
 - Quick log now detects height (in cm, or feet and inches) as a vital
   measurement — previously it wasn't recognised at all.
+- Onboarding: fixed overflow and off-screen tap targets on the redesigned
+  first-log and feature-highlight steps, and fixed low-contrast chip labels
+  on the "what you can track" step.
 
 ### Security
 - _Nothing yet._
@@ -210,8 +238,9 @@ Subsection meanings (from Keep a Changelog):
 - Offline-first guarantee: zero outbound network requests at runtime, enforced
   by the `url-scan` CI check.
 
-[Unreleased]: https://git.ahosking.com/HealthFlare/app/compare/v1.6.0...HEAD
-[1.6.0]: https://git.ahosking.com/HealthFlare/app/compare/v1.5.2...v1.6.0
+[Unreleased]: https://github.com/Health-Flare/app/compare/v1.7.0...HEAD
+[1.7.0]: https://github.com/Health-Flare/app/compare/v1.6.0...v1.7.0
+[1.6.0]: https://github.com/Health-Flare/app/compare/v1.5.2...v1.6.0
 [1.5.2]: https://git.ahosking.com/HealthFlare/app/compare/v1.5.1...v1.5.2
 [1.5.1]: https://git.ahosking.com/HealthFlare/app/compare/v1.5.0...v1.5.1
 [1.5.0]: https://git.ahosking.com/HealthFlare/app/compare/v1.3.0...v1.5.0
