@@ -70,7 +70,10 @@ class OnboardingFeaturesZone extends StatelessWidget {
                 .map(
                   (h) => Chip(
                     avatar: Icon(h.icon, size: 18, color: cs.primary),
-                    label: Text(h.label),
+                    label: Text(
+                      h.label,
+                      style: TextStyle(color: cs.onSurfaceVariant),
+                    ),
                     backgroundColor: cs.surfaceContainerHighest,
                     side: BorderSide.none,
                   ),
