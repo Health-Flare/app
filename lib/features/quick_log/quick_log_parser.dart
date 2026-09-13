@@ -110,7 +110,35 @@ abstract final class QuickLogParser {
       );
     }
 
+    final heightImperial = _heightFeetInches(lower);
+    if (heightImperial != null) return heightImperial;
+
+    final heightCm = _number(lower, r'cm');
+    if (heightCm != null && heightCm >= 30 && heightCm <= 250) {
+      return ParsedVital(
+        vitalType: VitalType.height,
+        value: heightCm,
+        unit: 'cm',
+      );
+    }
+
     return null;
+  }
+
+  /// Height written as feet+inches, e.g. "4'8"", "4'8", or "4 ft 8 in".
+  static ParsedVital? _heightFeetInches(String lower) {
+    final match = RegExp(
+      r'''(\d{1,2})\s*(?:'|ft\b|feet\b)\s*(\d{1,2})\s*(?:"|in\b|inches?\b)?''',
+    ).firstMatch(lower);
+    if (match == null) return null;
+    final feet = double.parse(match.group(1)!);
+    final inches = double.parse(match.group(2)!);
+    if (feet < 1 || feet > 8 || inches < 0 || inches > 11) return null;
+    return ParsedVital(
+      vitalType: VitalType.height,
+      value: feet * 12 + inches,
+      unit: 'in',
+    );
   }
 
   /// Extracts a sleep duration ("slept 7 hours", "6.5 hrs"), or null.
