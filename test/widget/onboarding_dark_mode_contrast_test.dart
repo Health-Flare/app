@@ -108,7 +108,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.dark,
-          home: const Scaffold(body: OnboardingPrivacyZone()),
+          home: Scaffold(body: OnboardingPrivacyZone(onNext: () {})),
         ),
       );
       await tester.pump();
