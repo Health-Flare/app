@@ -140,7 +140,9 @@ void main() {
     await _pumpAtPhoneSize(
       tester,
       _harness(
-        const Scaffold(body: FirstLogPrompt(profileName: 'Ethan')),
+        Scaffold(
+          body: FirstLogPrompt(profileName: 'Ethan', onFinished: () {}),
+        ),
         overrides: _profileOverrides,
       ),
     );

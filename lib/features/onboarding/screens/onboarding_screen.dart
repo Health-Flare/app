@@ -4,20 +4,25 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:health_flare/core/providers/condition_provider.dart';
 import 'package:health_flare/core/providers/onboarding_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
+import 'package:health_flare/features/onboarding/widgets/onboarding_features_zone.dart';
 import 'package:health_flare/features/onboarding/widgets/onboarding_welcome_zone.dart';
 import 'package:health_flare/features/onboarding/widgets/onboarding_privacy_zone.dart';
 import 'package:health_flare/features/onboarding/widgets/onboarding_profile_zone.dart';
+import 'package:health_flare/features/shared/widgets/guided_step_header.dart';
 import 'package:health_flare/models/condition.dart';
 
-/// Onboarding screen — shown exactly once on first launch.
+/// Onboarding — shown exactly once on first launch, as a short guided flow.
 ///
-/// Three zones on a single scrollable canvas:
-///   Zone 1 — Welcome & purpose
-///   Zone 2 — Privacy & data promise (with expandable detail)
-///   Zone 3 — Profile creation form (inline, no navigation away)
+/// Four steps on a shared [PageView]:
+///   1. Welcome
+///   2. What you can track (feature highlights)
+///   3. Your privacy
+///   4. Create profile (mandatory — the only step that cannot be skipped)
 ///
-/// The screen cannot be dismissed or skipped. The CTA button is disabled
-/// until a valid profile name is entered.
+/// Steps 1-3 can be skipped straight to profile creation via the header's
+/// "Skip" action, since a profile is the only thing actually required to
+/// use the app. The CTA on step 4 is disabled until a valid profile name is
+/// entered.
 class OnboardingScreen extends ConsumerWidget {
   const OnboardingScreen({super.key});
 
@@ -37,31 +42,41 @@ class _OnboardingBody extends ConsumerStatefulWidget {
 }
 
 class _OnboardingBodyState extends ConsumerState<_OnboardingBody> {
+  static const _stepCount = 4;
+  static const _stepTitles = [
+    'Welcome',
+    'What you can track',
+    'Your privacy',
+    'Create profile',
+  ];
+
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
-  final _scrollController = ScrollController();
   final _nameFocusNode = FocusNode();
+  final _pageController = PageController();
 
+  int _index = 0;
   bool _isSubmitting = false;
-
-  @override
-  void initState() {
-    super.initState();
-    // Ensure the screen always starts at the very top, even on devices where
-    // the system tries to scroll to a focused field during the first frame.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      _scrollController.jumpTo(0);
-    });
-  }
 
   @override
   void dispose() {
     _nameController.dispose();
-    _scrollController.dispose();
     _nameFocusNode.dispose();
+    _pageController.dispose();
     super.dispose();
   }
+
+  void _goTo(int index) {
+    _pageController.animateToPage(
+      index,
+      duration: const Duration(milliseconds: 280),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  void _next() => _goTo(_index + 1);
+  void _back() => _goTo(_index - 1);
+  void _skipToProfile() => _goTo(_stepCount - 1);
 
   Future<void> _submit(
     DateTime? dateOfBirth,
@@ -99,34 +114,48 @@ class _OnboardingBodyState extends ConsumerState<_OnboardingBody> {
     // needed, but kept for call-site clarity.
     ref.read(onboardingProvider.notifier).markComplete();
 
-    // Weather opt-in and first-log prompt are shown on the Dashboard once
-    // the router navigates there automatically (onboardingProvider → false).
+    // The post-setup mini-flow (weather opt-in, first-log prompt) is shown
+    // from the Dashboard once the router navigates there automatically
+    // (onboardingProvider → false).
   }
 
   @override
   Widget build(BuildContext context) {
-    return CustomScrollView(
-      controller: _scrollController,
-      slivers: [
-        // Zone 1 — Welcome
-        const SliverToBoxAdapter(child: OnboardingWelcomeZone()),
-
-        // Zone 2 — Privacy
-        const SliverToBoxAdapter(child: OnboardingPrivacyZone()),
-
-        // Zone 3 — Profile creation
-        SliverToBoxAdapter(
-          child: OnboardingProfileZone(
-            formKey: _formKey,
-            nameController: _nameController,
-            nameFocusNode: _nameFocusNode,
-            isSubmitting: _isSubmitting,
-            onSubmit: _submit,
+    return Column(
+      children: [
+        GuidedStepHeader(
+          total: _stepCount,
+          currentIndex: _index,
+          stepTitle: _stepTitles[_index],
+          onBack: _index > 0 ? _back : null,
+          onSkip: _index < _stepCount - 1 ? _skipToProfile : null,
+        ),
+        Expanded(
+          child: PageView(
+            controller: _pageController,
+            onPageChanged: (i) => setState(() => _index = i),
+            children: [
+              SingleChildScrollView(
+                child: OnboardingWelcomeZone(onNext: _next),
+              ),
+              SingleChildScrollView(
+                child: OnboardingFeaturesZone(onNext: _next),
+              ),
+              SingleChildScrollView(
+                child: OnboardingPrivacyZone(onNext: _next),
+              ),
+              SingleChildScrollView(
+                child: OnboardingProfileZone(
+                  formKey: _formKey,
+                  nameController: _nameController,
+                  nameFocusNode: _nameFocusNode,
+                  isSubmitting: _isSubmitting,
+                  onSubmit: _submit,
+                ),
+              ),
+            ],
           ),
         ),
-
-        // Bottom safe-area padding
-        const SliverToBoxAdapter(child: SizedBox(height: 40)),
       ],
     );
   }

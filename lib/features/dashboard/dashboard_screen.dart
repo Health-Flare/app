@@ -8,11 +8,10 @@ import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/core/router/app_router.dart';
 import 'package:health_flare/features/dashboard/widgets/dashboard_activity_feed.dart';
 import 'package:health_flare/features/dashboard/widgets/dashboard_quick_entry_sheet.dart';
-import 'package:health_flare/features/onboarding/widgets/first_log_prompt.dart';
+import 'package:health_flare/features/onboarding/screens/post_setup_flow_screen.dart';
 import 'package:health_flare/features/flare/widgets/active_flare_banner.dart';
 import 'package:health_flare/features/daily_checkin/widgets/daily_checkin_card.dart';
 import 'package:health_flare/features/appointments/widgets/upcoming_appointments_card.dart';
-import 'package:health_flare/features/onboarding/widgets/weather_opt_in_sheet.dart';
 import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 
 /// Dashboard — the home tab.
@@ -20,9 +19,9 @@ import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 /// Shows the active profile name in the app bar. All data sections
 /// will be scoped to the active profile once the data layer is wired up.
 ///
-/// Also owns the first-log prompt trigger: when [firstLogPromptProvider]
-/// becomes true (new profile created, not yet shown), it displays
-/// [FirstLogPrompt] as a modal bottom sheet once per profile.
+/// Also owns the post-setup mini-flow trigger: when the weather opt-in
+/// and/or first-log prompt become due (new profile created, not yet shown),
+/// it pushes [PostSetupFlowScreen] full-screen, once per profile.
 class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
 
@@ -38,36 +37,26 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) => _maybeShowPrompts());
   }
 
-  /// Shows the weather opt-in prompt (if not yet seen), then the first-log
-  /// prompt (if not yet seen), in sequence.
-  ///
-  /// Both prompts are marked as shown *before* being displayed so that
-  /// swipe-dismiss or hot-restart cannot re-trigger them.
+  /// Pushes the post-setup mini-flow (weather opt-in, then first-log
+  /// prompt) full-screen if either is still pending for the active profile.
   Future<void> _maybeShowPrompts() async {
     if (!mounted) return;
 
-    // Weather opt-in first
-    if (ref.read(weatherOptInProvider)) {
-      await showWeatherOptIn(
-        context,
-        onResult: (enabled) async {
-          await ref
-              .read(weatherOptInProvider.notifier)
-              .dismiss(enabled: enabled);
-          if (mounted) Navigator.of(context).pop();
-        },
-      );
-    }
+    final showWeather = ref.read(weatherOptInProvider);
+    final showFirstLog = ref.read(firstLogPromptProvider);
+    if (!showWeather && !showFirstLog) return;
 
-    if (!mounted) return;
-
-    // First-log prompt second
-    if (ref.read(firstLogPromptProvider)) {
-      await ref.read(firstLogPromptProvider.notifier).markShown();
-      if (!mounted) return;
-      final profile = ref.read(activeProfileDataProvider);
-      await showFirstLogPrompt(context, profileName: profile?.name ?? '');
-    }
+    final profile = ref.read(activeProfileDataProvider);
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        fullscreenDialog: true,
+        builder: (_) => PostSetupFlowScreen(
+          showWeatherStep: showWeather,
+          showFirstLogStep: showFirstLog,
+          profileName: profile?.name ?? '',
+        ),
+      ),
+    );
   }
 
   @override
