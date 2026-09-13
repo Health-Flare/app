@@ -134,6 +134,22 @@ Feature: Quick Log
     And I type "Blood pressure was 128 over 84 this morning"
     Then a suggestion chip labelled "Vital" appears
 
+  Scenario: Typing a height in centimetres suggests a Vital entry type
+    When I tap the + button
+    And I type "157cm height"
+    Then a suggestion chip labelled "Vital" appears
+
+  Scenario Outline: A short vital reading suggests a Vital entry type without needing more words
+    When I tap the + button
+    And I type "<text>"
+    Then a suggestion chip labelled "Vital" appears
+
+    Examples:
+      | text   |
+      | 74kg   |
+      | 144cm  |
+      | 4'8\"  |
+
   Scenario: Typing about sleep suggests a Sleep entry type
     When I tap the + button
     And I type "Slept for 6 hours last night, woke up twice"
@@ -386,6 +402,21 @@ Feature: Quick Log
   Scenario: A heart-rate quick entry saves a structured value
     When I save the quick log entry "Resting heart rate 72 bpm before breakfast"
     Then a Heart Rate vital entry is saved with value 72 BPM
+    And the original text is preserved in the entry's notes
+
+  Scenario: A height quick entry in centimetres saves a structured value
+    When I save the quick log entry "157cm height"
+    Then a Height vital entry is saved with value 157 cm
+    And the original text is preserved in the entry's notes
+
+  Scenario: A height quick entry in feet and inches saves a structured value
+    When I save the quick log entry "4'8\" tall"
+    Then a Height vital entry is saved with value 56 in
+    And the original text is preserved in the entry's notes
+
+  Scenario: A weight quick entry with no other words saves a structured value
+    When I save the quick log entry "74kg"
+    Then a Weight vital entry is saved with value 74 kg
     And the original text is preserved in the entry's notes
 
   Scenario: Vital text whose values cannot be parsed saves as a general note

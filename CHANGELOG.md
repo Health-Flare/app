@@ -42,7 +42,8 @@ Subsection meanings (from Keep a Changelog):
 - _Nothing yet._
 
 ### Changed
-- _Nothing yet._
+- Quick log now recognises short vital readings (e.g. "74kg", "144cm",
+  "4'8"") as a Vital entry without needing extra words of context.
 
 ### Deprecated
 - _Nothing yet._
@@ -51,7 +52,8 @@ Subsection meanings (from Keep a Changelog):
 - _Nothing yet._
 
 ### Fixed
-- _Nothing yet._
+- Quick log now detects height (in cm, or feet and inches) as a vital
+  measurement — previously it wasn't recognised at all.
 
 ### Security
 - _Nothing yet._

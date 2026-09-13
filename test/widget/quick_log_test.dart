@@ -270,6 +270,19 @@ void main() {
       );
     });
 
+    test('classifies a height reading in centimetres', () {
+      expect(
+        QuickLogClassifier.classify('157cm height'),
+        QuickLogEntryType.vital,
+      );
+    });
+
+    test('classifies short vital readings without the word-count minimum', () {
+      expect(QuickLogClassifier.classify('74kg'), QuickLogEntryType.vital);
+      expect(QuickLogClassifier.classify('144cm'), QuickLogEntryType.vital);
+      expect(QuickLogClassifier.classify('4\'8"'), QuickLogEntryType.vital);
+    });
+
     test('classifies medication keywords', () {
       expect(
         QuickLogClassifier.classify('Took naproxen after lunch today'),
@@ -538,6 +551,32 @@ void main() {
         vitalCalls.single['notes'],
         'Blood pressure was 128 over 84 this morning',
       );
+      expect(journalCalls, isEmpty);
+    });
+
+    testWidgets('height text in centimetres saves a structured vital', (
+      tester,
+    ) async {
+      await _openSheet(tester);
+      await _typeAndSave(tester, '157cm height');
+
+      expect(vitalCalls, hasLength(1));
+      expect(vitalCalls.single['vitalType'], VitalType.height);
+      expect(vitalCalls.single['value'], 157);
+      expect(vitalCalls.single['unit'], 'cm');
+      expect(journalCalls, isEmpty);
+    });
+
+    testWidgets('a short weight-only entry saves a structured vital', (
+      tester,
+    ) async {
+      await _openSheet(tester);
+      await _typeAndSave(tester, '74kg');
+
+      expect(vitalCalls, hasLength(1));
+      expect(vitalCalls.single['vitalType'], VitalType.weight);
+      expect(vitalCalls.single['value'], 74);
+      expect(vitalCalls.single['unit'], 'kg');
       expect(journalCalls, isEmpty);
     });
 

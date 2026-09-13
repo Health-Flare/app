@@ -91,6 +91,43 @@ void main() {
       expect(lbs.unit, 'lbs');
     });
 
+    test('parses height in centimetres', () {
+      final v = QuickLogParser.parseVital('157cm height')!;
+      expect(v.vitalType, VitalType.height);
+      expect(v.value, 157);
+      expect(v.unit, 'cm');
+    });
+
+    test('parses height written as feet and inches', () {
+      final quoted = QuickLogParser.parseVital('4\'8" tall')!;
+      expect(quoted.vitalType, VitalType.height);
+      expect(quoted.value, 56);
+      expect(quoted.unit, 'in');
+
+      final unquoted = QuickLogParser.parseVital("I'm 5'4 these days")!;
+      expect(unquoted.vitalType, VitalType.height);
+      expect(unquoted.value, 64);
+      expect(unquoted.unit, 'in');
+    });
+
+    test('parses a short weight-only entry with no other words', () {
+      final v = QuickLogParser.parseVital('74kg')!;
+      expect(v.vitalType, VitalType.weight);
+      expect(v.value, 74);
+      expect(v.unit, 'kg');
+    });
+
+    test('parses a short height-only entry with no other words', () {
+      final v = QuickLogParser.parseVital('144cm')!;
+      expect(v.vitalType, VitalType.height);
+      expect(v.value, 144);
+      expect(v.unit, 'cm');
+    });
+
+    test('rejects implausible height values', () {
+      expect(QuickLogParser.parseVital('900cm'), isNull);
+    });
+
     test('returns null when no value can be extracted', () {
       expect(QuickLogParser.parseVital('Feeling faint and shaky'), isNull);
       expect(QuickLogParser.parseVital('Checked my blood pressure'), isNull);

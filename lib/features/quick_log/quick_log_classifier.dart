@@ -23,17 +23,20 @@ abstract final class QuickLogClassifier {
 
   /// Classify [text] and return a suggested [QuickLogEntryType].
   ///
-  /// Returns null when the text has fewer than [_minWords] words.
+  /// Returns null when the text has fewer than [_minWords] words, unless it
+  /// confidently matches a vital reading (e.g. "74kg", "144cm", "4'8"") —
+  /// those numeric+unit patterns are unambiguous enough to skip the
+  /// word-count gate that guards the fuzzier keyword matches below.
   static QuickLogEntryType? classify(String text) {
     final trimmed = text.trim();
-    final wordCount = trimmed.isEmpty
-        ? 0
-        : trimmed.split(RegExp(r'\s+')).length;
-    if (wordCount < _minWords) return null;
+    if (trimmed.isEmpty) return null;
 
     final lower = trimmed.toLowerCase();
-
     if (_matchesVital(lower)) return QuickLogEntryType.vital;
+
+    final wordCount = trimmed.split(RegExp(r'\s+')).length;
+    if (wordCount < _minWords) return null;
+
     if (_matchesSleep(lower)) return QuickLogEntryType.sleep;
     if (_matchesMedication(lower)) return QuickLogEntryType.medication;
     if (_matchesDoctor(lower)) return QuickLogEntryType.doctorVisit;
@@ -49,9 +52,13 @@ abstract final class QuickLogClassifier {
     // Blood-pressure: digits/digits (e.g. "120/80") or "N over N"
     if (RegExp(r'\d+/\d+').hasMatch(lower)) return true;
     if (RegExp(r'\d+\s+over\s+\d+').hasMatch(lower)) return true;
-    // Number + recognised unit
+    // Height as feet'inches (e.g. "4'8"" or "4'8")
+    if (RegExp(r'''\d{1,2}\s*'\s*\d{1,2}\s*"?''').hasMatch(lower)) {
+      return true;
+    }
+    // Number + recognised unit (including height in cm)
     return RegExp(
-      r'\d+(\.\d+)?\s*(bpm|mmhg|°c|°f|degrees?|%|kg|lbs?|lb|mmol|mg/dl)',
+      r'\d+(\.\d+)?\s*(bpm|mmhg|°c|°f|degrees?|%|kg|lbs?|lb|mmol|mg/dl|cm)',
       caseSensitive: false,
     ).hasMatch(lower);
   }
