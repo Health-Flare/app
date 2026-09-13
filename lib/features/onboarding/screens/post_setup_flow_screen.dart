@@ -114,16 +114,18 @@ class _PostSetupFlowScreenState extends ConsumerState<PostSetupFlowScreen> {
                   onPageChanged: (i) => setState(() => _index = i),
                   children: [
                     for (final step in _steps)
-                      SingleChildScrollView(
-                        child: step == _StepKind.weather
-                            ? WeatherTrackingOptInSheet(
-                                onResult: _handleWeatherResult,
-                              )
-                            : FirstLogPrompt(
-                                profileName: widget.profileName,
-                                onFinished: _advance,
-                              ),
-                      ),
+                      if (step == _StepKind.weather)
+                        SingleChildScrollView(
+                          child: WeatherTrackingOptInSheet(
+                            onResult: _handleWeatherResult,
+                          ),
+                        )
+                      else
+                        // FirstLogPrompt scrolls internally.
+                        FirstLogPrompt(
+                          profileName: widget.profileName,
+                          onFinished: _advance,
+                        ),
                   ],
                 ),
               ),

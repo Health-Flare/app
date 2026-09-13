@@ -82,10 +82,7 @@ class OnboardingFeaturesZone extends StatelessWidget {
 
           SizedBox(
             width: double.infinity,
-            child: FilledButton(
-              onPressed: onNext,
-              child: const Text('Next'),
-            ),
+            child: FilledButton(onPressed: onNext, child: const Text('Next')),
           ),
         ],
       ),
