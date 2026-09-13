@@ -45,30 +45,33 @@ Widget _routedHarness(Widget child, {List<Override> overrides = const []}) {
   final router = GoRouter(
     initialLocation: '/start',
     routes: [
-      GoRoute(path: '/start', builder: (_, __) => Scaffold(body: child)),
+      GoRoute(
+        path: '/start',
+        builder: (_, _) => Scaffold(body: child),
+      ),
       GoRoute(
         path: AppRoutes.illness,
-        builder: (_, __) =>
+        builder: (_, _) =>
             const Scaffold(body: Center(child: Text('Illness screen'))),
       ),
       GoRoute(
         path: AppRoutes.symptoms,
-        builder: (_, __) =>
+        builder: (_, _) =>
             const Scaffold(body: Center(child: Text('Tracking screen'))),
       ),
       GoRoute(
         path: AppRoutes.meals,
-        builder: (_, __) =>
+        builder: (_, _) =>
             const Scaffold(body: Center(child: Text('Meals screen'))),
       ),
       GoRoute(
         path: AppRoutes.medications,
-        builder: (_, __) =>
+        builder: (_, _) =>
             const Scaffold(body: Center(child: Text('Medications screen'))),
       ),
       GoRoute(
         path: AppRoutes.journal,
-        builder: (_, __) =>
+        builder: (_, _) =>
             const Scaffold(body: Center(child: Text('Journal screen'))),
       ),
     ],
@@ -150,7 +153,9 @@ void main() {
         ),
       );
 
-      await tester.tap(find.text('A journal entry'));
+      final journalOption = find.text('A journal entry');
+      await tester.ensureVisible(journalOption);
+      await tester.tap(journalOption);
       await tester.pumpAndSettle();
 
       expect(find.text('Journal screen'), findsOneWidget);
@@ -168,13 +173,13 @@ void main() {
             profileName: 'Ethan',
             onFinished: () => finished = true,
           ),
-          overrides: [
-            firstLogPromptProvider.overrideWith(() => notifier),
-          ],
+          overrides: [firstLogPromptProvider.overrideWith(() => notifier)],
         ),
       );
 
-      await tester.tap(find.text("I'll explore on my own  →"));
+      final exploreLink = find.text("I'll explore on my own  →");
+      await tester.ensureVisible(exploreLink);
+      await tester.tap(exploreLink);
       await tester.pumpAndSettle();
 
       expect(notifier.shownCalled, isTrue);

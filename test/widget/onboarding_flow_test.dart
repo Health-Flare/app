@@ -169,7 +169,9 @@ void main() {
       await tester.pumpWidget(_buildOnboarding());
       await tester.pump();
 
-      await tester.tap(find.widgetWithText(FilledButton, 'Next'));
+      final nextButton = find.widgetWithText(FilledButton, 'Next');
+      await tester.ensureVisible(nextButton);
+      await tester.tap(nextButton);
       await tester.pumpAndSettle();
 
       expect(find.byType(OnboardingFeaturesZone), findsOneWidget);
@@ -185,10 +187,7 @@ void main() {
       await tester.tap(find.text('Skip'));
       await tester.pumpAndSettle();
 
-      expect(
-        find.text('Create profile and get started  →'),
-        findsOneWidget,
-      );
+      expect(find.text('Create profile and get started  →'), findsOneWidget);
       // The mandatory step offers no Skip.
       expect(find.text('Skip'), findsNothing);
     });
