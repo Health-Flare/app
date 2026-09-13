@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 
-/// Zone 2 — Privacy & data promise.
+/// Step 3 — Privacy & data promise.
 ///
 /// Shows a headline commitment, 4 supporting facts, and an expandable
 /// "How does this work?" section with full plain-English detail.
 ///
 /// Copy source: docs/onboarding-copy.md › Zone 2
 class OnboardingPrivacyZone extends StatefulWidget {
-  const OnboardingPrivacyZone({super.key});
+  const OnboardingPrivacyZone({super.key, required this.onNext});
+
+  final VoidCallback onNext;
 
   @override
   State<OnboardingPrivacyZone> createState() => _OnboardingPrivacyZoneState();
@@ -135,6 +137,16 @@ class _OnboardingPrivacyZoneState extends State<OnboardingPrivacyZone>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [const SizedBox(height: 20), _ExpandedPrivacyDetail()],
+            ),
+          ),
+
+          const SizedBox(height: 32),
+
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton(
+              onPressed: widget.onNext,
+              child: const Text('Next'),
             ),
           ),
         ],

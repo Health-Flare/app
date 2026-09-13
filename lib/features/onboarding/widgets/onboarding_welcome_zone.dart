@@ -2,39 +2,13 @@ import 'package:flutter/material.dart';
 
 import 'package:health_flare/core/theme/app_colors.dart';
 
-/// Zone 1 — Welcome & purpose.
+/// Step 1 — Welcome & purpose.
 ///
 /// Copy source: docs/onboarding-copy.md › Zone 1
-class OnboardingWelcomeZone extends StatefulWidget {
-  const OnboardingWelcomeZone({super.key});
+class OnboardingWelcomeZone extends StatelessWidget {
+  const OnboardingWelcomeZone({super.key, required this.onNext});
 
-  @override
-  State<OnboardingWelcomeZone> createState() => _OnboardingWelcomeZoneState();
-}
-
-class _OnboardingWelcomeZoneState extends State<OnboardingWelcomeZone>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _bounceController;
-  late final Animation<Offset> _bounceAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    _bounceController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 900),
-    )..repeat(reverse: true);
-    _bounceAnimation =
-        Tween<Offset>(begin: Offset.zero, end: const Offset(0, 0.35)).animate(
-          CurvedAnimation(parent: _bounceController, curve: Curves.easeInOut),
-        );
-  }
-
-  @override
-  void dispose() {
-    _bounceController.dispose();
-    super.dispose();
-  }
+  final VoidCallback onNext;
 
   @override
   Widget build(BuildContext context) {
@@ -142,32 +116,15 @@ class _OnboardingWelcomeZoneState extends State<OnboardingWelcomeZone>
 
               const SizedBox(height: 36),
 
-              // Scroll hint — tells the user the form is below
-              Semantics(
-                label: 'Scroll down to create your profile',
-                child: Center(
-                  child: SlideTransition(
-                    position: _bounceAnimation,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          'Scroll down to get started',
-                          style: tt.bodySmall?.copyWith(
-                            color: Colors.white.withAlpha(178),
-                            letterSpacing: 0.3,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        Icon(
-                          Icons.keyboard_arrow_down_rounded,
-                          color: Colors.white.withAlpha(178),
-                          size: 28,
-                          semanticLabel: '',
-                        ),
-                      ],
-                    ),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton(
+                  style: FilledButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: AppColors.primaryAction,
                   ),
+                  onPressed: onNext,
+                  child: const Text('Next'),
                 ),
               ),
             ],
