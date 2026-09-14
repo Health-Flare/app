@@ -34,6 +34,15 @@ jobs:
       #
       # github.api_url resolves to this Gitea instance's API root
       # (https://<instance>/api/v1) automatically, same as release.yaml.
+      #
+      # renovate.json5 extends a shared preset from the public
+      # Health-Flare/renovate-configs GitHub repo, so this runner also needs
+      # outbound access to api.github.com to resolve it. Unauthenticated
+      # GitHub API calls are rate-limited to 60/hour, which a weekly run
+      # fetching one preset file should never hit — but if preset resolution
+      # ever starts failing intermittently, add a repo Actions secret
+      # GITHUB_COM_TOKEN (any GitHub PAT, read-only, no special scopes
+      # needed for a public repo) and pass it through here.
       - name: Run Renovate
         env:
           RENOVATE_PLATFORM: gitea
