@@ -1,15 +1,6 @@
 {
   $schema: 'https://docs.renovatebot.com/renovate-schema.json',
-  extends: ['config:recommended'],
-
-  // This is a low-maintenance side project (see CLAUDE.md "Lightweight by
-  // Default") — batch updates into one weekly run instead of a steady drip
-  // of individual PRs.
-  schedule: ['before 6am on monday'],
-  timezone: 'UTC',
-
-  dependencyDashboard: true,
-  labels: ['dependencies'],
+  extends: ['github>Health-Flare/renovate-configs//flutter-app.json5'],
 
   packageRules: [
     // Runtime app dependencies (pubspec.yaml `dependencies:`) sit on top of
@@ -63,50 +54,5 @@
       automerge: true,
       automergeType: 'pr',
     },
-
-    // Belt and suspenders: no major version bump, from any manager, ever
-    // auto-merges. This repo has had to migrate provider APIs, renamed
-    // AsyncValue members, and a Flutter framework deprecation
-    // (onReorder -> onReorderItem) from majors that looked routine going in.
-    {
-      matchManagers: ['pub', 'github-actions'],
-      matchUpdateTypes: ['major'],
-      automerge: false,
-      labels: ['dependencies', 'major-update'],
-    },
-
-    // android/settings.gradle.kts declares the standard `flutter create`
-    // boilerplate plugin `dev.flutter.flutter-plugin-loader` version
-    // "1.0.0". It isn't fetched from Maven/Gradle Plugin Portal at all —
-    // pluginManagement's includeBuild("$flutterSdkPath/packages/flutter_tools/gradle")
-    // supplies it locally from the bundled Flutter SDK, and its version
-    // tracks the Flutter SDK rather than an independent release train.
-    // Renovate doesn't know that; since the plugin isn't in its registry of
-    // known Gradle plugins, it guesses the standard marker artifact
-    // coordinate (`<pluginId>:<pluginId>.gradle.plugin`) and repeatedly
-    // fails resolving *that* against the configured repositories (see the
-    // "Package lookup failures" / "Dependency Lookup Warnings" repository
-    // problems on the dashboard) — match on the marker coordinate, not the
-    // bare plugin id, to actually disable the lookup.
-    {
-      matchManagers: ['gradle'],
-      matchPackageNames: [
-        'dev.flutter.flutter-plugin-loader',
-        'dev.flutter.flutter-plugin-loader:dev.flutter.flutter-plugin-loader.gradle.plugin',
-      ],
-      enabled: false,
-    },
   ],
-
-  // Keeps pubspec.lock's transitive deps current even between direct
-  // version bumps in pubspec.yaml — exactly the kind of drift that let
-  // analyzer/build_runner fall out of sync with the Dart SDK before.
-  lockFileMaintenance: {
-    enabled: true,
-    schedule: ['before 6am on monday'],
-  },
-
-  vulnerabilityAlerts: {
-    labels: ['dependencies', 'security'],
-  },
 }
