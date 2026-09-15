@@ -39,10 +39,11 @@ Subsection meanings (from Keep a Changelog):
 ## [Unreleased]
 
 ### Added
-- _Nothing yet._
+- Android screenshot capture script (`scripts/take_screenshots_android.sh`), mirroring the existing iOS App Store sweep for Play Store listings. Covers the phone device class; the tablet AVD is left to adhoc/manual capture pending a fix for its boot flakiness.
+- Onboarding screenshot coverage now walks the full 4-step guided flow (Welcome, What you can track, Your privacy, Create profile) instead of stopping at the first step.
 
 ### Changed
-- _Nothing yet._
+- App Store and Play Store screenshot sets regenerated to reflect the guided onboarding redesign and the chip-contrast fix shipped in 1.7.0.
 
 ### Deprecated
 - _Nothing yet._

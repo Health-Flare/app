@@ -645,13 +645,24 @@ Future<void> _settle(WidgetTester tester) async {
   await tester.pump(const Duration(milliseconds: 400));
 }
 
+// On Android, convertFlutterSurfaceToImage() may only be called once per
+// test — it registers its own tearDown to revert the surface, so a second
+// call within the same test body (needed when one test takes several
+// screenshots, e.g. walking the onboarding steps) hits
+// "Surface already converted to an image". No-op on other platforms, so
+// this guard only matters there. Reset per-test via setUp below.
+bool _surfaceConverted = false;
+
 /// Takes a named screenshot and prints progress to the console.
 Future<void> _screenshot(
   IntegrationTestWidgetsFlutterBinding binding,
   WidgetTester tester,
   String name,
 ) async {
-  await binding.convertFlutterSurfaceToImage();
+  if (!_surfaceConverted) {
+    await binding.convertFlutterSurfaceToImage();
+    _surfaceConverted = true;
+  }
   await tester.pump();
   await binding.takeScreenshot(name);
   print('📸  $name');
@@ -672,7 +683,13 @@ void main() {
     };
   });
 
+  setUp(() => _surfaceConverted = false);
+
   group('screenshots', () {
+    // Walks the full guided onboarding flow — Welcome, What you can track,
+    // Your privacy, Create profile — capturing each step. All four live on
+    // one PageView (see OnboardingScreen), so this stays a single test
+    // rather than four separate pumps.
     testWidgets('01_onboarding', (tester) async {
       await tester.pumpWidget(
         ProviderScope(
@@ -682,6 +699,20 @@ void main() {
       );
       await _settle(tester);
       await _screenshot(binding, tester, '01_onboarding');
+
+      final nextButton = find.widgetWithText(FilledButton, 'Next');
+
+      await tester.tap(nextButton);
+      await _settle(tester);
+      await _screenshot(binding, tester, '01b_onboarding_features');
+
+      await tester.tap(nextButton);
+      await _settle(tester);
+      await _screenshot(binding, tester, '01c_onboarding_privacy');
+
+      await tester.tap(nextButton);
+      await _settle(tester);
+      await _screenshot(binding, tester, '01d_onboarding_profile');
     });
 
     testWidgets('02_dashboard', (tester) async {

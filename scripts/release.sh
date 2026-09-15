@@ -26,7 +26,7 @@ set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PUBSPEC="${REPO_ROOT}/pubspec.yaml"
 CHANGELOG="${REPO_ROOT}/CHANGELOG.md"
-GITEA_BASE="https://git.ahosking.com/HealthFlare/app"
+GITEA_BASE="https://github.com/Health-Flare/app"
 
 # ── Defaults ────────────────────────────────────────────────────────────
 DRY_RUN=false

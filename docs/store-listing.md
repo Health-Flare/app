@@ -13,7 +13,7 @@ Character counts are noted where limits apply.
 | Developer / seller name | Automated Bytes Incorporated |
 | Bundle ID (iOS / macOS) | org.healthflare.app.healthflare |
 | Package name (Android) | org.healthflare.app.healthflare |
-| Version | 1.0.0 |
+| Version | 1.7.1 |
 | Privacy policy URL | https://healthflare.org/privacy |
 | Support URL | https://healthflare.org |
 | Category (primary) | Health & Fitness |
@@ -95,9 +95,14 @@ YOUR DATA STAYS WITH YOU
 Health Flare is not a medical device and does not provide medical advice. Always consult your healthcare team for medical decisions.
 ```
 
-### What's New (version 1.0.0)
+### What's New (version 1.7.1)
+*(covers everything since the store listing was last updated at 1.6.0 — 1.6.0, 1.7.0, and 1.7.1 shipped without a listing refresh)*
 ```
-Initial release.
+Setup is quicker and friendlier: a short guided intro now walks you through what you can track, how your privacy works, and creating your first profile — with an easy skip straight to profile creation if you'd rather explore on your own.
+
+Quick Log got smarter too: typing something like "74kg" or "5'6"" is now recognised automatically as a vital reading, and height joins your other trackable vitals.
+
+Plus onboarding polish: fixed layout overflow and improved chip contrast throughout the guided flow.
 ```
 
 ---
@@ -167,6 +172,16 @@ Health & Fitness
 chronic illness, health tracker, symptom log, medication tracker, health journal
 ```
 
+### Recent changes (version 1.7.1)
+*(covers everything since the listing was last updated at 1.6.0 — Play's "recent changes" field has a 500-character limit, so this is trimmed tighter than the App Store copy above)*
+```
+Quicker, friendlier setup: a short guided intro replaces the old long scroll, with an easy skip to profile creation.
+
+Quick Log is smarter — readings like "74kg" or "5'6"" are now recognised automatically, and height is now a trackable vital.
+
+Plus: fixed layout and contrast issues in onboarding.
+```
+
 ---
 
 ## Screenshot captions (suggested — for both stores)
@@ -211,3 +226,4 @@ Justification: all data is stored locally in a sandboxed Isar database. No netwo
 - **iOS minimum deployment target:** check Xcode project settings before submitting.
 - **macOS:** submit as a separate listing or use the "Also available on Mac" option via Mac Catalyst / universal purchase if supported.
 - **Android:** ensure `targetSdk` matches the current Play Store requirement before submitting.
+- **Screenshots (v1.7.1):** regenerated for the guided onboarding redesign — `screenshots/appstore/{iphone-6.9,iphone-6.5,ipad-13}/` (App Store Connect) and `screenshots/playstore/phone/` (Play Console). Regenerate via `scripts/take_screenshots.sh` and `scripts/take_screenshots_android.sh`.
