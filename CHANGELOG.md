@@ -39,6 +39,26 @@ Subsection meanings (from Keep a Changelog):
 ## [Unreleased]
 
 ### Added
+- _Nothing yet._
+
+### Changed
+- _Nothing yet._
+
+### Deprecated
+- _Nothing yet._
+
+### Removed
+- _Nothing yet._
+
+### Fixed
+- _Nothing yet._
+
+### Security
+- _Nothing yet._
+
+## [1.7.1] - 2026-09-15
+
+### Added
 - Android screenshot capture script (`scripts/take_screenshots_android.sh`), mirroring the existing iOS App Store sweep for Play Store listings. Covers the phone device class; the tablet AVD is left to adhoc/manual capture pending a fix for its boot flakiness.
 - Onboarding screenshot coverage now walks the full 4-step guided flow (Welcome, What you can track, Your privacy, Create profile) instead of stopping at the first step.
 
@@ -239,7 +259,8 @@ Subsection meanings (from Keep a Changelog):
 - Offline-first guarantee: zero outbound network requests at runtime, enforced
   by the `url-scan` CI check.
 
-[Unreleased]: https://github.com/Health-Flare/app/compare/v1.7.0...HEAD
+[Unreleased]: https://github.com/Health-Flare/app/compare/v1.7.1...HEAD
+[1.7.1]: https://github.com/Health-Flare/app/compare/v1.7.0...v1.7.1
 [1.7.0]: https://github.com/Health-Flare/app/compare/v1.6.0...v1.7.0
 [1.6.0]: https://github.com/Health-Flare/app/compare/v1.5.2...v1.6.0
 [1.5.2]: https://git.ahosking.com/HealthFlare/app/compare/v1.5.1...v1.5.2
