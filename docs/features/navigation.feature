@@ -23,6 +23,7 @@ Feature: Navigation and General UX
       | Tracking    |
       | Medications |
       | Meals       |
+      | Sleep       |
       | Reports     |
 
   Scenario: Navigate to the Dashboard
@@ -42,6 +43,10 @@ Feature: Navigation and General UX
   Scenario: Navigate to Meals
     When I tap "Meals" in the primary navigation
     Then I am shown the meal log screen for "Sarah"
+
+  Scenario: Navigate to Sleep
+    When I tap "Sleep" in the primary navigation
+    Then I am shown the sleep log screen for "Sarah"
 
   Scenario: Navigate to Reports
     When I tap "Reports" in the primary navigation

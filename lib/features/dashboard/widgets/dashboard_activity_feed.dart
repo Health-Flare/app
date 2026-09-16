@@ -62,7 +62,7 @@ class DashboardActivityFeed extends StatelessWidget {
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
-        onTap: () => context.go(AppRoutes.sleepEdit(entry.id)),
+        onTap: () => context.push(AppRoutes.sleepEdit(entry.id), extra: entry),
       ),
       SymptomActivityItem(:final entry) => ListTile(
         leading: Icon(Icons.healing_outlined, color: cs.primary),

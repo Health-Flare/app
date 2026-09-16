@@ -159,6 +159,38 @@ class _SleepEntryScreenState extends ConsumerState<SleepEntryScreen> {
     if (mounted) context.pop();
   }
 
+  Future<void> _confirmDelete(
+    BuildContext context,
+    WidgetRef ref,
+    SleepEntry entry,
+  ) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Delete this entry?'),
+        content: const Text('This cannot be undone.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            style: TextButton.styleFrom(
+              foregroundColor: Theme.of(ctx).colorScheme.error,
+            ),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      await ref.read(sleepEntryListProvider.notifier).remove(entry.id);
+      if (context.mounted) context.pop();
+    }
+  }
+
   // ── Build ─────────────────────────────────────────────────────────────────
 
   @override
@@ -176,6 +208,12 @@ class _SleepEntryScreenState extends ConsumerState<SleepEntryScreen> {
               onMove: (target) => ref
                   .read(sleepEntryListProvider.notifier)
                   .moveToProfile(widget.entry!.id, target.id),
+            ),
+          if (widget.entry != null)
+            IconButton(
+              icon: const Icon(Icons.delete_outline_rounded),
+              tooltip: 'Delete entry',
+              onPressed: () => _confirmDelete(context, ref, widget.entry!),
             ),
         ],
       ),

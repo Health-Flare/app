@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/core/providers/sleep_provider.dart';
@@ -15,6 +16,22 @@ import 'package:health_flare/models/sleep_entry.dart';
 class _FakeSleepList extends SleepEntryListNotifier {
   @override
   List<SleepEntry> build() => [];
+}
+
+class _FakeSleepListWithRemove extends SleepEntryListNotifier {
+  final List<SleepEntry> _initial;
+  bool removeWasCalled = false;
+
+  _FakeSleepListWithRemove(this._initial);
+
+  @override
+  List<SleepEntry> build() => List.of(_initial);
+
+  @override
+  Future<void> remove(int id) async {
+    removeWasCalled = true;
+    state = state.where((e) => e.id != id).toList();
+  }
 }
 
 class _FakeActiveProfile extends ActiveProfileNotifier {
@@ -43,6 +60,42 @@ Widget _buildScreen({SleepEntry? entry}) {
       ),
     ],
     child: MaterialApp(home: SleepEntryScreen(entry: entry)),
+  );
+}
+
+/// Builds the edit-mode screen inside a GoRouter so that context.pop() works,
+/// with a fake list notifier that tracks whether `remove` was called.
+Widget _buildEditScreenWithRouter(
+  _FakeSleepListWithRemove fakeList,
+  SleepEntry entry,
+) {
+  final router = GoRouter(
+    routes: [
+      GoRoute(
+        path: '/',
+        builder: (context, _) => const Scaffold(body: Text('Root screen')),
+        routes: [
+          GoRoute(
+            path: 'edit',
+            builder: (context, _) => SleepEntryScreen(entry: entry),
+          ),
+        ],
+      ),
+    ],
+    initialLocation: '/edit',
+  );
+
+  return ProviderScope(
+    overrides: [
+      sleepEntryListProvider.overrideWith(() => fakeList),
+      activeProfileProvider.overrideWith(_FakeActiveProfile.new),
+      profileListProvider.overrideWith(_FakeProfileList.new),
+      activeSleepEntriesProvider.overrideWith((ref) => []),
+      activeProfileDataProvider.overrideWith(
+        (ref) => Profile(id: 1, name: 'Sarah'),
+      ),
+    ],
+    child: MaterialApp.router(routerConfig: router),
   );
 }
 
@@ -146,6 +199,82 @@ void main() {
         find.textContaining('Wake time must be after bedtime'),
         findsOneWidget,
       );
+    });
+  });
+
+  group('SleepEntryScreen delete', () {
+    SleepEntry entry({int id = 1}) => SleepEntry(
+      id: id,
+      profileId: 1,
+      bedtime: DateTime(2026, 3, 10, 22, 30),
+      wakeTime: DateTime(2026, 3, 11, 6, 45),
+      isNap: false,
+      createdAt: DateTime(2026, 3, 11, 6, 45),
+    );
+
+    testWidgets('Delete icon is present in edit mode', (tester) async {
+      final e = entry();
+      final fake = _FakeSleepListWithRemove([e]);
+      await tester.pumpWidget(_buildEditScreenWithRouter(fake, e));
+      await tester.pump();
+
+      expect(find.byIcon(Icons.delete_outline_rounded), findsOneWidget);
+    });
+
+    testWidgets('Delete icon is not present when creating a new entry', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_buildScreen());
+      await tester.pump();
+
+      expect(find.byIcon(Icons.delete_outline_rounded), findsNothing);
+    });
+
+    testWidgets('tapping Delete shows confirmation dialog', (tester) async {
+      final e = entry();
+      final fake = _FakeSleepListWithRemove([e]);
+      await tester.pumpWidget(_buildEditScreenWithRouter(fake, e));
+      await tester.pump();
+
+      await tester.tap(find.byIcon(Icons.delete_outline_rounded));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Delete this entry?'), findsOneWidget);
+      expect(find.text('This cannot be undone.'), findsOneWidget);
+    });
+
+    testWidgets('Cancel dismisses dialog without deleting', (tester) async {
+      final e = entry();
+      final fake = _FakeSleepListWithRemove([e]);
+      await tester.pumpWidget(_buildEditScreenWithRouter(fake, e));
+      await tester.pump();
+
+      await tester.tap(find.byIcon(Icons.delete_outline_rounded));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Delete this entry?'), findsNothing);
+      expect(fake.removeWasCalled, isFalse);
+    });
+
+    testWidgets('confirming delete calls remove and navigates back', (
+      tester,
+    ) async {
+      final e = entry();
+      final fake = _FakeSleepListWithRemove([e]);
+      await tester.pumpWidget(_buildEditScreenWithRouter(fake, e));
+      await tester.pump();
+
+      await tester.tap(find.byIcon(Icons.delete_outline_rounded));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Delete'));
+      await tester.pumpAndSettle();
+
+      expect(fake.removeWasCalled, isTrue);
+      expect(find.text('Root screen'), findsOneWidget);
     });
   });
 
