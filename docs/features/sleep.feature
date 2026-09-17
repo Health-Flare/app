@@ -66,6 +66,42 @@ Feature: Sleep Logging
     And both entries are visible in the sleep history for that day
 
   # ---------------------------------------------------------------------------
+  # Manually tagging naps
+  # ---------------------------------------------------------------------------
+
+  Scenario: Manually tag an entry as a nap
+    When I open the sleep entry form
+    And I turn on the "Nap" toggle
+    And I save the entry
+    Then the sleep entry is saved and labelled as a nap
+
+  Scenario: Manually untag an entry that was auto-detected as a nap
+    Given "Sarah" already has a sleep entry for "2026-03-11"
+    When I log another sleep entry for "2026-03-11"
+    Then the "Nap" toggle is on by default
+    When I turn off the "Nap" toggle
+    And I save the entry
+    Then the sleep entry is saved and is not labelled as a nap
+
+  # ---------------------------------------------------------------------------
+  # Adjusting bedtime and wake time without creating an invalid entry
+  # ---------------------------------------------------------------------------
+
+  Scenario: Moving wake time before bedtime shifts bedtime to stay valid
+    Given "Sarah" has a sleep entry with bedtime "23:00" and wake time "07:00"
+    When I change the wake time to two hours earlier
+    Then the bedtime shifts two hours earlier as well
+    And the sleep duration is unchanged
+    And no validation error is shown
+
+  Scenario: Moving bedtime after wake time shifts wake time to stay valid
+    Given "Sarah" has a sleep entry with bedtime "23:00" and wake time "07:00"
+    When I change the bedtime to three hours later
+    Then the wake time shifts three hours later as well
+    And the sleep duration is unchanged
+    And no validation error is shown
+
+  # ---------------------------------------------------------------------------
   # Sleep quality scale
   # ---------------------------------------------------------------------------
 

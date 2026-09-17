@@ -141,6 +141,7 @@ class _RecordingSleepList extends SleepEntryListNotifier {
     required DateTime wakeTime,
     int? qualityRating,
     String? notes,
+    bool? isNap,
   }) async {
     sleepCalls.add({
       'profileId': profileId,

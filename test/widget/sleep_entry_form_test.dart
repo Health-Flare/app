@@ -369,4 +369,148 @@ void main() {
       expect(entry.isNap, false);
     });
   });
+
+  group('Nap toggle', () {
+    testWidgets('shows Nap switch pre-filled from the entry in edit mode', (
+      tester,
+    ) async {
+      final nap = SleepEntry(
+        id: 1,
+        profileId: 1,
+        bedtime: DateTime(2026, 3, 11, 14, 0),
+        wakeTime: DateTime(2026, 3, 11, 14, 45),
+        isNap: true,
+        createdAt: DateTime(2026, 3, 11, 14, 45),
+      );
+
+      await tester.pumpWidget(_buildScreen(entry: nap));
+      await tester.pump();
+
+      final tile = tester.widget<SwitchListTile>(
+        find.byKey(const Key('sleep_nap_switch')),
+      );
+      expect(tile.value, isTrue);
+    });
+
+    testWidgets('defaults off for a new entry with no same-day sleep', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_buildScreen());
+      await tester.pump();
+
+      final tile = tester.widget<SwitchListTile>(
+        find.byKey(const Key('sleep_nap_switch')),
+      );
+      expect(tile.value, isFalse);
+    });
+
+    testWidgets('tapping the switch toggles it', (tester) async {
+      final entry = SleepEntry(
+        id: 1,
+        profileId: 1,
+        bedtime: DateTime(2026, 3, 11, 14, 0),
+        wakeTime: DateTime(2026, 3, 11, 14, 45),
+        isNap: false,
+        createdAt: DateTime(2026, 3, 11, 14, 45),
+      );
+
+      await tester.pumpWidget(_buildScreen(entry: entry));
+      await tester.pump();
+
+      await tester.tap(find.byKey(const Key('sleep_nap_switch')));
+      await tester.pump();
+
+      final tile = tester.widget<SwitchListTile>(
+        find.byKey(const Key('sleep_nap_switch')),
+      );
+      expect(tile.value, isTrue);
+    });
+  });
+
+  group('Bedtime/wake time shift helpers', () {
+    test(
+      'shifting wake time before bedtime carries bedtime by the same offset',
+      () {
+        final oldBedtime = DateTime(2026, 3, 11, 23, 0);
+        final oldWakeTime = DateTime(2026, 3, 12, 7, 0);
+
+        // User drags wake time 2 hours earlier than the old bedtime.
+        final newWakeTime = DateTime(2026, 3, 11, 21, 0);
+
+        final newBedtime = shiftedBedtimeForNewWakeTime(
+          newWakeTime: newWakeTime,
+          oldWakeTime: oldWakeTime,
+          bedtime: oldBedtime,
+        );
+
+        final shift = newWakeTime.difference(oldWakeTime);
+        expect(newBedtime, oldBedtime.add(shift));
+        expect(newWakeTime.isAfter(newBedtime), isTrue);
+      },
+    );
+
+    test('shifting wake time to stay valid leaves bedtime untouched', () {
+      final bedtime = DateTime(2026, 3, 11, 23, 0);
+      final oldWakeTime = DateTime(2026, 3, 12, 7, 0);
+      final newWakeTime = DateTime(2026, 3, 12, 6, 30);
+
+      final result = shiftedBedtimeForNewWakeTime(
+        newWakeTime: newWakeTime,
+        oldWakeTime: oldWakeTime,
+        bedtime: bedtime,
+      );
+
+      expect(result, bedtime);
+    });
+
+    test(
+      'shifting bedtime after wake time carries wake time by the same offset',
+      () {
+        final oldBedtime = DateTime(2026, 3, 11, 23, 0);
+        final oldWakeTime = DateTime(2026, 3, 12, 7, 0);
+
+        // User drags bedtime 3 hours past the old wake time.
+        final newBedtime = DateTime(2026, 3, 12, 10, 0);
+
+        final newWakeTime = shiftedWakeTimeForNewBedtime(
+          newBedtime: newBedtime,
+          oldBedtime: oldBedtime,
+          wakeTime: oldWakeTime,
+        );
+
+        final shift = newBedtime.difference(oldBedtime);
+        expect(newWakeTime, oldWakeTime.add(shift));
+        expect(newWakeTime.isAfter(newBedtime), isTrue);
+      },
+    );
+
+    test('shifting bedtime to stay valid leaves wake time untouched', () {
+      final oldBedtime = DateTime(2026, 3, 11, 23, 0);
+      final wakeTime = DateTime(2026, 3, 12, 7, 0);
+      final newBedtime = DateTime(2026, 3, 11, 22, 0);
+
+      final result = shiftedWakeTimeForNewBedtime(
+        newBedtime: newBedtime,
+        oldBedtime: oldBedtime,
+        wakeTime: wakeTime,
+      );
+
+      expect(result, wakeTime);
+    });
+
+    test('shift preserves the original sleep duration', () {
+      final oldBedtime = DateTime(2026, 3, 11, 23, 0);
+      final oldWakeTime = DateTime(2026, 3, 12, 7, 0);
+      final originalDuration = oldWakeTime.difference(oldBedtime);
+
+      final newWakeTime = DateTime(2026, 3, 11, 20, 0);
+      final newBedtime = shiftedBedtimeForNewWakeTime(
+        newWakeTime: newWakeTime,
+        oldWakeTime: oldWakeTime,
+        bedtime: oldBedtime,
+      );
+
+      expect(newWakeTime.difference(newBedtime), originalDuration);
+    });
+  });
 }
