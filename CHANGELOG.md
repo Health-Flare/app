@@ -24,8 +24,7 @@ How to use this file
      - Add a fresh, empty `## [Unreleased]` block above it.
      - Update the comparison links at the bottom of the file.
      - Commit the change, then tag `vX.Y.Z` and push the tag — the release
-       workflow takes it from there (see `.github/workflows/release.yaml`
-       and `.gitea/workflows/release.yaml`).
+       workflow takes it from there (see `.github/workflows/release.yaml`).
 
 4. Forgot to keep Unreleased up to date, or writing notes for a range that
    spans several past releases? `scripts/release/generate_release_notes.sh`

@@ -16,7 +16,6 @@ jobs:
     runs-on: ubuntu-latest
 
     # Required for github.token to create releases on GitHub.
-    # Gitea ignores this block but it is harmless.
     permissions:
       contents: write
 
@@ -38,7 +37,7 @@ jobs:
         run: flutter pub get
 
       # ── Signing setup ────────────────────────────────────────────────────────
-      # Add these secrets in your repository settings (Gitea or GitHub):
+      # Add these secrets in your repository settings:
       #   KEYSTORE_BASE64   base64-encoded .jks / .keystore file
       #                     Generate with: base64 -i release.keystore | pbcopy
       #   STORE_PASSWORD    storePassword value from key.properties
@@ -68,10 +67,8 @@ jobs:
             build/app/outputs/flutter-apk/healthflare-${{ github.ref_name }}.apk
 
       # ── Publish ──────────────────────────────────────────────────────────────
-      # github.api_url works on both platforms:
-      #   GitHub → https://api.github.com
-      #   Gitea  → https://<your-instance>/api/v1
-      # github.token is auto-provided on both platforms.
+      # github.api_url resolves to https://api.github.com; github.token is
+      # auto-provided by GitHub Actions.
       - name: Create or get release
         run: |
           # If the release was already created (e.g. via the GitHub UI), reuse it.
@@ -94,9 +91,9 @@ jobs:
           fi
           echo "Release ID: $(jq '.id' release.json)"
 
-      # Both GitHub and Gitea return an upload_url field in the release
-      # response. GitHub uses a separate upload host (uploads.github.com);
-      # extracting upload_url handles this transparently on both platforms.
+      # The release response includes an upload_url field. GitHub uses a
+      # separate upload host (uploads.github.com); extracting upload_url
+      # handles this transparently.
       - name: Upload APK to release
         run: |
           # Strip the URI template suffix {?name,label} before appending our params

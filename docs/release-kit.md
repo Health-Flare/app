@@ -53,20 +53,22 @@ scripts/release/generate_release_notes.sh --since 2026-01-01
 scripts/release/generate_release_notes.sh --since v1.7.1 --store-blurb
 ```
 
-**Why it doesn't trust `gh pr list --state merged`:** PRs in this repo
-merge on Gitea, which push-mirrors to GitHub. GitHub only ever observes the
-resulting merge commit — never a merge performed through its own API — so
-its `merged` flag reads `false` on PRs that are very much merged (verified
-against #3–#18: every one shows `merged:false` despite being in `main`'s
-history). The script never filters on that flag. It finds PR numbers by
-walking `git log --first-parent` for merge-commit patterns (both the
-GitHub-style `Merge pull request #N from ...` and the Gitea-style
-`Merge pull request 'title' (#N) from branch into main`, plus GitHub's
-squash-merge `(#N)` suffix convention for the future), then uses `gh` only
-to fetch metadata — title, labels, body — for PR numbers it already knows
-shipped. Commits that reach `main` outside the PR flow entirely (this repo
-has plenty of those — dependency bumps, direct pushes) still show up, in a
-"Needs triage" section, so nothing silently drops.
+**Why it doesn't trust `gh pr list --state merged`:** before the repo moved
+fully to GitHub (2026-09-13), PRs merged on Gitea, which push-mirrored to
+GitHub. GitHub only ever observed the resulting merge commit — never a
+merge performed through its own API — so its `merged` flag read `false` on
+PRs that were very much merged (verified against #3–#18: every one showed
+`merged:false` despite being in `main`'s history). The script still never
+filters on that flag, both for consistency and so retroactive notes spanning
+the Gitea era keep working. It finds PR numbers by walking `git log
+--first-parent` for merge-commit patterns (the current GitHub-style `Merge
+pull request #N from ...`, the pre-migration Gitea-style `Merge pull
+request 'title' (#N) from branch into main`, plus GitHub's squash-merge
+`(#N)` suffix convention), then uses `gh` only to fetch metadata — title,
+labels, body — for PR numbers it already knows shipped. Commits that reach
+`main` outside the PR flow entirely (this repo has plenty of those —
+dependency bumps, direct pushes) still show up, in a "Needs triage"
+section, so nothing silently drops.
 
 **Categorization** is by conventional-commit prefix on the PR/commit title
 (`feat:` → Added, `fix:` → Fixed, `perf:`/`refactor:` → Changed,

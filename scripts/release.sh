@@ -7,7 +7,7 @@
 #   1. Bump `version:` in pubspec.yaml (versionName + versionCode).
 #   2. Promote the ## [Unreleased] section in CHANGELOG.md.
 #   3. Commit the changes and create an annotated git tag.
-#   4. Push the commit and tag — triggering the Gitea release workflow.
+#   4. Push the commit and tag — triggering the GitHub release workflow.
 #
 # Usage:
 #   bash scripts/release.sh patch                # 1.0.0 → 1.0.1
@@ -26,7 +26,7 @@ set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PUBSPEC="${REPO_ROOT}/pubspec.yaml"
 CHANGELOG="${REPO_ROOT}/CHANGELOG.md"
-GITEA_BASE="https://github.com/Health-Flare/app"
+GITHUB_BASE="https://github.com/Health-Flare/app"
 
 # ── Defaults ────────────────────────────────────────────────────────────
 DRY_RUN=false
@@ -216,7 +216,7 @@ awk -v new_ver="$NEW_VERSION" -v today="$TODAY" '
 
 # 2b. Update comparison links at the bottom of the file.
 TMP=$(mktemp)
-awk -v new_ver="$NEW_VERSION" -v new_tag="$NEW_TAG" -v prev_tag="$PREV_TAG" -v base="$GITEA_BASE" '
+awk -v new_ver="$NEW_VERSION" -v new_tag="$NEW_TAG" -v prev_tag="$PREV_TAG" -v base="$GITHUB_BASE" '
   /^\[Unreleased\]:/ {
     print "[Unreleased]: " base "/compare/" new_tag "...HEAD"
     print "[" new_ver "]: " base "/compare/" prev_tag "..." new_tag
@@ -251,4 +251,4 @@ git push origin "$BRANCH"
 git push origin "$NEW_TAG"
 echo ""
 echo "  Pushed to origin. Release workflow should start shortly."
-echo "  ${GITEA_BASE}/releases/tag/${NEW_TAG}"
+echo "  ${GITHUB_BASE}/releases/tag/${NEW_TAG}"

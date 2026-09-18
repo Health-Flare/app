@@ -104,7 +104,7 @@ All PRs target `main`. Every PR must pass CI before it can be merged.
 
 ### CI pipeline
 
-Pushes and PRs run the following checks automatically via Gitea Actions:
+Pushes and PRs run the following checks automatically via GitHub Actions:
 
 | Check | What it does |
 |---|---|

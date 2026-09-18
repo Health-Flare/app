@@ -16,7 +16,6 @@ jobs:
     runs-on: macos-latest
 
     # Required for github.token to create releases on GitHub.
-    # Gitea ignores this block but it is harmless.
     permissions:
       contents: write
 
@@ -89,7 +88,6 @@ jobs:
           xcrun stapler staple healthflare-${{ github.ref_name }}.dmg
 
       # ── Publish ──────────────────────────────────────────────────────────────
-      # github.api_url works on both GitHub and Gitea.
       - name: Create or get release
         run: |
           HTTP_CODE=$(curl -s -o release.json -w "%{http_code}" \
