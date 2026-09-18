@@ -3,14 +3,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/core/providers/sleep_provider.dart';
 import 'package:health_flare/core/router/app_router.dart';
 import 'package:health_flare/features/sleep/screens/sleep_list_screen.dart';
+import 'package:health_flare/models/profile.dart';
 import 'package:health_flare/models/sleep_entry.dart';
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
+
+final _sarahProfile = Profile(id: 1, name: 'Sarah');
 
 SleepEntry _entry({int id = 1, DateTime? bedtime, DateTime? wakeTime}) {
   final wake = wakeTime ?? DateTime(2026, 3, 15, 7, 30);
@@ -44,7 +48,10 @@ Widget _buildScreen({List<SleepEntry> entries = const []}) {
   );
 
   return ProviderScope(
-    overrides: [activeSleepEntriesProvider.overrideWith((ref) => entries)],
+    overrides: [
+      activeSleepEntriesProvider.overrideWith((ref) => entries),
+      activeProfileDataProvider.overrideWith((ref) => _sarahProfile),
+    ],
     child: MaterialApp.router(routerConfig: router),
   );
 }
@@ -121,6 +128,7 @@ void main() {
         ProviderScope(
           overrides: [
             activeSleepEntriesProvider.overrideWith((ref) => [entry]),
+            activeProfileDataProvider.overrideWith((ref) => _sarahProfile),
           ],
           child: MaterialApp.router(routerConfig: router),
         ),

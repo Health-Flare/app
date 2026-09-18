@@ -9,8 +9,7 @@ import 'package:health_flare/features/shell/app_shell.dart';
 // Helpers
 // ---------------------------------------------------------------------------
 
-Widget _placeholder(String label) =>
-    Scaffold(body: Center(child: Text(label)));
+Widget _placeholder(String label) => Scaffold(body: Center(child: Text(label)));
 
 /// A minimal shell router mirroring the tab destinations wired into
 /// [AppShell], so the NavigationBar can be exercised without booting the
