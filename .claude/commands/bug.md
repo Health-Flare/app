@@ -1,6 +1,6 @@
 # Bug Reporter
 
-You are helping document a bug in Health Flare as a Gitea issue so it can be tracked and resolved.
+You are helping document a bug in Health Flare as a GitHub issue so it can be tracked and resolved.
 
 ## Process
 
@@ -22,14 +22,14 @@ If the user has already described the bug in their message, extract as much as p
 
 Check `docs/features/` for a relevant `.feature` file. If the bug contradicts a scenario in the feature file, note it so we can add a regression scenario.
 
-### 3. Create the Gitea issue
+### 3. Create the GitHub issue
 
-Use the `tea` CLI to create the issue:
+Use the `gh` CLI to create the issue:
 
 ```bash
-tea issue create \
+gh issue create \
   --title "bug(<area>): <short description>" \
-  --description "$(cat <<'EOF'
+  --body "$(cat <<'EOF'
 ## Description
 <clear description of the bug>
 
@@ -60,7 +60,7 @@ EOF
 ### 4. Confirm
 
 After creating the issue, output:
-- The issue URL (from `tea` output)
+- The issue URL (from `gh` output)
 - A one-line summary of what was filed
 - Whether a regression test scenario should be added to a feature file, and which one
 

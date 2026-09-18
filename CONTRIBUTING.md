@@ -64,10 +64,10 @@ conflict with the Riverpod generator.
 
 ## Opening a pull request
 
-This project uses **Gitea**, not GitHub — use the `tea` CLI:
+This project is hosted on **GitHub** — use the `gh` CLI:
 
 ```bash
-tea pr create --title "feat(foo): short title" --description "## Summary\n..."
+gh pr create --title "feat(foo): short title" --body "## Summary\n..."
 ```
 
 `main` only accepts changes via PR — no direct commits. Every PR runs CI (dependency resolution,

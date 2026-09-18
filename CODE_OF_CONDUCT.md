@@ -46,7 +46,7 @@ or harmful.
 ## Scope
 
 This Code of Conduct applies within all community spaces (issues, pull
-requests, discussions on the project's Gitea instance) and also applies when
+requests, discussions on the project's GitHub repository) and also applies when
 an individual is officially representing the community in public spaces.
 
 ## Enforcement

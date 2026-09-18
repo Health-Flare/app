@@ -18,15 +18,17 @@
 # It does NOT write to CHANGELOG.md. It prints a draft to stdout for a
 # human to read, trim, and paste in.
 #
-# ── The Gitea/GitHub wrinkle ────────────────────────────────────────────
-# This repo merges PRs on Gitea, which push-mirrors to GitHub in near real
-# time. `gh pr list --state merged` is unreliable here — GitHub only ever
-# sees the resulting merge commit, never a merge performed through its own
-# API, so its `merged` flag reads false on PRs that are very much merged
-# (confirmed against #3-#18: every one shows merged:false despite being in
-# `main`'s history). So this script never filters or trusts that flag — it
-# finds PR numbers by walking git history directly, then uses `gh` only to
-# fetch metadata (title/labels/body) for numbers it already knows shipped.
+# ── The historical Gitea wrinkle ────────────────────────────────────────
+# Before the repo moved fully to GitHub (2026-09-13), PRs merged on Gitea,
+# which push-mirrored to GitHub in near real time. `gh pr list --state
+# merged` was unreliable for that era — GitHub only ever saw the resulting
+# merge commit, never a merge performed through its own API, so its
+# `merged` flag read false on PRs that were very much merged (confirmed
+# against #3-#18: every one showed merged:false despite being in `main`'s
+# history). So this script never filters or trusts that flag — it finds
+# PR numbers by walking git history directly, then uses `gh` only to fetch
+# metadata (title/labels/body) for numbers it already knows shipped. This
+# also means a retroactive `--since` spanning the Gitea era still works.
 #
 # Usage:
 #   scripts/release/generate_release_notes.sh --since v1.5.0
@@ -126,8 +128,9 @@ echo "Collecting PRs merged between ${SINCE} (${SINCE_REF:0:12}) and ${UNTIL} ($
 
 # ── 1. Find every PR number that landed in this range ──────────────────
 # Two merge-commit shapes appear in this repo's history:
-#   GitHub-style:  "Merge pull request #18 from Health-Flare/branch-name"
-#   Gitea-style:   "Merge pull request 'title' (#123) from branch into main"
+#   GitHub-style: "Merge pull request #18 from Health-Flare/branch-name"
+#   Gitea-style (pre-2026-09-13 history only): "Merge pull request 'title'
+#   (#123) from branch into main"
 # Plus, in case a future PR is squash-merged (GitHub convention appends
 # "(#N)" to the squashed commit's own subject line), scan all commits too.
 PR_NUMBERS_FILE="$(mktemp)"
