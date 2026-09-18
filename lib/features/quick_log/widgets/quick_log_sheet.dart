@@ -115,22 +115,24 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
               loggedAt: _timestamp,
             );
       case QuickLogEntryType.vital:
-        final parsed = QuickLogParser.parseVital(_text);
-        if (parsed == null) {
+        final parsed = QuickLogParser.parseVitals(_text);
+        if (parsed.isEmpty) {
           await _saveJournal(profileId);
           return;
         }
-        await ref
-            .read(vitalEntryListProvider.notifier)
-            .add(
-              profileId: profileId,
-              vitalType: parsed.vitalType,
-              value: parsed.value,
-              value2: parsed.value2,
-              unit: parsed.unit,
-              loggedAt: _timestamp,
-              notes: _text,
-            );
+        for (final vital in parsed) {
+          await ref
+              .read(vitalEntryListProvider.notifier)
+              .add(
+                profileId: profileId,
+                vitalType: vital.vitalType,
+                value: vital.value,
+                value2: vital.value2,
+                unit: vital.unit,
+                loggedAt: _timestamp,
+                notes: _text,
+              );
+        }
       case QuickLogEntryType.medication:
         final medication = QuickLogParser.matchMedication(
           _text,
