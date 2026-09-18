@@ -10,6 +10,36 @@ import 'package:health_flare/features/sleep/widgets/sleep_quality_selector.dart'
 import 'package:health_flare/models/sleep_entry.dart';
 import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 
+/// The wake time to use after [newBedtime] replaces [oldBedtime].
+///
+/// If [wakeTime] would no longer be after [newBedtime], the whole sleep
+/// window slides: wake time shifts by the same offset the bedtime moved,
+/// preserving the original duration instead of producing an invalid entry.
+@visibleForTesting
+DateTime shiftedWakeTimeForNewBedtime({
+  required DateTime newBedtime,
+  required DateTime oldBedtime,
+  required DateTime wakeTime,
+}) {
+  if (wakeTime.isAfter(newBedtime)) return wakeTime;
+  return wakeTime.add(newBedtime.difference(oldBedtime));
+}
+
+/// The bedtime to use after [newWakeTime] replaces [oldWakeTime].
+///
+/// If [newWakeTime] would no longer be after [bedtime], the whole sleep
+/// window slides: bedtime shifts by the same offset the wake time moved,
+/// preserving the original duration instead of producing an invalid entry.
+@visibleForTesting
+DateTime shiftedBedtimeForNewWakeTime({
+  required DateTime newWakeTime,
+  required DateTime oldWakeTime,
+  required DateTime bedtime,
+}) {
+  if (newWakeTime.isAfter(bedtime)) return bedtime;
+  return bedtime.add(newWakeTime.difference(oldWakeTime));
+}
+
 /// Full-screen form for creating or editing a sleep entry.
 ///
 /// Pass [entry] to open in edit mode; leave null for a new entry.
@@ -30,6 +60,7 @@ class _SleepEntryScreenState extends ConsumerState<SleepEntryScreen> {
   late DateTime _bedtime;
   late DateTime _wakeTime;
   int? _qualityRating;
+  late bool _isNap;
   late TextEditingController _notesController;
   bool _submitting = false;
 
@@ -41,6 +72,7 @@ class _SleepEntryScreenState extends ConsumerState<SleepEntryScreen> {
       _bedtime = e.bedtime;
       _wakeTime = e.wakeTime;
       _qualityRating = e.qualityRating;
+      _isNap = e.isNap;
       _notesController = TextEditingController(text: e.notes ?? '');
     } else {
       final now = DateTime.now();
@@ -48,6 +80,12 @@ class _SleepEntryScreenState extends ConsumerState<SleepEntryScreen> {
       final yesterday = today.subtract(const Duration(days: 1));
       _bedtime = yesterday.add(const Duration(hours: 23));
       _wakeTime = today.add(const Duration(hours: 7));
+      final profileId = ref.read(activeProfileProvider);
+      _isNap =
+          profileId != null &&
+          ref
+              .read(sleepEntryListProvider)
+              .any((e) => e.profileId == profileId && e.date == today);
       _notesController = TextEditingController(text: widget.initialNotes ?? '');
     }
   }
@@ -85,14 +123,23 @@ class _SleepEntryScreenState extends ConsumerState<SleepEntryScreen> {
       initialTime: TimeOfDay.fromDateTime(_bedtime),
     );
     if (time == null || !mounted) return;
+    final newBedtime = DateTime(
+      date.year,
+      date.month,
+      date.day,
+      time.hour,
+      time.minute,
+    );
+    // Moving bedtime past wake time would make the entry invalid — shift
+    // wake time by the same offset so the sleep window slides as a whole.
+    final newWakeTime = shiftedWakeTimeForNewBedtime(
+      newBedtime: newBedtime,
+      oldBedtime: _bedtime,
+      wakeTime: _wakeTime,
+    );
     setState(() {
-      _bedtime = DateTime(
-        date.year,
-        date.month,
-        date.day,
-        time.hour,
-        time.minute,
-      );
+      _bedtime = newBedtime;
+      _wakeTime = newWakeTime;
     });
   }
 
@@ -109,14 +156,23 @@ class _SleepEntryScreenState extends ConsumerState<SleepEntryScreen> {
       initialTime: TimeOfDay.fromDateTime(_wakeTime),
     );
     if (time == null || !mounted) return;
+    final newWakeTime = DateTime(
+      date.year,
+      date.month,
+      date.day,
+      time.hour,
+      time.minute,
+    );
+    // Moving wake time before bedtime would make the entry invalid — shift
+    // bedtime by the same offset so the sleep window slides as a whole.
+    final newBedtime = shiftedBedtimeForNewWakeTime(
+      newWakeTime: newWakeTime,
+      oldWakeTime: _wakeTime,
+      bedtime: _bedtime,
+    );
     setState(() {
-      _wakeTime = DateTime(
-        date.year,
-        date.month,
-        date.day,
-        time.hour,
-        time.minute,
-      );
+      _wakeTime = newWakeTime;
+      _bedtime = newBedtime;
     });
   }
 
@@ -140,6 +196,7 @@ class _SleepEntryScreenState extends ConsumerState<SleepEntryScreen> {
             wakeTime: _wakeTime,
             qualityRating: _qualityRating,
             notes: notes,
+            isNap: _isNap,
           );
     } else {
       await ref
@@ -152,11 +209,44 @@ class _SleepEntryScreenState extends ConsumerState<SleepEntryScreen> {
               clearQuality: _qualityRating == null,
               notes: notes,
               clearNotes: notes == null,
+              isNap: _isNap,
             ),
           );
     }
 
     if (mounted) context.pop();
+  }
+
+  Future<void> _confirmDelete(
+    BuildContext context,
+    WidgetRef ref,
+    SleepEntry entry,
+  ) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Delete this entry?'),
+        content: const Text('This cannot be undone.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            style: TextButton.styleFrom(
+              foregroundColor: Theme.of(ctx).colorScheme.error,
+            ),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      await ref.read(sleepEntryListProvider.notifier).remove(entry.id);
+      if (context.mounted) context.pop();
+    }
   }
 
   // ── Build ─────────────────────────────────────────────────────────────────
@@ -176,6 +266,12 @@ class _SleepEntryScreenState extends ConsumerState<SleepEntryScreen> {
               onMove: (target) => ref
                   .read(sleepEntryListProvider.notifier)
                   .moveToProfile(widget.entry!.id, target.id),
+            ),
+          if (widget.entry != null)
+            IconButton(
+              icon: const Icon(Icons.delete_outline_rounded),
+              tooltip: 'Delete entry',
+              onPressed: () => _confirmDelete(context, ref, widget.entry!),
             ),
         ],
       ),
@@ -214,7 +310,19 @@ class _SleepEntryScreenState extends ConsumerState<SleepEntryScreen> {
                 textAlign: TextAlign.center,
               ),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: 8),
+
+            // ── Nap ──────────────────────────────────────────────────────
+            SwitchListTile(
+              key: const Key('sleep_nap_switch'),
+              contentPadding: EdgeInsets.zero,
+              title: const Text('Nap'),
+              subtitle: const Text('Mark this as a nap rather than main sleep'),
+              value: _isNap,
+              onChanged: (v) => setState(() => _isNap = v),
+            ),
+
+            const SizedBox(height: 16),
 
             // ── Quality ──────────────────────────────────────────────────
             const _SectionLabel(label: 'Sleep quality (optional)'),

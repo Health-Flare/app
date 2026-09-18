@@ -42,21 +42,21 @@ class SleepEntryListNotifier extends Notifier<List<SleepEntry>> {
 
   /// Add a new sleep entry.
   ///
-  /// Automatically sets [isNap] to true when a sleep entry already exists
-  /// for the same calendar date (wake-up day) and profile.
+  /// [isNap] defaults to an automatic guess — true when a sleep entry
+  /// already exists for the same calendar date (wake-up day) and profile —
+  /// but callers (e.g. the sleep entry form) may pass an explicit value to
+  /// let the user tag/untag naps themselves.
   Future<void> add({
     required int profileId,
     required DateTime bedtime,
     required DateTime wakeTime,
     int? qualityRating,
     String? notes,
+    bool? isNap,
   }) async {
     final isar = ref.read(isarProvider);
 
-    // Determine nap: is there already an entry on the same wake-up date?
-    final wakeDate = DateTime(wakeTime.year, wakeTime.month, wakeTime.day);
-    final existing = state.where((e) => e.profileId == profileId);
-    final isNap = existing.any((e) => e.date == wakeDate);
+    final nap = isNap ?? _autoDetectNap(profileId, wakeTime);
 
     final row = SleepEntryIsar()
       ..id = Isar.autoIncrement
@@ -65,12 +65,20 @@ class SleepEntryListNotifier extends Notifier<List<SleepEntry>> {
       ..wakeTime = wakeTime
       ..qualityRating = qualityRating
       ..notes = notes
-      ..isNap = isNap
+      ..isNap = nap
       ..createdAt = DateTime.now();
 
     await isar.writeTxn(() async {
       await isar.sleepEntryIsars.put(row);
     });
+  }
+
+  /// True when an entry already exists for [profileId] on the same
+  /// wake-up date as [wakeTime].
+  bool _autoDetectNap(int profileId, DateTime wakeTime) {
+    final wakeDate = DateTime(wakeTime.year, wakeTime.month, wakeTime.day);
+    final existing = state.where((e) => e.profileId == profileId);
+    return existing.any((e) => e.date == wakeDate);
   }
 
   /// Replace an existing entry (used when editing).

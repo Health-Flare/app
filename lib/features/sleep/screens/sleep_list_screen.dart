@@ -40,6 +40,11 @@ class SleepListScreen extends ConsumerWidget {
                 const SliverToBoxAdapter(child: SizedBox(height: 100)),
               ],
             ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => context.push(AppRoutes.sleepNew),
+        tooltip: 'Log sleep',
+        child: const Icon(Icons.add),
+      ),
     );
   }
 }

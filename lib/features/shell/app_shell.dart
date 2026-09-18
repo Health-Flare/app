@@ -44,6 +44,12 @@ class AppShell extends StatelessWidget {
       icon: Icons.book_outlined,
       selectedIcon: Icons.book_rounded,
     ),
+    (
+      route: AppRoutes.sleep,
+      label: 'Sleep',
+      icon: Icons.bedtime_outlined,
+      selectedIcon: Icons.bedtime_rounded,
+    ),
   ];
 
   int _currentIndex(BuildContext context) {

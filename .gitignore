@@ -50,3 +50,6 @@ app.*.map.json
 *.isar
 *.isar-lck
 libisar.dylib
+
+# Golden-test failure diffs (regenerated on every failing local run)
+test/golden/failures/

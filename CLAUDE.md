@@ -27,6 +27,26 @@ dart run build_runner build --delete-conflicting-outputs
 ./scripts/generate_isar.sh
 ```
 
+## Pre-commit Hooks
+
+Run once per clone to install the repo-tracked git hooks:
+
+```bash
+bash scripts/setup_hooks.sh
+```
+
+This points `core.hooksPath` at `.githooks/`, whose `pre-commit` hook mirrors
+the CI gates in `.github/workflows/ci.yml` before a commit lands:
+
+1. Formats staged Dart files (`dart format`) and re-stages them
+2. Offline integrity scan (`scripts/check_urls.sh`)
+3. Static analysis (`flutter analyze --fatal-infos`)
+4. Tests (`flutter test`, excluding `test/golden` — golden-file pixel diffs
+   are rendered on `ubuntu-latest` and commonly differ on macOS/Windows; CI
+   still gates them on Linux)
+
+Skip it for a single commit with `git commit --no-verify` if needed.
+
 ## Git & Pull Requests
 
 This project is hosted on **GitHub**. Use the `gh` CLI for all repository operations:

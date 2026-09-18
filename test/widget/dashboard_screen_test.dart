@@ -184,8 +184,12 @@ Widget _buildDashboardWithRouter({
       ),
       GoRoute(
         path: '/sleep/:id/edit',
-        builder: (context, _) =>
-            const Scaffold(body: Center(child: Text('Sleep Edit'))),
+        builder: (context, state) {
+          final entry = state.extra as SleepEntry?;
+          return Scaffold(
+            body: Center(child: Text('Sleep Edit: entry ${entry?.id}')),
+          );
+        },
       ),
     ],
   );
@@ -370,7 +374,9 @@ void main() {
         await tester.pump();
         await tester.pump(const Duration(milliseconds: 300));
 
-        expect(find.text('Sleep Edit'), findsOneWidget);
+        // Regression test: the tapped entry must be passed via `extra` so
+        // SleepEntryScreen opens in edit mode rather than a blank create form.
+        expect(find.text('Sleep Edit: entry 7'), findsOneWidget);
       });
     });
   });
