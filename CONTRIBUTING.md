@@ -45,7 +45,11 @@ conflict with the Riverpod generator.
    (`lib/features/<feature>/{screens,widgets}`, `lib/core/providers/`, `lib/models/` vs
    `lib/data/models/`).
 4. Add or update tests in `test/`.
-5. Run the local checks before opening a PR:
+5. For a user-facing change, add an entry under `## [Unreleased]` in `CHANGELOG.md` (past tense,
+   user-facing voice — see that file's own "How to use this file" header). If you're backfilling
+   notes for a range instead of writing them as you go, see
+   [`docs/release-kit.md`](docs/release-kit.md).
+6. Run the local checks before opening a PR:
 
    ```bash
    flutter analyze
@@ -55,7 +59,7 @@ conflict with the Riverpod generator.
    bash scripts/check_deps.sh
    ```
 
-6. Follow [Conventional Commits](https://www.conventionalcommits.org/) for commit messages
+7. Follow [Conventional Commits](https://www.conventionalcommits.org/) for commit messages
    (`feat(scope): ...`, `fix(scope): ...`, `docs: ...`, `chore: ...`, etc.).
 
 ## Opening a pull request

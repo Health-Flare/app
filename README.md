@@ -183,6 +183,21 @@ no accounts, no sync, no analytics. Before opening a PR, ensure:
 
 All features are specced as Gherkin `.feature` files in `docs/features/`. Read the relevant spec before implementing or changing behaviour, and update it if the behaviour changes.
 
+### Release notes, screenshots, and videos
+
+See [`docs/release-kit.md`](docs/release-kit.md) for the full workflow behind everything a release
+needs. In short:
+
+- **Release notes** — add an entry under `## [Unreleased]` in `CHANGELOG.md` as part of any
+  user-facing PR (see that file's own "How to use this file" header). Missed one, or need notes
+  spanning several past releases at once? `scripts/release/generate_release_notes.sh --since
+  <tag|date>` drafts the same shape from actual PR/issue history for any range.
+- **Screenshots** — `scripts/take_screenshots.sh` (iOS) and `scripts/take_screenshots_android.sh`
+  (Android) regenerate the committed App Store / Play Store screenshot sets.
+- **Videos** — `scripts/take_video.sh` (iOS) and `scripts/take_video_android.sh` (Android) record
+  an App Store "App Preview" / Play Store promo video from a guided in-app tour.
+- **All three at once** — `scripts/release/build_release_kit.sh --since <tag>` runs whatever's
+  runnable on the current machine and assembles the result into `release-kit/<version>/`.
 
 ## Testing
 `flutter devices` to list all available devices
