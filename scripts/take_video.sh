@@ -75,6 +75,19 @@ record_walkthrough() {
   # Give recordVideo a moment to attach before the app starts driving.
   sleep 2
 
+  # simctl only allows one active host recording at a time across every
+  # simulator. If a previous run's recorder never got cleaned up, this one
+  # fails immediately ("Host recording is already in progress") but the
+  # background job still exits "successfully" from bash's point of view —
+  # nothing here was checking that recordVideo actually attached before
+  # driving the walkthrough, so the whole run could report success with no
+  # video ever produced. `jobs %%` still reporting Running is a cheap signal
+  # that the process is still alive rather than having exited immediately.
+  if ! kill -0 "$record_pid" 2>/dev/null; then
+    echo "❌  recordVideo exited immediately — see output above (often a stale 'Host recording already in progress' lock; try 'xcrun simctl shutdown all' and retry)." >&2
+    return 1
+  fi
+
   local drive_status=0
   flutter drive \
     --driver=test_driver/integration_test.dart \
@@ -85,6 +98,11 @@ record_walkthrough() {
   # corrupt/unplayable .mov.
   kill -INT "$record_pid" 2>/dev/null || true
   wait "$record_pid" 2>/dev/null || true
+
+  if [[ ! -s "$out_file" ]]; then
+    echo "❌  $out_file is empty — the recording never got finalized." >&2
+    return 1
+  fi
 
   return "$drive_status"
 }

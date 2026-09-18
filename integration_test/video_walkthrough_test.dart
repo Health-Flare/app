@@ -529,6 +529,7 @@ List<Override> _onboardingOverrides() => [
   activeProfileActivityEntriesProvider.overrideWith((ref) => []),
   dashboardActivityProvider.overrideWith((ref) => []),
   dashboardHasActivityProvider.overrideWith((ref) => false),
+  currentWeatherProvider.overrideWith((ref) async => null),
 ];
 
 // ---------------------------------------------------------------------------
@@ -576,8 +577,19 @@ void main() {
 
   testWidgets('full_app_walkthrough', (tester) async {
     // ── Scene 1: guided onboarding ──────────────────────────────────────
+    //
+    // Each scene below gets its own Key on the ProviderScope. Without one,
+    // Flutter reconciles same-type widgets in place across pumpWidget calls
+    // instead of remounting — so overriding a NotifierProvider with a
+    // different fake class has no effect on a Notifier that already built
+    // once (only future/new elements pick up the new override), and the app
+    // silently keeps showing whatever screen the previous scene left it on.
+    // A fresh Key forces a full teardown/remount — a fresh ProviderContainer
+    // per scene — so every scene's overrides actually take effect and
+    // GoRouter's initialLocation is re-evaluated from scratch.
     await tester.pumpWidget(
       ProviderScope(
+        key: const ValueKey('scene-onboarding'),
         overrides: _onboardingOverrides(),
         child: const HealthFlareApp(),
       ),
@@ -600,14 +612,22 @@ void main() {
 
     // ── Scene 2: dashboard, populated ───────────────────────────────────
     await tester.pumpWidget(
-      ProviderScope(overrides: _overrides(), child: const HealthFlareApp()),
+      ProviderScope(
+        key: const ValueKey('scene-dashboard'),
+        overrides: _overrides(),
+        child: const HealthFlareApp(),
+      ),
     );
     await _settle(tester);
     await _hold(tester, 3, 'dashboard');
 
     // ── Scene 3: tracking — symptoms ────────────────────────────────────
     await tester.pumpWidget(
-      ProviderScope(overrides: _overrides(), child: const HealthFlareApp()),
+      ProviderScope(
+        key: const ValueKey('scene-tracking-symptoms'),
+        overrides: _overrides(),
+        child: const HealthFlareApp(),
+      ),
     );
     await _settle(tester);
     await tester.tap(find.text('Tracking'));
@@ -616,7 +636,11 @@ void main() {
 
     // ── Scene 4: tracking — illnesses → condition detail ───────────────
     await tester.pumpWidget(
-      ProviderScope(overrides: _overrides(), child: const HealthFlareApp()),
+      ProviderScope(
+        key: const ValueKey('scene-tracking-illnesses'),
+        overrides: _overrides(),
+        child: const HealthFlareApp(),
+      ),
     );
     await _settle(tester);
     await tester.tap(find.text('Tracking'));
@@ -630,7 +654,11 @@ void main() {
 
     // ── Scene 5: medications ────────────────────────────────────────────
     await tester.pumpWidget(
-      ProviderScope(overrides: _overrides(), child: const HealthFlareApp()),
+      ProviderScope(
+        key: const ValueKey('scene-medications'),
+        overrides: _overrides(),
+        child: const HealthFlareApp(),
+      ),
     );
     await _settle(tester);
     await tester.tap(find.text('Medications'));
@@ -639,7 +667,11 @@ void main() {
 
     // ── Scene 6: journal — list → composer ──────────────────────────────
     await tester.pumpWidget(
-      ProviderScope(overrides: _overrides(), child: const HealthFlareApp()),
+      ProviderScope(
+        key: const ValueKey('scene-journal'),
+        overrides: _overrides(),
+        child: const HealthFlareApp(),
+      ),
     );
     await _settle(tester);
     await tester.tap(find.text('Journal'));
@@ -653,7 +685,11 @@ void main() {
 
     // ── Scene 7: symptom form with weather chip ─────────────────────────
     await tester.pumpWidget(
-      ProviderScope(overrides: _overrides(), child: const HealthFlareApp()),
+      ProviderScope(
+        key: const ValueKey('scene-symptom-weather'),
+        overrides: _overrides(),
+        child: const HealthFlareApp(),
+      ),
     );
     await _settle(tester);
     await tester.tap(find.text('Tracking'));

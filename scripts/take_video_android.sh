@@ -107,6 +107,15 @@ record_walkthrough() {
   mkdir -p "$(dirname "$out_file")"
   "$ADB_BIN" -s "$serial" shell rm -f "$DEVICE_OUT_PATH" >/dev/null 2>&1 || true
 
+  # A freshly booted (or idle) emulator can come up with its display asleep
+  # and not yet assigned a SurfaceFlinger layer stack. screenrecord attaches
+  # fine in that state but silently records nothing — it exits immediately
+  # with "ERROR: UNASSIGNED_LAYER_STACK" and leaves a 0-byte file, while
+  # every step around it still reports success. Waking the display first
+  # avoids that.
+  "$ADB_BIN" -s "$serial" shell input keyevent KEYCODE_WAKEUP >/dev/null 2>&1 || true
+  sleep 1
+
   echo "Starting recording -> device:$DEVICE_OUT_PATH"
   "$ADB_BIN" -s "$serial" shell screenrecord --bit-rate 8000000 "$DEVICE_OUT_PATH" &
   local record_pid=$!
@@ -121,13 +130,25 @@ record_walkthrough() {
   # screenrecord finalizes the mp4 container on SIGINT; a hard kill leaves
   # an unplayable file. It also self-stops at 3 minutes, well past this
   # walkthrough's length, so this is a courtesy stop, not a race against it.
-  kill -INT "$record_pid" 2>/dev/null || true
+  #
+  # The signal has to be sent to the *remote* screenrecord process via a
+  # second `adb shell`, not to $record_pid (the local `adb shell ...`
+  # client) — without a pty, adb does not reliably forward a local SIGINT
+  # to the remote command, so the mp4's container/moov atom never gets
+  # finalized and the pulled file comes back 0 bytes despite every step
+  # reporting success.
+  "$ADB_BIN" -s "$serial" shell pkill -INT screenrecord 2>/dev/null || true
   wait "$record_pid" 2>/dev/null || true
-  sleep 1
+  sleep 2
 
   echo "Pulling recording..."
   "$ADB_BIN" -s "$serial" pull "$DEVICE_OUT_PATH" "$out_file"
   "$ADB_BIN" -s "$serial" shell rm -f "$DEVICE_OUT_PATH" >/dev/null 2>&1 || true
+
+  if [[ ! -s "$out_file" ]]; then
+    echo "❌  $out_file is empty — the recording never got finalized on-device." >&2
+    return 1
+  fi
 
   return "$drive_status"
 }
