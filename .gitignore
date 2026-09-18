@@ -12,6 +12,22 @@
 .swiftpm/
 migrate_working_dir/
 
+# Raw App Store / Play Store preview video captures (scripts/take_video*.sh).
+# Unlike screenshots/ (small, final-form PNGs committed for reference), raw
+# .mov/.mp4 captures are large, get trimmed/edited before actual use, and
+# are regenerable on demand from integration_test/video_walkthrough_test.dart
+# — so they stay local/CI artifacts rather than repo history. Upload the
+# edited result to App Store Connect directly, or to YouTube for the Play
+# Store "Video" field (see scripts/take_video_android.sh).
+/videos/
+
+# scripts/release/build_release_kit.sh output — a scratch assembly of
+# generated release notes + a snapshot of screenshots/videos for one release
+# range. Reviewed notes get copied by hand into CHANGELOG.md and
+# docs/store-listing.md; screenshots/videos are sourced from their own
+# directories above. See docs/release-kit.md.
+/release-kit/
+
 # IntelliJ related
 *.iml
 *.ipr

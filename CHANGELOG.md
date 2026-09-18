@@ -27,6 +27,14 @@ How to use this file
        workflow takes it from there (see `.github/workflows/release.yaml`
        and `.gitea/workflows/release.yaml`).
 
+4. Forgot to keep Unreleased up to date, or writing notes for a range that
+   spans several past releases? `scripts/release/generate_release_notes.sh`
+   drafts this same Keep-a-Changelog shape (plus store-blurb prose) from
+   actual PR/issue history for any `--since`/`--until` range — a starting
+   point to edit, not a replacement for writing entries as you go. See
+   `docs/release-kit.md` for the full release-notes/screenshots/videos
+   workflow.
+
 Subsection meanings (from Keep a Changelog):
   Added       — for new features.
   Changed     — for changes in existing functionality.
@@ -39,7 +47,13 @@ Subsection meanings (from Keep a Changelog):
 ## [Unreleased]
 
 ### Added
-- _Nothing yet._
+- Release kit — `scripts/release/generate_release_notes.sh` drafts release
+  notes and store "what's new" blurbs from actual PR/issue history for any
+  date/tag range, `scripts/take_video.sh` and `scripts/take_video_android.sh`
+  capture an App Store/Play Store preview video from a new guided-tour
+  integration test, and `scripts/release/build_release_kit.sh` runs all
+  three (plus the existing screenshot sweep) together. See
+  `docs/release-kit.md`.
 
 ### Changed
 - _Nothing yet._
