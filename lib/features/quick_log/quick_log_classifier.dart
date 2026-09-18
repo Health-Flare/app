@@ -1,3 +1,5 @@
+import 'package:health_flare/features/quick_log/quick_log_parser.dart';
+
 /// Entry types the quick-log classifier can suggest.
 enum QuickLogEntryType {
   meal,
@@ -49,16 +51,19 @@ abstract final class QuickLogClassifier {
   // ── Pattern matchers ─────────────────────────────────────────────────────
 
   static bool _matchesVital(String lower) {
-    // Blood-pressure: digits/digits (e.g. "120/80") or "N over N"
-    if (RegExp(r'\d+/\d+').hasMatch(lower)) return true;
-    if (RegExp(r'\d+\s+over\s+\d+').hasMatch(lower)) return true;
+    // Blood pressure and heart rate/pulse share bounds-checked parsing with
+    // QuickLogParser, so an unbounded fraction ("3/4 of a sandwich") or a
+    // typed date ("9/17") never lights up a chip the save step would then
+    // reject, and "HR 72"/"Pulse 72" (no "bpm" unit) still get one.
+    if (QuickLogParser.parseBloodPressure(lower) != null) return true;
+    if (QuickLogParser.parseHeartRate(lower) != null) return true;
     // Height as feet'inches (e.g. "4'8"" or "4'8")
     if (RegExp(r'''\d{1,2}\s*'\s*\d{1,2}\s*"?''').hasMatch(lower)) {
       return true;
     }
     // Number + recognised unit (including height in cm)
     return RegExp(
-      r'\d+(\.\d+)?\s*(bpm|mmhg|°c|°f|degrees?|%|kg|lbs?|lb|mmol|mg/dl|cm)',
+      r'\d+(\.\d+)?\s*(mmhg|°c|°f|degrees?|%|kg|lbs?|lb|mmol|mg/dl|cm)',
       caseSensitive: false,
     ).hasMatch(lower);
   }

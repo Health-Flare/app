@@ -149,6 +149,24 @@ Feature: Quick Log
       | 74kg   |
       | 144cm  |
       | 4'8\"  |
+      | HR 72  |
+
+  Scenario Outline: A pulse reading with no "bpm" unit still suggests a Vital entry type
+    When I tap the + button
+    And I type "<text>"
+    Then a suggestion chip labelled "Vital" appears
+
+    Examples:
+      | text                     |
+      | Pulse 72 today           |
+      | Pulse was 72 this morning |
+      | 72 beats per minute      |
+
+  Scenario: An unrelated slash number does not falsely suggest a Vital entry type
+    When I tap the + button
+    And I type "Ate 3/4 of a sandwich for lunch"
+    Then a suggestion chip labelled "Meal" appears
+    And no suggestion chip labelled "Vital" appears
 
   Scenario: Typing about sleep suggests a Sleep entry type
     When I tap the + button
@@ -403,6 +421,22 @@ Feature: Quick Log
     When I save the quick log entry "Resting heart rate 72 bpm before breakfast"
     Then a Heart Rate vital entry is saved with value 72 BPM
     And the original text is preserved in the entry's notes
+
+  Scenario Outline: A pulse reading with no "bpm" unit saves a structured Heart Rate value
+    When I save the quick log entry "<text>"
+    Then a Heart Rate vital entry is saved with value 72 BPM
+    And the original text is preserved in the entry's notes
+
+    Examples:
+      | text            |
+      | HR 72           |
+      | Pulse 72 today  |
+
+  Scenario: A combined blood-pressure and pulse quick entry saves both structured values
+    When I save the quick log entry "BP 118/76, pulse 68bpm"
+    Then a Blood Pressure vital entry is saved with systolic 118 and diastolic 76 mmHg
+    And a Heart Rate vital entry is saved with value 68 BPM
+    And the original text is preserved in both entries' notes
 
   Scenario: A height quick entry in centimetres saves a structured value
     When I save the quick log entry "157cm height"

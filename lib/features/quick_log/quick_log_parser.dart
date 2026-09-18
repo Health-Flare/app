@@ -27,39 +27,18 @@ class ParsedVital {
 /// journal entry so the user's text is never lost.
 abstract final class QuickLogParser {
   /// Extracts a vital measurement, or null when no confident match is found.
+  ///
+  /// When the text contains both a blood-pressure and a pulse reading (e.g.
+  /// "BP 118/76, pulse 68bpm"), only the blood pressure is returned here —
+  /// use [parseVitals] to get both.
   static ParsedVital? parseVital(String text) {
     final lower = text.toLowerCase();
 
-    // Blood pressure: "128/84" or "128 over 84", with plausibility bounds so
-    // dates ("12/06") and fractions don't read as pressures.
-    final bp = RegExp(
-      r'(\d{2,3})\s*(?:/|over\s+)\s*(\d{2,3})',
-    ).firstMatch(lower);
-    if (bp != null) {
-      final systolic = double.parse(bp.group(1)!);
-      final diastolic = double.parse(bp.group(2)!);
-      if (systolic >= 60 &&
-          systolic <= 260 &&
-          diastolic >= 30 &&
-          diastolic <= 160 &&
-          systolic > diastolic) {
-        return ParsedVital(
-          vitalType: VitalType.bloodPressure,
-          value: systolic,
-          value2: diastolic,
-          unit: VitalType.bloodPressure.defaultUnit,
-        );
-      }
-    }
+    final bp = parseBloodPressure(lower);
+    if (bp != null) return _bloodPressureVital(bp);
 
-    final hr = _number(lower, r'bpm');
-    if (hr != null) {
-      return ParsedVital(
-        vitalType: VitalType.heartRate,
-        value: hr,
-        unit: VitalType.heartRate.defaultUnit,
-      );
-    }
+    final hr = parseHeartRate(lower);
+    if (hr != null) return _heartRateVital(hr);
 
     final temp = _number(lower, r'°\s*[cf]|degrees?|celsius|fahrenheit');
     if (temp != null) {
@@ -124,6 +103,85 @@ abstract final class QuickLogParser {
 
     return null;
   }
+
+  /// Extracts every structured vital reading found in [text]. Unlike
+  /// [parseVital], a combined blood-pressure + pulse reading (e.g.
+  /// "BP 118/76, pulse 68bpm") returns both readings instead of silently
+  /// discarding the pulse. Falls back to [parseVital]'s single-reading
+  /// behaviour for every other vital type.
+  static List<ParsedVital> parseVitals(String text) {
+    final lower = text.toLowerCase();
+    final bp = parseBloodPressure(lower);
+    final hr = parseHeartRate(lower);
+    if (bp == null && hr == null) {
+      final single = parseVital(text);
+      return single == null ? const [] : [single];
+    }
+    return [
+      if (bp != null) _bloodPressureVital(bp),
+      if (hr != null) _heartRateVital(hr),
+    ];
+  }
+
+  /// Extracts a plausible blood-pressure reading as (systolic, diastolic),
+  /// or null when no digit pair matches or the values fall outside
+  /// plausible human ranges. [text] is matched case-insensitively.
+  ///
+  /// Shared with `QuickLogClassifier` so its suggestion chip and this
+  /// parser's actual save behaviour never disagree about what counts as a
+  /// blood-pressure reading (e.g. "3/4 of a sandwich" or a typed date like
+  /// "9/17" must never match either).
+  static (double systolic, double diastolic)? parseBloodPressure(String text) {
+    final match = RegExp(
+      r'(\d{2,3})\s*(?:/|over\s+)\s*(\d{2,3})',
+    ).firstMatch(text.toLowerCase());
+    if (match == null) return null;
+    final systolic = double.parse(match.group(1)!);
+    final diastolic = double.parse(match.group(2)!);
+    if (systolic < 60 ||
+        systolic > 260 ||
+        diastolic < 30 ||
+        diastolic > 160 ||
+        systolic <= diastolic) {
+      return null;
+    }
+    return (systolic, diastolic);
+  }
+
+  /// Extracts a plausible heart-rate/pulse reading in BPM, or null. [text]
+  /// is matched case-insensitively.
+  ///
+  /// Recognises either an explicit "bpm"/"beats per minute" unit, or the
+  /// keywords "pulse"/"heart rate"/"hr" immediately preceding the number —
+  /// so "HR 72" and "Pulse 72" match without a unit, but a duration like
+  /// "2 hr walk" (number before "hr") does not.
+  static double? parseHeartRate(String text) {
+    final lower = text.toLowerCase();
+    final match =
+        RegExp(
+          r'(\d{2,3})\s*(?:bpm|beats?\s*per\s*minute)',
+        ).firstMatch(lower) ??
+        RegExp(
+          r'(?:pulse|heart\s*rate|\bhr\b)\s*(?:was|is|of|:)?\s*(\d{2,3})\b',
+        ).firstMatch(lower);
+    if (match == null) return null;
+    final value = double.parse(match.group(1)!);
+    if (value < 30 || value > 250) return null;
+    return value;
+  }
+
+  static ParsedVital _bloodPressureVital((double, double) bp) => ParsedVital(
+    vitalType: VitalType.bloodPressure,
+    value: bp.$1,
+    value2: bp.$2,
+    unit: VitalType.bloodPressure.defaultUnit,
+  );
+
+  static ParsedVital _heartRateVital(double hr) => ParsedVital(
+    vitalType: VitalType.heartRate,
+    value: hr,
+    unit: VitalType.heartRate.defaultUnit,
+  );
 
   /// Height written as feet+inches, e.g. "4'8"", "4'8", or "4 ft 8 in".
   static ParsedVital? _heightFeetInches(String lower) {

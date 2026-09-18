@@ -47,6 +47,24 @@ void main() {
       expect(v.unit, 'BPM');
     });
 
+    test('parses pulse/heart rate with no explicit bpm unit', () {
+      expect(QuickLogParser.parseVital('HR 72')!.value, 72);
+      expect(
+        QuickLogParser.parseVital('HR 72')!.vitalType,
+        VitalType.heartRate,
+      );
+      expect(QuickLogParser.parseVital('Pulse 72 today')!.value, 72);
+      expect(QuickLogParser.parseVital('Pulse was 72 this morning')!.value, 72);
+      expect(QuickLogParser.parseVital('72 beats per minute')!.value, 72);
+    });
+
+    test('does not read a duration like "2 hr walk" as a heart rate', () {
+      expect(
+        QuickLogParser.parseHeartRate('walked for 2 hr this morning'),
+        isNull,
+      );
+    });
+
     test('parses temperature in celsius', () {
       final v = QuickLogParser.parseVital('Temp was 37.8°C tonight')!;
       expect(v.vitalType, VitalType.temperature);
@@ -131,6 +149,44 @@ void main() {
     test('returns null when no value can be extracted', () {
       expect(QuickLogParser.parseVital('Feeling faint and shaky'), isNull);
       expect(QuickLogParser.parseVital('Checked my blood pressure'), isNull);
+    });
+  });
+
+  group('QuickLogParser.parseVitals', () {
+    test('returns both readings for a combined BP + pulse entry', () {
+      final vitals = QuickLogParser.parseVitals('BP 118/76, pulse 68bpm');
+      expect(vitals, hasLength(2));
+      expect(vitals[0].vitalType, VitalType.bloodPressure);
+      expect(vitals[0].value, 118);
+      expect(vitals[0].value2, 76);
+      expect(vitals[1].vitalType, VitalType.heartRate);
+      expect(vitals[1].value, 68);
+    });
+
+    test('returns a single reading when only one vital is present', () {
+      final vitals = QuickLogParser.parseVitals('157cm height');
+      expect(vitals, hasLength(1));
+      expect(vitals.single.vitalType, VitalType.height);
+    });
+
+    test('returns an empty list when nothing can be extracted', () {
+      expect(QuickLogParser.parseVitals('Feeling faint and shaky'), isEmpty);
+    });
+  });
+
+  group('QuickLogParser.parseBloodPressure', () {
+    test('rejects unbounded fractions and typed dates', () {
+      expect(
+        QuickLogParser.parseBloodPressure('Ate 3/4 of a sandwich'),
+        isNull,
+      );
+      expect(QuickLogParser.parseBloodPressure('chapter 5/10'), isNull);
+      expect(QuickLogParser.parseBloodPressure('Appointment on 9/17'), isNull);
+    });
+
+    test('accepts a plausible reading written with a slash or "over"', () {
+      expect(QuickLogParser.parseBloodPressure('128/84'), (128.0, 84.0));
+      expect(QuickLogParser.parseBloodPressure('128 over 84'), (128.0, 84.0));
     });
   });
 

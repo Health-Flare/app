@@ -278,6 +278,32 @@ void main() {
       );
     });
 
+    test('classifies a pulse reading with no explicit bpm unit', () {
+      expect(QuickLogClassifier.classify('HR 72'), QuickLogEntryType.vital);
+      expect(
+        QuickLogClassifier.classify('Pulse 72 today'),
+        QuickLogEntryType.vital,
+      );
+      expect(
+        QuickLogClassifier.classify('72 beats per minute'),
+        QuickLogEntryType.vital,
+      );
+    });
+
+    test('does not classify an unrelated slash number as a vital reading', () {
+      // "ate"/"sandwich" still classify it as a meal — the point is that
+      // the unbounded "3/4" no longer wins the vital check first, so the
+      // chip agrees with what actually gets saved.
+      expect(
+        QuickLogClassifier.classify('Ate 3/4 of a sandwich for lunch'),
+        QuickLogEntryType.meal,
+      );
+      expect(
+        QuickLogClassifier.classify('Appointment on 9/17 confirmed today'),
+        isNot(QuickLogEntryType.vital),
+      );
+    });
+
     test('classifies short vital readings without the word-count minimum', () {
       expect(QuickLogClassifier.classify('74kg'), QuickLogEntryType.vital);
       expect(QuickLogClassifier.classify('144cm'), QuickLogEntryType.vital);
@@ -552,6 +578,34 @@ void main() {
         vitalCalls.single['notes'],
         'Blood pressure was 128 over 84 this morning',
       );
+      expect(journalCalls, isEmpty);
+    });
+
+    testWidgets(
+      'combined blood pressure and pulse text saves both structured vitals',
+      (tester) async {
+        await _openSheet(tester);
+        await _typeAndSave(tester, 'BP 118/76, pulse 68bpm');
+
+        expect(vitalCalls, hasLength(2));
+        expect(vitalCalls[0]['vitalType'], VitalType.bloodPressure);
+        expect(vitalCalls[0]['value'], 118);
+        expect(vitalCalls[0]['value2'], 76);
+        expect(vitalCalls[1]['vitalType'], VitalType.heartRate);
+        expect(vitalCalls[1]['value'], 68);
+        expect(journalCalls, isEmpty);
+      },
+    );
+
+    testWidgets('pulse text with no bpm unit saves a structured heart rate', (
+      tester,
+    ) async {
+      await _openSheet(tester);
+      await _typeAndSave(tester, 'Pulse 72 today');
+
+      expect(vitalCalls, hasLength(1));
+      expect(vitalCalls.single['vitalType'], VitalType.heartRate);
+      expect(vitalCalls.single['value'], 72);
       expect(journalCalls, isEmpty);
     });
 
