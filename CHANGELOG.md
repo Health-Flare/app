@@ -53,6 +53,13 @@ Subsection meanings (from Keep a Changelog):
   integration test, and `scripts/release/build_release_kit.sh` runs all
   three (plus the existing screenshot sweep) together. See
   `docs/release-kit.md`.
+- Sleep tracking is now reachable from the app — a nav bar destination and
+  quick-create FAB for logging a sleep entry, and a way to delete one.
+  Tapping a sleep entry on the dashboard now opens it for editing instead
+  of a blank create form.
+- A manual Nap toggle on the sleep entry form, so a nap can be tagged or
+  untagged directly instead of relying only on the same-day auto-detect
+  heuristic.
 
 ### Changed
 - _Nothing yet._
@@ -70,6 +77,9 @@ Subsection meanings (from Keep a Changelog):
   per minute") is now recognised too, and unrelated text with a slash
   (like "Ate 3/4 of a sandwich") no longer mistakenly suggests a blood
   pressure entry.
+- Editing a sleep entry's bedtime or wake time past the other now shifts
+  the whole sleep window by the same offset, instead of leaving the entry
+  in an invalid state.
 
 ### Security
 - _Nothing yet._
