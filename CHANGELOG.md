@@ -64,7 +64,12 @@ Subsection meanings (from Keep a Changelog):
 - _Nothing yet._
 
 ### Fixed
-- _Nothing yet._
+- Quick Log no longer drops the pulse reading from a combined entry like
+  "BP 118/76, pulse 68bpm" — both vitals are now saved. Pulse/heart-rate
+  phrasing without an explicit "bpm" unit ("Pulse 72", "HR 72", "72 beats
+  per minute") is now recognised too, and unrelated text with a slash
+  (like "Ate 3/4 of a sandwich") no longer mistakenly suggests a blood
+  pressure entry.
 
 ### Security
 - _Nothing yet._
