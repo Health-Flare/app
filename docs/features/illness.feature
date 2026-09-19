@@ -102,6 +102,116 @@ Feature: Illness Tracking
     And the search bar is cleared
 
   # ---------------------------------------------------------------------------
+  # Custom entry must never be excluded (Issue #26)
+  #
+  # The condition catalogue is not, and can never be, fully comprehensive.
+  # A partial/substring match against an unrelated catalogue entry must never
+  # be the reason a user cannot save the illness text they actually typed.
+  # Only an *exact* (case-insensitive) catalogue match may suppress custom add.
+  # ---------------------------------------------------------------------------
+
+  Scenario: A partial catalogue match does not suppress the Add custom option
+    Given the illness entry screen is open
+    And "Crohn's disease" exists in the condition catalogue
+    When I type "Crohn's colitis" in the search bar
+    Then "Crohn's disease" appears in the filtered results as a partial match
+    And I still see an option to add "Crohn's colitis" as a custom illness
+
+  Scenario: Tapping Add custom after a partial match saves the exact text I typed
+    Given the illness entry screen is open
+    And filtered results include a partial match for my search text
+    When I tap the "Add custom" option for "Crohn's colitis"
+    Then a new condition named "Crohn's colitis" is created in the catalogue with global = false
+    And "Crohn's disease" is not modified
+    And the new condition is immediately selected
+
+  Scenario: A search that only partially matches several catalogue entries still allows custom add
+    Given the illness entry screen is open
+    And the catalogue contains "Arthritis" and "Psoriatic arthritis"
+    When I type "Autoimmune arthritis" in the search bar
+    Then both "Arthritis" and "Psoriatic arthritis" appear as partial matches
+    And I still see an option to add "Autoimmune arthritis" as a custom illness
+
+  Scenario: Only an exact match suppresses the Add custom option
+    Given the illness entry screen is open
+    When I type "arthritis" in the search bar
+    And "Arthritis" exists in the condition catalogue
+    Then the match is treated as exact regardless of letter case
+    And the "Add custom" option is not shown
+
+  # ---------------------------------------------------------------------------
+  # Smart entry detection for diagnosis, remission, and relapse phrasing (Issue #26)
+  #
+  # Detection is a convenience layer only. If no phrasing pattern matches, the
+  # full typed text is still saved verbatim as a custom condition — detection
+  # must never narrow or block what "Add custom" from the section above allows.
+  # ---------------------------------------------------------------------------
+
+  Scenario Outline: Diagnosis phrasing is detected and the condition name is extracted
+    Given the illness entry screen is open
+    When I type "<input>" in the search bar
+    And no existing condition exactly matches "<input>"
+    Then I see an option to add "<condition>" as a custom illness
+    And the diagnosis date field for "<condition>" pre-fills with today's date
+
+    Examples:
+      | input                        | condition    |
+      | Diagnosed with Fibromyalgia  | Fibromyalgia |
+      | diagnosed with fibromyalgia  | fibromyalgia |
+      | Diagnosed Fibromyalgia       | Fibromyalgia |
+      | Dx: Fibromyalgia             | Fibromyalgia |
+      | Dx Fibromyalgia              | Fibromyalgia |
+
+  Scenario Outline: Remission phrasing is detected and maps to an "in recovery" status
+    Given the illness entry screen is open
+    When I type "<input>" in the search bar
+    And no existing condition exactly matches "<input>"
+    Then I see an option to add "<condition>" as a custom illness
+    And adding it saves the condition with a status of "In recovery"
+
+    Examples:
+      | input                        | condition    |
+      | Fibromyalgia in remission    | Fibromyalgia |
+      | Remission from Fibromyalgia  | Fibromyalgia |
+      | Fibromyalgia (remission)     | Fibromyalgia |
+
+  Scenario Outline: Relapse phrasing is detected and records a relapse event
+    Given the illness entry screen is open
+    And the active profile is already tracking "Fibromyalgia" with a status of "In recovery"
+    When I type "<input>" in the search bar
+    Then I see an option to record a relapse for "Fibromyalgia" instead of creating a duplicate condition
+    And confirming it sets "Fibromyalgia" to a status of "Active"
+    And a relapse event is recorded in the condition history
+
+    Examples:
+      | input                      |
+      | Relapsed with Fibromyalgia |
+      | Fibromyalgia relapse       |
+      | Relapse of Fibromyalgia    |
+
+  Scenario: Detected phrasing can be edited before saving
+    Given the illness entry screen is open
+    When I type "Diagnosed with Fibromyalgia" in the search bar
+    Then I see an option to add "Fibromyalgia" as a custom illness
+    When I edit the suggested name to "Fibromyalgia and chronic fatigue"
+    And I tap "Add custom"
+    Then a new condition named "Fibromyalgia and chronic fatigue" is created
+
+  Scenario: Text that matches no diagnosis, remission, or relapse phrasing is saved verbatim
+    Given the illness entry screen is open
+    When I type "Weird joint thing my doctor hasn't named yet" in the search bar
+    And no existing condition exactly matches "Weird joint thing my doctor hasn't named yet"
+    Then I see an option to add "Weird joint thing my doctor hasn't named yet" as a custom illness with no phrasing stripped
+    And no diagnosis date, remission status, or relapse event is inferred
+
+  Scenario: Smart entry detection never prevents adding an exact literal phrase
+    Given the illness entry screen is open
+    When I type "Diagnosed with" in the search bar
+    And no existing condition exactly matches "Diagnosed with"
+    Then I see an option to add "Diagnosed with" as a custom illness
+    And no condition name is inferred because no illness name follows the phrase
+
+  # ---------------------------------------------------------------------------
   # Common symptom quick-add
   # ---------------------------------------------------------------------------
 
