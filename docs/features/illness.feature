@@ -365,3 +365,26 @@ Feature: Illness Tracking
     When I remove "Arthritis" from her tracked conditions
     Then the symptom log entries that were attributed to "Arthritis" are preserved
     And they remain in the symptom log without a condition attribution
+
+  # ---------------------------------------------------------------------------
+  # Quick Log integration
+  # ---------------------------------------------------------------------------
+  #
+  # Quick Log (docs/features/quick-log.feature) can classify text as a
+  # Condition entry and route it here. It matches against this screen's own
+  # condition catalogue (global = true) and against conditions the active
+  # profile is already tracking or has created as custom (global = false),
+  # the same catalogue this screen reads and writes.
+
+  Scenario: A condition created via Quick Log's "Add details" link uses the same custom-condition rules
+    Given no condition matches my search text on the illness entry screen
+    When I arrive here from Quick Log's "Add details" link with my typed text pre-filled
+    And I tap the "Add custom" option for my search text
+    Then a new condition with that name is created in the catalogue with global = false
+    And it is immediately selected, exactly as when reached directly from this screen
+
+  Scenario: A condition Quick Log has already matched is not offered as a duplicate "Add custom" option
+    Given "Sarah" is already tracking "Fibromyalgia"
+    When I arrive here from Quick Log's "Add details" link after typing "fibromyalgia flare"
+    Then "Fibromyalgia" does not appear in the selectable condition list
+    And I cannot add it a second time

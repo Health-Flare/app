@@ -58,7 +58,7 @@ Feature: Quick Log
     Then the quick log sheet slides up
     And the freeform text field is focused with the keyboard raised
     And the current date and time are shown
-    And a Save button is visible
+    And a primary button labelled "Add to Journal" is visible
 
   Scenario: The keyboard is raised immediately with no extra tap
     When I tap the + button
@@ -85,7 +85,7 @@ Feature: Quick Log
     Given "Dad" is the active profile
     When I tap the + button
     And I type "Pain in right hip after walking"
-    And I tap Save
+    And I tap the primary button
     Then the entry appears in Dad's activity feed
     And the entry does not appear in any other profile's feed
 
@@ -102,7 +102,7 @@ Feature: Quick Log
     When I tap the + button
     And I tap the timestamp
     Then I can change the date and time to any past value
-    When I tap Save
+    When I tap the primary button
     Then the entry is saved with the adjusted timestamp, not the time the sheet was opened
 
   # ---------------------------------------------------------------------------
@@ -123,6 +123,49 @@ Feature: Quick Log
     When I tap the + button
     And I type "Bad flare today, knees and wrists both swollen"
     Then a suggestion chip labelled "Symptom" appears
+
+  # ---------------------------------------------------------------------------
+  # Catalogue- and user-aware symptom detection
+  # ---------------------------------------------------------------------------
+  #
+  # Symptom classification is not limited to a fixed generic keyword list. It
+  # also matches against the app's symptom catalogue (Symptom, global = true)
+  # and, critically, against symptoms the active profile has already created
+  # or logged (UserSymptom / custom Symptom records with global = false) —
+  # including symptoms the user typed themselves rather than picked from a
+  # list. The first mention of a brand-new custom symptom still requires the
+  # full entry form; every mention after that is fast from Quick Log.
+
+  Scenario: A symptom catalogue name not covered by the generic keyword list is still recognised
+    Given "Photophobia" exists in the symptom catalogue
+    When I tap the + button
+    And I type "Photophobia again this afternoon"
+    Then a suggestion chip labelled "Symptom" appears
+    And accepting it links the entry to the "Photophobia" catalogue symptom
+
+  Scenario: A custom symptom the user previously created is recognised on later quick log entries
+    Given "Sarah" previously created the custom symptom "Brain fog" using the full symptom entry form
+    When I tap the + button
+    And I type "Brain fog again, hard to focus"
+    Then a suggestion chip labelled "Symptom" appears
+    And accepting it links the entry to Sarah's existing "Brain fog" symptom
+    And no duplicate symptom is created
+
+  Scenario: A brand-new custom symptom is not guaranteed a chip on its first mention
+    Given "Sarah" has never logged or created a symptom called "Pins and needles in feet"
+    When I tap the + button
+    And I type "Pins and needles in feet"
+    Then no Symptom chip is guaranteed, since the phrase matches no catalogue entry, user history, or generic keyword
+
+  Scenario: Once created via the full form, a custom symptom is recognised on every subsequent quick log entry
+    Given "Sarah" has never logged or created a symptom called "Pins and needles in feet"
+    When I tap the + button
+    And I type "Pins and needles in feet"
+    And I tap "Add details" and save it as a new custom symptom via the full symptom entry form
+    And I later tap the + button
+    And I type "Pins and needles in feet again"
+    Then a suggestion chip labelled "Symptom" appears
+    And accepting it links the entry to the "Pins and needles in feet" symptom created earlier
 
   Scenario: Typing about medication suggests a Medication entry type
     When I tap the + button
@@ -168,6 +211,36 @@ Feature: Quick Log
     Then a suggestion chip labelled "Meal" appears
     And no suggestion chip labelled "Vital" appears
 
+  # ---------------------------------------------------------------------------
+  # Full vital type coverage
+  # ---------------------------------------------------------------------------
+  #
+  # Vital classification must cover every VitalType the app tracks
+  # (heartRate, bloodPressure, weight, height, temperature, oxygenSaturation,
+  # respiratoryRate, bloodGlucose), not a fixed subset chosen by unit regex.
+
+  Scenario Outline: Every documented vital type suggests a Vital entry type
+    When I tap the + button
+    And I type "<text>"
+    Then a suggestion chip labelled "Vital" appears
+
+    Examples:
+      | text                        |
+      | HR 72                       |
+      | Blood pressure 128 over 84  |
+      | 74kg                        |
+      | 157cm height                |
+      | Temp 38.2°C                 |
+      | Oxygen sat 96%              |
+      | Respiratory rate 16 br/min  |
+      | Blood glucose 110 mg/dl     |
+
+  Scenario: Respiratory rate is a recognised vital, not a fallback Journal entry
+    When I tap the + button
+    And I type "Respiratory rate 18 br/min"
+    Then a suggestion chip labelled "Vital" appears
+    And no suggestion chip labelled "Journal" appears
+
   Scenario: Typing about sleep suggests a Sleep entry type
     When I tap the + button
     And I type "Slept for 6 hours last night, woke up twice"
@@ -178,11 +251,42 @@ Feature: Quick Log
     And I type "Feeling overwhelmed but had a decent morning"
     Then a suggestion chip labelled "Journal" appears
 
-  Scenario: Typing about a new diagnosis does not force a misclassification
+  # ---------------------------------------------------------------------------
+  # Condition detection
+  # ---------------------------------------------------------------------------
+  #
+  # Condition text is matched against the condition catalogue (Condition,
+  # global = true) and the active profile's own conditions (UserCondition /
+  # custom Condition records with global = false), the same way medication
+  # text is matched against the profile's real medication list. Diagnosis
+  # text is no longer routed to Journal by default — a Condition type exists
+  # and is used when the text names a known or previously-tracked condition.
+
+  Scenario: Typing about a known catalogue condition suggests a Condition entry type
+    Given "Fibromyalgia" exists in the condition catalogue
     When I tap the + button
     And I type "Just found out I have fibromyalgia"
-    Then the suggestion chip, if shown, is "Journal" or no chip is shown
-    And the entry is not forced into a Symptom or Medication type
+    Then a suggestion chip labelled "Condition" appears
+
+  Scenario: Accepting a Condition suggestion for a not-yet-tracked condition starts tracking it
+    Given "Fibromyalgia" exists in the condition catalogue but is not tracked by "Sarah"
+    When I tap the + button
+    And I type "Just found out I have fibromyalgia"
+    And the app suggests "Condition"
+    And I tap the primary button
+    Then a UserCondition record for "Fibromyalgia" is created and linked to "Sarah"
+
+  Scenario: A custom condition the user previously created is recognised on later quick log entries
+    Given "Sarah" previously created the custom condition "Myalgic encephalomyelitis" using the illness entry screen
+    When I tap the + button
+    And I type "Rough ME day today"
+    Then a suggestion chip labelled "Condition" appears
+    And accepting it attributes the entry to Sarah's existing "Myalgic encephalomyelitis" condition
+
+  Scenario: Free text that only describes symptoms is not misclassified as a Condition
+    When I tap the + button
+    And I type "Knees and wrists both swollen again"
+    Then the suggestion chip, if shown, is "Symptom", not "Condition"
 
   Scenario: Low-confidence or ambiguous input shows no chip rather than a wrong one
     When I tap the + button
@@ -269,11 +373,20 @@ Feature: Quick Log
     And the notes field is pre-filled with "Slept about 7 hours, felt groggy"
     And bedtime, wake time, and quality fields are available
 
+  Scenario: Tapping "Add details" on a Condition entry opens the illness entry screen
+    When I tap the + button
+    And I type "Just found out I have fibromyalgia"
+    And the app suggests "Condition"
+    And I tap "Add details"
+    Then the illness entry screen opens
+    And "Fibromyalgia" is pre-selected if it matched the catalogue
+    And the search bar is pre-filled with my text if it did not match
+
   Scenario: Saving without tapping "Add details" still creates a complete entry
     When I tap the + button
     And I type "Had soup for lunch"
     And the app suggests "Meal"
-    And I tap Save without tapping "Add details"
+    And I tap the primary button without tapping "Add details"
     Then a Meal entry is saved with the text "Had soup for lunch"
     And the entry is visible in the Meals section
     And I can tap into the full Meal detail view later to add more
@@ -287,18 +400,83 @@ Feature: Quick Log
     And saving promotes the entry to a full Meal record
 
   # ---------------------------------------------------------------------------
+  # Quick-add vs. Journal button language
+  # ---------------------------------------------------------------------------
+  #
+  # The primary button's label must always make it unambiguous whether tapping
+  # it will quick-add the detected record type (e.g. a Vital, a Medication
+  # dose) or fall back to a plain Journal entry. A generic "Save" label that
+  # never changes does not communicate this, so the label tracks the current
+  # classification. The secondary "Add details" link (see above) always opens
+  # the full, slower entry form for whichever type is currently detected, and
+  # is never worded the same as the primary button.
+
+  Scenario: The primary button defaults to "Add to Journal" before any type is detected
+    When I tap the + button
+    And I have not typed anything
+    Then the primary button reads "Add to Journal"
+
+  Scenario Outline: The primary button label names the detected quick-add type
+    When I tap the + button
+    And I type "<text>"
+    And the app suggests "<type>"
+    Then the primary button reads "<button label>"
+
+    Examples:
+      | text                                | type         | button label             |
+      | Had grilled salmon with rice        | Meal         | Quick Add: Meal          |
+      | Saw Dr. Chen about my joints         | Doctor Visit | Quick Add: Doctor Visit  |
+      | Bad flare today, knees swollen       | Symptom      | Quick Add: Symptom       |
+      | Took 400mg ibuprofen at noon         | Medication   | Quick Add: Medication    |
+      | Blood pressure was 128 over 84       | Vital        | Quick Add: Vital         |
+      | Slept for 6 hours last night         | Sleep        | Quick Add: Sleep         |
+      | Just found out I have fibromyalgia   | Condition    | Quick Add: Condition     |
+
+  Scenario: The primary button reads "Add to Journal" when the entry is classified as Journal
+    When I tap the + button
+    And I type "Feeling overwhelmed but had a decent morning"
+    And the app suggests "Journal"
+    Then the primary button reads "Add to Journal"
+
+  Scenario: The primary button relabels immediately as the type chip updates live
+    When I tap the + button
+    And I type "Tired"
+    And the app suggests "Journal"
+    Then the primary button reads "Add to Journal"
+    When I continue typing " after eating the pasta"
+    And the app suggests "Meal"
+    Then the primary button reads "Quick Add: Meal"
+
+  Scenario: The primary button reverts to "Add to Journal" when the user overrides the type to Journal
+    When I tap the + button
+    And I type "Took ibuprofen for the pain"
+    And the app suggests "Medication"
+    Then the primary button reads "Quick Add: Medication"
+    When I tap the suggestion chip
+    And I select "Journal"
+    Then the primary button reads "Add to Journal"
+
+  Scenario: The Quick Add button and the "Add details" link are never worded the same
+    When I tap the + button
+    And I type "Grilled salmon for dinner"
+    And the app suggests "Meal"
+    Then the primary button reads "Quick Add: Meal" and is styled as the prominent filled action
+    And the "Add details" link is styled as a secondary, less prominent action
+    And the two controls never share the same label text
+
+  # ---------------------------------------------------------------------------
   # Saving
   # ---------------------------------------------------------------------------
 
-  Scenario: Save button is disabled when the text field is empty
+  Scenario: Primary button is disabled when the text field is empty
     When I tap the + button
     And I have not typed anything
-    Then the Save button is disabled
+    Then the primary button is disabled
 
-  Scenario: Save button is disabled when the text field contains only whitespace
+  Scenario: Primary button is disabled when the text field contains only whitespace
     When I tap the + button
     And I type "     "
-    Then the Save button is disabled
+    Then the primary button is disabled
     And no entry is created
 
   Scenario: Dismissing with typed text shows a discard confirmation with equally clear buttons
@@ -412,6 +590,16 @@ Feature: Quick Log
     When I save a quick log entry classified as "Vital"
     Then the entry appears in the Symptoms & Vitals section
 
+  Scenario: A respiratory-rate quick entry saves a structured value
+    When I save the quick log entry "Respiratory rate 18 br/min"
+    Then a Respiratory Rate vital entry is saved with value 18 breaths/min
+    And the original text is preserved in the entry's notes
+
+  Scenario: A Condition-typed entry is visible in the Illnesses tab
+    When I save a quick log entry classified as "Condition"
+    Then the entry appears in the Illnesses tab
+    And the associated UserCondition record reflects the matched condition
+
   Scenario: A blood-pressure quick entry saves structured values
     When I save the quick log entry "Blood pressure was 128 over 84 this morning"
     Then a Blood Pressure vital entry is saved with systolic 128 and diastolic 84 mmHg
@@ -506,8 +694,14 @@ Feature: Quick Log
     Then the screen reader announces that the entry has been classified as "Medication"
     And focus remains on the text field unless the user navigates to the chip
 
+  Scenario: A change in the primary button's label is announced to screen readers
+    Given a screen reader is active
+    When I tap the + button
+    And I type "Took 400mg ibuprofen"
+    Then the screen reader announces that the primary button now reads "Quick Add: Medication"
+
   Scenario: Quick log sheet is usable at maximum system font size
     Given the device system font size is set to the largest accessible option
     When I tap the + button
-    Then the text field, type chip, timestamp, and Save button remain visible and usable
+    Then the text field, type chip, timestamp, and primary button remain visible and usable
     And no elements overflow or overlap each other
