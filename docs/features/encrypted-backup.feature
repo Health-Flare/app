@@ -22,6 +22,27 @@ Feature: Encrypted backups
   # the opt-in Open-Meteo weather lookup, which this feature does not touch).
 
   # ---------------------------------------------------------------------------
+  # Future direction — not in scope here
+  # ---------------------------------------------------------------------------
+  #
+  # This feature is the "safe copy, full user control" half of a broader
+  # principle: people own their health data and should have what they need to
+  # decide what's best to do with it. A direction under discussion, not
+  # committed to and not part of this feature, is letting a user take an
+  # *anonymized* export and hand it to patient-owned-data tooling outside this
+  # app — e.g. informed-patient.ai (github.com/DrCatHicks/informed-patient,
+  # CC-BY-4.0), a patient-advocacy project by Cat Hicks, PhD that helps people
+  # build structured evidence reviews from their own health data, or similar
+  # tools.
+  #
+  # This note exists so contributors extending backup/export later keep that
+  # direction in mind — e.g. don't design the encrypted backup format in a way
+  # that would foreclose an anonymized-export variant down the line — not so
+  # this feature builds anonymization or third-party interop now. The
+  # password-locked, full-fidelity backup specified below stays scoped to
+  # personal backup/restore and transfer between the user's own devices.
+
+  # ---------------------------------------------------------------------------
   # Background
   # ---------------------------------------------------------------------------
 
@@ -34,30 +55,12 @@ Feature: Encrypted backups
   # Data ownership messaging on export
   # ---------------------------------------------------------------------------
   #
-  # Language reference: informed-patient.ai (confirmed correct domain — note
-  # the hyphen, not "informedpatients.ai"), created by patient advocate Cat
-  # Hicks, PhD. Related GitHub repo: github.com/DrCatHicks/informed-patient
-  # (CC-BY-4.0). Its writing on what happens to a patient's data, who can see
-  # it, and why patients deserve a specific answer (not a vague reassurance)
-  # is a strong model for the tone we want on this screen — consistent with
-  # CLAUDE.md's existing "Privacy-Centric" principle ("no vague 'we value
-  # privacy'").
-  #
-  # NOTE: this session's network egress to informed-patient.ai itself is
-  # blocked (and archive.org is unreachable too), so its exact on-site copy
-  # still hasn't been pulled. The GitHub repo *was* reachable, but it's a
-  # Claude Skill for evidence reviews, not a data-export product — its actual
-  # privacy language is caution about using AI chat for health questions
-  # (e.g. "This is not a HIPAA-covered tool"; "consider whether you want your
-  # conversation used to train Anthropic's models"), not data-ownership
-  # language for an export flow. That may mean the live site has different,
-  # more relevant copy on its own pages — or that this isn't quite the source
-  # intended. TODO before shipping: get someone with access to
-  # informed-patient.ai to confirm and pull the actual ownership/export
-  # language; what's below documents the requirement, not the final copy.
-  #
-  # This messaging applies to the export flow generally — both the plain and
-  # encrypted paths — not just the encryption-specific scenarios below.
+  # Per CLAUDE.md's existing "Privacy-Centric" principle ("no vague 'we value
+  # privacy'"), the export screen owes the user a specific, checkable
+  # explanation rather than a reassuring platitude. This applies to the export
+  # flow generally — both the plain and encrypted paths — not just the
+  # encryption-specific scenarios below. Exact copy is still to be written;
+  # this scenario specifies what it has to convey.
 
   Scenario: The export screen explains data ownership before the user shares anything
     Given the user has opened "Export backup"
