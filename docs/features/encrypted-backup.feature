@@ -31,6 +31,40 @@ Feature: Encrypted backups
     And the settings screen's "Data & backup" section is open
 
   # ---------------------------------------------------------------------------
+  # Data ownership messaging on export
+  # ---------------------------------------------------------------------------
+  #
+  # Language reference: informed-patient.ai, created by patient advocate Cat
+  # Hicks, PhD. Its writing on what happens to a patient's data, who can see
+  # it, and why patients deserve a specific answer (not a vague reassurance)
+  # is a strong model for the tone we want on this screen — consistent with
+  # CLAUDE.md's existing "Privacy-Centric" principle ("no vague 'we value
+  # privacy'").
+  #
+  # NOTE: this session couldn't reach that site (network egress to it is
+  # blocked here) to quote its exact phrasing, and the domain originally given
+  # ("informedpatients.ai") doesn't resolve — "informed-patient.ai" by Cat
+  # Hicks is the closest match found and should be confirmed as the intended
+  # source before final copy is written. TODO before shipping: pull the actual
+  # language from that site and adapt it into the strings this scenario
+  # requires below; what's here documents the requirement, not the final copy.
+  #
+  # This messaging applies to the export flow generally — both the plain and
+  # encrypted paths — not just the encryption-specific scenarios below.
+
+  Scenario: The export screen explains data ownership before the user shares anything
+    Given the user has opened "Export backup"
+    Then the screen states, in plain language, that this data belongs to the user
+    And it states specifically what happens on export: the data is written to a
+      file the user controls, and Health Flare has no server or account that
+      receives a copy of it
+    And it states who can access the file afterward: only whoever the user
+      chooses to share it with — Health Flare never sees, stores, or has access
+      to it
+    And the language is specific and checkable, not a vague reassurance
+      ("we value your privacy")
+
+  # ---------------------------------------------------------------------------
   # Choosing to encrypt an export
   # ---------------------------------------------------------------------------
 
