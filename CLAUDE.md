@@ -62,6 +62,22 @@ Do **not** prefix branches with `claude/` (or similar tool-identifying prefixes)
 even when a session auto-generates one — rename to `bug/…` or `feature/…` before
 pushing.
 
+### Linking Starter-Work Branches to Issues
+
+When a branch exists with starter work for an issue (e.g. specs added, a fix
+partially scoped) before a PR is opened, make that discoverable on the issue
+itself so anyone — human or AI agent — can pick up from it instead of
+starting fresh:
+
+1. Apply the `has-branch` label to the issue.
+2. Add/update a `## Branch` section at the top of the issue body linking to
+   the branch (e.g. `https://github.com/<owner>/<repo>/tree/<branch>`) and
+   naming what's already there (specs, partial implementation, etc.).
+
+Once a PR is opened, GitHub's own "Development" linking on the PR (via
+`Closes #<issue>`) takes over — the manual `## Branch` note is only needed
+for the pre-PR gap.
+
 ```bash
 # Create a pull request (from current branch into main)
 gh pr create --title "feat(foo): short title" --body "## Summary\n..."
