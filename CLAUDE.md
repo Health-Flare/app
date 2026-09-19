@@ -51,6 +51,17 @@ Skip it for a single commit with `git commit --no-verify` if needed.
 
 This project is hosted on **GitHub**. Use the `gh` CLI for all repository operations:
 
+### Branch Naming
+
+Name branches by the kind of work, not by tool/author:
+
+- `bug/<short-description>` — bug fixes
+- `feature/<short-description>` — new features / enhancements
+
+Do **not** prefix branches with `claude/` (or similar tool-identifying prefixes)
+even when a session auto-generates one — rename to `bug/…` or `feature/…` before
+pushing.
+
 ```bash
 # Create a pull request (from current branch into main)
 gh pr create --title "feat(foo): short title" --body "## Summary\n..."
