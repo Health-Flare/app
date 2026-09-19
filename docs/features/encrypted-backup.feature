@@ -34,20 +34,27 @@ Feature: Encrypted backups
   # Data ownership messaging on export
   # ---------------------------------------------------------------------------
   #
-  # Language reference: informed-patient.ai, created by patient advocate Cat
-  # Hicks, PhD. Its writing on what happens to a patient's data, who can see
+  # Language reference: informed-patient.ai (confirmed correct domain — note
+  # the hyphen, not "informedpatients.ai"), created by patient advocate Cat
+  # Hicks, PhD. Related GitHub repo: github.com/DrCatHicks/informed-patient
+  # (CC-BY-4.0). Its writing on what happens to a patient's data, who can see
   # it, and why patients deserve a specific answer (not a vague reassurance)
   # is a strong model for the tone we want on this screen — consistent with
   # CLAUDE.md's existing "Privacy-Centric" principle ("no vague 'we value
   # privacy'").
   #
-  # NOTE: this session couldn't reach that site (network egress to it is
-  # blocked here) to quote its exact phrasing, and the domain originally given
-  # ("informedpatients.ai") doesn't resolve — "informed-patient.ai" by Cat
-  # Hicks is the closest match found and should be confirmed as the intended
-  # source before final copy is written. TODO before shipping: pull the actual
-  # language from that site and adapt it into the strings this scenario
-  # requires below; what's here documents the requirement, not the final copy.
+  # NOTE: this session's network egress to informed-patient.ai itself is
+  # blocked (and archive.org is unreachable too), so its exact on-site copy
+  # still hasn't been pulled. The GitHub repo *was* reachable, but it's a
+  # Claude Skill for evidence reviews, not a data-export product — its actual
+  # privacy language is caution about using AI chat for health questions
+  # (e.g. "This is not a HIPAA-covered tool"; "consider whether you want your
+  # conversation used to train Anthropic's models"), not data-ownership
+  # language for an export flow. That may mean the live site has different,
+  # more relevant copy on its own pages — or that this isn't quite the source
+  # intended. TODO before shipping: get someone with access to
+  # informed-patient.ai to confirm and pull the actual ownership/export
+  # language; what's below documents the requirement, not the final copy.
   #
   # This messaging applies to the export flow generally — both the plain and
   # encrypted paths — not just the encryption-specific scenarios below.
