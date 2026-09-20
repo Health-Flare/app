@@ -1,4 +1,8 @@
+import 'package:health_flare/models/condition.dart';
 import 'package:health_flare/models/medication.dart';
+import 'package:health_flare/models/symptom.dart';
+import 'package:health_flare/models/user_condition.dart';
+import 'package:health_flare/models/user_symptom.dart';
 import 'package:health_flare/models/vital_type.dart';
 
 /// A vital measurement extracted from freeform quick-log text.
@@ -59,6 +63,18 @@ abstract final class QuickLogParser {
         vitalType: VitalType.oxygenSaturation,
         value: spo2,
         unit: VitalType.oxygenSaturation.defaultUnit,
+      );
+    }
+
+    final respiratoryRate = _number(
+      lower,
+      r'br/min|breaths?\s*(?:per\s*minute|/\s*min)',
+    );
+    if (respiratoryRate != null) {
+      return ParsedVital(
+        vitalType: VitalType.respiratoryRate,
+        value: respiratoryRate,
+        unit: VitalType.respiratoryRate.defaultUnit,
       );
     }
 
@@ -229,6 +245,119 @@ abstract final class QuickLogParser {
       }
     }
     return best;
+  }
+
+  /// Finds the condition whose name appears in [text], preferring the
+  /// longest name. Matches against the global catalogue (custom conditions
+  /// created by other profiles, [Condition.global] == false, are excluded)
+  /// plus every condition [trackedConditions] says the active profile has
+  /// already started tracking — so a profile's own custom condition is
+  /// still recognised even though it isn't in the global set. Returns null
+  /// when nothing matches.
+  static Condition? matchCondition(
+    String text,
+    List<Condition> catalogConditions,
+    List<UserCondition> trackedConditions,
+  ) {
+    final candidates = <int, Condition>{
+      for (final c in catalogConditions)
+        if (c.global) c.id: c,
+      for (final tc in trackedConditions)
+        tc.conditionId: Condition(
+          id: tc.conditionId,
+          name: tc.conditionName,
+          global: false,
+        ),
+    };
+    Condition? best;
+    for (final c in candidates.values) {
+      if (!textMentionsName(text, c.name)) continue;
+      if (best == null || c.name.trim().length > best.name.trim().length) {
+        best = c;
+      }
+    }
+    return best;
+  }
+
+  /// Finds the symptom whose name appears in [text], preferring the longest
+  /// name. Matches against the global catalogue, every symptom
+  /// [trackedSymptoms] says the active profile is tracking (added via the
+  /// Illnesses screen's "common symptoms" chips), and every name in
+  /// [loggedNames] the profile has typed into the standalone symptom entry
+  /// form — the most common way symptoms actually get created, and one that
+  /// never touches the [UserSymptom] catalogue at all (it only records a
+  /// free-text `SymptomEntry.name`; see `recentSymptomNamesProvider`). A
+  /// symptom typed there is still recognised on every mention after its
+  /// first, slower entry. Returns null when nothing matches.
+  static Symptom? matchSymptom(
+    String text,
+    List<Symptom> catalogSymptoms,
+    List<UserSymptom> trackedSymptoms, {
+    List<String> loggedNames = const [],
+  }) {
+    final candidates = <int, Symptom>{
+      for (final s in catalogSymptoms)
+        if (s.global) s.id: s,
+      for (final ts in trackedSymptoms)
+        ts.symptomId: Symptom(
+          id: ts.symptomId,
+          name: ts.symptomName,
+          global: false,
+        ),
+    };
+    Symptom? best;
+    for (final s in candidates.values) {
+      if (!textMentionsName(text, s.name)) continue;
+      if (best == null || s.name.trim().length > best.name.trim().length) {
+        best = s;
+      }
+    }
+    // Logged-only names have no catalogue id, so they're matched separately
+    // rather than folded into the id-keyed map above (which would collide
+    // across distinct names with no real id of their own).
+    for (final name in loggedNames) {
+      if (!textMentionsName(text, name)) continue;
+      if (best == null || name.trim().length > best.name.trim().length) {
+        best = Symptom(id: -1, name: name, global: false);
+      }
+    }
+    return best;
+  }
+
+  /// True if [text] mentions [name] — either as a whole-name substring, or
+  /// (for a multi-word [name]) via its capital-letter acronym written out
+  /// in full, e.g. "ME" for "Myalgic Encephalomyelitis". Names shorter than
+  /// 3 characters never match, to avoid common short words false-positiving.
+  /// The acronym check is case-sensitive against the original [text] (not
+  /// lower-cased) so a lowercase "me" never triggers it.
+  static bool textMentionsName(String text, String name) {
+    final trimmedName = name.trim();
+    if (trimmedName.length < 3) return false;
+    if (text.toLowerCase().contains(trimmedName.toLowerCase())) return true;
+    final acronym = _acronym(trimmedName);
+    if (acronym.length < 2) return false;
+    // RegExp.escape guards a name like "Lupus (SLE)" — its acronym's first
+    // punctuation-adjacent letter is still plain text, but nothing here
+    // stops a future name shape from landing an unescaped regex
+    // metacharacter in \b<acronym>\b and crashing every classify() call.
+    return RegExp(r'\b' + RegExp.escape(acronym) + r'\b').hasMatch(text);
+  }
+
+  /// Initials of each word in [name] (skipping words with no letters at
+  /// all), or '' when fewer than two words contribute a letter — a
+  /// one-word acronym would be indistinguishable from the name itself and
+  /// is more likely to false-positive.
+  ///
+  /// Uses each word's first *letter* rather than its first character, so a
+  /// parenthesised name like "Lupus (SLE)" contributes 'S' (from "SLE"),
+  /// not '(' from "(SLE)".
+  static String _acronym(String name) {
+    final words = name.split(RegExp(r'\s+')).where((w) => w.isNotEmpty);
+    final letters = [
+      for (final w in words) RegExp('[A-Za-z]').firstMatch(w)?.group(0),
+    ].whereType<String>();
+    if (letters.length < 2) return '';
+    return letters.map((l) => l.toUpperCase()).join();
   }
 
   /// First number immediately followed by [unitPattern].

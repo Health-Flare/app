@@ -173,7 +173,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: AppRoutes.illness,
             name: 'illness',
-            builder: (context, state) => const IllnessScreen(),
+            builder: (context, state) =>
+                IllnessScreen(prefill: state.extra as IllnessScreenPrefill?),
           ),
           GoRoute(
             path: AppRoutes.tracking,

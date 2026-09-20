@@ -23,10 +23,24 @@ import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 /// Can be pushed as a full-screen route or presented as a modal sheet via
 /// [showIllnessSheet].
 class IllnessScreen extends ConsumerStatefulWidget {
-  const IllnessScreen({super.key});
+  const IllnessScreen({super.key, this.prefill});
+
+  /// Set when arriving from Quick Log's "Add details" link, so a matched
+  /// condition is pre-selected (or, if nothing matched, the search bar
+  /// starts filled with the typed text) instead of opening empty.
+  final IllnessScreenPrefill? prefill;
 
   @override
   ConsumerState<IllnessScreen> createState() => _IllnessScreenState();
+}
+
+/// Carries Quick Log's typed text (and a matched condition, if any) into
+/// [IllnessScreen] as its route `extra`.
+class IllnessScreenPrefill {
+  const IllnessScreenPrefill({this.query, this.conditionId});
+
+  final String? query;
+  final int? conditionId;
 }
 
 class _IllnessScreenState extends ConsumerState<IllnessScreen> {
@@ -50,6 +64,18 @@ class _IllnessScreenState extends ConsumerState<IllnessScreen> {
     _searchController.addListener(() {
       setState(() => _query = _searchController.text.trim());
     });
+
+    final prefill = widget.prefill;
+    final conditionId = prefill?.conditionId;
+    if (conditionId != null) {
+      final alreadyTracked = ref
+          .read(userConditionListProvider)
+          .any((uc) => uc.conditionId == conditionId);
+      if (!alreadyTracked) _pendingConditionIds.add(conditionId);
+    } else if (prefill?.query != null && prefill!.query!.trim().isNotEmpty) {
+      _searchController.text = prefill.query!;
+      _query = prefill.query!.trim();
+    }
   }
 
   @override

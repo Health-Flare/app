@@ -288,6 +288,22 @@ Feature: Quick Log
     And I type "Knees and wrists both swollen again"
     Then the suggestion chip, if shown, is "Symptom", not "Condition"
 
+  # Generic diagnosis-status language suggests Condition even when the text
+  # names no catalogue or previously-tracked condition — mirroring how
+  # Symptom classification also has a generic keyword list alongside its
+  # catalogue-aware matching, above.
+  Scenario Outline: Generic diagnosis-status language suggests a Condition entry type
+    When I tap the + button
+    And I type "<text>"
+    Then a suggestion chip labelled "Condition" appears
+
+    Examples:
+      | text                                          |
+      | Just got diagnosed with something new today   |
+      | Got my official diagnosis this afternoon       |
+      | Officially in remission as of this week        |
+      | Had a relapse after months of feeling fine     |
+
   Scenario: Low-confidence or ambiguous input shows no chip rather than a wrong one
     When I tap the + button
     And I type "43"

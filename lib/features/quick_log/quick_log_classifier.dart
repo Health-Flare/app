@@ -1,4 +1,8 @@
 import 'package:health_flare/features/quick_log/quick_log_parser.dart';
+import 'package:health_flare/models/condition.dart';
+import 'package:health_flare/models/symptom.dart';
+import 'package:health_flare/models/user_condition.dart';
+import 'package:health_flare/models/user_symptom.dart';
 
 /// Entry types the quick-log classifier can suggest.
 enum QuickLogEntryType {
@@ -9,6 +13,7 @@ enum QuickLogEntryType {
   doctorVisit,
   activity,
   sleep,
+  condition,
   journal,
 }
 
@@ -18,7 +23,8 @@ enum QuickLogEntryType {
 /// too short or too ambiguous to classify confidently.
 ///
 /// Priority order (first match wins):
-///   Vital > Sleep > Medication > Doctor > Meal > Symptom > Journal (fallback)
+///   Vital > Sleep > Medication > Doctor > Meal > Activity > Condition >
+///   Symptom > Journal (fallback)
 abstract final class QuickLogClassifier {
   /// Minimum word count before classification is attempted.
   static const _minWords = 3;
@@ -29,7 +35,26 @@ abstract final class QuickLogClassifier {
   /// confidently matches a vital reading (e.g. "74kg", "144cm", "4'8"") —
   /// those numeric+unit patterns are unambiguous enough to skip the
   /// word-count gate that guards the fuzzier keyword matches below.
-  static QuickLogEntryType? classify(String text) {
+  ///
+  /// [conditionCatalog]/[trackedConditions] and [symptomCatalog]/
+  /// [trackedSymptoms] let Condition and Symptom classification recognise a
+  /// known or previously-tracked name even when it isn't in the generic
+  /// keyword lists below — mirroring how [QuickLogParser.matchMedication]
+  /// checks the profile's real medications at save time. [loggedSymptomNames]
+  /// covers the much more common case of a symptom typed into the standalone
+  /// symptom entry form, which never creates a [UserSymptom] record at all
+  /// (see `recentSymptomNamesProvider`) — without it, a symptom logged that
+  /// way is never recognised again. All of these default to empty so callers
+  /// that only care about generic keyword classification (e.g. existing unit
+  /// tests) don't need to pass them.
+  static QuickLogEntryType? classify(
+    String text, {
+    List<Condition> conditionCatalog = const [],
+    List<UserCondition> trackedConditions = const [],
+    List<Symptom> symptomCatalog = const [],
+    List<UserSymptom> trackedSymptoms = const [],
+    List<String> loggedSymptomNames = const [],
+  }) {
     final trimmed = text.trim();
     if (trimmed.isEmpty) return null;
 
@@ -44,7 +69,25 @@ abstract final class QuickLogClassifier {
     if (_matchesDoctor(lower)) return QuickLogEntryType.doctorVisit;
     if (_matchesMeal(lower)) return QuickLogEntryType.meal;
     if (_matchesActivity(lower)) return QuickLogEntryType.activity;
-    if (_matchesSymptom(lower)) return QuickLogEntryType.symptom;
+    if (_matchesConditionKeyword(lower) ||
+        QuickLogParser.matchCondition(
+              trimmed,
+              conditionCatalog,
+              trackedConditions,
+            ) !=
+            null) {
+      return QuickLogEntryType.condition;
+    }
+    if (_matchesSymptom(lower) ||
+        QuickLogParser.matchSymptom(
+              trimmed,
+              symptomCatalog,
+              trackedSymptoms,
+              loggedNames: loggedSymptomNames,
+            ) !=
+            null) {
+      return QuickLogEntryType.symptom;
+    }
     return QuickLogEntryType.journal;
   }
 
@@ -61,9 +104,14 @@ abstract final class QuickLogClassifier {
     if (RegExp(r'''\d{1,2}\s*'\s*\d{1,2}\s*"?''').hasMatch(lower)) {
       return true;
     }
-    // Number + recognised unit (including height in cm)
+    // Number + recognised unit (including height in cm and respiratory rate
+    // in br/min — without this branch, "Respiratory rate 16 br/min" falls
+    // through to the word-count-gated keyword checks below and gets
+    // misclassified as Meal, since "rate" contains the substring "ate").
     return RegExp(
-      r'\d+(\.\d+)?\s*(mmhg|°c|°f|degrees?|%|kg|lbs?|lb|mmol|mg/dl|cm)',
+      r'\d+(\.\d+)?\s*'
+      r'(mmhg|°c|°f|degrees?|%|kg|lbs?|lb|mmol|mg/dl|cm|'
+      r'br/min|breaths?\s*(?:per\s*minute|/\s*min))',
       caseSensitive: false,
     ).hasMatch(lower);
   }
@@ -134,6 +182,13 @@ abstract final class QuickLogClassifier {
     'soup',
     'sandwich',
   ]);
+
+  // Generic condition/diagnosis-status language — independent of whether the
+  // named condition itself is in the catalogue or already tracked, mirroring
+  // how _matchesSymptom's generic word list works alongside catalogue-aware
+  // matching.
+  static bool _matchesConditionKeyword(String lower) =>
+      _any(lower, ['diagnosed', 'diagnosis', 'remission', 'relapse']);
 
   static bool _matchesSymptom(String lower) => _any(lower, [
     'pain',

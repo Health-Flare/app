@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 
 import 'package:health_flare/core/providers/activity_entry_provider.dart';
 import 'package:health_flare/core/providers/appointment_provider.dart';
+import 'package:health_flare/core/providers/condition_provider.dart';
 import 'package:health_flare/core/providers/dose_log_provider.dart';
 import 'package:health_flare/core/providers/journal_provider.dart';
 import 'package:health_flare/core/providers/meal_entry_provider.dart';
@@ -14,6 +15,7 @@ import 'package:health_flare/core/providers/sleep_provider.dart';
 import 'package:health_flare/core/providers/symptom_entry_provider.dart';
 import 'package:health_flare/core/providers/vital_entry_provider.dart';
 import 'package:health_flare/core/router/app_router.dart';
+import 'package:health_flare/features/illness/screens/illness_screen.dart';
 import 'package:health_flare/features/quick_log/quick_log_classifier.dart';
 import 'package:health_flare/features/quick_log/quick_log_parser.dart';
 import 'package:health_flare/models/journal_entry.dart';
@@ -57,7 +59,14 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
   }
 
   void _onTextChanged() {
-    final next = QuickLogClassifier.classify(_textController.text);
+    final next = QuickLogClassifier.classify(
+      _textController.text,
+      conditionCatalog: ref.read(conditionCatalogProvider),
+      trackedConditions: ref.read(userConditionListProvider),
+      symptomCatalog: ref.read(symptomCatalogProvider),
+      trackedSymptoms: ref.read(userSymptomListProvider),
+      loggedSymptomNames: ref.read(recentSymptomNamesProvider),
+    );
     if (next != _classification) {
       setState(() => _classification = next);
     }
@@ -167,6 +176,22 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
               wakeTime: _timestamp,
               notes: _text,
             );
+      case QuickLogEntryType.condition:
+        final condition = QuickLogParser.matchCondition(
+          _text,
+          ref.read(conditionCatalogProvider),
+          ref.read(userConditionListProvider),
+        );
+        if (condition == null) {
+          await _saveJournal(profileId);
+          return;
+        }
+        // Conditions have no per-occurrence log record (unlike vitals or
+        // doses) — tracking is a membership, so add() is the whole save and
+        // is a no-op when the condition is already tracked.
+        await ref
+            .read(userConditionListProvider.notifier)
+            .add(conditionId: condition.id, conditionName: condition.name);
       case QuickLogEntryType.journal:
       case null:
         await _saveJournal(profileId);
@@ -204,6 +229,16 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
         context.push(AppRoutes.sleepNew, extra: _text);
       case QuickLogEntryType.medication:
         context.push(AppRoutes.medicationsNew);
+      case QuickLogEntryType.condition:
+        final matched = QuickLogParser.matchCondition(
+          _text,
+          ref.read(conditionCatalogProvider),
+          ref.read(userConditionListProvider),
+        );
+        context.push(
+          AppRoutes.illness,
+          extra: IllnessScreenPrefill(query: _text, conditionId: matched?.id),
+        );
       case QuickLogEntryType.journal:
       case null:
         context.push(AppRoutes.journalNew, extra: _text);
@@ -359,16 +394,20 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
                   padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
                   child: Row(
                     children: [
-                      Chip(
-                        label: Text(_chipLabel(_classification!)),
-                        avatar: Icon(
-                          _chipIcon(_classification!),
-                          size: 16,
-                          color: cs.primary,
+                      Semantics(
+                        liveRegion: true,
+                        label: 'Classified as ${_chipLabel(_classification!)}',
+                        child: Chip(
+                          label: Text(_chipLabel(_classification!)),
+                          avatar: Icon(
+                            _chipIcon(_classification!),
+                            size: 16,
+                            color: cs.primary,
+                          ),
+                          backgroundColor: cs.primaryContainer,
+                          padding: EdgeInsets.zero,
+                          visualDensity: VisualDensity.compact,
                         ),
-                        backgroundColor: cs.primaryContainer,
-                        padding: EdgeInsets.zero,
-                        visualDensity: VisualDensity.compact,
                       ),
                       const SizedBox(width: 12),
                       TextButton(
@@ -390,7 +429,10 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
                           width: 18,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : const Text('Save'),
+                      : Semantics(
+                          liveRegion: true,
+                          child: Text(_primaryButtonLabel(_classification)),
+                        ),
                 ),
               ),
             ],
@@ -411,6 +453,7 @@ String _chipLabel(QuickLogEntryType type) => switch (type) {
   QuickLogEntryType.doctorVisit => 'Doctor Visit',
   QuickLogEntryType.activity => 'Activity',
   QuickLogEntryType.sleep => 'Sleep',
+  QuickLogEntryType.condition => 'Condition',
   QuickLogEntryType.journal => 'Journal',
 };
 
@@ -422,5 +465,17 @@ IconData _chipIcon(QuickLogEntryType type) => switch (type) {
   QuickLogEntryType.doctorVisit => Icons.local_hospital_outlined,
   QuickLogEntryType.activity => Icons.directions_walk_outlined,
   QuickLogEntryType.sleep => Icons.bedtime_outlined,
+  QuickLogEntryType.condition => Icons.assignment_late_outlined,
   QuickLogEntryType.journal => Icons.book_outlined,
 };
+
+/// The primary button always names what tapping it will do: quick-add the
+/// detected structured record, or fall back to a plain journal entry when
+/// nothing is detected (or the user overrides the type to Journal) — never a
+/// generic "Save" that leaves that ambiguous.
+String _primaryButtonLabel(QuickLogEntryType? type) {
+  if (type == null || type == QuickLogEntryType.journal) {
+    return 'Add to Journal';
+  }
+  return 'Quick Add: ${_chipLabel(type)}';
+}
