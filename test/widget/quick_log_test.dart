@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:health_flare/core/providers/appointment_provider.dart';
+import 'package:health_flare/core/providers/condition_provider.dart';
 import 'package:health_flare/core/providers/dose_log_provider.dart';
 import 'package:health_flare/core/providers/journal_provider.dart';
 import 'package:health_flare/core/providers/meal_entry_provider.dart';
@@ -15,13 +16,17 @@ import 'package:health_flare/core/providers/vital_entry_provider.dart';
 import 'package:health_flare/features/quick_log/quick_log_classifier.dart';
 import 'package:health_flare/features/quick_log/widgets/quick_log_sheet.dart';
 import 'package:health_flare/models/appointment.dart';
+import 'package:health_flare/models/condition.dart';
 import 'package:health_flare/models/dose_log.dart';
 import 'package:health_flare/models/journal_entry.dart';
 import 'package:health_flare/models/meal_entry.dart';
 import 'package:health_flare/models/medication.dart';
 import 'package:health_flare/models/profile.dart';
 import 'package:health_flare/models/sleep_entry.dart';
+import 'package:health_flare/models/symptom.dart';
 import 'package:health_flare/models/symptom_entry.dart';
+import 'package:health_flare/models/user_condition.dart';
+import 'package:health_flare/models/user_symptom.dart';
 import 'package:health_flare/models/vital_entry.dart';
 import 'package:health_flare/models/vital_type.dart';
 import 'package:health_flare/models/weather_snapshot.dart';
@@ -46,8 +51,11 @@ class _FakeMealList extends MealEntryListNotifier {
 }
 
 class _FakeSymptomList extends SymptomEntryListNotifier {
+  _FakeSymptomList([this._data = const []]);
+  final List<SymptomEntry> _data;
+
   @override
-  List<SymptomEntry> build() => [];
+  List<SymptomEntry> build() => _data;
 }
 
 class _FakeJournalList extends JournalEntryListNotifier {
@@ -157,18 +165,71 @@ class _FakeAppointmentList extends AppointmentListNotifier {
   List<Appointment> build() => [];
 }
 
+class _FakeConditionCatalog extends ConditionCatalogNotifier {
+  _FakeConditionCatalog(this._data);
+  final List<Condition> _data;
+
+  @override
+  List<Condition> build() => _data;
+}
+
+final conditionTrackCalls = <Map<String, Object?>>[];
+
+class _RecordingUserConditionList extends UserConditionListNotifier {
+  _RecordingUserConditionList(this._data);
+  final List<UserCondition> _data;
+
+  @override
+  List<UserCondition> build() => _data;
+
+  @override
+  Future<void> add({
+    required int conditionId,
+    required String conditionName,
+    DateTime? diagnosedAt,
+  }) async {
+    conditionTrackCalls.add({
+      'conditionId': conditionId,
+      'conditionName': conditionName,
+    });
+  }
+}
+
+class _FakeSymptomCatalog extends SymptomCatalogNotifier {
+  _FakeSymptomCatalog(this._data);
+  final List<Symptom> _data;
+
+  @override
+  List<Symptom> build() => _data;
+}
+
+class _FakeUserSymptomList extends UserSymptomListNotifier {
+  _FakeUserSymptomList(this._data);
+  final List<UserSymptom> _data;
+
+  @override
+  List<UserSymptom> build() => _data;
+}
+
 // ---------------------------------------------------------------------------
 // Helper
 // ---------------------------------------------------------------------------
 
-List<Override> _overrides({List<Medication> medications = const []}) => [
+List<Override> _overrides({
+  List<Medication> medications = const [],
+  List<Condition> conditionCatalog = const [],
+  List<UserCondition> trackedConditions = const [],
+  List<Symptom> symptomCatalog = const [],
+  List<UserSymptom> trackedSymptoms = const [],
+  List<SymptomEntry> loggedSymptoms = const [],
+}) => [
   activeProfileProvider.overrideWith(_FakeActiveProfile.new),
   profileListProvider.overrideWith(_FakeProfileList.new),
   activeProfileDataProvider.overrideWith(
     (ref) => Profile(id: 1, name: 'Sarah'),
   ),
   mealEntryListProvider.overrideWith(_FakeMealList.new),
-  symptomEntryListProvider.overrideWith(_FakeSymptomList.new),
+  symptomEntryListProvider.overrideWith(() => _FakeSymptomList(loggedSymptoms)),
   journalEntryListProvider.overrideWith(_FakeJournalList.new),
   appointmentListProvider.overrideWith(_FakeAppointmentList.new),
   activeProfileAppointmentsProvider.overrideWith((ref) => []),
@@ -177,11 +238,37 @@ List<Override> _overrides({List<Medication> medications = const []}) => [
   doseLogListProvider.overrideWith(_RecordingDoseList.new),
   sleepEntryListProvider.overrideWith(_RecordingSleepList.new),
   activeProfileMedicationsProvider.overrideWith((ref) => medications),
+  conditionCatalogProvider.overrideWith(
+    () => _FakeConditionCatalog(conditionCatalog),
+  ),
+  userConditionListProvider.overrideWith(
+    () => _RecordingUserConditionList(trackedConditions),
+  ),
+  symptomCatalogProvider.overrideWith(
+    () => _FakeSymptomCatalog(symptomCatalog),
+  ),
+  userSymptomListProvider.overrideWith(
+    () => _FakeUserSymptomList(trackedSymptoms),
+  ),
 ];
 
-Widget _buildSheet({List<Medication> medications = const []}) {
+Widget _buildSheet({
+  List<Medication> medications = const [],
+  List<Condition> conditionCatalog = const [],
+  List<UserCondition> trackedConditions = const [],
+  List<Symptom> symptomCatalog = const [],
+  List<UserSymptom> trackedSymptoms = const [],
+  List<SymptomEntry> loggedSymptoms = const [],
+}) {
   return ProviderScope(
-    overrides: _overrides(medications: medications),
+    overrides: _overrides(
+      medications: medications,
+      conditionCatalog: conditionCatalog,
+      trackedConditions: trackedConditions,
+      symptomCatalog: symptomCatalog,
+      trackedSymptoms: trackedSymptoms,
+      loggedSymptoms: loggedSymptoms,
+    ),
     child: MaterialApp(
       home: Scaffold(
         body: Builder(
@@ -198,8 +285,22 @@ Widget _buildSheet({List<Medication> medications = const []}) {
 Future<void> _openSheet(
   WidgetTester tester, {
   List<Medication> medications = const [],
+  List<Condition> conditionCatalog = const [],
+  List<UserCondition> trackedConditions = const [],
+  List<Symptom> symptomCatalog = const [],
+  List<UserSymptom> trackedSymptoms = const [],
+  List<SymptomEntry> loggedSymptoms = const [],
 }) async {
-  await tester.pumpWidget(_buildSheet(medications: medications));
+  await tester.pumpWidget(
+    _buildSheet(
+      medications: medications,
+      conditionCatalog: conditionCatalog,
+      trackedConditions: trackedConditions,
+      symptomCatalog: symptomCatalog,
+      trackedSymptoms: trackedSymptoms,
+      loggedSymptoms: loggedSymptoms,
+    ),
+  );
   await tester.pump();
   await tester.tap(find.text('Open'));
   await tester.pumpAndSettle();
@@ -208,7 +309,7 @@ Future<void> _openSheet(
 Future<void> _typeAndSave(WidgetTester tester, String text) async {
   await tester.enterText(find.byType(TextField), text);
   await tester.pump();
-  await tester.tap(find.text('Save'));
+  await tester.tap(find.byType(FilledButton));
   await tester.pumpAndSettle();
 }
 
@@ -381,42 +482,36 @@ void main() {
       expect(find.text('Logging for Sarah'), findsOneWidget);
     });
 
-    testWidgets('shows text field and save button', (tester) async {
+    testWidgets('shows text field and primary button', (tester) async {
       await _openSheet(tester);
       expect(find.byType(TextField), findsOneWidget);
-      expect(find.text('Save'), findsOneWidget);
+      expect(find.text('Add to Journal'), findsOneWidget);
     });
 
-    testWidgets('save button disabled when text field is empty', (
+    testWidgets('primary button disabled when text field is empty', (
       tester,
     ) async {
       await _openSheet(tester);
-      final btn = tester.widget<FilledButton>(
-        find.widgetWithText(FilledButton, 'Save'),
-      );
+      final btn = tester.widget<FilledButton>(find.byType(FilledButton));
       expect(btn.onPressed, isNull);
     });
 
-    testWidgets('save button disabled for whitespace only', (tester) async {
+    testWidgets('primary button disabled for whitespace only', (tester) async {
       await _openSheet(tester);
       await tester.enterText(find.byType(TextField), '     ');
       await tester.pump();
-      final btn = tester.widget<FilledButton>(
-        find.widgetWithText(FilledButton, 'Save'),
-      );
+      final btn = tester.widget<FilledButton>(find.byType(FilledButton));
       expect(btn.onPressed, isNull);
     });
 
-    testWidgets('save button enabled when text is present', (tester) async {
+    testWidgets('primary button enabled when text is present', (tester) async {
       await _openSheet(tester);
       await tester.enterText(
         find.byType(TextField),
         'Had soup for lunch today',
       );
       await tester.pump();
-      final btn = tester.widget<FilledButton>(
-        find.widgetWithText(FilledButton, 'Save'),
-      );
+      final btn = tester.widget<FilledButton>(find.byType(FilledButton));
       expect(btn.onPressed, isNotNull);
     });
 
@@ -464,6 +559,153 @@ void main() {
       await tester.pump();
       expect(find.text('Doctor Visit'), findsOneWidget);
     });
+
+    testWidgets('Condition chip appears for a known catalogue condition', (
+      tester,
+    ) async {
+      await _openSheet(
+        tester,
+        conditionCatalog: [const Condition(id: 1, name: 'Fibromyalgia')],
+      );
+      await tester.enterText(
+        find.byType(TextField),
+        'Just found out I have fibromyalgia',
+      );
+      await tester.pump();
+      expect(find.text('Condition'), findsOneWidget);
+    });
+
+    testWidgets(
+      'Condition chip appears for a previously-tracked custom condition',
+      (tester) async {
+        await _openSheet(
+          tester,
+          trackedConditions: [
+            UserCondition(
+              id: 1,
+              profileId: 1,
+              conditionId: 9,
+              conditionName: 'Myalgic encephalomyelitis',
+              trackedSince: DateTime(2026),
+            ),
+          ],
+        );
+        await tester.enterText(find.byType(TextField), 'Rough ME day today');
+        await tester.pump();
+        expect(find.text('Condition'), findsOneWidget);
+      },
+    );
+
+    testWidgets('Symptom chip appears for a catalogue symptom not in the '
+        'generic keyword list', (tester) async {
+      await _openSheet(
+        tester,
+        symptomCatalog: [const Symptom(id: 1, name: 'Photophobia')],
+      );
+      await tester.enterText(
+        find.byType(TextField),
+        'Photophobia again this afternoon',
+      );
+      await tester.pump();
+      expect(find.text('Symptom'), findsOneWidget);
+    });
+
+    testWidgets('Symptom chip appears for a previously-created custom '
+        'symptom', (tester) async {
+      await _openSheet(
+        tester,
+        trackedSymptoms: [
+          UserSymptom(
+            id: 1,
+            profileId: 1,
+            symptomId: 4,
+            symptomName: 'Brain fog',
+            trackedSince: DateTime(2026),
+          ),
+        ],
+      );
+      await tester.enterText(
+        find.byType(TextField),
+        'Brain fog again, hard to focus',
+      );
+      await tester.pump();
+      expect(find.text('Symptom'), findsOneWidget);
+    });
+
+    // Regression: a symptom logged only via the standalone "Log symptom"
+    // full form never creates a UserSymptom record (only a SymptomEntry.name
+    // string — see recentSymptomNamesProvider), so it must still be
+    // recognised here through the profile's logged symptom-entry history,
+    // not just the UserSymptom catalogue.
+    testWidgets(
+      'Symptom chip appears for a symptom only ever logged via the full '
+      'entry form (no UserSymptom record)',
+      (tester) async {
+        await _openSheet(
+          tester,
+          loggedSymptoms: [
+            SymptomEntry(
+              id: 1,
+              profileId: 1,
+              name: 'Brain fog',
+              severity: 4,
+              loggedAt: DateTime(2026, 1, 1),
+              createdAt: DateTime(2026, 1, 1),
+            ),
+          ],
+        );
+        await tester.enterText(find.byType(TextField), 'Brain Fog again');
+        await tester.pump();
+        expect(find.text('Symptom'), findsOneWidget);
+      },
+    );
+
+    testWidgets('primary button defaults to "Add to Journal"', (tester) async {
+      await _openSheet(tester);
+      expect(find.text('Add to Journal'), findsOneWidget);
+    });
+
+    testWidgets('primary button names the detected quick-add type', (
+      tester,
+    ) async {
+      await _openSheet(tester);
+      await tester.enterText(
+        find.byType(TextField),
+        'Had grilled salmon with rice for dinner',
+      );
+      await tester.pump();
+      expect(find.text('Quick Add: Meal'), findsOneWidget);
+    });
+
+    testWidgets('primary button relabels live as the type chip updates', (
+      tester,
+    ) async {
+      await _openSheet(tester);
+      await tester.enterText(find.byType(TextField), 'Tired');
+      await tester.pump();
+      expect(find.text('Add to Journal'), findsOneWidget);
+
+      await tester.enterText(
+        find.byType(TextField),
+        'Tired after eating the pasta today',
+      );
+      await tester.pump();
+      expect(find.text('Quick Add: Meal'), findsOneWidget);
+    });
+
+    testWidgets(
+      'primary button and Add details link are never worded the same',
+      (tester) async {
+        await _openSheet(tester);
+        await tester.enterText(
+          find.byType(TextField),
+          'Had grilled salmon with rice for dinner',
+        );
+        await tester.pump();
+        expect(find.text('Quick Add: Meal'), findsOneWidget);
+        expect(find.text('Add details'), findsOneWidget);
+      },
+    );
 
     testWidgets('Add details link shown with chip', (tester) async {
       await _openSheet(tester);
@@ -554,6 +796,7 @@ void main() {
       vitalCalls.clear();
       doseCalls.clear();
       sleepCalls.clear();
+      conditionTrackCalls.clear();
     });
 
     testWidgets('Sleep chip appears for sleep text', (tester) async {
@@ -695,5 +938,43 @@ void main() {
       expect(sleepCalls, isEmpty);
       expect(journalCalls, hasLength(1));
     });
+
+    testWidgets('Condition-typed save starts tracking the matched condition', (
+      tester,
+    ) async {
+      await _openSheet(
+        tester,
+        conditionCatalog: [const Condition(id: 5, name: 'Fibromyalgia')],
+      );
+      await _typeAndSave(tester, 'Just found out I have fibromyalgia');
+
+      expect(conditionTrackCalls, hasLength(1));
+      expect(conditionTrackCalls.single['conditionId'], 5);
+      expect(conditionTrackCalls.single['conditionName'], 'Fibromyalgia');
+      expect(journalCalls, isEmpty);
+    });
+
+    testWidgets(
+      'Condition-typed save is a no-op for an already-tracked condition',
+      (tester) async {
+        await _openSheet(
+          tester,
+          trackedConditions: [
+            UserCondition(
+              id: 1,
+              profileId: 1,
+              conditionId: 9,
+              conditionName: 'Myalgic encephalomyelitis',
+              trackedSince: DateTime(2026),
+            ),
+          ],
+        );
+        await _typeAndSave(tester, 'Rough ME day today');
+
+        expect(conditionTrackCalls, hasLength(1));
+        expect(conditionTrackCalls.single['conditionId'], 9);
+        expect(journalCalls, isEmpty);
+      },
+    );
   });
 }

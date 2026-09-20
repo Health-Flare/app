@@ -1,7 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:health_flare/features/quick_log/quick_log_parser.dart';
+import 'package:health_flare/models/condition.dart';
 import 'package:health_flare/models/medication.dart';
+import 'package:health_flare/models/symptom.dart';
+import 'package:health_flare/models/user_condition.dart';
+import 'package:health_flare/models/user_symptom.dart';
 import 'package:health_flare/models/vital_type.dart';
 
 Medication _med(int id, String name) => Medication(
@@ -14,6 +18,28 @@ Medication _med(int id, String name) => Medication(
   frequency: 'asNeeded',
   startDate: DateTime(2026),
   createdAt: DateTime(2026),
+);
+
+Condition _condition(int id, String name, {bool global = true}) =>
+    Condition(id: id, name: name, global: global);
+
+Symptom _symptom(int id, String name, {bool global = true}) =>
+    Symptom(id: id, name: name, global: global);
+
+UserCondition _trackedCondition(int conditionId, String name) => UserCondition(
+  id: conditionId,
+  profileId: 1,
+  conditionId: conditionId,
+  conditionName: name,
+  trackedSince: DateTime(2026),
+);
+
+UserSymptom _trackedSymptom(int symptomId, String name) => UserSymptom(
+  id: symptomId,
+  profileId: 1,
+  symptomId: symptomId,
+  symptomName: name,
+  trackedSince: DateTime(2026),
 );
 
 void main() {
@@ -83,6 +109,13 @@ void main() {
       expect(v.vitalType, VitalType.oxygenSaturation);
       expect(v.value, 94);
       expect(v.unit, '%');
+    });
+
+    test('parses respiratory rate', () {
+      final v = QuickLogParser.parseVital('Respiratory rate 18 br/min')!;
+      expect(v.vitalType, VitalType.respiratoryRate);
+      expect(v.value, 18);
+      expect(v.unit, 'br/min');
     });
 
     test('parses blood glucose in mmol', () {
@@ -244,6 +277,161 @@ void main() {
       expect(
         QuickLogParser.matchMedication('Took something for the pain', meds),
         isNull,
+      );
+    });
+  });
+
+  group('QuickLogParser.matchCondition', () {
+    test('matches a global catalogue condition case-insensitively', () {
+      final catalog = [_condition(1, 'Fibromyalgia')];
+      final match = QuickLogParser.matchCondition(
+        'Just found out I have fibromyalgia',
+        catalog,
+        const [],
+      );
+      expect(match?.id, 1);
+    });
+
+    test('excludes another profile\'s custom (non-global) catalogue entry', () {
+      final catalog = [
+        _condition(1, 'Some other custom condition', global: false),
+      ];
+      final match = QuickLogParser.matchCondition(
+        'Dealing with some other custom condition today',
+        catalog,
+        const [],
+      );
+      expect(match, isNull);
+    });
+
+    test('matches the active profile\'s own tracked custom condition', () {
+      final tracked = [_trackedCondition(9, 'Myalgic encephalomyelitis')];
+      final match = QuickLogParser.matchCondition(
+        'Rough ME day today',
+        const [],
+        tracked,
+      );
+      expect(match?.id, 9);
+      expect(match?.name, 'Myalgic encephalomyelitis');
+    });
+
+    test('prefers the longest matching name', () {
+      final catalog = [
+        _condition(1, 'Arthritis'),
+        _condition(2, 'Rheumatoid Arthritis'),
+      ];
+      final match = QuickLogParser.matchCondition(
+        'Flare of my rheumatoid arthritis today',
+        catalog,
+        const [],
+      );
+      expect(match?.id, 2);
+    });
+
+    test('returns null when the text names no known condition', () {
+      final catalog = [_condition(1, 'Fibromyalgia')];
+      final match = QuickLogParser.matchCondition(
+        'Knees and wrists both swollen again',
+        catalog,
+        const [],
+      );
+      expect(match, isNull);
+    });
+  });
+
+  group('QuickLogParser.matchSymptom', () {
+    test('matches a global catalogue symptom not in the generic word list', () {
+      final catalog = [_symptom(1, 'Photophobia')];
+      final match = QuickLogParser.matchSymptom(
+        'Photophobia again this afternoon',
+        catalog,
+        const [],
+      );
+      expect(match?.id, 1);
+    });
+
+    test('matches the active profile\'s own previously-created symptom', () {
+      final tracked = [_trackedSymptom(4, 'Brain fog')];
+      final match = QuickLogParser.matchSymptom(
+        'Brain fog again, hard to focus',
+        const [],
+        tracked,
+      );
+      expect(match?.id, 4);
+    });
+
+    test(
+      'returns null for a brand-new symptom with no catalogue or history match',
+      () {
+        final match = QuickLogParser.matchSymptom(
+          'Pins and needles in feet',
+          const [],
+          const [],
+        );
+        expect(match, isNull);
+      },
+    );
+
+    // Regression: symptoms typed into the standalone symptom entry form
+    // (the everyday path) only ever create a SymptomEntry.name string — no
+    // UserSymptom record — so a real user's "Brain fog" went undetected on
+    // every later Quick Log mention until loggedNames was added.
+    test('matches a symptom that was only ever typed into the full entry form '
+        '(no UserSymptom record — logged name only)', () {
+      final match = QuickLogParser.matchSymptom(
+        'Brain fog again, hard to focus',
+        const [],
+        const [],
+        loggedNames: const ['Brain fog'],
+      );
+      expect(match?.name, 'Brain fog');
+    });
+
+    test('prefers the longest match across catalogue, tracked, and logged '
+        'names combined', () {
+      final match = QuickLogParser.matchSymptom(
+        'Chronic brain fog again today',
+        [_symptom(1, 'Brain fog')],
+        const [],
+        loggedNames: const ['Chronic brain fog'],
+      );
+      expect(match?.name, 'Chronic brain fog');
+    });
+  });
+
+  group('QuickLogParser.textMentionsName', () {
+    test('never matches a name shorter than 3 characters', () {
+      expect(QuickLogParser.textMentionsName('I saw ME today', 'ME'), isFalse);
+    });
+
+    test('does not crash on a parenthesised name (regex metacharacters '
+        'in a would-be acronym)', () {
+      // "Lupus (SLE)" would naively acronym to "L(" — an invalid, unescaped
+      // regex that throws FormatException on every call, not just one that
+      // matches "Lupus (SLE)".
+      expect(
+        () => QuickLogParser.textMentionsName(
+          'Rough day today, feeling awful',
+          'Lupus (SLE)',
+        ),
+        returnsNormally,
+      );
+    });
+
+    test('matches a multi-word acronym only in uppercase', () {
+      expect(
+        QuickLogParser.textMentionsName(
+          'Rough ME day',
+          'Myalgic Encephalomyelitis',
+        ),
+        isTrue,
+      );
+      expect(
+        QuickLogParser.textMentionsName(
+          'let me think about it',
+          'Myalgic Encephalomyelitis',
+        ),
+        isFalse,
       );
     });
   });

@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:health_flare/core/providers/appointment_provider.dart';
+import 'package:health_flare/core/providers/condition_provider.dart';
 import 'package:health_flare/core/providers/daily_checkin_provider.dart';
 import 'package:health_flare/core/providers/dashboard_provider.dart';
 import 'package:health_flare/core/providers/flare_provider.dart';
@@ -11,15 +12,21 @@ import 'package:health_flare/core/providers/journal_provider.dart';
 import 'package:health_flare/core/providers/onboarding_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/core/providers/sleep_provider.dart';
+import 'package:health_flare/core/providers/symptom_entry_provider.dart';
 import 'package:health_flare/core/router/app_router.dart';
 import 'package:health_flare/features/dashboard/dashboard_screen.dart';
 import 'package:health_flare/models/activity_item.dart';
 import 'package:health_flare/models/appointment.dart';
+import 'package:health_flare/models/condition.dart';
 import 'package:health_flare/models/daily_checkin.dart';
 import 'package:health_flare/models/flare.dart';
 import 'package:health_flare/models/journal_entry.dart';
 import 'package:health_flare/models/profile.dart';
 import 'package:health_flare/models/sleep_entry.dart';
+import 'package:health_flare/models/symptom.dart';
+import 'package:health_flare/models/symptom_entry.dart';
+import 'package:health_flare/models/user_condition.dart';
+import 'package:health_flare/models/user_symptom.dart';
 
 // ---------------------------------------------------------------------------
 // Fake notifiers — avoid touching Isar in widget tests
@@ -52,6 +59,31 @@ class _FakeCheckinList extends DailyCheckinListNotifier {
 class _FakeAppointmentList extends AppointmentListNotifier {
   @override
   List<Appointment> build() => [];
+}
+
+class _FakeSymptomEntryList extends SymptomEntryListNotifier {
+  @override
+  List<SymptomEntry> build() => [];
+}
+
+class _FakeConditionCatalog extends ConditionCatalogNotifier {
+  @override
+  List<Condition> build() => [];
+}
+
+class _FakeUserConditionList extends UserConditionListNotifier {
+  @override
+  List<UserCondition> build() => [];
+}
+
+class _FakeSymptomCatalog extends SymptomCatalogNotifier {
+  @override
+  List<Symptom> build() => [];
+}
+
+class _FakeUserSymptomList extends UserSymptomListNotifier {
+  @override
+  List<UserSymptom> build() => [];
 }
 
 class _FakeWeatherOptIn extends WeatherOptInNotifier {
@@ -148,8 +180,13 @@ Widget _buildDashboard({
       dailyCheckinListProvider.overrideWith(_FakeCheckinList.new),
       todayCheckinProvider.overrideWith((ref) => null),
       appointmentListProvider.overrideWith(_FakeAppointmentList.new),
+      symptomEntryListProvider.overrideWith(_FakeSymptomEntryList.new),
       activeProfileAppointmentsProvider.overrideWith((ref) => []),
       upcomingAppointmentsProvider.overrideWith((ref) => []),
+      conditionCatalogProvider.overrideWith(_FakeConditionCatalog.new),
+      userConditionListProvider.overrideWith(_FakeUserConditionList.new),
+      symptomCatalogProvider.overrideWith(_FakeSymptomCatalog.new),
+      userSymptomListProvider.overrideWith(_FakeUserSymptomList.new),
     ],
     child: const MaterialApp(home: DashboardScreen()),
   );
@@ -213,8 +250,13 @@ Widget _buildDashboardWithRouter({
       dailyCheckinListProvider.overrideWith(_FakeCheckinList.new),
       todayCheckinProvider.overrideWith((ref) => null),
       appointmentListProvider.overrideWith(_FakeAppointmentList.new),
+      symptomEntryListProvider.overrideWith(_FakeSymptomEntryList.new),
       activeProfileAppointmentsProvider.overrideWith((ref) => []),
       upcomingAppointmentsProvider.overrideWith((ref) => []),
+      conditionCatalogProvider.overrideWith(_FakeConditionCatalog.new),
+      userConditionListProvider.overrideWith(_FakeUserConditionList.new),
+      symptomCatalogProvider.overrideWith(_FakeSymptomCatalog.new),
+      userSymptomListProvider.overrideWith(_FakeUserSymptomList.new),
     ],
     child: MaterialApp.router(routerConfig: router),
   );
@@ -258,7 +300,7 @@ void main() {
         await tester.pump(const Duration(milliseconds: 300));
 
         expect(find.text('Logging for Sarah'), findsOneWidget);
-        expect(find.text('Save'), findsOneWidget);
+        expect(find.text('Add to Journal'), findsOneWidget);
       });
     });
 

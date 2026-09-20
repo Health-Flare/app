@@ -32,8 +32,11 @@ class _FakeSymptomCatalog extends SymptomCatalogNotifier {
 }
 
 class _FakeUserConditions extends UserConditionListNotifier {
+  _FakeUserConditions([this.items = const []]);
+  final List<UserCondition> items;
+
   @override
-  List<UserCondition> build() => [];
+  List<UserCondition> build() => items;
 }
 
 class _FakeUserSymptoms extends UserSymptomListNotifier {
@@ -45,20 +48,26 @@ class _FakeUserSymptoms extends UserSymptomListNotifier {
 // Helper
 // ---------------------------------------------------------------------------
 
-Widget buildIllnessScreen({List<Condition> conditions = const []}) {
+Widget buildIllnessScreen({
+  List<Condition> conditions = const [],
+  List<UserCondition> trackedConditions = const [],
+  IllnessScreenPrefill? prefill,
+}) {
   return ProviderScope(
     overrides: [
       conditionCatalogProvider.overrideWith(
         () => _FakeConditionCatalog(conditions),
       ),
       symptomCatalogProvider.overrideWith(_FakeSymptomCatalog.new),
-      userConditionListProvider.overrideWith(_FakeUserConditions.new),
+      userConditionListProvider.overrideWith(
+        () => _FakeUserConditions(trackedConditions),
+      ),
       userSymptomListProvider.overrideWith(_FakeUserSymptoms.new),
       activeProfileDataProvider.overrideWith(
         (ref) => Profile(id: 1, name: 'Sarah'),
       ),
     ],
-    child: const MaterialApp(home: IllnessScreen()),
+    child: MaterialApp(home: IllnessScreen(prefill: prefill)),
   );
 }
 
@@ -168,6 +177,96 @@ void main() {
         expect(find.text('Arthritis'), findsOneWidget);
         expect(find.text('Osteoarthritis'), findsOneWidget);
         expect(find.text('Reactive arthritis'), findsOneWidget);
+      },
+    );
+  });
+
+  group('IllnessScreen — arriving from Quick Log "Add details"', () {
+    testWidgets(
+      'a matched catalogue condition is pre-selected, not shown for search',
+      (tester) async {
+        const fibromyalgia = Condition(id: 1, name: 'Fibromyalgia');
+        await tester.pumpWidget(
+          buildIllnessScreen(
+            conditions: [fibromyalgia],
+            prefill: const IllnessScreenPrefill(
+              query: 'Just found out I have fibromyalgia',
+              conditionId: 1,
+            ),
+          ),
+        );
+        await tester.pump();
+
+        // Pre-selected → shown as a removable "Selected" chip (and still
+        // listed below, since only already-tracked conditions are excluded
+        // from the browsable list — pending selections are not).
+        expect(find.text('Fibromyalgia'), findsWidgets);
+        final button = tester.widget<FilledButton>(
+          find.widgetWithText(FilledButton, 'Add to profile'),
+        );
+        expect(button.onPressed, isNotNull);
+      },
+    );
+
+    testWidgets(
+      'unmatched typed text pre-fills the search bar instead of selecting '
+      'anything',
+      (tester) async {
+        const arthritis = Condition(id: 1, name: 'Arthritis');
+        await tester.pumpWidget(
+          buildIllnessScreen(
+            conditions: [arthritis],
+            prefill: const IllnessScreenPrefill(
+              query: 'Myalgic encephalomyelitis',
+            ),
+          ),
+        );
+        await tester.pump();
+
+        expect(
+          find.text('Myalgic encephalomyelitis'),
+          findsOneWidget,
+          reason: 'search bar should start filled with the typed text',
+        );
+        expect(find.textContaining('as a custom illness'), findsOneWidget);
+        final button = tester.widget<FilledButton>(
+          find.widgetWithText(FilledButton, 'Add to profile'),
+        );
+        expect(button.onPressed, isNull);
+      },
+    );
+
+    testWidgets(
+      'a condition already tracked is not pre-selected as a duplicate',
+      (tester) async {
+        const fibromyalgia = Condition(id: 1, name: 'Fibromyalgia');
+        await tester.pumpWidget(
+          buildIllnessScreen(
+            conditions: [fibromyalgia],
+            trackedConditions: [
+              UserCondition(
+                id: 1,
+                profileId: 1,
+                conditionId: 1,
+                conditionName: 'Fibromyalgia',
+                trackedSince: DateTime(2026),
+              ),
+            ],
+            prefill: const IllnessScreenPrefill(
+              query: 'fibromyalgia flare',
+              conditionId: 1,
+            ),
+          ),
+        );
+        await tester.pump();
+
+        // Already tracked → excluded from the selectable list and not
+        // re-added as a pending "Selected" chip.
+        expect(find.text('Fibromyalgia'), findsNothing);
+        final button = tester.widget<FilledButton>(
+          find.widgetWithText(FilledButton, 'Add to profile'),
+        );
+        expect(button.onPressed, isNull);
       },
     );
   });
