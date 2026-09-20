@@ -86,7 +86,7 @@ Feature: Onboarding
 
   Scenario: Feature highlights are shown as icon-led chips
     Given I am on the "What you can track" step
-    Then I see a chip for each of: Symptoms, Vitals, Medications, Meals, Journal, and Illnesses & conditions
+    Then I see a chip for each of: Symptoms, Vitals, Medications, Meals, Journal, and Conditions
     And each chip displays a distinct icon alongside its label
     And the copy emphasises how flexible and simple logging is day-to-day
 
@@ -135,7 +135,7 @@ Feature: Onboarding
   Scenario: Only a name is required to complete this step
     Given I am on the "Create profile" step
     Then I see a required name field
-    And I see an optional date of birth field, avatar field, and illness selector
+    And I see an optional date of birth field, avatar field, and condition selector
     And the primary action is disabled until a name is entered
 
   Scenario: Completing profile creation advances into the app
@@ -230,14 +230,14 @@ Feature: Onboarding
 
   Scenario: Six entry options are offered as icon-led options
     Given I am on the "Log your first entry" step
-    Then I see an option for each of: An illness, A symptom, A vital, A meal, A medication, A journal entry
-    And "An illness" is displayed prominently as the first option
+    Then I see an option for each of: A condition, A symptom, A vital, A meal, A medication, A journal entry
+    And "A condition" is displayed prominently as the first option
     And each option uses a rendered vector icon, matching the icon system used on "What you can track"
     And each option has a brief sub-label describing what it captures
 
-  Scenario: Tapping "An illness" opens the illness screen and returns to this step
+  Scenario: Tapping "A condition" opens the illness screen and returns to this step
     Given I am on the "Log your first entry" step
-    When I tap "An illness"
+    When I tap "A condition"
     Then the illness entry screen opens full-screen, on top of this step
     When I finish on the illness screen (with or without saving)
     Then I am returned to "Log your first entry"

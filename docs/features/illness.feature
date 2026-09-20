@@ -277,7 +277,7 @@ Feature: Illness Tracking
 
   Scenario: A condition in recovery shows a distinct visual indicator in the list
     Given the active profile is tracking "Arthritis" with a status of "In recovery"
-    When I open the Illnesses tab
+    When I open the Conditions tab
     Then "Arthritis" is shown with a visual indicator distinguishing it from active conditions
 
   Scenario: Marking a condition in recovery as relapsed
@@ -298,12 +298,12 @@ Feature: Illness Tracking
     When I open the detail screen for "Arthritis"
     Then I see a timeline listing all three events in chronological order
 
-  Scenario: Active and in-recovery conditions are grouped separately in the Illnesses tab
+  Scenario: Active and in-recovery conditions are grouped separately in the Conditions tab
     Given the active profile is tracking:
       | Condition    | Status      |
       | Arthritis    | Active      |
       | Fibromyalgia | In recovery |
-    When I open the Illnesses tab
+    When I open the Conditions tab
     Then I see "Arthritis" under an "Active" section
     And I see "Fibromyalgia" under an "In recovery" section
 

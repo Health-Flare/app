@@ -324,6 +324,69 @@ abstract final class QuickLogParser {
     return best;
   }
 
+  /// Extracts a 1-10 symptom severity rating from free text, or null when
+  /// nothing confident can be found — callers should fall back to a
+  /// sensible neutral default rather than leaving the field unset.
+  ///
+  /// An explicit numeric scale ("7/10", "pain level 8", "severity: 6") wins
+  /// over qualitative words ("mild", "severe", "excruciating"), which are
+  /// mapped to representative points on the same 1-10 scale.
+  static int? parseSeverity(String text) {
+    final lower = text.toLowerCase();
+
+    final scaleMatch =
+        RegExp(r'(\d{1,2})\s*(?:/\s*10|out of 10)\b').firstMatch(lower) ??
+        RegExp(
+          r'(?:severity|pain)\s*(?:of|is|was|at|level)?\s*:?\s*(\d{1,2})\b',
+        ).firstMatch(lower);
+    if (scaleMatch != null) {
+      final value = int.tryParse(scaleMatch.group(1)!);
+      if (value != null && value >= 1 && value <= 10) return value;
+    }
+
+    const bands = [
+      (
+        [
+          'unbearable',
+          'excruciating',
+          'agonizing',
+          'agonising',
+          'worst ever',
+          'worst pain',
+        ],
+        9,
+      ),
+      (['severe', 'intense', 'terrible', 'awful', 'horrible'], 7),
+      (['moderate'], 5),
+      (['mild', 'slight', 'minor'], 3),
+    ];
+    for (final (keywords, value) in bands) {
+      if (keywords.any(lower.contains)) return value;
+    }
+    return null;
+  }
+
+  /// True if [text] signals a *fresh* diagnosis ("diagnosed", "diagnosis",
+  /// "found out") rather than just mentioning a condition the profile may
+  /// already have had for years — used to decide whether "now" is a
+  /// trustworthy stand-in for an unstated diagnosis date.
+  static bool mentionsNewDiagnosis(String text) {
+    final lower = text.toLowerCase();
+    return RegExp(r'\bdiagnos(?:ed|is)\b').hasMatch(lower) ||
+        lower.contains('found out');
+  }
+
+  /// Infers a [ConditionStatus] transition signalled by [text] ("in
+  /// remission" → [ConditionStatus.inRecovery], "relapsed" →
+  /// [ConditionStatus.active]), or null when the text carries no explicit
+  /// status language.
+  static ConditionStatus? parseConditionStatus(String text) {
+    final lower = text.toLowerCase();
+    if (lower.contains('remission')) return ConditionStatus.inRecovery;
+    if (RegExp(r'\brelaps').hasMatch(lower)) return ConditionStatus.active;
+    return null;
+  }
+
   /// True if [text] mentions [name] — either as a whole-name substring, or
   /// (for a multi-word [name]) via its capital-letter acronym written out
   /// in full, e.g. "ME" for "Myalgic Encephalomyelitis". Names shorter than

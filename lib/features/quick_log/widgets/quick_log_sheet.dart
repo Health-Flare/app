@@ -19,6 +19,7 @@ import 'package:health_flare/features/illness/screens/illness_screen.dart';
 import 'package:health_flare/features/quick_log/quick_log_classifier.dart';
 import 'package:health_flare/features/quick_log/quick_log_parser.dart';
 import 'package:health_flare/models/journal_entry.dart';
+import 'package:health_flare/models/user_condition.dart';
 
 /// Opens the quick-log bottom sheet. Call from any screen that has a FAB.
 Future<void> showQuickLogSheet(BuildContext context) {
@@ -103,13 +104,25 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
               loggedAt: _timestamp,
             );
       case QuickLogEntryType.symptom:
+        final matchedSymptom = QuickLogParser.matchSymptom(
+          _text,
+          ref.read(symptomCatalogProvider),
+          ref.read(userSymptomListProvider),
+          loggedNames: ref.read(recentSymptomNamesProvider),
+        );
         await ref
             .read(symptomEntryListProvider.notifier)
             .add(
               profileId: profileId,
-              name: _text,
-              severity: 5,
+              // A matched canonical name keeps repeated mentions of the same
+              // symptom consolidated under one name for trend/insight
+              // purposes, rather than accumulating near-duplicate free text
+              // ("Brain fog", "brain fog again", "Bad brain fog today", …).
+              // The original wording is never lost — it goes to notes.
+              name: matchedSymptom?.name ?? _text,
+              severity: QuickLogParser.parseSeverity(_text) ?? 5,
               loggedAt: _timestamp,
+              notes: matchedSymptom != null ? _text : null,
             );
       case QuickLogEntryType.doctorVisit:
         await ref
@@ -177,21 +190,58 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
               notes: _text,
             );
       case QuickLogEntryType.condition:
+        final trackedConditions = ref.read(userConditionListProvider);
         final condition = QuickLogParser.matchCondition(
           _text,
           ref.read(conditionCatalogProvider),
-          ref.read(userConditionListProvider),
+          trackedConditions,
         );
         if (condition == null) {
           await _saveJournal(profileId);
           return;
         }
-        // Conditions have no per-occurrence log record (unlike vitals or
-        // doses) — tracking is a membership, so add() is the whole save and
-        // is a no-op when the condition is already tracked.
-        await ref
-            .read(userConditionListProvider.notifier)
-            .add(conditionId: condition.id, conditionName: condition.name);
+        final existing = trackedConditions
+            .where((uc) => uc.conditionId == condition.id)
+            .firstOrNull;
+        final parsedStatus = QuickLogParser.parseConditionStatus(_text);
+
+        if (existing == null) {
+          // Not yet tracked — start tracking. "Diagnosed"/"found out"
+          // language makes *now* a trustworthy diagnosis date; a bare
+          // mention of an already-known condition does not, so diagnosedAt
+          // stays unset rather than guessing.
+          await ref
+              .read(userConditionListProvider.notifier)
+              .add(
+                conditionId: condition.id,
+                conditionName: condition.name,
+                diagnosedAt: QuickLogParser.mentionsNewDiagnosis(_text)
+                    ? _timestamp
+                    : null,
+                status: parsedStatus ?? ConditionStatus.active,
+              );
+        } else if (parsedStatus != null && parsedStatus != existing.status) {
+          // Already tracked and the text signals an actual status change —
+          // record it in the condition's history. Conditions have no
+          // per-occurrence log record otherwise (unlike vitals or doses), so
+          // this and the branch above are the whole save.
+          await ref
+              .read(userConditionListProvider.notifier)
+              .update(
+                existing.copyWith(
+                  status: parsedStatus,
+                  statusHistory: [
+                    ...existing.statusHistory,
+                    ConditionStatusEvent(
+                      eventType: parsedStatus == ConditionStatus.inRecovery
+                          ? 'recovery'
+                          : 'relapse',
+                      date: _timestamp,
+                    ),
+                  ],
+                ),
+              );
+        }
       case QuickLogEntryType.journal:
       case null:
         await _saveJournal(profileId);

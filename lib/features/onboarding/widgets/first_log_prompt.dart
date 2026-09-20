@@ -8,7 +8,7 @@ import 'package:health_flare/core/router/app_router.dart';
 /// Final step of the post-setup guided mini-flow (see `PostSetupFlowScreen`),
 /// shown once immediately after the first profile is created.
 ///
-/// Presents six option chips (Illness, Symptom, Vital, Meal, Medication,
+/// Presents six option chips (Condition, Symptom, Vital, Meal, Medication,
 /// Journal) and a dismiss link. Tapping a chip navigates to the relevant
 /// section; completing or backing out of the illness screen returns here
 /// (it's pushed on top rather than replacing this step), while every other
@@ -103,10 +103,10 @@ class _FirstLogPromptState extends ConsumerState<FirstLogPrompt> {
               children: [
                 _LogOptionCard(
                   icon: Icons.local_hospital_outlined,
-                  label: 'An illness',
+                  label: 'A condition',
                   sublabel: 'Add conditions you want to track',
                   semanticsLabel:
-                      'Track an illness — add conditions you want to track',
+                      'Track a condition — add conditions you want to track',
                   fullWidth: true,
                   onTap: _openIllness,
                 ),

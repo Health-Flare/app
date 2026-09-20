@@ -200,7 +200,7 @@ class _OnboardingProfileZoneState extends ConsumerState<OnboardingProfileZone> {
 
             const SizedBox(height: 32),
 
-            // ── Illness selector ────────────────────────────────────────────
+            // ── Condition selector ───────────────────────────────────────────
             Text(
               'What are you managing?',
               style: tt.bodyMedium?.copyWith(

@@ -126,7 +126,7 @@ void main() {
         'Medications',
         'Meals',
         'Journal',
-        'Illnesses & conditions',
+        'Conditions',
       ]) {
         expect(find.widgetWithText(Chip, label), findsOneWidget);
       }

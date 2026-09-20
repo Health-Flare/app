@@ -50,10 +50,10 @@ Feature: UI Patterns and Design Language
     Then the primary action button is labelled "Add to profile"
     And this label is used regardless of whether the profile belongs to the user or a dependant
 
-  Scenario: "Add to profile" is the label for illness, symptom, and medication tracking screens
+  Scenario: "Add to profile" is the label for condition, symptom, and medication tracking screens
     Given any of the following screens:
       | Screen                     |
-      | Illness tracking screen    |
+      | Condition tracking screen  |
       | Symptom tracking screen    |
       | Medication tracking screen |
     Then the primary action button is labelled "Add to profile"

@@ -96,5 +96,38 @@ void main() {
       final navBar = tester.widget<NavigationBar>(find.byType(NavigationBar));
       expect(navBar.selectedIndex, 5);
     });
+
+    // Regression: "Medications" is more than twice as long as its shortest
+    // sibling label and, with all 6 destinations always labelled, was the
+    // one most likely to wrap or misalign on narrow screens.
+    testWidgets(
+      'shows "Meds", not the longer "Medications", for the medications tab',
+      (tester) async {
+        await tester.pumpWidget(_buildShell());
+        await tester.pump();
+
+        expect(
+          find.descendant(
+            of: find.byType(NavigationBar),
+            matching: find.text('Meds'),
+          ),
+          findsOneWidget,
+        );
+        expect(find.text('Medications'), findsNothing);
+      },
+    );
+
+    testWidgets('tapping Meds navigates to the medications screen', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_buildShell());
+      await tester.pump();
+
+      await tester.tap(find.text('Meds'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+
+      expect(find.text('Medications screen'), findsOneWidget);
+    });
   });
 }

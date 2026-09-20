@@ -151,7 +151,7 @@ Feature: Profile Management
       | Add medication        |
       | Add vital             |
       | Add journal entry     |
-      | Add illness           |
+      | Add condition         |
       | Quick log sheet       |
     Then each screen shows "Logging for Dad" or "Adding to Dad's record"
     And this label is visible before any save action is taken
