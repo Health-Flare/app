@@ -602,6 +602,39 @@ Feature: Quick Log
     When I save a quick log entry classified as "Symptom"
     Then the entry appears in the Symptoms & Vitals section
 
+  # ---------------------------------------------------------------------------
+  # Symptom entries — canonical naming and severity
+  # ---------------------------------------------------------------------------
+  #
+  # Repeated mentions of the same symptom should consolidate under one
+  # canonical name for trend/insight purposes, rather than accumulating
+  # near-duplicate free text ("Brain fog", "brain fog again", "Bad brain fog
+  # today", …) — mirroring how Medication and Condition already resolve to a
+  # canonical record before saving. The user's own wording is never lost.
+
+  Scenario: A Symptom entry matching a known name is saved under its canonical name
+    Given "Sarah" previously created the custom symptom "Brain fog"
+    When I save the quick log entry "Bad brain fog again, hard to focus"
+    Then the saved symptom entry's name is "Brain fog"
+    And the entry's notes preserve "Bad brain fog again, hard to focus"
+
+  Scenario: A brand-new Symptom entry with no canonical match saves the raw text
+    When I save the quick log entry "Sharp pain in my left foot"
+    Then the saved symptom entry's name is "Sharp pain in my left foot"
+    And the entry has no notes, since the name already captures everything typed
+
+  Scenario: An explicit severity scale is extracted from the text
+    When I save the quick log entry "Joint pain 8/10 today, hard to walk"
+    Then the saved symptom entry's severity is 8
+
+  Scenario: A qualitative severity word is mapped onto the severity scale
+    When I save the quick log entry "Mild headache this afternoon"
+    Then the saved symptom entry's severity is 3
+
+  Scenario: Severity defaults to a neutral value when nothing can be inferred
+    When I save the quick log entry "Knees and wrists both swollen again"
+    Then the saved symptom entry's severity defaults to 5
+
   Scenario: A Vital-typed entry is visible in Symptoms and Vitals
     When I save a quick log entry classified as "Vital"
     Then the entry appears in the Symptoms & Vitals section
@@ -611,10 +644,38 @@ Feature: Quick Log
     Then a Respiratory Rate vital entry is saved with value 18 breaths/min
     And the original text is preserved in the entry's notes
 
-  Scenario: A Condition-typed entry is visible in the Illnesses tab
+  Scenario: A Condition-typed entry is visible in the Conditions tab
     When I save a quick log entry classified as "Condition"
-    Then the entry appears in the Illnesses tab
+    Then the entry appears in the Conditions tab
     And the associated UserCondition record reflects the matched condition
+
+  # ---------------------------------------------------------------------------
+  # Condition entries — diagnosis date and status
+  # ---------------------------------------------------------------------------
+
+  Scenario: "Just found out" language stamps today as the diagnosis date
+    Given "Fibromyalgia" exists in the condition catalogue but is not tracked by "Sarah"
+    When I save the quick log entry "Just found out I have fibromyalgia"
+    Then a UserCondition record for "Fibromyalgia" is created and linked to "Sarah"
+    And its diagnosis date is today
+
+  Scenario: A bare mention of an already-known condition does not guess a diagnosis date
+    Given "Fibromyalgia" exists in the condition catalogue but is not tracked by "Sarah"
+    When I save the quick log entry "Fibromyalgia flare again today"
+    Then a UserCondition record for "Fibromyalgia" is created and linked to "Sarah"
+    And no diagnosis date is guessed, since the text names no fresh diagnosis
+
+  Scenario: Remission language updates a tracked condition's status
+    Given "Sarah" is already tracking "Myalgic encephalomyelitis" with a status of "Active"
+    When I save the quick log entry "Officially in remission from my ME now"
+    Then "Myalgic encephalomyelitis" is updated to a status of "In recovery"
+    And a "recovery" event is recorded in its condition history
+
+  Scenario: Relapse language updates a tracked condition back to active
+    Given "Sarah" is already tracking "Myalgic encephalomyelitis" with a status of "In recovery"
+    When I save the quick log entry "Had a bad ME relapse this week"
+    Then "Myalgic encephalomyelitis" is updated to a status of "Active"
+    And a "relapse" event is recorded in its condition history
 
   Scenario: A blood-pressure quick entry saves structured values
     When I save the quick log entry "Blood pressure was 128 over 84 this morning"

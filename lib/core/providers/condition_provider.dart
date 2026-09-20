@@ -141,6 +141,7 @@ class UserConditionListNotifier extends Notifier<List<UserCondition>> {
     required int conditionId,
     required String conditionName,
     DateTime? diagnosedAt,
+    ConditionStatus status = ConditionStatus.active,
   }) async {
     final profileId = ref.read(activeProfileProvider);
     if (profileId == null) return;
@@ -161,7 +162,8 @@ class UserConditionListNotifier extends Notifier<List<UserCondition>> {
       ..conditionId = conditionId
       ..conditionName = conditionName
       ..trackedSince = DateTime.now()
-      ..diagnosedAt = diagnosedAt;
+      ..diagnosedAt = diagnosedAt
+      ..status = status == ConditionStatus.inRecovery ? 'inRecovery' : 'active';
 
     await isar.writeTxn(() async {
       await isar.userConditionIsars.put(row);

@@ -183,7 +183,7 @@ class _IllnessScreenState extends ConsumerState<IllnessScreen> {
         _pendingConditionIds.isNotEmpty || _pendingSymptomIds.isNotEmpty;
 
     return Scaffold(
-      appBar: const HFAppBar(title: Text('Track Illnesses')),
+      appBar: const HFAppBar(title: Text('Track Conditions')),
       bottomNavigationBar: SafeArea(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),

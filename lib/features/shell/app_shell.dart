@@ -28,7 +28,7 @@ class AppShell extends StatelessWidget {
     ),
     (
       route: AppRoutes.medications,
-      label: 'Medications',
+      label: 'Meds',
       icon: Icons.medication_outlined,
       selectedIcon: Icons.medication_rounded,
     ),

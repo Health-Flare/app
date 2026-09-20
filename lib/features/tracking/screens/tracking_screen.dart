@@ -66,7 +66,7 @@ class _TrackingScreenState extends ConsumerState<TrackingScreen>
           tabs: const [
             Tab(text: 'Symptoms'),
             Tab(text: 'Vitals'),
-            Tab(text: 'Illnesses'),
+            Tab(text: 'Conditions'),
           ],
         ),
       ),
@@ -278,7 +278,7 @@ class _VitalEmptyState extends StatelessWidget {
 }
 
 // ---------------------------------------------------------------------------
-// Illnesses tab
+// Conditions tab
 // ---------------------------------------------------------------------------
 
 class _IllnessesList extends StatelessWidget {

@@ -21,7 +21,7 @@ Feature: Navigation and General UX
       | Destination |
       | Dashboard   |
       | Tracking    |
-      | Medications |
+      | Meds        |
       | Meals       |
       | Sleep       |
       | Reports     |
@@ -37,7 +37,7 @@ Feature: Navigation and General UX
     And the Symptoms tab is selected by default
 
   Scenario: Navigate to Medications
-    When I tap "Medications" in the primary navigation
+    When I tap "Meds" in the primary navigation
     Then I am shown the medications screen for "Sarah"
 
   Scenario: Navigate to Meals
@@ -56,7 +56,7 @@ Feature: Navigation and General UX
   # Tracking screen tab layout
   # ---------------------------------------------------------------------------
   #
-  # Schema note (pending): the Illnesses tab surfaces UserConditionIsar fields
+  # Schema note (pending): the Conditions tab surfaces UserConditionIsar fields
   # (status, recoveryDate, relapseDate, conditionHistory) that are not yet in
   # the schema. The tab structure can be built before those fields land, but
   # the recovery/relapse UI within the tab requires the schema version bump first.
@@ -66,15 +66,15 @@ Feature: Navigation and General UX
     Then the "Symptoms" tab is selected and visible
     And I see the symptom and vitals log for "Sarah"
 
-  Scenario: Illnesses tab is accessible from the Tracking screen
+  Scenario: Conditions tab is accessible from the Tracking screen
     Given I am on the Tracking screen
-    When I tap the "Illnesses" tab
+    When I tap the "Conditions" tab
     Then I see the list of conditions tracked for "Sarah"
     And I can manage diagnosis dates, recovery status, and condition links from this tab
 
   Scenario: Switching tabs does not lose scroll position
     Given I have scrolled partway down the Symptoms tab on the Tracking screen
-    When I tap the "Illnesses" tab
+    When I tap the "Conditions" tab
     And I tap the "Symptoms" tab
     Then my scroll position on the Symptoms tab is preserved
 
@@ -83,7 +83,7 @@ Feature: Navigation and General UX
     When I navigate to the Tracking screen
     And I am on the "Symptoms" tab
     Then I see an empty state message guiding me to log my first symptom or vital
-    When I tap the "Illnesses" tab
+    When I tap the "Conditions" tab
     Then I see an empty state message guiding me to add my first condition
 
   # ---------------------------------------------------------------------------

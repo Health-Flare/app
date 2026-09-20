@@ -98,7 +98,7 @@ void main() {
       );
 
       for (final label in [
-        'An illness',
+        'A condition',
         'A symptom',
         'A vital',
         'A meal',
@@ -109,7 +109,7 @@ void main() {
       }
     });
 
-    testWidgets('tapping "An illness" pushes the illness screen and returns '
+    testWidgets('tapping "A condition" pushes the illness screen and returns '
         'here afterwards, updating the heading', (tester) async {
       await tester.pumpWidget(
         _routedHarness(
@@ -122,7 +122,7 @@ void main() {
 
       expect(find.text("Ethan's profile is ready."), findsOneWidget);
 
-      await tester.tap(find.text('An illness'));
+      await tester.tap(find.text('A condition'));
       await tester.pumpAndSettle();
       expect(find.text('Illness screen'), findsOneWidget);
 

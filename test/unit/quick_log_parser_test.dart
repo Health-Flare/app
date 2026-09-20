@@ -399,6 +399,84 @@ void main() {
     });
   });
 
+  group('QuickLogParser.parseSeverity', () {
+    test('parses an explicit "x/10" scale', () {
+      expect(QuickLogParser.parseSeverity('Joint pain 8/10 today'), 8);
+      expect(QuickLogParser.parseSeverity('Pain was 6 out of 10'), 6);
+    });
+
+    test('parses "severity"/"pain level" phrasing', () {
+      expect(QuickLogParser.parseSeverity('Severity 7 this morning'), 7);
+      expect(QuickLogParser.parseSeverity('Pain level 9'), 9);
+    });
+
+    test('maps qualitative words to representative points on the scale', () {
+      expect(QuickLogParser.parseSeverity('Mild headache today'), 3);
+      expect(QuickLogParser.parseSeverity('Moderate cramping'), 5);
+      expect(QuickLogParser.parseSeverity('Severe migraine all day'), 7);
+      expect(QuickLogParser.parseSeverity('Excruciating, unbearable pain'), 9);
+    });
+
+    test('ignores an out-of-range numeric scale', () {
+      expect(QuickLogParser.parseSeverity('Pain level 15'), isNull);
+    });
+
+    test('returns null when nothing can be inferred', () {
+      expect(
+        QuickLogParser.parseSeverity('Knees and wrists both swollen again'),
+        isNull,
+      );
+    });
+
+    test('does not false-positive on unrelated numbers near "pain"', () {
+      expect(QuickLogParser.parseSeverity('Pain for 6 days now'), isNull);
+    });
+  });
+
+  group('QuickLogParser.mentionsNewDiagnosis', () {
+    test('recognises "diagnosed"/"diagnosis"/"found out"', () {
+      expect(
+        QuickLogParser.mentionsNewDiagnosis('Just got diagnosed today'),
+        isTrue,
+      );
+      expect(
+        QuickLogParser.mentionsNewDiagnosis('Got the diagnosis this week'),
+        isTrue,
+      );
+      expect(
+        QuickLogParser.mentionsNewDiagnosis('Just found out I have it'),
+        isTrue,
+      );
+    });
+
+    test('a bare mention of a condition is not a fresh diagnosis', () {
+      expect(
+        QuickLogParser.mentionsNewDiagnosis('Fibromyalgia flare again today'),
+        isFalse,
+      );
+    });
+  });
+
+  group('QuickLogParser.parseConditionStatus', () {
+    test('recognises remission and relapse language', () {
+      expect(
+        QuickLogParser.parseConditionStatus('Officially in remission now'),
+        ConditionStatus.inRecovery,
+      );
+      expect(
+        QuickLogParser.parseConditionStatus('Had a relapse this week'),
+        ConditionStatus.active,
+      );
+    });
+
+    test('returns null with no status language', () {
+      expect(
+        QuickLogParser.parseConditionStatus('Rough fibromyalgia day today'),
+        isNull,
+      );
+    });
+  });
+
   group('QuickLogParser.textMentionsName', () {
     test('never matches a name shorter than 3 characters', () {
       expect(QuickLogParser.textMentionsName('I saw ME today', 'ME'), isFalse);

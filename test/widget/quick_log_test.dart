@@ -50,12 +50,35 @@ class _FakeMealList extends MealEntryListNotifier {
   List<MealEntry> build() => [];
 }
 
+final symptomSaveCalls = <Map<String, Object?>>[];
+
 class _FakeSymptomList extends SymptomEntryListNotifier {
   _FakeSymptomList([this._data = const []]);
   final List<SymptomEntry> _data;
 
   @override
   List<SymptomEntry> build() => _data;
+
+  @override
+  Future<int> add({
+    required int profileId,
+    required String name,
+    required int severity,
+    required DateTime loggedAt,
+    String? notes,
+    int? userSymptomIsarId,
+    int? userConditionIsarId,
+    int? flareIsarId,
+    WeatherSnapshot? weatherSnapshot,
+  }) async {
+    symptomSaveCalls.add({
+      'profileId': profileId,
+      'name': name,
+      'severity': severity,
+      'notes': notes,
+    });
+    return 1;
+  }
 }
 
 class _FakeJournalList extends JournalEntryListNotifier {
@@ -187,13 +210,23 @@ class _RecordingUserConditionList extends UserConditionListNotifier {
     required int conditionId,
     required String conditionName,
     DateTime? diagnosedAt,
+    ConditionStatus status = ConditionStatus.active,
   }) async {
     conditionTrackCalls.add({
       'conditionId': conditionId,
       'conditionName': conditionName,
+      'diagnosedAt': diagnosedAt,
+      'status': status,
     });
   }
+
+  @override
+  Future<void> update(UserCondition updated) async {
+    conditionUpdateCalls.add(updated);
+  }
 }
+
+final conditionUpdateCalls = <UserCondition>[];
 
 class _FakeSymptomCatalog extends SymptomCatalogNotifier {
   _FakeSymptomCatalog(this._data);
@@ -797,6 +830,8 @@ void main() {
       doseCalls.clear();
       sleepCalls.clear();
       conditionTrackCalls.clear();
+      conditionUpdateCalls.clear();
+      symptomSaveCalls.clear();
     });
 
     testWidgets('Sleep chip appears for sleep text', (tester) async {
@@ -971,10 +1006,133 @@ void main() {
         );
         await _typeAndSave(tester, 'Rough ME day today');
 
-        expect(conditionTrackCalls, hasLength(1));
-        expect(conditionTrackCalls.single['conditionId'], 9);
+        // Already tracked with no status-change language in the text —
+        // nothing to add or update. (Falling back to a redundant add() call
+        // would rely on the real notifier's own idempotency; skipping it
+        // entirely here is the more correct behaviour.)
+        expect(conditionTrackCalls, isEmpty);
+        expect(conditionUpdateCalls, isEmpty);
         expect(journalCalls, isEmpty);
       },
     );
+
+    testWidgets('"Just found out" language stamps a diagnosis date on a new '
+        'condition', (tester) async {
+      await _openSheet(
+        tester,
+        conditionCatalog: [const Condition(id: 5, name: 'Fibromyalgia')],
+      );
+      await _typeAndSave(tester, 'Just found out I have fibromyalgia');
+
+      expect(conditionTrackCalls, hasLength(1));
+      expect(conditionTrackCalls.single['diagnosedAt'], isNotNull);
+    });
+
+    testWidgets('a bare mention of an already-known condition does not guess a '
+        'diagnosis date', (tester) async {
+      await _openSheet(
+        tester,
+        conditionCatalog: [const Condition(id: 5, name: 'Fibromyalgia')],
+      );
+      await _typeAndSave(tester, 'Fibromyalgia flare again today');
+
+      expect(conditionTrackCalls, hasLength(1));
+      expect(conditionTrackCalls.single['diagnosedAt'], isNull);
+    });
+
+    testWidgets(
+      'remission language on a tracked condition updates its status and '
+      'history',
+      (tester) async {
+        await _openSheet(
+          tester,
+          trackedConditions: [
+            UserCondition(
+              id: 1,
+              profileId: 1,
+              conditionId: 9,
+              conditionName: 'Myalgic encephalomyelitis',
+              trackedSince: DateTime(2026),
+            ),
+          ],
+        );
+        await _typeAndSave(tester, 'Officially in remission from my ME now');
+
+        expect(conditionTrackCalls, isEmpty);
+        expect(conditionUpdateCalls, hasLength(1));
+        final updated = conditionUpdateCalls.single;
+        expect(updated.status, ConditionStatus.inRecovery);
+        expect(updated.statusHistory, hasLength(1));
+        expect(updated.statusHistory.single.eventType, 'recovery');
+      },
+    );
+
+    testWidgets('Symptom-typed save resolves to the canonical tracked name and '
+        'keeps the typed text as notes', (tester) async {
+      await _openSheet(
+        tester,
+        trackedSymptoms: [
+          UserSymptom(
+            id: 1,
+            profileId: 1,
+            symptomId: 4,
+            symptomName: 'Brain fog',
+            trackedSince: DateTime(2026),
+          ),
+        ],
+      );
+      await _typeAndSave(tester, 'Bad brain fog again, hard to focus');
+
+      expect(symptomSaveCalls, hasLength(1));
+      expect(symptomSaveCalls.single['name'], 'Brain fog');
+      expect(
+        symptomSaveCalls.single['notes'],
+        'Bad brain fog again, hard to focus',
+      );
+    });
+
+    testWidgets(
+      'Symptom-typed save with no canonical match saves the raw text as '
+      'the name, with no redundant notes',
+      (tester) async {
+        await _openSheet(tester);
+        await _typeAndSave(tester, 'Sharp pain in my left foot');
+
+        expect(symptomSaveCalls, hasLength(1));
+        expect(symptomSaveCalls.single['name'], 'Sharp pain in my left foot');
+        expect(symptomSaveCalls.single['notes'], isNull);
+      },
+    );
+
+    testWidgets('Symptom-typed save parses an explicit severity scale', (
+      tester,
+    ) async {
+      await _openSheet(tester);
+      await _typeAndSave(tester, 'Joint pain 8/10 today, hard to walk');
+
+      expect(symptomSaveCalls, hasLength(1));
+      expect(symptomSaveCalls.single['severity'], 8);
+    });
+
+    testWidgets(
+      'Symptom-typed save maps a qualitative severity word when no scale '
+      'is given',
+      (tester) async {
+        await _openSheet(tester);
+        await _typeAndSave(tester, 'Mild headache this afternoon');
+
+        expect(symptomSaveCalls, hasLength(1));
+        expect(symptomSaveCalls.single['severity'], 3);
+      },
+    );
+
+    testWidgets('Symptom-typed save defaults severity to 5 when nothing can be '
+        'parsed', (tester) async {
+      await _openSheet(tester);
+      await _typeAndSave(tester, 'Knees and wrists both swollen again');
+
+      expect(symptomSaveCalls, hasLength(1));
+      expect(symptomSaveCalls.single['severity'], 5);
+    });
   });
 }

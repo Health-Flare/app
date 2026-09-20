@@ -19,7 +19,7 @@ class OnboardingFeaturesZone extends StatelessWidget {
     (icon: Icons.medication_outlined, label: 'Medications'),
     (icon: Icons.restaurant_outlined, label: 'Meals'),
     (icon: Icons.book_outlined, label: 'Journal'),
-    (icon: Icons.local_hospital_outlined, label: 'Illnesses & conditions'),
+    (icon: Icons.local_hospital_outlined, label: 'Conditions'),
   ];
 
   @override
