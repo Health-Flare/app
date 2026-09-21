@@ -9,7 +9,7 @@ import 'package:health_flare/core/providers/database_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 
 // ---------------------------------------------------------------------------
-// Meal entry list — all entries across all profiles
+// Meal entry list: all entries across all profiles
 // ---------------------------------------------------------------------------
 
 /// Holds all meal entries for all profiles.
@@ -90,7 +90,7 @@ class MealEntryListNotifier extends Notifier<List<MealEntry>> {
   }
 
   /// Reassign an entry to a different profile (wrong-profile recovery).
-  /// Any flare link is cleared — flares belong to the source profile.
+  /// Any flare link is cleared: flares belong to the source profile.
   Future<void> moveToProfile(int id, int newProfileId) async {
     final isar = ref.read(isarProvider);
     await isar.writeTxn(() async {

@@ -1,8 +1,8 @@
-# Full User Review — All Personas
+# Full User Review: All Personas
 
 Run a full user review of all Health Flare feature files across four distinct user personas in parallel, then synthesise the findings.
 
-## Step 1 — Launch four parallel persona reviews
+## Step 1: Launch four parallel persona reviews
 
 Invoke the Agent tool four times **simultaneously** (in a single response) with the following personas. Each agent should independently read all feature files in `docs/features/` and produce its review.
 
@@ -20,18 +20,18 @@ Persona: Sam, 38, Crohn's disease, also tracking daughter Lily (T1D) and mother 
 
 ### Agent 4: Developer-Spouse Handing Off to Primary Caregiver (`user-review-caregiver-partner`)
 Prompt the agent with the full contents of `.claude/commands/user-review-caregiver-partner.md`.
-Persona: Marcus, developer in late 30s, building the app; wife Claire manages all tracking for two children — Ethan (10, JIA) and Nora (7, EoE). Include `developer-experience.feature` in this agent's review.
+Persona: Marcus, developer in late 30s, building the app; wife Claire manages all tracking for two children: Ethan (10, JIA) and Nora (7, EoE). Include `developer-experience.feature` in this agent's review.
 
-## Step 2 — Wait for all four agents to complete
+## Step 2: Wait for all four agents to complete
 
 Do not proceed until all four agents have returned their full reviews.
 
-## Step 3 — Synthesise findings
+## Step 3: Synthesise findings
 
 Produce a consolidated report with this structure:
 
 ```
-# Health Flare — Full Persona Review
+# Health Flare: Full Persona Review
 
 ## Participants
 - Alex (solo user with illness)

@@ -22,7 +22,7 @@ Feature: Onboarding
     Then I am taken directly to the dashboard for the last active profile
 
   # ---------------------------------------------------------------------------
-  # Guided flow shell — progress, navigation, skip
+  # Guided flow shell: progress, navigation, skip
   #
   # One shared header component (dots + optional Back + optional Skip) is
   # used everywhere a guided, multi-step flow appears in the app: the
@@ -183,8 +183,8 @@ Feature: Onboarding
   # Post-setup mini-flow: weather opt-in, then log your first entry
   #
   # Shown once per profile, immediately after that profile's dashboard first
-  # loads. Reuses the same guided-flow shell as onboarding above — the same
-  # header, dots, and button styling — rather than a modal bottom sheet, so
+  # loads. Reuses the same guided-flow shell as onboarding above: the same
+  # header, dots, and button styling: rather than a modal bottom sheet, so
   # a one-time prompt never feels like a different screen bolted onto the
   # side of the app.
   # ---------------------------------------------------------------------------

@@ -30,7 +30,7 @@ class DailyCheckinCard extends ConsumerWidget {
 }
 
 // ---------------------------------------------------------------------------
-// Prompt card — shown when no check-in exists for today
+// Prompt card: shown when no check-in exists for today
 // ---------------------------------------------------------------------------
 
 class _CheckInPromptCard extends StatelessWidget {
@@ -71,7 +71,7 @@ class _CheckInPromptCard extends StatelessWidget {
 }
 
 // ---------------------------------------------------------------------------
-// Summary card — shown once today's check-in is saved
+// Summary card: shown once today's check-in is saved
 // ---------------------------------------------------------------------------
 
 class _CheckInSummaryCard extends StatelessWidget {

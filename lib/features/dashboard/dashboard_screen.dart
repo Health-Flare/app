@@ -14,7 +14,7 @@ import 'package:health_flare/features/daily_checkin/widgets/daily_checkin_card.d
 import 'package:health_flare/features/appointments/widgets/upcoming_appointments_card.dart';
 import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 
-/// Dashboard — the home tab.
+/// Dashboard: the home tab.
 ///
 /// Shows the active profile name in the app bar. All data sections
 /// will be scoped to the active profile once the data layer is wired up.
@@ -65,7 +65,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     final cs = Theme.of(context).colorScheme;
     final tt = Theme.of(context).textTheme;
 
-    // Listen for subsequent transitions to true — handles the case where a
+    // Listen for subsequent transitions to true: handles the case where a
     // new profile is created from the profile switcher while on another tab.
     ref.listen<bool>(firstLogPromptProvider, (prev, next) {
       if (next && !(prev ?? false)) {
@@ -118,7 +118,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 }
 
 // ---------------------------------------------------------------------------
-// Body — switches between empty state and activity feed
+// Body: switches between empty state and activity feed
 // ---------------------------------------------------------------------------
 
 class _DashboardBody extends ConsumerWidget {

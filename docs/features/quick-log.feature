@@ -9,7 +9,7 @@ Feature: Quick Log
     And I am on the Dashboard screen
 
   # ---------------------------------------------------------------------------
-  # Log entry button — placement and visibility
+  # Log entry button: placement and visibility
   # ---------------------------------------------------------------------------
 
   Scenario: A log entry button is persistently visible on the dashboard
@@ -66,7 +66,7 @@ Feature: Quick Log
     And the keyboard is visible without any additional interaction
 
   # ---------------------------------------------------------------------------
-  # Profile attribution — caregiver safety
+  # Profile attribution: caregiver safety
   # ---------------------------------------------------------------------------
 
   Scenario: Quick log sheet shows whose record the entry will be saved to
@@ -131,7 +131,7 @@ Feature: Quick Log
   # Symptom classification is not limited to a fixed generic keyword list. It
   # also matches against the app's symptom catalogue (Symptom, global = true)
   # and, critically, against symptoms the active profile has already created
-  # or logged (UserSymptom / custom Symptom records with global = false) —
+  # or logged (UserSymptom / custom Symptom records with global = false): 
   # including symptoms the user typed themselves rather than picked from a
   # list. The first mention of a brand-new custom symptom still requires the
   # full entry form; every mention after that is fast from Quick Log.
@@ -259,7 +259,7 @@ Feature: Quick Log
   # global = true) and the active profile's own conditions (UserCondition /
   # custom Condition records with global = false), the same way medication
   # text is matched against the profile's real medication list. Diagnosis
-  # text is no longer routed to Journal by default — a Condition type exists
+  # text is no longer routed to Journal by default: a Condition type exists
   # and is used when the text names a known or previously-tracked condition.
 
   Scenario: Typing about a known catalogue condition suggests a Condition entry type
@@ -289,7 +289,7 @@ Feature: Quick Log
     Then the suggestion chip, if shown, is "Symptom", not "Condition"
 
   # Generic diagnosis-status language suggests Condition even when the text
-  # names no catalogue or previously-tracked condition — mirroring how
+  # names no catalogue or previously-tracked condition: mirroring how
   # Symptom classification also has a generic keyword list alongside its
   # catalogue-aware matching, above.
   Scenario Outline: Generic diagnosis-status language suggests a Condition entry type
@@ -603,13 +603,13 @@ Feature: Quick Log
     Then the entry appears in the Symptoms & Vitals section
 
   # ---------------------------------------------------------------------------
-  # Symptom entries — canonical naming and severity
+  # Symptom entries: canonical naming and severity
   # ---------------------------------------------------------------------------
   #
   # Repeated mentions of the same symptom should consolidate under one
   # canonical name for trend/insight purposes, rather than accumulating
   # near-duplicate free text ("Brain fog", "brain fog again", "Bad brain fog
-  # today", …) — mirroring how Medication and Condition already resolve to a
+  # today", …): mirroring how Medication and Condition already resolve to a
   # canonical record before saving. The user's own wording is never lost.
 
   Scenario: A Symptom entry matching a known name is saved under its canonical name
@@ -650,7 +650,7 @@ Feature: Quick Log
     And the associated UserCondition record reflects the matched condition
 
   # ---------------------------------------------------------------------------
-  # Condition entries — diagnosis date and status
+  # Condition entries: diagnosis date and status
   # ---------------------------------------------------------------------------
 
   Scenario: "Just found out" language stamps today as the diagnosis date

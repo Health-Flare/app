@@ -4,7 +4,7 @@
 # Dependency health audit for Health Flare.
 # Reports outdated direct dependencies and fails if any direct dependency
 # is discontinued. Transitive discontinued packages are warned but do not
-# fail the build — they are outside our control.
+# fail the build: they are outside our control.
 #
 # Usage:
 #   bash scripts/check_deps.sh          # exits 0 if healthy, 1 if problems found
@@ -18,7 +18,7 @@ REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$REPO_ROOT"
 
 echo "──────────────────────────────────────────────"
-echo "  Health Flare — Dependency Audit"
+echo "  Health Flare: Dependency Audit"
 echo "  $(date -u '+%Y-%m-%d %H:%M UTC')"
 echo "──────────────────────────────────────────────"
 

@@ -193,7 +193,7 @@ Feature: Medication Tracking
 
   # For as-needed (PRN) medications especially, it is valuable to know whether
   # taking the medication actually helped. This is distinct from logging that a
-  # dose was taken — it records the user's perceived response.
+  # dose was taken: it records the user's perceived response.
 
   Scenario: Rate the effectiveness of a dose after taking it
     Given "Sarah" has a medication "Ibuprofen" at "400mg" as needed
@@ -212,7 +212,7 @@ Feature: Medication Tracking
       | Made it worse  |
     And no option is pre-selected
 
-  Scenario: Effectiveness is optional — a dose can be saved without it
+  Scenario: Effectiveness is optional: a dose can be saved without it
     When I log a dose for "Ibuprofen"
     And I leave the effectiveness field blank
     And I save the dose

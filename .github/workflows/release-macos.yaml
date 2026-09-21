@@ -6,7 +6,7 @@ on:
     tags:
       - "v*.*.*"
 
-# Flutter version kept in sync with ci.yml — update both together.
+# Flutter version kept in sync with ci.yml: update both together.
 env:
   FLUTTER_VERSION: "3.47.2"
 
@@ -66,7 +66,7 @@ jobs:
         run: |
           APP=build/macos/Build/Products/Release/Health\ Flare.app
           DMG=healthflare-${{ github.ref_name }}.dmg
-          # Create a simple DMG with hdiutil — no extra tooling required.
+          # Create a simple DMG with hdiutil: no extra tooling required.
           hdiutil create -volname "Health Flare ${{ github.ref_name }}" \
             -srcfolder "$APP" \
             -ov -format UDZO \

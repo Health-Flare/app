@@ -48,8 +48,8 @@ class FoodTrigger {
 
 /// How next-day symptom severity differs after poor vs good sleep.
 ///
-/// [poorSleepAvg] — average severity on the day after a sleep rated 1–2.
-/// [goodSleepAvg] — average severity on the day after a sleep rated 4–5.
+/// [poorSleepAvg]: average severity on the day after a sleep rated 1–2.
+/// [goodSleepAvg]: average severity on the day after a sleep rated 4–5.
 /// Null values mean there were not enough samples to compute the average.
 class SleepCorrelation {
   const SleepCorrelation({

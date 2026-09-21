@@ -5,7 +5,7 @@ version: 1.0.0
 environment:
   sdk: ^3.0.0
 
-# No Flutter dependency — this is a plain Dart CLI project.
+# No Flutter dependency: this is a plain Dart CLI project.
 
 dependencies:
   isar_community: 3.3.0 # pinned to match generated .g.dart files

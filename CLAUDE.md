@@ -1,6 +1,6 @@
-# Claude Code Project Guide — Health Flare
+# Claude Code Project Guide: Health Flare
 
-Health Flare is a chronic illness tracking companion app for iOS and Android. It's built with Flutter, uses Riverpod for state management, Isar Community for local storage, and follows a feature-first architecture. The app is **offline-first** — no accounts, no cloud sync, all data stays on device. The one exception is opt-in weather capture, which sends coordinates to the Open-Meteo API to fetch conditions at the time of a log entry (coordinates are never stored; only the resulting weather summary is saved).
+Health Flare is a chronic illness tracking companion app for iOS and Android. It's built with Flutter, uses Riverpod for state management, Isar Community for local storage, and follows a feature-first architecture. The app is **offline-first**: no accounts, no cloud sync, all data stays on device. The one exception is opt-in weather capture, which sends coordinates to the Open-Meteo API to fetch conditions at the time of a log entry (coordinates are never stored; only the resulting weather summary is saved).
 
 ## Quick Start Commands
 
@@ -41,7 +41,7 @@ the CI gates in `.github/workflows/ci.yml` before a commit lands:
 1. Formats staged Dart files (`dart format`) and re-stages them
 2. Offline integrity scan (`scripts/check_urls.sh`)
 3. Static analysis (`flutter analyze --fatal-infos`)
-4. Tests (`flutter test`, excluding `test/golden` — golden-file pixel diffs
+4. Tests (`flutter test`, excluding `test/golden`: golden-file pixel diffs
    are rendered on `ubuntu-latest` and commonly differ on macOS/Windows; CI
    still gates them on Linux)
 
@@ -55,18 +55,18 @@ This project is hosted on **GitHub**. Use the `gh` CLI for all repository operat
 
 Name branches by the kind of work, not by tool/author:
 
-- `bug/<short-description>` — bug fixes
-- `feature/<short-description>` — new features / enhancements
+- `bug/<short-description>`: bug fixes
+- `feature/<short-description>`: new features / enhancements
 
 Do **not** prefix branches with `claude/` (or similar tool-identifying prefixes)
-even when a session auto-generates one — rename to `bug/…` or `feature/…` before
+even when a session auto-generates one: rename to `bug/…` or `feature/…` before
 pushing.
 
 ### Linking Starter-Work Branches to Issues
 
 When a branch exists with starter work for an issue (e.g. specs added, a fix
 partially scoped) before a PR is opened, make that discoverable on the issue
-itself so anyone — human or AI agent — can pick up from it instead of
+itself so anyone (human or AI agent) can pick up from it instead of
 starting fresh:
 
 1. Apply the `has-branch` label to the issue.
@@ -75,7 +75,7 @@ starting fresh:
    naming what's already there (specs, partial implementation, etc.).
 
 Once a PR is opened, GitHub's own "Development" linking on the PR (via
-`Closes #<issue>`) takes over — the manual `## Branch` note is only needed
+`Closes #<issue>`) takes over: the manual `## Branch` note is only needed
 for the pre-PR gap.
 
 ```bash
@@ -244,9 +244,9 @@ flutter test test/widget/onboarding_screen_test.dart
 
 ### Must Pass
 
-1. `flutter analyze` — zero warnings/errors
-2. `dart format --set-exit-if-changed .` — code is formatted
-3. No network URLs in Dart files (offline-first app) — **exceptions (see `.url-scan-ignore`):** `healthflare.org` links (first-party domain, opened by the OS browser on explicit user tap, never called by app code) and `api.open-meteo.com` (the opt-in weather capture call — no API key or personal data sent). Add any new URL exception to `.url-scan-ignore` with a justification comment.
+1. `flutter analyze`: zero warnings/errors
+2. `dart format --set-exit-if-changed .`: code is formatted
+3. No network URLs in Dart files (offline-first app): **exceptions (see `.url-scan-ignore`):** `healthflare.org` links (first-party domain, opened by the OS browser on explicit user tap, never called by app code) and `api.open-meteo.com` (the opt-in weather capture call: no API key or personal data sent). Add any new URL exception to `.url-scan-ignore` with a justification comment.
 4. No `google_fonts` package (fonts are bundled locally)
 
 ### Conventions

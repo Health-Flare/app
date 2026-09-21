@@ -7,7 +7,7 @@ import 'package:health_flare/core/providers/database_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 
 // ---------------------------------------------------------------------------
-// Appointment list — all appointments across all profiles
+// Appointment list: all appointments across all profiles
 // ---------------------------------------------------------------------------
 
 class AppointmentListNotifier extends Notifier<List<Appointment>> {
@@ -86,7 +86,7 @@ final appointmentListProvider =
     );
 
 // ---------------------------------------------------------------------------
-// Active profile's appointments — sorted by scheduledAt descending
+// Active profile's appointments: sorted by scheduledAt descending
 // ---------------------------------------------------------------------------
 
 final activeProfileAppointmentsProvider = Provider<List<Appointment>>((ref) {

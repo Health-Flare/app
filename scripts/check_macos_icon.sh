@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# check_macos_icon.sh — validates the macOS app icon set against the asset
+# check_macos_icon.sh: validates the macOS app icon set against the asset
 # completeness rules in docs/features/macos.feature.
 #
 # Fails with a descriptive error (non-zero exit) if:
@@ -60,7 +60,7 @@ done < <(jq -r '.images[] | "\(.filename)\t\(.size)\t\(.scale)"' "$CONTENTS")
 
 if [[ "$FAILED" -eq 1 ]]; then
   echo "" >&2
-  echo "macOS app icon validation failed — see docs/features/macos.feature." >&2
+  echo "macOS app icon validation failed: see docs/features/macos.feature." >&2
   exit 1
 fi
 

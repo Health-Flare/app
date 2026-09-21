@@ -10,7 +10,7 @@ import 'package:health_flare/models/dose_log.dart';
 import 'package:health_flare/models/medication.dart';
 import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 
-/// Detail screen for a medication — shows metadata, effectiveness summary,
+/// Detail screen for a medication: shows metadata, effectiveness summary,
 /// and full dose history.
 class MedicationDetailScreen extends ConsumerWidget {
   const MedicationDetailScreen({super.key, required this.medicationId});

@@ -7,14 +7,14 @@ You are helping document a bug in Health Flare as a GitHub issue so it can be tr
 ### 1. Gather information
 
 Ask the user for (or extract from their message):
-- **Title** — one-line summary of the bug (≤ 70 chars)
-- **Screen / area** — which screen or feature is affected
-- **Steps to reproduce** — numbered steps to trigger the bug
-- **Expected behavior** — what should happen
-- **Actual behavior** — what actually happens
-- **Device / OS** — e.g. "iPhone 15, iOS 17" or "Pixel 7, Android 14"
-- **Severity** — pick one: `critical` (data loss / crash), `high` (major feature broken), `medium` (degraded experience), `low` (cosmetic)
-- **Priority** — pick one: `P0` (fix immediately), `P1` (next sprint), `P2` (backlog)
+- **Title**: one-line summary of the bug (≤ 70 chars)
+- **Screen / area**, which screen or feature is affected
+- **Steps to reproduce**: numbered steps to trigger the bug
+- **Expected behavior**: what should happen
+- **Actual behavior**: what actually happens
+- **Device / OS**: e.g. "iPhone 15, iOS 17" or "Pixel 7, Android 14"
+- **Severity**: pick one: `critical` (data loss / crash), `high` (major feature broken), `medium` (degraded experience), `low` (cosmetic)
+- **Priority**: pick one: `P0` (fix immediately), `P1` (next sprint), `P2` (backlog)
 
 If the user has already described the bug in their message, extract as much as possible and only ask about genuinely missing pieces.
 

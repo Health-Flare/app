@@ -118,7 +118,7 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
               // symptom consolidated under one name for trend/insight
               // purposes, rather than accumulating near-duplicate free text
               // ("Brain fog", "brain fog again", "Bad brain fog today", …).
-              // The original wording is never lost — it goes to notes.
+              // The original wording is never lost: it goes to notes.
               name: matchedSymptom?.name ?? _text,
               severity: QuickLogParser.parseSeverity(_text) ?? 5,
               loggedAt: _timestamp,
@@ -206,7 +206,7 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
         final parsedStatus = QuickLogParser.parseConditionStatus(_text);
 
         if (existing == null) {
-          // Not yet tracked — start tracking. "Diagnosed"/"found out"
+          // Not yet tracked: start tracking. "Diagnosed"/"found out"
           // language makes *now* a trustworthy diagnosis date; a bare
           // mention of an already-known condition does not, so diagnosedAt
           // stays unset rather than guessing.
@@ -221,7 +221,7 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
                 status: parsedStatus ?? ConditionStatus.active,
               );
         } else if (parsedStatus != null && parsedStatus != existing.status) {
-          // Already tracked and the text signals an actual status change —
+          // Already tracked and the text signals an actual status change:
           // record it in the condition's history. Conditions have no
           // per-occurrence log record otherwise (unlike vitals or doses), so
           // this and the branch above are the whole save.
@@ -248,7 +248,7 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
     }
   }
 
-  /// Fallback for classifications whose values could not be extracted —
+  /// Fallback for classifications whose values could not be extracted:
   /// the user's text is preserved as a journal entry rather than dropped.
   Future<void> _saveJournal(int profileId) {
     return ref
@@ -521,7 +521,7 @@ IconData _chipIcon(QuickLogEntryType type) => switch (type) {
 
 /// The primary button always names what tapping it will do: quick-add the
 /// detected structured record, or fall back to a plain journal entry when
-/// nothing is detected (or the user overrides the type to Journal) — never a
+/// nothing is detected (or the user overrides the type to Journal): never a
 /// generic "Save" that leaves that ambiguous.
 String _primaryButtonLabel(QuickLogEntryType? type) {
   if (type == null || type == QuickLogEntryType.journal) {

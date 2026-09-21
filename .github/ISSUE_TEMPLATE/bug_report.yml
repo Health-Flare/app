@@ -6,7 +6,7 @@ body:
     attributes:
       value: |
         Thanks for taking the time to report a bug. Please do **not** use this form for
-        security or privacy vulnerabilities — see `SECURITY.md` for how to report those
+        security or privacy vulnerabilities: see `SECURITY.md` for how to report those
         privately instead.
 
   - type: textarea

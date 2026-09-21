@@ -43,10 +43,10 @@ class ImportResult {
 class Importer {
   /// Runs the full import pipeline.
   ///
-  /// [dbPath]     — absolute path to `healthflare.isar`.
-  /// [profileName] — name of the target profile (case-insensitive).
-  /// [rows]       — pre-parsed CSV rows.
-  /// [dryRun]     — when true, performs all checks but writes nothing.
+  /// [dbPath]: absolute path to `healthflare.isar`.
+  /// [profileName]: name of the target profile (case-insensitive).
+  /// [rows]: pre-parsed CSV rows.
+  /// [dryRun], when true, performs all checks but writes nothing.
   static Future<ImportResult> run({
     required String dbPath,
     required String profileName,
@@ -62,7 +62,7 @@ class Importer {
     final name = dbFile.uri.pathSegments.last.replaceAll('.isar', '');
 
     // Isar needs to initialise its native library on non-Flutter Dart.
-    // Downloads and caches libisar.dylib on first run (CLI only — not app code).
+    // Downloads and caches libisar.dylib on first run (CLI only: not app code).
     await Isar.initializeIsarCore(download: true);
 
     final isar = await Isar.open(

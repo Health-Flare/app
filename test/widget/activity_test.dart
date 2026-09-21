@@ -173,12 +173,12 @@ void main() {
   // ActivityEntryFormScreen tests
   // ---------------------------------------------------------------------------
 
-  group('ActivityEntryFormScreen — new entry', () {
+  group('ActivityEntryFormScreen: new entry', () {
     testWidgets('shows Log activity title', (tester) async {
       await tester.pumpWidget(_buildFormScreen());
       await tester.pump();
 
-      // Title appears in app bar + button — find at least one
+      // Title appears in app bar + button: find at least one
       expect(find.text('Log activity'), findsWidgets);
     });
 
@@ -229,7 +229,7 @@ void main() {
     });
   });
 
-  group('ActivityEntryFormScreen — edit entry', () {
+  group('ActivityEntryFormScreen: edit entry', () {
     testWidgets('shows Edit activity title in edit mode', (tester) async {
       final entry = makeActivity(description: 'Yoga session');
       await tester.pumpWidget(_buildFormScreen(entry: entry));

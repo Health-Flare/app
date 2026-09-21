@@ -29,7 +29,7 @@ class JournalDetailScreen extends ConsumerWidget {
     final cs = Theme.of(context).colorScheme;
     final tt = Theme.of(context).textTheme;
 
-    // Entry may have been deleted — pop back gracefully.
+    // Entry may have been deleted: pop back gracefully.
     if (entry == null) {
       return const Scaffold(
         appBar: HFAppBar(),
@@ -108,7 +108,7 @@ class JournalDetailScreen extends ConsumerWidget {
               const SizedBox(height: 12),
             ],
 
-            // Body — SelectableText so users can copy to share with doctor
+            // Body: SelectableText so users can copy to share with doctor
             SelectableText(
               entry.body,
               style: tt.bodyLarge?.copyWith(color: cs.onSurface, height: 1.6),

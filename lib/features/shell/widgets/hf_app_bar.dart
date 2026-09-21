@@ -8,7 +8,7 @@ import 'package:health_flare/features/shell/widgets/profile_icon_button.dart';
 ///
 /// Usage is identical to [AppBar]: pass [title], any screen-specific
 /// [actions], and an optional [bottom] (e.g. a [TabBar]).  The profile icon
-/// is appended automatically — do not add it manually.
+/// is appended automatically: do not add it manually.
 class HFAppBar extends StatelessWidget implements PreferredSizeWidget {
   const HFAppBar({
     super.key,

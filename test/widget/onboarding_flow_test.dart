@@ -153,7 +153,7 @@ void main() {
     });
   });
 
-  group('OnboardingScreen — guided flow', () {
+  group('OnboardingScreen: guided flow', () {
     testWidgets('starts on the Welcome step', (tester) async {
       await tester.pumpWidget(_buildOnboarding());
       await tester.pump();

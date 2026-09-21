@@ -12,9 +12,9 @@ import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 /// Screen for selecting illnesses (conditions) and quick-adding symptoms.
 ///
 /// ## Flow
-/// 1. User types in the search box — the condition list filters live (starts-with
+/// 1. User types in the search box: the condition list filters live (starts-with
 ///    ranked above contains, both groups alphabetical).
-/// 2. User taps a condition row to select it — selected conditions appear as
+/// 2. User taps a condition row to select it: selected conditions appear as
 ///    removable chips above the list.
 /// 3. After any condition is selected, a "Common symptoms" chip grid appears
 ///    below the condition list so the user can add symptoms with one tap.
@@ -50,7 +50,7 @@ class _IllnessScreenState extends ConsumerState<IllnessScreen> {
   // Conditions chosen in this session (not yet in userConditionListProvider)
   final Set<int> _pendingConditionIds = {};
 
-  // Diagnosis dates keyed by condition id — optional, set by the user
+  // Diagnosis dates keyed by condition id: optional, set by the user
   final Map<int, DateTime> _diagnosisDates = {};
 
   // Symptoms toggled on/off in this session
@@ -441,7 +441,7 @@ class _ConditionTile extends StatelessWidget {
   }
 }
 
-/// Shown when search returns no condition matches — lets the user add a
+/// Shown when search returns no condition matches: lets the user add a
 /// custom condition by name.
 class _AddCustomTile extends StatelessWidget {
   const _AddCustomTile({required this.name, required this.onTap});

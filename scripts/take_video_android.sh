@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# take_video_android.sh — record a Play Store promo/feature video on an
+# take_video_android.sh: record a Play Store promo/feature video on an
 # Android emulator.
 #
 # Usage:
@@ -22,12 +22,12 @@
 # well under a minute, so this isn't a practical limit here, but is worth
 # knowing if the walkthrough test grows.
 #
-# Play Console doesn't accept an uploaded video file directly — the "Video"
+# Play Console doesn't accept an uploaded video file directly: the "Video"
 # field on a store listing takes a YouTube URL. This script produces the
 # raw recording; upload it to YouTube (unlisted is fine) and paste that URL
 # into Play Console, per docs/store-listing.md.
 #
-# Requirements: same as take_screenshots_android.sh — Android SDK with
+# Requirements: same as take_screenshots_android.sh: Android SDK with
 # emulator + platform-tools, flutter in $PATH.
 
 set -euo pipefail
@@ -109,7 +109,7 @@ record_walkthrough() {
 
   # A freshly booted (or idle) emulator can come up with its display asleep
   # and not yet assigned a SurfaceFlinger layer stack. screenrecord attaches
-  # fine in that state but silently records nothing — it exits immediately
+  # fine in that state but silently records nothing: it exits immediately
   # with "ERROR: UNASSIGNED_LAYER_STACK" and leaves a 0-byte file, while
   # every step around it still reports success. Waking the display first
   # avoids that.
@@ -133,7 +133,7 @@ record_walkthrough() {
   #
   # The signal has to be sent to the *remote* screenrecord process via a
   # second `adb shell`, not to $record_pid (the local `adb shell ...`
-  # client) — without a pty, adb does not reliably forward a local SIGINT
+  # client): without a pty, adb does not reliably forward a local SIGINT
   # to the remote command, so the mp4's container/moov atom never gets
   # finalized and the pulled file comes back 0 bytes despite every step
   # reporting success.
@@ -146,7 +146,7 @@ record_walkthrough() {
   "$ADB_BIN" -s "$serial" shell rm -f "$DEVICE_OUT_PATH" >/dev/null 2>&1 || true
 
   if [[ ! -s "$out_file" ]]; then
-    echo "❌  $out_file is empty — the recording never got finalized on-device." >&2
+    echo "❌  $out_file is empty: the recording never got finalized on-device." >&2
     return 1
   fi
 
@@ -183,7 +183,7 @@ if [[ $# -ge 1 ]]; then
     echo "✅  Done. Video written to $OUT_FILE"
   else
     echo ""
-    echo "⚠️   Walkthrough test failed — video up to that point still saved to $OUT_FILE"
+    echo "⚠️   Walkthrough test failed: video up to that point still saved to $OUT_FILE"
     exit 1
   fi
   exit 0
@@ -191,7 +191,7 @@ fi
 
 # ── Default mode ─────────────────────────────────────────────────────────
 
-echo "No AVD given — recording on the default device class ($DEFAULT_AVD)."
+echo "No AVD given: recording on the default device class ($DEFAULT_AVD)."
 echo "(Pass an AVD name to record on a specific device.)"
 echo ""
 
@@ -218,6 +218,6 @@ if [[ "$STATUS" -eq 0 ]]; then
   echo "✅  Done. Video written to $OUT_FILE"
 else
   echo ""
-  echo "⚠️   Walkthrough test failed — video up to that point still saved to $OUT_FILE"
+  echo "⚠️   Walkthrough test failed: video up to that point still saved to $OUT_FILE"
   exit 1
 fi

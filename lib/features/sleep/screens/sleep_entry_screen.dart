@@ -130,7 +130,7 @@ class _SleepEntryScreenState extends ConsumerState<SleepEntryScreen> {
       time.hour,
       time.minute,
     );
-    // Moving bedtime past wake time would make the entry invalid — shift
+    // Moving bedtime past wake time would make the entry invalid: shift
     // wake time by the same offset so the sleep window slides as a whole.
     final newWakeTime = shiftedWakeTimeForNewBedtime(
       newBedtime: newBedtime,
@@ -163,7 +163,7 @@ class _SleepEntryScreenState extends ConsumerState<SleepEntryScreen> {
       time.hour,
       time.minute,
     );
-    // Moving wake time before bedtime would make the entry invalid — shift
+    // Moving wake time before bedtime would make the entry invalid: shift
     // bedtime by the same offset so the sleep window slides as a whole.
     final newBedtime = shiftedBedtimeForNewWakeTime(
       newWakeTime: newWakeTime,

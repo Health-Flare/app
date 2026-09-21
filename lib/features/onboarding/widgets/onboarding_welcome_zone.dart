@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:health_flare/core/theme/app_colors.dart';
 
-/// Step 1 — Welcome & purpose.
+/// Step 1: Welcome & purpose.
 ///
 /// Copy source: docs/onboarding-copy.md › Zone 1
 class OnboardingWelcomeZone extends StatelessWidget {
@@ -70,7 +70,7 @@ class OnboardingWelcomeZone extends StatelessWidget {
               // Body copy
               Text(
                 'Living with a chronic illness means tracking a lot. '
-                'Symptoms, medications, meals, patterns — it adds up. '
+                'Symptoms, medications, meals, patterns. It adds up. '
                 'Health Flare gives you one calm place to record it all, '
                 'so nothing gets lost between appointments.',
                 style: tt.bodyLarge?.copyWith(

@@ -9,7 +9,7 @@ on:
     tags:
       - "v*.*.*"
 
-# Flutter version kept in sync with ci.yml — update both together.
+# Flutter version kept in sync with ci.yml: update both together.
 env:
   FLUTTER_VERSION: "3.47.2"
 
@@ -68,7 +68,7 @@ jobs:
       #      project and create a service account with a JSON key.
       #   2. In Play Console → Users & permissions, invite the service account
       #      email and grant it release permissions for this app.
-      #   3. Upload the first .aab manually in the Play Console — the API
+      #   3. Upload the first .aab manually in the Play Console: the API
       #      rejects uploads until at least one release exists for the package.
       #   4. Add the service-account JSON as the secret PLAY_SERVICE_ACCOUNT_JSON.
       - name: Upload to Play Store (internal track)

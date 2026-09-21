@@ -22,7 +22,7 @@ class ProfileAvatar extends StatelessWidget {
   /// Circle radius in logical pixels. Defaults to 24 (48px diameter).
   final double radius;
 
-  /// When true, draws a 2px primary-coloured border — used for the
+  /// When true, draws a 2px primary-coloured border: used for the
   /// active profile indicator in the switcher.
   final bool showBorder;
 

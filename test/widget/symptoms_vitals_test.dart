@@ -103,7 +103,7 @@ Widget _buildVitalForm({VitalEntry? entry}) {
 }
 
 // ---------------------------------------------------------------------------
-// SymptomsVitalsScreen — list screen
+// SymptomsVitalsScreen: list screen
 // ---------------------------------------------------------------------------
 
 void main() {
@@ -203,7 +203,7 @@ void main() {
       expect(find.text('Nausea'), findsOneWidget);
       expect(find.text('Headache'), findsOneWidget);
 
-      // Nausea (more recent) should appear first — verify tile ordering
+      // Nausea (more recent) should appear first: verify tile ordering
       final nauseaOffset = tester.getTopLeft(find.text('Nausea')).dy;
       final headacheOffset = tester.getTopLeft(find.text('Headache')).dy;
       expect(nauseaOffset, lessThan(headacheOffset));

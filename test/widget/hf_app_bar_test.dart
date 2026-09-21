@@ -43,7 +43,7 @@ Widget _buildScaffold({List<Widget> actions = const []}) {
 }
 
 // ---------------------------------------------------------------------------
-// Tests — implement the ui-patterns.feature app-bar scenarios:
+// Tests: implement the ui-patterns.feature app-bar scenarios:
 // the profile icon is always visible, always rightmost, and never clipped
 // by utility actions.
 // ---------------------------------------------------------------------------
@@ -85,7 +85,7 @@ void main() {
         );
         await tester.pump();
 
-        // All hit-testable — nothing is clipped or hidden behind another
+        // All hit-testable: nothing is clipped or hidden behind another
         // element. An app bar overflow would have thrown during layout.
         expect(find.byIcon(Icons.search).hitTestable(), findsOneWidget);
         expect(find.byIcon(Icons.filter_list).hitTestable(), findsOneWidget);

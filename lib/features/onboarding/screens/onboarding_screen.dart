@@ -11,13 +11,13 @@ import 'package:health_flare/features/onboarding/widgets/onboarding_profile_zone
 import 'package:health_flare/features/shared/widgets/guided_step_header.dart';
 import 'package:health_flare/models/condition.dart';
 
-/// Onboarding — shown exactly once on first launch, as a short guided flow.
+/// Onboarding: shown exactly once on first launch, as a short guided flow.
 ///
 /// Four steps on a shared [PageView]:
 ///   1. Welcome
 ///   2. What you can track (feature highlights)
 ///   3. Your privacy
-///   4. Create profile (mandatory — the only step that cannot be skipped)
+///   4. Create profile (mandatory: the only step that cannot be skipped)
 ///
 /// Steps 1-3 can be skipped straight to profile creation via the header's
 /// "Skip" action, since a profile is the only thing actually required to
@@ -28,7 +28,7 @@ class OnboardingScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // No explicit backgroundColor — inherit ThemeData.scaffoldBackgroundColor
+    // No explicit backgroundColor: inherit ThemeData.scaffoldBackgroundColor
     // so the screen tracks light/dark mode instead of staying pinned light.
     return const Scaffold(body: _OnboardingBody());
   }
@@ -110,7 +110,7 @@ class _OnboardingBodyState extends ConsumerState<_OnboardingBody> {
     }
     if (!mounted) return;
 
-    // onboardingProvider derives from profileListProvider — no explicit call
+    // onboardingProvider derives from profileListProvider: no explicit call
     // needed, but kept for call-site clarity.
     ref.read(onboardingProvider.notifier).markComplete();
 

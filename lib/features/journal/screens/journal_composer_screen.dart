@@ -13,7 +13,7 @@ import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 import 'package:health_flare/models/journal_entry.dart';
 import 'package:health_flare/models/weather_snapshot.dart';
 
-/// Full-screen journal entry composer — used for both creating a new entry
+/// Full-screen journal entry composer: used for both creating a new entry
 /// and editing an existing one.
 ///
 /// ## Autosave behaviour
@@ -64,7 +64,7 @@ class _JournalComposerScreenState extends ConsumerState<JournalComposerScreen> {
   String _lastSavedBody = '';
   String _lastSavedTitle = '';
 
-  // Time of last save — shown in the AppBar title.
+  // Time of last save: shown in the AppBar title.
   DateTime? _lastSavedAt;
 
   // The date/time to use as createdAt when saving a new entry.
@@ -184,7 +184,7 @@ class _JournalComposerScreenState extends ConsumerState<JournalComposerScreen> {
         _bodyController.text = widget.prefillBody!;
       }
       // Reset any mood/energy left from a previous composer session.
-      // Must use addPostFrameCallback — ref is not yet attached at initState
+      // Must use addPostFrameCallback: ref is not yet attached at initState
       // time. Moving this reset to dispose() is unsafe because ref is already
       // invalidated by the time dispose() runs in ConsumerStatefulWidget.
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -246,7 +246,7 @@ class _JournalComposerScreenState extends ConsumerState<JournalComposerScreen> {
     );
 
     if (_entryId == null) {
-      // First save in create mode — Isar assigns the id.
+      // First save in create mode: Isar assigns the id.
       // Use _entryDate (not now) so backdated entries land on the correct date.
       _entryId = await ref
           .read(journalEntryListProvider.notifier)
@@ -353,7 +353,7 @@ class _JournalComposerScreenState extends ConsumerState<JournalComposerScreen> {
       clearEnergyLevel: composerState.energyLevel == null,
     );
     ref.read(journalEntryListProvider.notifier).update(updated);
-    // update() is async but fire-and-forget is fine here — the watchLazy
+    // update() is async but fire-and-forget is fine here: the watchLazy
     // subscription will reload state once the write completes.
   }
 
@@ -391,7 +391,7 @@ class _JournalComposerScreenState extends ConsumerState<JournalComposerScreen> {
       child: Scaffold(
         appBar: HFAppBar(
           leading: const BackButton(),
-          // AppBar title shows saved state — the only feedback the user needs.
+          // AppBar title shows saved state: the only feedback the user needs.
           title: _lastSavedAt != null
               ? Text(
                   _savedLabel(),

@@ -2,7 +2,7 @@ Feature: Daily Check-in
   As a user managing a chronic illness
   I want to record a brief daily wellbeing rating, stress level, and optional context
   So that I have a single anchor point for each day that all other logged data can be
-  compared against — and so I can see my overall health trajectory over time
+  compared against, and so I can see my overall health trajectory over time
 
   Background:
     Given a profile named "Sarah" exists and is active
@@ -26,7 +26,7 @@ Feature: Daily Check-in
     Given "Sarah" has not completed a check-in today
     When I open the dashboard
     Then a check-in prompt is visible on the dashboard
-    And the prompt is warm and brief — it does not feel like a medical form
+    And the prompt is warm and brief: it does not feel like a medical form
     And completing it takes no more than three taps
 
   Scenario: Complete today's check-in with a wellbeing rating only
@@ -92,7 +92,7 @@ Feature: Daily Check-in
     Then the wellbeing selector shows values from 1 to 10
     And 1 is labelled or anchored as "Worst possible"
     And 10 is labelled or anchored as "Best possible"
-    And the input method is a single interaction (slider, tap row, or equivalent) — not a text field
+    And the input method is a single interaction (slider, tap row, or equivalent): not a text field
 
   Scenario: No wellbeing rating is pre-selected on the check-in prompt
     When the check-in prompt opens

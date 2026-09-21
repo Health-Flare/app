@@ -10,7 +10,7 @@ class ProfileIsar {
   String? avatarPath;
 
   /// Whether the first-log prompt has been shown (and dismissed) for this profile.
-  /// Defaults to false — prompt shown automatically on first dashboard visit.
+  /// Defaults to false: prompt shown automatically on first dashboard visit.
   bool firstLogShown = false;
 
   /// Whether the user opted in to weather tracking for this profile.

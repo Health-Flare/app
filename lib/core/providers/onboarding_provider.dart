@@ -16,11 +16,11 @@ class OnboardingNotifier extends Notifier<bool> {
     return profiles.isNotEmpty;
   }
 
-  /// No-op — state is fully derived from [profileListProvider].
+  /// No-op: state is fully derived from [profileListProvider].
   /// Kept for call-site compatibility with existing onboarding screens.
   void markComplete() {}
 
-  /// No-op — state is fully derived from [profileListProvider].
+  /// No-op: state is fully derived from [profileListProvider].
   void markAlreadyComplete() {}
 }
 
@@ -32,7 +32,7 @@ final onboardingProvider = NotifierProvider<OnboardingNotifier, bool>(
 ///
 /// ## Persistence
 /// The shown state is stored in [ProfileIsar.firstLogShown] so it survives
-/// app restarts. Each profile has its own flag — creating a second profile
+/// app restarts. Each profile has its own flag: creating a second profile
 /// will show the prompt for that profile regardless of whether it was
 /// previously shown for the first.
 ///
@@ -46,7 +46,7 @@ final onboardingProvider = NotifierProvider<OnboardingNotifier, bool>(
 /// [DashboardScreen] watches this provider and shows [FirstLogPrompt] as a
 /// modal bottom sheet when state transitions to `true`. The Dashboard calls
 /// [markShown] immediately before displaying the sheet, which persists the
-/// flag and prevents the prompt from appearing again — even if the user
+/// flag and prevents the prompt from appearing again: even if the user
 /// swipes the sheet away without tapping any option.
 class FirstLogPromptNotifier extends Notifier<bool> {
   @override
@@ -79,7 +79,7 @@ class FirstLogPromptNotifier extends Notifier<bool> {
   /// Persists [ProfileIsar.firstLogShown] = true and sets state to false.
   ///
   /// Called by [DashboardScreen] immediately before displaying the sheet so
-  /// the prompt is never shown again — even if the user swipes the sheet away.
+  /// the prompt is never shown again: even if the user swipes the sheet away.
   Future<void> markShown() async {
     if (!state) return; // already marked
     state = false;
@@ -99,11 +99,11 @@ class FirstLogPromptNotifier extends Notifier<bool> {
 
   // ── Backwards-compatibility stubs ─────────────────────────────────────────
 
-  /// No-op — prompt is triggered automatically via [activeProfileProvider].
+  /// No-op: prompt is triggered automatically via [activeProfileProvider].
   /// Retained so [OnboardingScreen] compiles without changes.
   void show() {}
 
-  /// Alias for [markShown] — used by option cards inside [FirstLogPrompt].
+  /// Alias for [markShown]: used by option cards inside [FirstLogPrompt].
   Future<void> dismiss() => markShown();
 }
 

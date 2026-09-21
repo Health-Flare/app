@@ -24,7 +24,7 @@ import 'package:health_flare/data/database/backup_service.dart';
 import 'package:health_flare/data/database/migration_runner.dart';
 
 /// Startup data read before [runApp] so providers have real values on
-/// the first frame — avoids blank-frame flashes from async loads.
+/// the first frame: avoids blank-frame flashes from async loads.
 class StartupData {
   const StartupData({required this.profiles, required this.activeProfileId});
 
@@ -50,7 +50,7 @@ class IsarService {
     } else {
       final dir = await getApplicationDocumentsDirectory();
       directory = dir.path;
-      // Apply any pending restore before opening — replaces the database file
+      // Apply any pending restore before opening: replaces the database file
       // while Isar is still closed, so no live instance juggling is required.
       await BackupService.applyPendingRestoreIfNeeded(directory);
     }

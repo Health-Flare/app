@@ -61,7 +61,7 @@ class _FakePathProvider
 }
 
 // ---------------------------------------------------------------------------
-// Helper — open a fresh in-memory Isar instance
+// Helper: open a fresh in-memory Isar instance
 // ---------------------------------------------------------------------------
 
 Future<Isar> _openIsar() async {
@@ -206,7 +206,7 @@ void main() {
       'all Isar schemas registered in IsarService match MigrationRunner',
       () {
         // This test ensures app_database.dart and migration_runner.dart agree
-        // on the target version. Both hardcode v15 — this test would fail if
+        // on the target version. Both hardcode v15: this test would fail if
         // one is updated without the other.
         //
         // The target version is verified by the migration reaching v15 in the

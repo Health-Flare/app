@@ -8,7 +8,7 @@ import 'package:health_flare/core/providers/database_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 
 // ---------------------------------------------------------------------------
-// Medication list — all medications across all profiles
+// Medication list: all medications across all profiles
 // ---------------------------------------------------------------------------
 
 /// Holds all medications for all profiles.

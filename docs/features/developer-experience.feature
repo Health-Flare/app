@@ -159,7 +159,7 @@ Feature: Developer Experience
     And the pipeline warns (but does not fail) if the format is not followed
 
   # ---------------------------------------------------------------------------
-  # Code reuse — single-source definitions
+  # Code reuse: single-source definitions
   # ---------------------------------------------------------------------------
 
   Scenario: UI patterns that appear on more than one screen are extracted into shared widgets

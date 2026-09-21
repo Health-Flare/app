@@ -9,7 +9,7 @@ import 'package:health_flare/data/database/import_service.dart';
 import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 
 // ---------------------------------------------------------------------------
-// Local provider — reads schema version from AppSettings singleton.
+// Local provider: reads schema version from AppSettings singleton.
 // ---------------------------------------------------------------------------
 
 final _schemaVersionProvider = FutureProvider<int>((ref) async {
@@ -110,7 +110,7 @@ class _BackupTilesState extends ConsumerState<_BackupTiles> {
           ),
         );
       } else if (next is ImportPreviewReady) {
-        // Show category picker sheet — user selects what to import.
+        // Show category picker sheet: user selects what to import.
         showModalBottomSheet<void>(
           context: context,
           isScrollControlled: true,
@@ -215,7 +215,7 @@ class _BackupTilesState extends ConsumerState<_BackupTiles> {
               ),
               const SizedBox(height: 16),
 
-              // Option 1 — Replace everything
+              // Option 1: Replace everything
               _ImportModeOption(
                 icon: Icons.swap_horiz_rounded,
                 title: 'Replace everything',
@@ -262,7 +262,7 @@ class _BackupTilesState extends ConsumerState<_BackupTiles> {
 
               const SizedBox(height: 8),
 
-              // Option 2 — Add missing data
+              // Option 2: Add missing data
               _ImportModeOption(
                 icon: Icons.merge_rounded,
                 title: 'Add missing data',
@@ -277,7 +277,7 @@ class _BackupTilesState extends ConsumerState<_BackupTiles> {
 
               const SizedBox(height: 8),
 
-              // Option 3 — Choose what to import
+              // Option 3: Choose what to import
               _ImportModeOption(
                 icon: Icons.checklist_rounded,
                 title: 'Choose what to import',
@@ -360,7 +360,7 @@ class _ImportModeOption extends StatelessWidget {
 }
 
 // ---------------------------------------------------------------------------
-// Selective import — category picker sheet
+// Selective import: category picker sheet
 // ---------------------------------------------------------------------------
 
 class _ImportCategorySheet extends StatefulWidget {
@@ -460,7 +460,7 @@ class _ImportCategorySheetState extends State<_ImportCategorySheet> {
 
             const Divider(height: 1),
 
-            // Footer — confirm / cancel
+            // Footer: confirm / cancel
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
               child: Row(
@@ -570,7 +570,7 @@ class _AboutTiles extends ConsumerWidget {
           onTap: () => showLicensePage(
             context: context,
             applicationName: 'Health Flare',
-            applicationLegalese: '© 2026 Health Flare — GNU GPL-3.0',
+            applicationLegalese: '© 2026 Health Flare, GNU GPL-3.0',
           ),
         ),
       ],

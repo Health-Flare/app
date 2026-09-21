@@ -210,7 +210,7 @@ class _MealEntryFormScreenState extends ConsumerState<MealEntryFormScreen> {
     final cs = Theme.of(context).colorScheme;
     final fmt = DateFormat('d MMM yyyy, HH:mm');
 
-    // Watch weather for new entries — capture when available.
+    // Watch weather for new entries: capture when available.
     final weatherAsync = _isEdit ? null : ref.watch(currentWeatherProvider);
     weatherAsync?.whenData((w) {
       if (w != null && _capturedWeather == null) {

@@ -5,7 +5,7 @@
 
 **A calm, private health companion for people living with chronic illness.**
 
-Health Flare makes it easy to record and review your own health data — or the health data of someone you care for. Log symptoms, vitals, medications, meals, and journal entries in one place, then walk into your next appointment with a clear, organised picture of how you've really been feeling.
+Health Flare makes it easy to record and review your own health data, or the health data of someone you care for. Log symptoms, vitals, medications, meals, and journal entries in one place, then walk into your next appointment with a clear, organised picture of how you've really been feeling.
 
 Health Flare is not a medical device. It does not diagnose, prescribe, or give clinical recommendations. It is a personal health journal with structure.
 
@@ -25,7 +25,7 @@ Reports can be exported as PDF or CSV to share with a doctor or specialist.
 
 ---
 
-## Privacy — your data stays on your device
+## Privacy: your data stays on your device
 
 - **No account or login required.** Ever.
 - **No cloud sync, no remote storage.** All data is written to the local device only.
@@ -94,7 +94,7 @@ flutter run
 
 | Branch pattern | Purpose |
 |---|---|
-| `main` | Stable, releasable code. PRs only — no direct commits. |
+| `main` | Stable, releasable code. PRs only: no direct commits. |
 | `feature/<name>` | New features |
 | `fix/<name>` | Bug fixes |
 | `ci/<name>` | Pipeline and tooling changes |
@@ -171,13 +171,13 @@ ci: add weekly dependency audit job
 
 Health Flare makes no outbound network requests at runtime, with one explicit, opt-in exception:
 weather capture calls the Open-Meteo API to fetch conditions at the time of a log entry (see
-`.url-scan-ignore` for the allowed domains and justification). There is no other network path —
+`.url-scan-ignore` for the allowed domains and justification). There is no other network path: 
 no accounts, no sync, no analytics. Before opening a PR, ensure:
 
 - No new `http://` or `https://` URLs appear in `lib/` or `test/` outside of comments, unless
   added to `.url-scan-ignore` with a documented justification
 - No network-dependent packages (`dio`, `firebase_*`, `google_fonts`, etc.) are imported
-- Run `bash scripts/check_urls.sh` to verify — this is also enforced by CI
+- Run `bash scripts/check_urls.sh` to verify: this is also enforced by CI
 
 ### Feature specifications
 
@@ -188,15 +188,15 @@ All features are specced as Gherkin `.feature` files in `docs/features/`. Read t
 See [`docs/release-kit.md`](docs/release-kit.md) for the full workflow behind everything a release
 needs. In short:
 
-- **Release notes** — add an entry under `## [Unreleased]` in `CHANGELOG.md` as part of any
+- **Release notes**: add an entry under `## [Unreleased]` in `CHANGELOG.md` as part of any
   user-facing PR (see that file's own "How to use this file" header). Missed one, or need notes
   spanning several past releases at once? `scripts/release/generate_release_notes.sh --since
   <tag|date>` drafts the same shape from actual PR/issue history for any range.
-- **Screenshots** — `scripts/take_screenshots.sh` (iOS) and `scripts/take_screenshots_android.sh`
+- **Screenshots**: `scripts/take_screenshots.sh` (iOS) and `scripts/take_screenshots_android.sh`
   (Android) regenerate the committed App Store / Play Store screenshot sets.
-- **Videos** — `scripts/take_video.sh` (iOS) and `scripts/take_video_android.sh` (Android) record
+- **Videos**: `scripts/take_video.sh` (iOS) and `scripts/take_video_android.sh` (Android) record
   an App Store "App Preview" / Play Store promo video from a guided in-app tour.
-- **All three at once** — `scripts/release/build_release_kit.sh --since <tag>` runs whatever's
+- **All three at once**: `scripts/release/build_release_kit.sh --since <tag>` runs whatever's
   runnable on the current machine and assembles the result into `release-kit/<version>/`.
 
 ## Testing
@@ -212,13 +212,13 @@ needs. In short:
 
 Health Flare is free software, licensed under the
 [GNU General Public License v3.0](LICENSE.md) (or, at your option, any later version).
-Forks and redistributions are welcome under the same terms — see `SECURITY.md`'s
+Forks and redistributions are welcome under the same terms: see `SECURITY.md`'s
 "Hardening notes for forks and self-builders" for what to change before you ship your own build.
 
 Third-party package and font licenses are listed in [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md)
 and are also viewable in-app under **Settings → Open source licenses**.
 
 The "Health Flare" name and logo are trademarks of Automated Bytes Incorporated and are not
-covered by the GPL-3.0 grant — see [`TRADEMARKS.md`](TRADEMARKS.md). This does not restrict your
+covered by the GPL-3.0 grant: see [`TRADEMARKS.md`](TRADEMARKS.md). This does not restrict your
 rights to the source code in any way; it only means a fork should use its own name and icon if it
 isn't an official Health Flare build.

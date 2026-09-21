@@ -29,7 +29,7 @@ import 'package:health_flare/models/user_condition.dart';
 import 'package:health_flare/models/user_symptom.dart';
 
 // ---------------------------------------------------------------------------
-// Fake notifiers — avoid touching Isar in widget tests
+// Fake notifiers: avoid touching Isar in widget tests
 // ---------------------------------------------------------------------------
 
 class _FakeFirstLogPrompt extends FirstLogPromptNotifier {
@@ -155,7 +155,7 @@ List<ActivityItem> _feedItems({
   return items.take(10).toList();
 }
 
-/// Wraps DashboardScreen in a plain MaterialApp (no GoRouter) — suitable for
+/// Wraps DashboardScreen in a plain MaterialApp (no GoRouter): suitable for
 /// content and sheet-presence tests where navigation is not exercised.
 Widget _buildDashboard({
   List<JournalEntry> journalEntries = const [],
@@ -192,7 +192,7 @@ Widget _buildDashboard({
   );
 }
 
-/// Wraps DashboardScreen in a test GoRouter — used for navigation tests.
+/// Wraps DashboardScreen in a test GoRouter: used for navigation tests.
 Widget _buildDashboardWithRouter({
   List<JournalEntry> journalEntries = const [],
   List<SleepEntry> sleepEntries = const [],
@@ -304,7 +304,7 @@ void main() {
       });
     });
 
-    // ── Activity feed — content ──────────────────────────────────────────────
+    // ── Activity feed: content ──────────────────────────────────────────────
 
     group('activity feed', () {
       testWidgets('journal entry body preview appears in feed', (tester) async {
@@ -380,7 +380,7 @@ void main() {
       });
     });
 
-    // ── Activity feed — navigation ───────────────────────────────────────────
+    // ── Activity feed: navigation ───────────────────────────────────────────
 
     group('activity feed navigation', () {
       testWidgets('tapping journal item navigates to detail screen', (

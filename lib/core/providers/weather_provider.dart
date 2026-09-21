@@ -6,7 +6,7 @@ import 'package:health_flare/data/services/weather_service.dart';
 import 'package:health_flare/models/weather_snapshot.dart';
 
 /// Persists the last successfully fetched snapshot alongside the fetch time.
-/// Not autoDispose — survives form open/close cycles within the same session.
+/// Not autoDispose: survives form open/close cycles within the same session.
 final _weatherCacheProvider = StateProvider<(WeatherSnapshot, DateTime)?>(
   (_) => null,
 );

@@ -38,7 +38,7 @@ Feature: Dashboard
     Then the sleep entry screen is shown
 
   # ---------------------------------------------------------------------------
-  # Activity feed — content
+  # Activity feed: content
   # ---------------------------------------------------------------------------
 
   Scenario: Journal entry body preview appears in the activity feed
@@ -64,7 +64,7 @@ Feature: Dashboard
     Then the sleep entry appears above the journal entry in the feed
 
   # ---------------------------------------------------------------------------
-  # Activity feed — navigation
+  # Activity feed: navigation
   # ---------------------------------------------------------------------------
 
   Scenario: Tapping a journal activity item opens the journal detail screen

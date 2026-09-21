@@ -61,7 +61,7 @@ abstract final class PdfReportService {
           mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
           children: [
             pw.Text(
-              'Health Report — ${data.profileName}',
+              'Health Report for ${data.profileName}',
               style: const pw.TextStyle(
                 fontSize: 16,
                 fontWeight: pw.FontWeight.bold,

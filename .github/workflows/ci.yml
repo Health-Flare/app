@@ -6,10 +6,10 @@ on:
   pull_request:
     branches: [main]
   schedule:
-    # Weekly dependency report — every Monday at 07:00 UTC
+    # Weekly dependency report: every Monday at 07:00 UTC
     - cron: "0 7 * * 1"
 
-# A PR triggers both `push` (to its branch, previously) and `pull_request` —
+# A PR triggers both `push` (to its branch, previously) and `pull_request`: 
 # restricting `push` to main above removes that double-run. This group also
 # cancels a stale run when new commits land on the same PR/branch.
 concurrency:
@@ -19,7 +19,7 @@ concurrency:
 permissions:
   contents: read
 
-# Flutter version pinned here — update in one place when upgrading.
+# Flutter version pinned here: update in one place when upgrading.
 env:
   FLUTTER_VERSION: "3.47.2"
 
@@ -68,7 +68,7 @@ jobs:
         run: flutter pub get
       - name: Check for discontinued direct packages
         run: |
-          # Only fail on discontinued *direct* dependencies — transitive ones
+          # Only fail on discontinued *direct* dependencies: transitive ones
           # (e.g. build_resolvers, build_runner_core) are outside our control.
           DIRECT=$(flutter pub outdated 2>&1 \
             | awk '/direct dependencies:/{found=1} /transitive dependencies:/{found=0} found')
@@ -105,13 +105,13 @@ jobs:
       - name: Verify google_fonts is not a dependency
         run: |
           if grep -q "google_fonts" pubspec.yaml; then
-            echo "❌ google_fonts found in pubspec.yaml — all fonts must be bundled as assets."
+            echo "❌ google_fonts found in pubspec.yaml: all fonts must be bundled as assets."
             exit 1
           fi
       - name: Verify no google_fonts imports in lib/
         run: |
           if grep -rl "package:google_fonts" lib/; then
-            echo "❌ google_fonts import found in lib/. Remove it — fonts are bundled."
+            echo "❌ google_fonts import found in lib/. Remove it: fonts are bundled."
             exit 1
           fi
 
@@ -215,7 +215,7 @@ jobs:
           retention-days: 7
 
   # ── 9. Build Linux app ────────────────────────────────────────────────────────
-  # TODO: Commented out — Linux build is failing CI. Fix and re-enable.
+  # TODO: Commented out: Linux build is failing CI. Fix and re-enable.
   # flutter-build-linux:
   #   name: Build Linux app
   #   runs-on: ubuntu-latest

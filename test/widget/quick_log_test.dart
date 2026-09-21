@@ -359,7 +359,7 @@ Medication _medication(int id, String name) => Medication(
 );
 
 // ---------------------------------------------------------------------------
-// QuickLogClassifier — unit tests
+// QuickLogClassifier: unit tests
 // ---------------------------------------------------------------------------
 
 void main() {
@@ -425,7 +425,7 @@ void main() {
     });
 
     test('does not classify an unrelated slash number as a vital reading', () {
-      // "ate"/"sandwich" still classify it as a meal — the point is that
+      // "ate"/"sandwich" still classify it as a meal: the point is that
       // the unbounded "3/4" no longer wins the vital check first, so the
       // chip agrees with what actually gets saved.
       expect(
@@ -667,7 +667,7 @@ void main() {
 
     // Regression: a symptom logged only via the standalone "Log symptom"
     // full form never creates a UserSymptom record (only a SymptomEntry.name
-    // string — see recentSymptomNamesProvider), so it must still be
+    // string: see recentSymptomNamesProvider), so it must still be
     // recognised here through the profile's logged symptom-entry history,
     // not just the UserSymptom catalogue.
     testWidgets(
@@ -780,7 +780,7 @@ void main() {
       // Tap the X close button directly
       await tester.tap(find.byIcon(Icons.close));
       await tester.pumpAndSettle();
-      // Sheet dismissed — no dialog
+      // Sheet dismissed: no dialog
       expect(find.byType(AlertDialog), findsNothing);
       expect(find.text('Logging for Sarah'), findsNothing);
     });
@@ -823,7 +823,7 @@ void main() {
     });
   });
 
-  group('QuickLogSheet — structured saves', () {
+  group('QuickLogSheet: structured saves', () {
     setUp(() {
       journalCalls.clear();
       vitalCalls.clear();
@@ -1006,7 +1006,7 @@ void main() {
         );
         await _typeAndSave(tester, 'Rough ME day today');
 
-        // Already tracked with no status-change language in the text —
+        // Already tracked with no status-change language in the text:
         // nothing to add or update. (Falling back to a redundant add() call
         // would rely on the real notifier's own idempotency; skipping it
         // entirely here is the more correct behaviour.)

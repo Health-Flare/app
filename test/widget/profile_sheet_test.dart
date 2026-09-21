@@ -7,7 +7,7 @@ import 'package:health_flare/features/profiles/widgets/add_profile_sheet.dart';
 import 'package:health_flare/models/profile.dart';
 
 // ---------------------------------------------------------------------------
-// Fake notifiers — skip Isar
+// Fake notifiers: skip Isar
 // ---------------------------------------------------------------------------
 
 class _FakeProfileList extends ProfileListNotifier {
@@ -47,7 +47,7 @@ Widget buildEditSheet(Profile editing, List<Profile> allProfiles) {
 // ---------------------------------------------------------------------------
 
 void main() {
-  group('AddProfileSheet — delete button guard', () {
+  group('AddProfileSheet: delete button guard', () {
     testWidgets('delete button is hidden when only one profile exists', (
       tester,
     ) async {

@@ -9,7 +9,7 @@ import 'package:health_flare/models/journal_entry.dart';
 import 'package:health_flare/models/profile.dart';
 
 // ---------------------------------------------------------------------------
-// Fakes — subclass real notifiers, override build() to skip Isar
+// Fakes: subclass real notifiers, override build() to skip Isar
 // ---------------------------------------------------------------------------
 
 class _FakeJournalList extends JournalEntryListNotifier {

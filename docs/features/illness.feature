@@ -153,7 +153,7 @@ Feature: Illness Tracking
     And all catalogue symptoms are shown regardless of which conditions are selected
 
   # ---------------------------------------------------------------------------
-  # "Add to profile" button — layout and state
+  # "Add to profile" button: layout and state
   # ---------------------------------------------------------------------------
 
   Scenario: A prominent "Add to profile" button is fixed at the bottom of the screen
@@ -252,10 +252,10 @@ Feature: Illness Tracking
   # ---------------------------------------------------------------------------
   #
   # Schema note (pending): UserConditionIsar needs:
-  #   - status (enum: active | inRecovery)  — default: active
+  #   - status (enum: active | inRecovery), default: active
   #   - recoveryDate (DateTime?)
   #   - relapseDate (DateTime?)
-  #   - conditionHistory (List<ConditionStatusEventIsar>) — embedded, each event
+  #   - conditionHistory (List<ConditionStatusEventIsar>): embedded, each event
   #     has eventType (diagnosed | recovery | relapse) and date
   # Requires a schema version bump and migration before implementation.
 

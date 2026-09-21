@@ -1,8 +1,8 @@
-# Health Flare — Onboarding UX Copy
+# Health Flare: Onboarding UX Copy
 
 **Version:** 0.1
 **Date:** 2026-02-17
-**Status:** Draft — pending design review
+**Status:** Draft: pending design review
 
 This document defines the exact copy for every text element in the onboarding experience. Nothing here should be treated as placeholder text. These words are intentional. Changes to tone, promises, or privacy language must be reviewed before implementation.
 
@@ -18,7 +18,7 @@ This document defines the exact copy for every text element in the onboarding ex
 
 ---
 
-## Zone 1 — Welcome
+## Zone 1: Welcome
 
 ### App name (displayed as wordmark or heading)
 ```
@@ -32,7 +32,7 @@ Your health story, in your hands.
 
 ### Supporting body copy
 ```
-Living with a chronic illness means tracking a lot. Symptoms, medications, meals, patterns —
+Living with a chronic illness means tracking a lot. Symptoms, medications, meals, patterns: 
 it adds up. Health Flare gives you one calm place to record it all, so nothing gets lost
 between appointments.
 
@@ -48,7 +48,7 @@ provide medical advice, diagnosis, or treatment.
 
 ---
 
-## Zone 2 — Privacy and Data Promise
+## Zone 2: Privacy and Data Promise
 
 ### Section label (small caps or eyebrow text above headline)
 ```
@@ -62,7 +62,7 @@ Everything stays on this device.
 
 ### Supporting privacy facts (bullet list, concise)
 ```
-• No account or login required — ever.
+• No account or login required: ever.
 • Nothing is uploaded to any server or cloud.
 • Your data only leaves this device when you choose to export or share it.
 • We don't see it. We don't store it. We can't access it.
@@ -86,7 +86,7 @@ How Health Flare handles your data
 
 #### Expanded body copy
 ```
-All of your health records — symptoms, vitals, medications, meals, and reports — are stored
+All of your health records (symptoms, vitals, medications, meals, and reports) are stored
 in a local database on this device only. This is not a backup. This is the only copy.
 
 No network connection is required to use Health Flare. No data is sent anywhere in the
@@ -94,7 +94,7 @@ background. There are no analytics trackers, no usage reports, and no third-part
 with access to your records.
 
 When you export a report as a PDF or CSV, that file is created on your device. You decide
-where it goes — whether that's an email to your doctor, a message to a family member, or
+where it goes, whether that's an email to your doctor, a message to a family member, or
 a folder on your computer. Health Flare doesn't know what you did with it.
 
 If you delete a profile, it is removed from the main views of the application. You can restore
@@ -118,7 +118,7 @@ Got it ‹
 
 ---
 
-## Zone 3 — Profile Creation
+## Zone 3: Profile Creation
 
 ### Section label (small caps or eyebrow text)
 ```
@@ -146,7 +146,7 @@ You can always add more people later.
 ### Date of birth field
 
 - **Label:** `Date of birth`
-- **Helper text:** `Optional — useful for reports`
+- **Helper text:** `Optional: useful for reports`
 - **Placeholder:** `DD / MM / YYYY`
 - **Required:** No
 
@@ -164,7 +164,7 @@ You can always add more people later.
 Create profile and get started →
 ```
 
-*Button is disabled until a valid name is entered. When disabled it remains visible but visually muted — it does not disappear.*
+*Button is disabled until a valid name is entered. When disabled it remains visible but visually muted: it does not disappear.*
 
 ---
 
@@ -209,23 +209,23 @@ I'll explore on my own →
 
 ## Empty States (shown on first use of each section, before any data is logged)
 
-### Dashboard — no data logged yet
+### Dashboard: no data logged yet
 **Heading:** `Nothing logged yet.`
 **Body:** `Tap the + button to record a symptom, vital, meal, or medication. The more you log, the clearer your health picture becomes.`
 
-### Symptom & Vitals — no entries
+### Symptom & Vitals: no entries
 **Heading:** `No symptoms or vitals logged yet.`
 **Body:** `Tap + to record how you're feeling or add a measurement like blood pressure or heart rate.`
 
-### Medications — no medications added
+### Medications: no medications added
 **Heading:** `No medications added yet.`
 **Body:** `Tap + to add a medication you're currently taking or have taken in the past.`
 
-### Meals — no meals logged
+### Meals: no meals logged
 **Heading:** `No meals logged yet.`
-**Body:** `Tap + to record what you ate. If something caused a reaction, you can flag it — Health Flare will help you spot patterns over time.`
+**Body:** `Tap + to record what you ate. If something caused a reaction, you can flag it: Health Flare will help you spot patterns over time.`
 
-### Reports — no data to report on
+### Reports: no data to report on
 **Heading:** `Not enough data yet.`
 **Body:** `Start logging symptoms, vitals, meals, or medications and your first report will be ready to generate within a day or two.`
 
@@ -236,7 +236,7 @@ I'll explore on my own →
 - The primary action button's accessible label must be: `"Create profile and get started"`
 - The name field's accessible label must be: `"Profile name, required"`
 - The "How does this work?" toggle must announce its expanded/collapsed state: `"Privacy details, collapsed, double tap to expand"` / `"Privacy details, expanded, double tap to collapse"`
-- The four first-log option cards must each have accessible labels that include both the label and sublabel, e.g.: `"Log a symptom — how is Ethan feeling right now?"` (profile name interpolated)
+- The four first-log option cards must each have accessible labels that include both the label and sublabel, e.g.: `"Log a symptom: how is Ethan feeling right now?"` (profile name interpolated)
 - The dismiss link must be labelled: `"Skip for now, explore [Name]'s data on my own"` (profile name interpolated)
-- No colour alone is used to distinguish required vs optional fields — the word "Optional" or "Required" is always present in the helper text
+- No colour alone is used to distinguish required vs optional fields: the word "Optional" or "Required" is always present in the helper text
 - Minimum touch target size: 44×44pt on all interactive elements
