@@ -27,7 +27,7 @@ import 'package:health_flare/data/seed_data.dart';
 ///   1. Increment [_targetVersion].
 ///   2. Add an `if (currentVersion < N)` block inside [run].
 ///   3. Update [AppSettings.schemaVersion] at the end of each block.
-///   4. Each block should be idempotent — it only writes what has changed.
+///   4. Each block should be idempotent: it only writes what has changed.
 ///
 /// Isar automatically handles structural changes (adding/removing fields and
 /// collections). [MigrationRunner] is for data migrations: transforming
@@ -60,7 +60,7 @@ class MigrationRunner {
 
     // ── v1 → v2: seed condition + symptom catalogue ────────────────────────
     // Seeds the global catalogue from compile-time [SeedData] constants.
-    // Guard: skip if already seeded (idempotent — safe to re-run).
+    // Guard: skip if already seeded (idempotent: safe to re-run).
     if (currentVersion < 2) {
       final existingCount = await isar.conditionIsars.count();
       if (existingCount == 0) {

@@ -37,7 +37,7 @@ class ImportCategoryInfo {
   final String label;
 
   /// Number of records from the backup that do not already exist in the
-  /// main database (new records only — existing ones are skipped).
+  /// main database (new records only: existing ones are skipped).
   final int count;
 
   /// Whether the user has selected this category for import.
@@ -51,7 +51,7 @@ class ImportCategoryInfo {
   );
 }
 
-/// Category identifiers — stable strings used by [ImportService].
+/// Category identifiers: stable strings used by [ImportService].
 abstract final class ImportCategoryId {
   static const profiles = 'profiles';
   static const trackedConditions = 'trackedConditions';
@@ -988,7 +988,7 @@ class _Ctx {
         continue;
       }
 
-      // Resolve medication FK — skip dose log if medication was not imported.
+      // Resolve medication FK: skip dose log if medication was not imported.
       final mainMedId = medicationMap[bd.medicationIsarId];
       if (mainMedId == null) continue;
 

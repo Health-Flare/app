@@ -7,7 +7,7 @@
 #   1. Bump `version:` in pubspec.yaml (versionName + versionCode).
 #   2. Promote the ## [Unreleased] section in CHANGELOG.md.
 #   3. Commit the changes and create an annotated git tag.
-#   4. Push the commit and tag — triggering the GitHub release workflow.
+#   4. Push the commit and tag: triggering the GitHub release workflow.
 #
 # Usage:
 #   bash scripts/release.sh patch                # 1.0.0 → 1.0.1
@@ -96,7 +96,7 @@ BRANCH=$(git rev-parse --abbrev-ref HEAD)
 if [[ "$DRY_RUN" != true ]]; then
   # Clean working tree?
   if ! git diff --quiet HEAD 2>/dev/null || ! git diff --cached --quiet 2>/dev/null; then
-    echo "error: working tree has uncommitted changes — commit or stash first." >&2
+    echo "error: working tree has uncommitted changes: commit or stash first." >&2
     exit 1
   fi
 
@@ -161,7 +161,7 @@ fi
 
 # ── Summary ─────────────────────────────────────────────────────────────
 echo "──────────────────────────────────────────────"
-echo "  Health Flare — Release"
+echo "  Health Flare: Release"
 echo "  ${CURRENT_VERSION}+${CURRENT_BUILD}  →  ${NEW_VERSION}+${NEW_BUILD}"
 echo "  Tag: ${NEW_TAG}    Date: ${TODAY}"
 if [[ "$NO_PUSH" == true ]]; then

@@ -27,7 +27,7 @@ class FirstLogPrompt extends ConsumerStatefulWidget {
 
   final String profileName;
 
-  /// Called once this step is complete — the user dismissed it, or
+  /// Called once this step is complete: the user dismissed it, or
   /// navigated away to save an entry. The mini-flow advances or closes
   /// itself in response.
   final VoidCallback onFinished;
@@ -47,7 +47,7 @@ class _FirstLogPromptState extends ConsumerState<FirstLogPrompt> {
   Future<void> _openIllness() async {
     // Pushed on top of this step (not a replacement), so popping back from
     // the illness screen naturally lands here again, per the "returns to
-    // the prompt" behaviour — with or without saving.
+    // the prompt" behaviour: with or without saving.
     await context.push(AppRoutes.illness);
     if (!mounted) return;
     setState(() => _illnessAdded = true);
@@ -76,7 +76,7 @@ class _FirstLogPromptState extends ConsumerState<FirstLogPrompt> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Heading — updates once an illness has been added, to invite
+            // Heading: updates once an illness has been added, to invite
             // the next, more routine kind of entry.
             Text(
               _illnessAdded
@@ -98,7 +98,7 @@ class _FirstLogPromptState extends ConsumerState<FirstLogPrompt> {
 
             const SizedBox(height: 28),
 
-            // Option cards — 2-column grid (illness spans full width on top)
+            // Option cards: 2-column grid (illness spans full width on top)
             Column(
               children: [
                 _LogOptionCard(
@@ -106,7 +106,7 @@ class _FirstLogPromptState extends ConsumerState<FirstLogPrompt> {
                   label: 'A condition',
                   sublabel: 'Add conditions you want to track',
                   semanticsLabel:
-                      'Track a condition — add conditions you want to track',
+                      'Track a condition: add conditions you want to track',
                   fullWidth: true,
                   onTap: _openIllness,
                 ),
@@ -127,7 +127,7 @@ class _FirstLogPromptState extends ConsumerState<FirstLogPrompt> {
                       label: 'A symptom',
                       sublabel: 'How is $name feeling right now?',
                       semanticsLabel:
-                          'Log a symptom — how is $name feeling right now?',
+                          'Log a symptom: how is $name feeling right now?',
                       onTap: () => _openAndFinish(AppRoutes.symptoms),
                     ),
                     _LogOptionCard(
@@ -135,7 +135,7 @@ class _FirstLogPromptState extends ConsumerState<FirstLogPrompt> {
                       label: 'A vital',
                       sublabel: 'Blood pressure, heart rate, and more',
                       semanticsLabel:
-                          'Log a vital — blood pressure, heart rate, and more',
+                          'Log a vital: blood pressure, heart rate, and more',
                       onTap: () => _openAndFinish(AppRoutes.symptoms),
                     ),
                     _LogOptionCard(
@@ -143,7 +143,7 @@ class _FirstLogPromptState extends ConsumerState<FirstLogPrompt> {
                       label: 'A meal',
                       sublabel: 'What did $name last eat or drink?',
                       semanticsLabel:
-                          'Log a meal — what did $name last eat or drink?',
+                          'Log a meal: what did $name last eat or drink?',
                       onTap: () => _openAndFinish(AppRoutes.meals),
                     ),
                     _LogOptionCard(
@@ -151,7 +151,7 @@ class _FirstLogPromptState extends ConsumerState<FirstLogPrompt> {
                       label: 'A medication',
                       sublabel: 'Add something $name is currently taking',
                       semanticsLabel:
-                          'Log a medication — add something $name is '
+                          'Log a medication: add something $name is '
                           'currently taking',
                       onTap: () => _openAndFinish(AppRoutes.medications),
                     ),
@@ -160,7 +160,7 @@ class _FirstLogPromptState extends ConsumerState<FirstLogPrompt> {
                       label: 'A journal entry',
                       sublabel: 'Write down how today has really gone',
                       semanticsLabel:
-                          'Write a journal entry — how has today really gone?',
+                          'Write a journal entry: how has today really gone?',
                       onTap: () => _openAndFinish(AppRoutes.journal),
                     ),
                   ],

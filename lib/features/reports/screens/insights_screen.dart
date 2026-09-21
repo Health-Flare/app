@@ -12,7 +12,7 @@ import 'package:health_flare/features/reports/widgets/trend_chart.dart';
 import 'package:health_flare/features/reports/widgets/weather_impact_card.dart';
 import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 
-/// Pattern insights screen — shows in-app charts and correlations.
+/// Pattern insights screen: shows in-app charts and correlations.
 ///
 /// Accessible from the Reports screen. All data is read from local Isar;
 /// nothing is transmitted.
@@ -96,7 +96,7 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
     final profileName = profile?.name ?? 'Profile';
 
     return Scaffold(
-      appBar: HFAppBar(title: Text('Insights — $profileName')),
+      appBar: HFAppBar(title: Text('Insights for $profileName')),
       body: Column(
         children: [
           // ── Date window selector ──────────────────────────────────────────

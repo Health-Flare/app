@@ -29,7 +29,7 @@ class JournalSnapshot {
 ///
 /// Content is stored as an append-only list of [JournalSnapshot] objects.
 /// The current content is always [snapshots.last]. Undo steps back through
-/// the list. This design means the user can never lose text — every autosave
+/// the list. This design means the user can never lose text: every autosave
 /// is preserved and navigable.
 ///
 /// MVP: plain Dart class, held in memory via [JournalEntryListNotifier].
@@ -60,7 +60,7 @@ class JournalEntry {
   ///
   /// New snapshots are appended on each autosave. Undo removes the last
   /// snapshot (never below one). The entry is deleted only by explicit
-  /// user action — not by having an empty body.
+  /// user action: not by having an empty body.
   final List<JournalSnapshot> snapshots;
 
   /// Optional mood at time of writing.

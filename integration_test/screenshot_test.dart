@@ -136,7 +136,7 @@ final _journalEntries = [
     snapshots: [
       JournalSnapshot(
         body:
-            'Rough day — fatigue hit hard after lunch. '
+            'Rough day. Fatigue hit hard after lunch. '
             'Managed a short walk but had to rest for two hours afterwards. '
             "Joint pain in knees is a 6/10 today. Tomorrow's rheumatology "
             'appointment can\'t come soon enough.',
@@ -164,7 +164,7 @@ final _journalEntries = [
         body:
             'Feeling much better than last week. '
             'Morning stiffness was only about 20 minutes today. '
-            'Went to the farmers market with mum — first outing in weeks!',
+            'Went to the farmers market with mum, first outing in weeks!',
         title: 'A good day',
         savedAt: DateTime(2026, 4, 30, 18, 0),
       ),
@@ -200,7 +200,7 @@ final _meals = [
     id: 2,
     profileId: 1,
     description: 'Gluten-free pasta with roasted vegetables',
-    notes: 'Felt slightly bloated after — monitor this.',
+    notes: 'Felt slightly bloated after. Monitor this.',
     hasReaction: true,
     loggedAt: DateTime(2026, 5, 3, 19, 30),
     createdAt: DateTime(2026, 5, 3, 19, 30),
@@ -208,7 +208,7 @@ final _meals = [
   MealEntry(
     id: 3,
     profileId: 1,
-    description: 'Green smoothie — spinach, banana, almond milk',
+    description: 'Green smoothie: spinach, banana, almond milk',
     hasReaction: false,
     loggedAt: DateTime(2026, 5, 3, 8, 15),
     createdAt: DateTime(2026, 5, 3, 8, 15),
@@ -239,7 +239,7 @@ final _activities = [
   ActivityEntry(
     id: 3,
     profileId: 1,
-    description: 'Rest day — very low energy',
+    description: 'Rest day: very low energy',
     activityType: ActivityType.rest,
     effortLevel: 1,
     loggedAt: DateTime(2026, 5, 1, 18, 0),
@@ -288,7 +288,7 @@ final _checkins = [
   ),
 ];
 
-// Conditions — showcases Active + In recovery grouping and diagnosis dates.
+// Conditions: showcases Active + In recovery grouping and diagnosis dates.
 final _userConditions = [
   UserCondition(
     id: 1,
@@ -423,7 +423,7 @@ final _doseLogs = [
 ];
 
 // ---------------------------------------------------------------------------
-// Fake notifiers — override build() to skip Isar
+// Fake notifiers: override build() to skip Isar
 // ---------------------------------------------------------------------------
 
 class _FakeProfileList extends ProfileListNotifier {
@@ -646,7 +646,7 @@ Future<void> _settle(WidgetTester tester) async {
 }
 
 // On Android, convertFlutterSurfaceToImage() may only be called once per
-// test — it registers its own tearDown to revert the surface, so a second
+// test: it registers its own tearDown to revert the surface, so a second
 // call within the same test body (needed when one test takes several
 // screenshots, e.g. walking the onboarding steps) hits
 // "Surface already converted to an image". No-op on other platforms, so
@@ -686,8 +686,8 @@ void main() {
   setUp(() => _surfaceConverted = false);
 
   group('screenshots', () {
-    // Walks the full guided onboarding flow — Welcome, What you can track,
-    // Your privacy, Create profile — capturing each step. All four live on
+    // Walks the full guided onboarding flow: Welcome, What you can track,
+    // Your privacy, Create profile: capturing each step. All four live on
     // one PageView (see OnboardingScreen), so this stays a single test
     // rather than four separate pumps.
     testWidgets('01_onboarding', (tester) async {
@@ -723,7 +723,7 @@ void main() {
       await _screenshot(binding, tester, '02_dashboard');
     });
 
-    // Tracking — Symptoms tab (default view when tapping Tracking in nav)
+    // Tracking: Symptoms tab (default view when tapping Tracking in nav)
     testWidgets('03_tracking_symptoms', (tester) async {
       await tester.pumpWidget(
         ProviderScope(overrides: _overrides(), child: const HealthFlareApp()),
@@ -734,7 +734,7 @@ void main() {
       await _screenshot(binding, tester, '03_tracking_symptoms');
     });
 
-    // Tracking — Illnesses tab showing Active + In recovery sections
+    // Tracking: Illnesses tab showing Active + In recovery sections
     testWidgets('04_tracking_illnesses', (tester) async {
       await tester.pumpWidget(
         ProviderScope(overrides: _overrides(), child: const HealthFlareApp()),
@@ -747,7 +747,7 @@ void main() {
       await _screenshot(binding, tester, '04_tracking_illnesses');
     });
 
-    // Condition detail — Fibromyalgia (in recovery, has diagnosis date + history)
+    // Condition detail: Fibromyalgia (in recovery, has diagnosis date + history)
     testWidgets('05_condition_detail', (tester) async {
       await tester.pumpWidget(
         ProviderScope(overrides: _overrides(), child: const HealthFlareApp()),
@@ -848,7 +848,7 @@ void main() {
       await _screenshot(binding, tester, '11_meal_form');
     });
 
-    // Symptom form with weather chip — requires weatherTrackingEnabled + provider override
+    // Symptom form with weather chip: requires weatherTrackingEnabled + provider override
     testWidgets('12_symptom_form_weather', (tester) async {
       await tester.pumpWidget(
         ProviderScope(overrides: _overrides(), child: const HealthFlareApp()),

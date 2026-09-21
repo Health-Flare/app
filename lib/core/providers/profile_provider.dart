@@ -8,7 +8,7 @@ import 'package:health_flare/models/profile.dart';
 import 'package:health_flare/core/providers/database_provider.dart';
 
 // ---------------------------------------------------------------------------
-// Color palette — 8 visually distinct Material 3 seed colors, cycled mod 8
+// Color palette: 8 visually distinct Material 3 seed colors, cycled mod 8
 // ---------------------------------------------------------------------------
 
 const _colorPalette = [
@@ -23,7 +23,7 @@ const _colorPalette = [
 ];
 
 // ---------------------------------------------------------------------------
-// Helpers — AppSettings access
+// Helpers: AppSettings access
 // ---------------------------------------------------------------------------
 
 Future<AppSettings> _getOrCreateSettings(Isar isar) async {
@@ -44,7 +44,7 @@ Future<void> _writeActiveProfileId(Isar isar, int? id) async {
 }
 
 // ---------------------------------------------------------------------------
-// Profile list — all profiles on this device
+// Profile list: all profiles on this device
 // ---------------------------------------------------------------------------
 
 /// Holds the ordered list of all profiles.

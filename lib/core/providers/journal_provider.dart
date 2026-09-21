@@ -10,7 +10,7 @@ import 'package:health_flare/core/providers/database_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 
 // ---------------------------------------------------------------------------
-// Journal entry list — all entries across all profiles
+// Journal entry list: all entries across all profiles
 // ---------------------------------------------------------------------------
 
 /// Holds all journal entries for all profiles.
@@ -183,7 +183,7 @@ final filteredJournalProvider = Provider<List<JournalEntry>>((ref) {
 /// because those open and close without destroying the composer's widget.
 ///
 /// [TextEditingController]s for the body and title fields are held in widget
-/// state — not here — because they require [dispose()].
+/// state (not here) because they require [dispose()].
 ///
 /// Reset to [JournalComposerState.empty] when the composer closes.
 class JournalComposerState {

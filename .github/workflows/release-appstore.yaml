@@ -5,7 +5,7 @@ name: Release App Store
 # pubspec.yaml's `version:`) than the last, same as the Play Store workflow.
 # Bump it before tagging or App Store Connect rejects the upload.
 #
-# Also supports manual dispatch — useful while iterating on the signing/build
+# Also supports manual dispatch: useful while iterating on the signing/build
 # setup, since it lets you re-run against the current build number without
 # cutting a new version tag each time. A manual run still uploads for real if
 # it gets that far, so only dispatch it when you actually mean to.
@@ -15,7 +15,7 @@ on:
       - "v*.*.*"
   workflow_dispatch: {}
 
-# Flutter version kept in sync with ci.yml — update both together.
+# Flutter version kept in sync with ci.yml: update both together.
 env:
   FLUTTER_VERSION: "3.47.2"
 
@@ -38,7 +38,7 @@ jobs:
       # ── Signing setup ────────────────────────────────────────────────────────
       # Manual signing with a pre-created Distribution cert + provisioning
       # profile. Automatic signing (-allowProvisioningUpdates + API key) was
-      # tried first and failed 6 straight times — see docs/apple-app-store-
+      # tried first and failed 6 straight times: see docs/apple-app-store-
       # checklist.md Phase 4 for the full log. Root cause: xcodebuild's
       # automatic-signing resolution doesn't reliably create a *first-ever*
       # Distribution profile headlessly, and once the profile existed
@@ -54,7 +54,7 @@ jobs:
       #                                           Access (right-click the
       #                                           certificate → Export).
       #   APPSTORE_DISTRIBUTION_CERT_PASSWORD    the export password chosen
-      #                                           for that .p12 — also reused
+      #                                           for that .p12: also reused
       #                                           below as the ephemeral CI
       #                                           keychain's unlock password.
       #   APPSTORE_PROVISIONING_PROFILE_BASE64   base64-encoded .mobileprovision
@@ -62,7 +62,7 @@ jobs:
       #                                           Store" profile (Developer
       #                                           portal → Profiles).
       #   APPSTORE_API_KEY_BASE64/_KEY_ID/_ISSUER_ID   still used for the final
-      #                                           altool upload step only —
+      #                                           altool upload step only: 
       #                                           that step never failed, only
       #                                           archiving did, so it's
       #                                           unchanged. See git history
@@ -91,7 +91,7 @@ jobs:
           # unprompted access to the private key. Attempts 7-12 all failed
           # at Export with "No signing certificate found" despite
           # `security find-identity -v` proving the identity valid right
-          # before each failure (see the diagnostic step below) — the gap
+          # before each failure (see the diagnostic step below): the gap
           # between "CLI says valid" and "xcodebuild -exportArchive says
           # not found" suggests -exportArchive uses a different internal
           # tool than plain codesign to actually load the private key,
@@ -103,12 +103,12 @@ jobs:
           rm distribution.p12
           # `security default-keychain` alone doesn't add build.keychain to the
           # *search list* that `xcodebuild -exportArchive` consults separately
-          # from Archive's codesign lookup — attempt 7 archived successfully
+          # from Archive's codesign lookup: attempt 7 archived successfully
           # (proving the cert/profile were valid) but Export still failed with
           # "No signing certificate 'iOS Distribution' found" until this list
           # includes build.keychain. Attempt 8 tried `-s build.keychain
           # login.keychain-db`, which *replaced* the default search list
-          # instead of extending it — dropping /Library/Keychains/System.keychain,
+          # instead of extending it: dropping /Library/Keychains/System.keychain,
           # which holds Apple's WWDR intermediate cert needed to validate the
           # trust chain for any Apple-issued certificate. Archive's codesign
           # lookup tolerated the missing chain; Export's stricter
@@ -120,7 +120,7 @@ jobs:
           security list-keychains -d user -s build.keychain $EXISTING_KEYCHAINS
 
       # Tried as a theory after attempt 11's diagnostic (missing/outdated
-      # WWDR intermediate in the trust chain) — attempt 12 proved this
+      # WWDR intermediate in the trust chain): attempt 12 proved this
       # wasn't the cause: all three intermediates installed successfully
       # and the failure was byte-for-byte identical anyway. Left in place
       # since installing them is harmless and one less thing to rule out
@@ -152,7 +152,7 @@ jobs:
       - name: Prepare Flutter build
         run: flutter build ios --release --no-codesign
 
-      # No signing flags/overrides needed here — project.pbxproj already has
+      # No signing flags/overrides needed here: project.pbxproj already has
       # CODE_SIGN_STYLE=Manual, PROVISIONING_PROFILE_SPECIFIER, and
       # DEVELOPMENT_TEAM committed for the Release configuration (see the
       # "fix(ios): manual Distribution signing" commit), matching exactly
@@ -166,7 +166,7 @@ jobs:
             -archivePath build/ios/Runner.xcarchive
 
       # `xcodebuild -exportArchive` failed 9 straight times with "No signing
-      # certificate/profile found" — the attempt 16 diagnostic (see git
+      # certificate/profile found": the attempt 16 diagnostic (see git
       # history) proved conclusively via `codesign -dvvv` on the archived
       # .app that it's already fully, correctly signed: full valid trust
       # chain (Apple Distribution: Automated Bytes Incorporated -> Apple
@@ -175,7 +175,7 @@ jobs:
       # -exportArchive's own re-validation was doing on this Xcode version,
       # it was failing independently of the archive's actual (valid)
       # signing state. Since the .app is already signed for distribution,
-      # -exportArchive's re-signing/re-validation is redundant — package
+      # -exportArchive's re-signing/re-validation is redundant: package
       # the IPA directly instead of fighting a broken validation step.
       - name: Package IPA
         run: |
@@ -187,7 +187,7 @@ jobs:
 
       # Kept as a downloadable artifact regardless of whether the automated
       # upload below succeeds, so a failed/rejected altool run still leaves
-      # something you can hand to Transporter (or altool) manually — this
+      # something you can hand to Transporter (or altool) manually: this
       # workflow is untested end-to-end, see Phase 4 of
       # docs/apple-app-store-checklist.md.
       - name: Upload IPA artifact
@@ -198,13 +198,13 @@ jobs:
           retention-days: 30
 
       # ── Publish ──────────────────────────────────────────────────────────────
-      # Prerequisites (one-time, done outside CI — see Phase 1/2 of
+      # Prerequisites (one-time, done outside CI: see Phase 1/2 of
       # docs/apple-app-store-checklist.md): Developer Program enrollment
       # active, App ID registered, app record created in App Store Connect.
       #
       # Per the Play Store workflow's equivalent comment: the very first
       # upload for a new app may need to go through Xcode/Transporter
-      # manually before App Store Connect accepts automated uploads for it —
+      # manually before App Store Connect accepts automated uploads for it: 
       # unconfirmed for App Store Connect specifically, verify on the first
       # real run rather than assuming this workflow works untested.
       - name: Upload to App Store Connect

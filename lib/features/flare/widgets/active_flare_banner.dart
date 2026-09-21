@@ -27,7 +27,7 @@ class ActiveFlareBanner extends ConsumerWidget {
 }
 
 // ---------------------------------------------------------------------------
-// Active flare card — shown when a flare is in progress
+// Active flare card: shown when a flare is in progress
 // ---------------------------------------------------------------------------
 
 class _ActiveFlareCard extends StatelessWidget {
@@ -86,7 +86,7 @@ class _ActiveFlareCard extends StatelessWidget {
 }
 
 // ---------------------------------------------------------------------------
-// Start flare card — shown when no flare is active
+// Start flare card: shown when no flare is active
 // ---------------------------------------------------------------------------
 
 class _StartFlareCard extends ConsumerWidget {

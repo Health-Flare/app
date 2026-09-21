@@ -33,7 +33,7 @@ abstract final class QuickLogParser {
   /// Extracts a vital measurement, or null when no confident match is found.
   ///
   /// When the text contains both a blood-pressure and a pulse reading (e.g.
-  /// "BP 118/76, pulse 68bpm"), only the blood pressure is returned here —
+  /// "BP 118/76, pulse 68bpm"), only the blood pressure is returned here:
   /// use [parseVitals] to get both.
   static ParsedVital? parseVital(String text) {
     final lower = text.toLowerCase();
@@ -168,7 +168,7 @@ abstract final class QuickLogParser {
   /// is matched case-insensitively.
   ///
   /// Recognises either an explicit "bpm"/"beats per minute" unit, or the
-  /// keywords "pulse"/"heart rate"/"hr" immediately preceding the number —
+  /// keywords "pulse"/"heart rate"/"hr" immediately preceding the number:
   /// so "HR 72" and "Pulse 72" match without a unit, but a duration like
   /// "2 hr walk" (number before "hr") does not.
   static double? parseHeartRate(String text) {
@@ -251,7 +251,7 @@ abstract final class QuickLogParser {
   /// longest name. Matches against the global catalogue (custom conditions
   /// created by other profiles, [Condition.global] == false, are excluded)
   /// plus every condition [trackedConditions] says the active profile has
-  /// already started tracking — so a profile's own custom condition is
+  /// already started tracking, so a profile's own custom condition is
   /// still recognised even though it isn't in the global set. Returns null
   /// when nothing matches.
   static Condition? matchCondition(
@@ -284,7 +284,7 @@ abstract final class QuickLogParser {
   /// [trackedSymptoms] says the active profile is tracking (added via the
   /// Illnesses screen's "common symptoms" chips), and every name in
   /// [loggedNames] the profile has typed into the standalone symptom entry
-  /// form — the most common way symptoms actually get created, and one that
+  /// form: the most common way symptoms actually get created, and one that
   /// never touches the [UserSymptom] catalogue at all (it only records a
   /// free-text `SymptomEntry.name`; see `recentSymptomNamesProvider`). A
   /// symptom typed there is still recognised on every mention after its
@@ -325,7 +325,7 @@ abstract final class QuickLogParser {
   }
 
   /// Extracts a 1-10 symptom severity rating from free text, or null when
-  /// nothing confident can be found — callers should fall back to a
+  /// nothing confident can be found: callers should fall back to a
   /// sensible neutral default rather than leaving the field unset.
   ///
   /// An explicit numeric scale ("7/10", "pain level 8", "severity: 6") wins
@@ -368,7 +368,7 @@ abstract final class QuickLogParser {
 
   /// True if [text] signals a *fresh* diagnosis ("diagnosed", "diagnosis",
   /// "found out") rather than just mentioning a condition the profile may
-  /// already have had for years — used to decide whether "now" is a
+  /// already have had for years: used to decide whether "now" is a
   /// trustworthy stand-in for an unstated diagnosis date.
   static bool mentionsNewDiagnosis(String text) {
     final lower = text.toLowerCase();
@@ -387,7 +387,7 @@ abstract final class QuickLogParser {
     return null;
   }
 
-  /// True if [text] mentions [name] — either as a whole-name substring, or
+  /// True if [text] mentions [name]: either as a whole-name substring, or
   /// (for a multi-word [name]) via its capital-letter acronym written out
   /// in full, e.g. "ME" for "Myalgic Encephalomyelitis". Names shorter than
   /// 3 characters never match, to avoid common short words false-positiving.
@@ -399,7 +399,7 @@ abstract final class QuickLogParser {
     if (text.toLowerCase().contains(trimmedName.toLowerCase())) return true;
     final acronym = _acronym(trimmedName);
     if (acronym.length < 2) return false;
-    // RegExp.escape guards a name like "Lupus (SLE)" — its acronym's first
+    // RegExp.escape guards a name like "Lupus (SLE)": its acronym's first
     // punctuation-adjacent letter is still plain text, but nothing here
     // stops a future name shape from landing an unescaped regex
     // metacharacter in \b<acronym>\b and crashing every classify() call.
@@ -407,7 +407,7 @@ abstract final class QuickLogParser {
   }
 
   /// Initials of each word in [name] (skipping words with no letters at
-  /// all), or '' when fewer than two words contribute a letter — a
+  /// all), or '' when fewer than two words contribute a letter: a
   /// one-word acronym would be indistinguishable from the name itself and
   /// is more likely to false-positive.
   ///

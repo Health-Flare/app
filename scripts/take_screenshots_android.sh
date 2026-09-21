@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# take_screenshots_android.sh — capture Play Store screenshots on Android emulators.
+# take_screenshots_android.sh: capture Play Store screenshots on Android emulators.
 #
 # Usage:
 #   ./scripts/take_screenshots_android.sh                 # sweep every required device class
@@ -17,15 +17,15 @@
 #   • flutter in $PATH
 #
 # Google Play screenshot requirements (docs/store-listing.md):
-#   Phone screenshots        — required
-#   7-inch / 10-inch tablet  — optional but recommended; skipped here. The
+#   Phone screenshots: required
+#   7-inch / 10-inch tablet: optional but recommended; skipped here. The
 #                              Pixel Tablet AVD has been unreliable (boot
-#                              hangs / driver flakiness) — re-add it to
+#                              hangs / driver flakiness): re-add it to
 #                              DEVICE_CLASS_SLUGS/DEVICE_CLASS_AVDS once
 #                              that's sorted out, or capture it manually via
 #                              adhoc mode: ./take_screenshots_android.sh "Pixel_Tablet_API_36"
 #
-# AVD names are whatever you created locally — Android Studio doesn't standardize them
+# AVD names are whatever you created locally: Android Studio doesn't standardize them
 # the way Apple names simulators, so update DEVICE_CLASS_AVDS below to match what
 # `emulator -list-avds` actually prints if it differs from the defaults.
 
@@ -154,15 +154,15 @@ if [[ $# -ge 1 ]]; then
   exit 0
 fi
 
-# ── Sweep mode (default — every required Play Store device class) ────────
+# ── Sweep mode (default: every required Play Store device class) ────────
 
-echo "No device given — sweeping all Play Store device classes."
+echo "No device given: sweeping all Play Store device classes."
 echo "(Pass an AVD name, e.g. \"Medium_Phone_API_36.1\", to capture just one.)"
 echo ""
 
-SKIPPED_CLASSES=()   # AVD not installed — never attempted
+SKIPPED_CLASSES=()   # AVD not installed: never attempted
 CAPTURED_CLASSES=()  # ran cleanly, every screenshot test passed
-PARTIAL_CLASSES=()   # ran, but one or more screenshot tests failed —
+PARTIAL_CLASSES=()   # ran, but one or more screenshot tests failed: 
                       # screenshots up to and including the failure are
                       # still written (integration_test saves on failure),
                       # but the set may be incomplete.
@@ -175,7 +175,7 @@ for i in "${!DEVICE_CLASS_SLUGS[@]}"; do
 
   FOUND=$(find_avd "$AVD_NAME")
   if [[ -z "$FOUND" ]]; then
-    echo "⚠️   AVD \"$AVD_NAME\" not installed — skipping ${SLUG}."
+    echo "⚠️   AVD \"$AVD_NAME\" not installed: skipping ${SLUG}."
     echo "     Create it via Android Studio → Device Manager, or update"
     echo "     DEVICE_CLASS_AVDS in this script if it's named differently."
     SKIPPED_CLASSES+=("$SLUG")
@@ -190,7 +190,7 @@ for i in "${!DEVICE_CLASS_SLUGS[@]}"; do
   if run_screenshot_suite "$SERIAL" "$OUT_DIR"; then
     CAPTURED_CLASSES+=("$SLUG")
   else
-    echo "⚠️   One or more screenshot tests failed on ${SLUG} — see log above."
+    echo "⚠️   One or more screenshot tests failed on ${SLUG}: see log above."
     PARTIAL_CLASSES+=("$SLUG")
   fi
 

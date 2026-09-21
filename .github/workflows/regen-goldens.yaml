@@ -1,7 +1,7 @@
 name: Regenerate goldens
 
 # Manual only. Golden images in test/goldens/ must be captured on the same
-# platform CI compares them against (ubuntu-latest) — generating them
+# platform CI compares them against (ubuntu-latest): generating them
 # locally on macOS produces small but real pixel diffs from anti-aliasing on
 # rounded/circular shapes and icons, even with a platform-stable test font
 # for text. Run this after an intentional visual change, then download the

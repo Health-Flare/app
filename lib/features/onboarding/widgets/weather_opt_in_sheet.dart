@@ -34,7 +34,7 @@ class WeatherTrackingOptInSheet extends StatelessWidget {
             height: 52,
             margin: const EdgeInsets.only(bottom: 16),
             decoration: BoxDecoration(
-              // Theme-adaptive tertiaryContainer, not AppColors.paleSky —
+              // Theme-adaptive tertiaryContainer, not AppColors.paleSky:
               // that constant is pinned light and looked like a stray
               // light-mode chip against an otherwise dark sheet.
               color: cs.tertiaryContainer,
@@ -54,7 +54,7 @@ class WeatherTrackingOptInSheet extends StatelessWidget {
           // Explanation
           Text(
             'Changes in temperature, humidity, and barometric pressure '
-            'can influence how people feel with chronic conditions — '
+            'can influence how people feel with chronic conditions, '
             'yet most people never think to track it. Enabling this '
             'silently captures weather conditions at the moment of each '
             'entry, so patterns become visible over time.',
@@ -87,7 +87,7 @@ class WeatherTrackingOptInSheet extends StatelessWidget {
 
           const SizedBox(height: 12),
 
-          // Secondary action — equal visual weight, no deferral framing
+          // Secondary action: equal visual weight, no deferral framing
           SizedBox(
             width: double.infinity,
             child: OutlinedButton(

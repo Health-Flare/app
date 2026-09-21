@@ -7,7 +7,7 @@ import 'package:health_flare/core/providers/database_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 
 // ---------------------------------------------------------------------------
-// Sleep entry list — all entries across all profiles
+// Sleep entry list: all entries across all profiles
 // ---------------------------------------------------------------------------
 
 /// Holds all sleep entries for all profiles.
@@ -42,8 +42,8 @@ class SleepEntryListNotifier extends Notifier<List<SleepEntry>> {
 
   /// Add a new sleep entry.
   ///
-  /// [isNap] defaults to an automatic guess — true when a sleep entry
-  /// already exists for the same calendar date (wake-up day) and profile —
+  /// [isNap] defaults to an automatic guess, true when a sleep entry
+  /// already exists for the same calendar date (wake-up day) and profile,
   /// but callers (e.g. the sleep entry form) may pass an explicit value to
   /// let the user tag/untag naps themselves.
   Future<void> add({

@@ -37,7 +37,7 @@ linter:
     # Prevents silent fire-and-forget async bugs.
     unawaited_futures: true
 
-    # Disallow dynamic method calls — forces proper typing.
+    # Disallow dynamic method calls: forces proper typing.
     avoid_dynamic_calls: true
 
     # Require stream subscriptions to be cancelled in dispose().
@@ -46,18 +46,18 @@ linter:
     # Require sinks to be closed.
     close_sinks: true
 
-    # No print() calls in production code — use a logger instead.
+    # No print() calls in production code: use a logger instead.
     avoid_print: true
 
     # ── Style & consistency ───────────────────────────────────────────────────
 
-    # Use package: imports everywhere — no relative imports in lib/.
+    # Use package: imports everywhere: no relative imports in lib/.
     always_use_package_imports: true
 
     # Single quotes for strings (except where the string contains a single quote).
     prefer_single_quotes: true
 
-    # Trailing commas on multi-line argument/parameter lists — improves diffs.
+    # Trailing commas on multi-line argument/parameter lists: improves diffs.
     require_trailing_commas: true
 
     # Replace unnecessary lambdas with tear-offs.
@@ -66,7 +66,7 @@ linter:
     # ── Declarations ─────────────────────────────────────────────────────────
 
     # All public API members must have doc comments.
-    public_member_api_docs: false  # Aspirational — enable when coverage improves.
+    public_member_api_docs: false  # Aspirational: enable when coverage improves.
 
     # Prefer const constructors wherever possible.
     prefer_const_constructors: true

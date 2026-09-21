@@ -31,7 +31,7 @@ Feature: Linux and Windows Desktop Applications
     And the Windows build job requires the same set of upstream jobs to pass first
 
   # ---------------------------------------------------------------------------
-  # App icon — Linux
+  # App icon: Linux
   # ---------------------------------------------------------------------------
 
   Scenario: The Linux app uses the Health Flare icon
@@ -41,7 +41,7 @@ Feature: Linux and Windows Desktop Applications
     And the icon appears in the taskbar and application switcher when the app is running
 
   # ---------------------------------------------------------------------------
-  # App icon — Windows
+  # App icon: Windows
   # ---------------------------------------------------------------------------
 
   Scenario: The Windows app uses the Health Flare icon
@@ -70,7 +70,7 @@ Feature: Linux and Windows Desktop Applications
     Then the window opens at the same position and size as when it was last closed
 
   # ---------------------------------------------------------------------------
-  # Distribution — Linux
+  # Distribution: Linux
   # ---------------------------------------------------------------------------
 
   Scenario: A release Linux build can be packaged as a self-contained archive
@@ -80,7 +80,7 @@ Feature: Linux and Windows Desktop Applications
     And no external Flutter SDK is required at runtime
 
   # ---------------------------------------------------------------------------
-  # Distribution — Windows
+  # Distribution: Windows
   # ---------------------------------------------------------------------------
 
   Scenario: A release Windows build can be packaged as a self-contained archive

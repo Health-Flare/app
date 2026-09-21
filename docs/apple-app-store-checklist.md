@@ -4,12 +4,12 @@ Health Flare is live on Google Play (`.github/workflows/release-playstore.yaml`,
 Play upload keystore). This document tracks what's still needed to get the same app onto the
 Apple App Store. It complements two docs that already exist and should **not** be duplicated:
 
-- `docs/features/app-store.feature` — the BDD acceptance criteria for both stores. Treat every
+- `docs/features/app-store.feature`: the BDD acceptance criteria for both stores. Treat every
   scenario in the "Apple App Store" section as a submission gate.
-- `docs/store-listing.md` — the actual copy (description, keywords, subtitle) to paste into App
+- `docs/store-listing.md`: the actual copy (description, keywords, subtitle) to paste into App
   Store Connect. Reuse it; update the version number to the current release before pasting.
 
-This file is the **gap list and sequencing** — what's missing between where the repo/account
+This file is the **gap list and sequencing**: what's missing between where the repo/account
 stand today and a submitted build.
 
 ---
@@ -18,61 +18,61 @@ stand today and a submitted build.
 
 | Item | Status |
 |---|---|
-| iOS project | `ios/` exists, builds via standard Flutter tooling. Bundle ID `org.healthflare.app.healthflare`, deployment target 13.0, `TARGETED_DEVICE_FAMILY = "1,2"` (iPhone **and** iPad). Turns out the iOS target had never actually been built in this repo before 2026-08-18 — `ios/Runner.xcworkspace` never referenced `Pods.xcodeproj` and `ios/Podfile.lock` didn't exist, both since the initial commit. First `flutter build ios` / `pod install` now committed. |
+| iOS project | `ios/` exists, builds via standard Flutter tooling. Bundle ID `org.healthflare.app.healthflare`, deployment target 13.0, `TARGETED_DEVICE_FAMILY = "1,2"` (iPhone **and** iPad). Turns out the iOS target had never actually been built in this repo before 2026-08-18: `ios/Runner.xcworkspace` never referenced `Pods.xcodeproj` and `ios/Podfile.lock` didn't exist, both since the initial commit. First `flutter build ios` / `pod install` now committed. |
 | App icon | Full `AppIcon.appiconset` present, including the required 1024×1024 marketing icon. |
 | Signing | **Working (2026-09-01).** Manual signing: Distribution certificate + "Health Flare App Store" provisioning profile created via Apple Developer portal, exported as `.p12`/`.mobileprovision` and stored as GitHub secrets (`APPSTORE_DISTRIBUTION_CERT_BASE64`, `APPSTORE_DISTRIBUTION_CERT_PASSWORD`, `APPSTORE_PROVISIONING_PROFILE_BASE64`), imported into an ephemeral CI keychain each run. `project.pbxproj`'s Release/Profile configs carry `CODE_SIGN_STYLE=Manual` + explicit identity/profile. App Store Connect API key (`APPSTORE_API_KEY_BASE64`/`_KEY_ID`/`_ISSUER_ID`, `APPLE_TEAM_ID`) used only for the final `altool` upload. |
-| CI release automation | `release.yaml` (APK), `release-playstore.yaml` (AAB → Play internal track — verified working 2026-08-21), `release-macos.yaml` (DMG, ad-hoc notarized — **not** Mac App Store), `release-appstore.yaml` (IPA → App Store Connect — **verified working end-to-end 2026-09-01**, `UPLOAD SUCCEEDED with no errors`, run 17 after extensive signing debugging, see Phase 4 for the full story). All four trigger off the same `v*.*.*` tag push; `release-appstore.yaml` also supports manual `workflow_dispatch` for iterating without cutting a new tag. Runs directly on `Health-Flare/app` via GitHub Actions. |
-| App Store Connect record | Believed created (Phases 1/2) as of 2026-08-21 — not independently re-verified in this doc. |
-| Screenshots | **Verified 2026-08-18** — `scripts/take_screenshots.sh` sweeps all three required device classes (iPhone 6.9"/6.5", iPad 13") into `screenshots/appstore/<slug>/`, 13/13 real screenshots per class, committed. See Phase 3 for how the first run surfaced and fixed a real app bug along the way. |
-| Privacy policy | Published content exists at `docs/privacy-policy.md` / `.html`, referenced as `https://healthflare.org/privacy` in `docs/store-listing.md`. Confirm it's actually deployed and reachable at that URL before submitting — App Store Connect validates the link. |
-| Export compliance | **Done (2026-08-21).** `ios/Runner/Info.plist` sets `ITSAppUsesNonExemptEncryption` = `false` — the app's only network call (weather lookup, see `.url-scan-ignore`) is standard HTTPS, which is export-exempt. |
+| CI release automation | `release.yaml` (APK), `release-playstore.yaml` (AAB → Play internal track: verified working 2026-08-21), `release-macos.yaml` (DMG, ad-hoc notarized: **not** Mac App Store), `release-appstore.yaml` (IPA → App Store Connect: **verified working end-to-end 2026-09-01**, `UPLOAD SUCCEEDED with no errors`, run 17 after extensive signing debugging, see Phase 4 for the full story). All four trigger off the same `v*.*.*` tag push; `release-appstore.yaml` also supports manual `workflow_dispatch` for iterating without cutting a new tag. Runs directly on `Health-Flare/app` via GitHub Actions. |
+| App Store Connect record | Believed created (Phases 1/2) as of 2026-08-21: not independently re-verified in this doc. |
+| Screenshots | **Verified 2026-08-18**: `scripts/take_screenshots.sh` sweeps all three required device classes (iPhone 6.9"/6.5", iPad 13") into `screenshots/appstore/<slug>/`, 13/13 real screenshots per class, committed. See Phase 3 for how the first run surfaced and fixed a real app bug along the way. |
+| Privacy policy | Published content exists at `docs/privacy-policy.md` / `.html`, referenced as `https://healthflare.org/privacy` in `docs/store-listing.md`. Confirm it's actually deployed and reachable at that URL before submitting: App Store Connect validates the link. |
+| Export compliance | **Done (2026-08-21).** `ios/Runner/Info.plist` sets `ITSAppUsesNonExemptEncryption` = `false`: the app's only network call (weather lookup, see `.url-scan-ignore`) is standard HTTPS, which is export-exempt. |
 
 ---
 
-## Phase 1 — Account & legal (do first — has lead time)
+## Phase 1: Account & legal (do first: has lead time)
 
 - [ ] Confirm Apple Developer Program enrollment is active for the entity used in
   `docs/store-listing.md` ("Automated Bytes Incorporated"). An organization account needs a
-  D-U-N-S number and legal-entity verification — this can take **days**, so start it before
+  D-U-N-S number and legal-entity verification: this can take **days**, so start it before
   anything else. (If enrolling as an individual instead, the seller name in the store listing
-  changes from the org name to your legal name — decide this now, it's hard to change later.)
+  changes from the org name to your legal name: decide this now, it's hard to change later.)
 - [ ] Accept the current Apple Developer Program License Agreement in App Store Connect (re-accept
-  whenever Apple updates it — this silently blocks builds/TestFlight if missed).
-- [ ] Accept the free "Apps" Paid Applications Agreement equivalent — for a free app this is just
+  whenever Apple updates it: this silently blocks builds/TestFlight if missed).
+- [ ] Accept the free "Apps" Paid Applications Agreement equivalent: for a free app this is just
   the base agreement, already covered by enrollment, but confirm no banking/tax section is
   outstanding (App Store Connect flags this under Agreements, Tax, and Banking even for $0 apps in
   some regions).
 
-## Phase 2 — App Store Connect record
+## Phase 2: App Store Connect record
 
 - [ ] Register the App ID `org.healthflare.app.healthflare` in the Apple Developer portal
-  (Certificates, Identifiers & Profiles → Identifiers) if not already present — note the macOS
+  (Certificates, Identifiers & Profiles → Identifiers) if not already present: note the macOS
   DMG workflow (`release-macos.yaml`) notarizes ad-hoc and never required a registered App ID, so
   this is likely a genuinely new step, not something reused from the macOS work.
 - [ ] Create the app record in App Store Connect: name "Health Flare", primary language,
   bundle ID above, SKU (any internal string, e.g. `healthflare-ios`).
 - [ ] Fill in App Information: category **Health & Fitness** (`docs/store-listing.md` and
-  `docs/features/app-store.feature` now agree on this — Medical would carry extra review
+  `docs/features/app-store.feature` now agree on this: Medical would carry extra review
   scrutiny around clinical claims), content rights, age rating questionnaire (expected
   result: 4+).
 - [ ] Paste in Name / Subtitle / Description / Keywords / Promotional text / Support URL / Privacy
-  Policy URL from `docs/store-listing.md` — update the "Version 1.0.0" references there to match
+  Policy URL from `docs/store-listing.md`: update the "Version 1.0.0" references there to match
   the actual current `pubspec.yaml` version (currently `1.3.0`) since this will be a first
   submission at a version well past 1.0.0.
 - [ ] Complete the App Privacy (nutrition label) questionnaire per the table already drafted in
-  `docs/store-listing.md` ("App privacy" section) — all "No" except general on-device use.
+  `docs/store-listing.md` ("App privacy" section): all "No" except general on-device use.
 - [ ] Write App Review notes explaining offline-first / no-account behavior and give reviewers a
   concrete test flow (add a profile → log a symptom → view dashboard). `app-store.feature` already
-  specifies this as a gate — use it as the acceptance check.
+  specifies this as a gate: use it as the acceptance check.
 - [x] Add `ITSAppUsesNonExemptEncryption` = `false` to `ios/Runner/Info.plist` (the app only makes
-  standard HTTPS calls to the weather API — no proprietary encryption) so export-compliance isn't
+  standard HTTPS calls to the weather API: no proprietary encryption) so export-compliance isn't
   a manual per-build prompt. **Done 2026-08-21.**
 
-## Phase 3 — Screenshots
+## Phase 3: Screenshots
 
 **Automation done (2026-08-17).** `scripts/take_screenshots.sh` now sweeps all three required App
-Store device classes in one run — iPhone 6.9", iPhone 6.5", and iPad 13" (the last one because
-`TARGETED_DEVICE_FAMILY = "1,2"` means the app targets iPad, not just iPhone) — and writes each
+Store device classes in one run: iPhone 6.9", iPhone 6.5", and iPad 13" (the last one because
+`TARGETED_DEVICE_FAMILY = "1,2"` means the app targets iPad, not just iPhone), and writes each
 class to its own subdirectory so runs don't clobber each other:
 
 ```bash
@@ -87,10 +87,10 @@ possible without touching the test file itself.
 
 **Verified end-to-end (2026-08-18).** Installed the iOS 26.3 Simulator runtime
 (`xcodebuild -downloadPlatform iOS`, ~8.4 GB) and created the three simulators
-`DEVICE_CLASS_NAMES` expects (`xcrun simctl create` — Xcode only auto-provisions its newest
+`DEVICE_CLASS_NAMES` expects (`xcrun simctl create`: Xcode only auto-provisions its newest
 device lineup, but the older device *types* still exist and can be created directly). The first
 sweep surfaced a real bug: `integration_test/screenshot_test.dart`'s `09b_journal_detail` test
-used `find.text('Rough Saturday')`, which was ambiguous — `AppShell`'s nested `ShellRoute`
+used `find.text('Rough Saturday')`, which was ambiguous: `AppShell`'s nested `ShellRoute`
 Navigator keeps the previous tab mounted offstage on `context.go()` rather than disposing it, and
 the fixture's dashboard activity feed shows the same journal entries, so the same title text
 existed twice in the tree. Fixed by scoping the tap to
@@ -103,38 +103,38 @@ verified visually (correct Sarah Chen persona content, correct per-device resolu
 placeholder/lorem-ipsum content, iPad layout renders sensibly rather than breaking). Committed
 under `screenshots/appstore/<slug>/` (matches the existing `v1`/`v2` pattern for older captures).
 
-- [ ] Decide whether `TARGETED_DEVICE_FAMILY = "1,2"` (iPad support) is actually intentional —
+- [ ] Decide whether `TARGETED_DEVICE_FAMILY = "1,2"` (iPad support) is actually intentional: 
   the iPad screenshots exist and look fine, but this is still a product decision, not something
   settled by the screenshots working. See "Open questions" below.
-- [ ] Building iOS at all turned out to be a first for this repo — see the CocoaPods integration
+- [ ] Building iOS at all turned out to be a first for this repo: see the CocoaPods integration
   note under "Current state" above. Re-run the sweep again before final submission once the app
   has changed further, since these screenshots are a point-in-time capture, not a live artifact.
 
-## Phase 4 — CI: build & sign
+## Phase 4: CI: build & sign
 
 - [x] Decide signing approach. **Chosen 2026-08-21: App Store Connect API key + automatic
-  signing** — generate an API key in App Store Connect (Users and Access → Integrations), store
+  signing**: generate an API key in App Store Connect (Users and Access → Integrations), store
   the `.p8` key + Key ID + Issuer ID as secrets, let `xcodebuild -allowProvisioningUpdates` handle
   cert/profile creation and renewal during CI. (Rejected: fastlane match / manual `.p12` +
-  provisioning profile — more secrets to rotate, manual yearly profile renewal, no upside here
+  provisioning profile, more secrets to rotate, manual yearly profile renewal, no upside here
   since there's no existing fastlane setup in this repo to build on.)
 - [x] Add `.github/workflows/release-appstore.yaml`, triggered on the same `v*.*.*` tag as the
-  other release workflows. **Added 2026-08-21.** Note it does *not* go through `flutter build ipa`
-  — that command has no passthrough for `-allowProvisioningUpdates`/`-authenticationKeyPath`
+  other release workflows. **Added 2026-08-21.** Note it does *not* go through `flutter build ipa`,
+  since that command has no passthrough for `-allowProvisioningUpdates`/`-authenticationKeyPath`
   (checked via `flutter build ipa --help`), so the workflow runs `flutter build ios --release
   --no-codesign` for the Dart/Flutter half, then calls `xcodebuild archive` and `xcodebuild
   -exportArchive` directly with the API-key auth flags, then `xcrun altool --upload-app`.
 - [x] Document the new secrets at the top of the workflow file, following the existing comment
-  convention in `release-playstore.yaml` and `release-macos.yaml`. **Done** — secrets are
+  convention in `release-playstore.yaml` and `release-macos.yaml`. **Done**: secrets are
   `APPSTORE_API_KEY_BASE64`, `APPSTORE_API_KEY_ID`, `APPSTORE_API_ISSUER_ID`, `APPLE_TEAM_ID`, each
   documented inline with where to generate it.
-- [x] `release-playstore.yaml` — **verified 2026-08-21**, first real run (tag `v1.5.0`) succeeded.
+- [x] `release-playstore.yaml`: **verified 2026-08-21**, first real run (tag `v1.5.0`) succeeded.
   It also turned out to have been sitting untracked/never pushed to git this whole time despite
-  the secret existing since 2026-07-14 — Play releases hadn't actually been running through CI
+  the secret existing since 2026-07-14: Play releases hadn't actually been running through CI
   until this session committed it.
-- [x] **`release-appstore.yaml` — working end-to-end (2026-09-01), 17 attempts total.**
+- [x] **`release-appstore.yaml`: working end-to-end (2026-09-01), 17 attempts total.**
   `UPLOAD SUCCEEDED with no errors` on run 17, real upload of `v1.5.0` (build 5) to App Store
-  Connect. One warning, unrelated to signing: `MinimumOSVersion too low` — Apple requires
+  Connect. One warning, unrelated to signing: `MinimumOSVersion too low`: Apple requires
   15.0+ starting Spring 2027 (app is currently 13.0), a real but non-urgent future item, not
   a submission blocker today.
 
@@ -147,16 +147,16 @@ under `screenshots/appstore/<slug>/` (matches the existing `v1`/`v2` pattern for
      `CODE_SIGN_IDENTITY=Apple Distribution`.
   3. `conflicting provisioning settings... automatically signed for development` → removed the
      pinned identity (Automatic signing rejects any manual `CODE_SIGN_IDENTITY`).
-  4. Back to `No Account for Team` + wants Development, same as attempt 2 — ruled out the Xcode
+  4. Back to `No Account for Team` + wants Development, same as attempt 2: ruled out the Xcode
      scheme, xcconfig files, and target-level build settings as the cause.
-  5. Regenerated the API key as Admin — identical error. `GatherProvisioningInputs` completing
+  5. Regenerated the API key as Admin: identical error. `GatherProvisioningInputs` completing
      in ~1.4s each time (too fast for a real Apple API round-trip) pointed to `xcodebuild
      archive`'s automatic-signing resolution not reliably invoking API-key auth for creating a
      *first-ever* Distribution profile headlessly.
   6. Provisioned the Distribution cert + "Health Flare App Store" profile once via Xcode's own
-     GUI locally (Product → Archive, Automatic signing unchecked, profile selected by hand —
+     GUI locally (Product → Archive, Automatic signing unchecked, profile selected by hand: 
      this is also where the account was converted from individual to business, Team ID stayed
-     `SJSS6984YQ`) — but re-testing CI's automatic path then hit a *new* conflict:
+     `SJSS6984YQ`), but re-testing CI's automatic path then hit a *new* conflict:
      `CODE_SIGN_STYLE=Automatic` (command-line override) vs. the now-committed
      `PROVISIONING_PROFILE_SPECIFIER` in `project.pbxproj`. Automatic signing was abandoned here
      in favor of matching what had just been proven to work locally: manual signing.
@@ -165,60 +165,60 @@ under `screenshots/appstore/<slug>/` (matches the existing `v1`/`v2` pattern for
   + `.mobileprovision`, added as GitHub secrets (`APPSTORE_DISTRIBUTION_CERT_BASE64`,
   `APPSTORE_DISTRIBUTION_CERT_PASSWORD`, `APPSTORE_PROVISIONING_PROFILE_BASE64`), imported into
   an ephemeral CI keychain each run. Archive started succeeding immediately (attempt 7), but
-  `xcodebuild -exportArchive` then failed identically 9 times in a row — `No signing
+  `xcodebuild -exportArchive` then failed identically 9 times in a row: `No signing
   certificate "iOS Distribution" found` / `No profiles... matching 'Health Flare App Store'
-  are installed` — through a long sequence of fixes that each produced **zero change** in the
+  are installed`: through a long sequence of fixes that each produced **zero change** in the
   error text: adding `build.keychain` to the keychain search list (7→8), realizing that fix
   *replaced* the search list rather than extending it and dropped `System.keychain` (8→9),
   preserving the existing list instead (9→10), installing Apple's WWDR intermediate
-  certificates (10→12, confirmed installed successfully — no effect), granting `-A`
+  certificates (10→12, confirmed installed successfully: no effect), granting `-A`
   (all-apps, not just `/usr/bin/codesign`) private-key access (12→13, no effect), correcting
   the archive's embedded `CODE_SIGN_IDENTITY` from the legacy `"iPhone Distribution"` alias to
   `"Apple Distribution"` (13→14, no effect), and switching `ExportOptions.plist`'s deprecated
   `method: app-store` to `app-store-connect` (14→15, confirmed the deprecation warning
-  disappeared — still no effect on the actual error).
+  disappeared: still no effect on the actual error).
 
   The break came from inspecting the *archive itself* rather than continuing to vary external
   inputs: `codesign -dvvv` run directly on the archived `.app` showed a **complete, valid trust
   chain** (`Apple Distribution: Automated Bytes Incorporated` → `Apple Worldwide Developer
   Relations Certification Authority` → `Apple Root CA`) and the correct embedded provisioning
-  profile — proving conclusively that Archive's signing was correct all along, and that
+  profile: proving conclusively that Archive's signing was correct all along, and that
   `-exportArchive`'s own re-validation on this Xcode version (26.6) was failing independently
   of the real signing state. Since the `.app` was already correctly signed for distribution,
   `-exportArchive`'s re-signing pass was redundant: the fix was to **bypass it entirely** and
   package the `.ipa` manually (`zip` the already-signed `Payload/Runner.app`), which succeeded
   immediately on attempt 17.
-- [x] First upload — **done automatically, no manual step needed.** `xcrun altool --upload-app`
+- [x] First upload: **done automatically, no manual step needed.** `xcrun altool --upload-app`
   succeeded on the very first automated attempt; the "may need one manual upload first" caveat
   (matching the Play Store workflow's equivalent comment) did not apply to App Store Connect.
 
-## Phase 5 — TestFlight (recommended before public submission)
+## Phase 5: TestFlight (recommended before public submission)
 
-- [ ] Upload a build to TestFlight first — internal testing only, no App Review required.
+- [ ] Upload a build to TestFlight first: internal testing only, no App Review required.
 - [ ] Verify on a real device (or at minimum a fresh simulator) that: onboarding works, a profile
   can be created, data persists after force-quit, and the export-compliance flag suppressed the
   manual prompt.
 - [ ] Optionally invite a couple of external testers (requires a lightweight Beta App Review, much
   faster than full App Review) to catch anything the automated CI can't.
 
-## Phase 6 — Submit for review
+## Phase 6: Submit for review
 
 - [ ] Attach the build from Phase 4/5 to the App Store Connect version record.
 - [ ] Final pass through every scenario in `docs/features/app-store.feature` under "Apple App
-  Store" and "Shared metadata" — treat it as the literal submission gate, not just a spec.
+  Store" and "Shared metadata": treat it as the literal submission gate, not just a spec.
 - [ ] Submit for review. Typical Apple review turnaround is 24–48 hours; a Health & Fitness app
   with no accounts/network/medical claims is low-risk for rejection as long as the review notes
   (Phase 2) clearly explain the offline, no-login behavior up front.
 
 ---
 
-## Open questions to resolve before starting (not code — need a decision from you)
+## Open questions to resolve before starting (not code: need a decision from you)
 
-- Individual vs. organization Apple Developer account — affects the seller name shown in the
+- Individual vs. organization Apple Developer account: affects the seller name shown in the
   store and how long enrollment takes.
 - Whether iPad support (`TARGETED_DEVICE_FAMILY = "1,2"`) is intentional. If not, dropping it to
   iPhone-only removes the iPad screenshot requirement in Phase 3.
 - If the Play Store listing is already live under a "Medical" category, note that fixing
-  `docs/store-listing.md` to say Health & Fitness (done 2026-08-17) only affects future copy/paste
-  — updating the *live* Play Console listing to match is a separate manual step, not implied by
+  `docs/store-listing.md` to say Health & Fitness (done 2026-08-17) only affects future copy/paste,
+  since updating the *live* Play Console listing to match is a separate manual step, not implied by
   this doc.

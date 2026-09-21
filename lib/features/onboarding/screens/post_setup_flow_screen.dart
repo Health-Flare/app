@@ -8,7 +8,7 @@ import 'package:health_flare/features/shared/widgets/guided_step_header.dart';
 
 enum _StepKind { weather, firstLog }
 
-/// Post-setup guided mini-flow — pushed full-screen from the Dashboard once
+/// Post-setup guided mini-flow: pushed full-screen from the Dashboard once
 /// per profile, for whichever of the weather opt-in and first-log prompt
 /// have not yet been shown for the active profile.
 ///
@@ -44,7 +44,7 @@ class _PostSetupFlowScreenState extends ConsumerState<PostSetupFlowScreen> {
   void initState() {
     super.initState();
     if (_steps.isEmpty) {
-      // Nothing to show — pop once the first frame is up rather than
+      // Nothing to show: pop once the first frame is up rather than
       // during build.
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) Navigator.of(context).pop();
@@ -92,7 +92,7 @@ class _PostSetupFlowScreenState extends ConsumerState<PostSetupFlowScreen> {
   Widget build(BuildContext context) {
     if (_steps.isEmpty) return const SizedBox.shrink();
 
-    // No back-swipe/back-button dismissal — each step's own Skip control
+    // No back-swipe/back-button dismissal: each step's own Skip control
     // (or, on the first-log step, its "I'll explore on my own" link) is the
     // only way out, so a choice always gets persisted via markShown/dismiss.
     return PopScope(

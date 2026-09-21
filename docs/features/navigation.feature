@@ -95,7 +95,7 @@ Feature: Navigation and General UX
     When I tap the log entry button
     Then the quick log sheet opens
     And I can begin typing immediately
-    And tapping Save completes the entry — 2 taps total from any screen
+    And tapping Save completes the entry: 2 taps total from any screen
 
   # ---------------------------------------------------------------------------
   # Profile switcher

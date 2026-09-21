@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-/// Step 2 — "What you can track".
+/// Step 2: "What you can track".
 ///
 /// Shows the app's main capabilities as icon-led chips. Each icon is a real
-/// [Icon] widget, not an emoji character rendered as text — emoji glyphs can
+/// [Icon] widget, not an emoji character rendered as text: emoji glyphs can
 /// come out blank on iOS when the app's text theme doesn't declare an emoji
 /// font fallback, which is exactly what made the equivalent cards on the
 /// old first-log prompt look broken. Using [Icon] avoids that class of bug
@@ -53,7 +53,7 @@ class OnboardingFeaturesZone extends StatelessWidget {
 
           Text(
             'One quick note, a full entry with details, or anything in '
-            'between — Health Flare bends to how much time and energy you '
+            'between: Health Flare bends to how much time and energy you '
             'have that day.',
             style: tt.bodyMedium?.copyWith(
               color: cs.onSurfaceVariant,

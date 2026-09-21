@@ -128,7 +128,7 @@ class _CheckInFormScreenState extends ConsumerState<CheckInFormScreen> {
     final tt = Theme.of(context).textTheme;
     final fmt = DateFormat('d MMM yyyy');
 
-    // Watch weather for new check-ins — capture when available.
+    // Watch weather for new check-ins: capture when available.
     final weatherAsync = _isEdit ? null : ref.watch(currentWeatherProvider);
     weatherAsync?.whenData((w) {
       if (w != null && _capturedWeather == null) {
@@ -211,7 +211,7 @@ class _CheckInFormScreenState extends ConsumerState<CheckInFormScreen> {
             ),
             const SizedBox(height: 20),
 
-            // Cycle phase — only when enabled
+            // Cycle phase: only when enabled
             if (showCycle) ...[
               Text(
                 'Cycle phase (optional)',

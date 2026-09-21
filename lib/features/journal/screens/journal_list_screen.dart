@@ -11,7 +11,7 @@ import 'package:health_flare/features/journal/widgets/journal_empty_state.dart';
 import 'package:health_flare/features/journal/widgets/journal_entry_card.dart';
 import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 
-/// The journal tab — shows all journal entries for the active profile,
+/// The journal tab: shows all journal entries for the active profile,
 /// grouped by month in reverse chronological order, with optional search.
 class JournalListScreen extends ConsumerStatefulWidget {
   const JournalListScreen({super.key});

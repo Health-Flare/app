@@ -7,7 +7,7 @@ import 'package:health_flare/features/onboarding/widgets/onboarding_profile_zone
 import 'package:health_flare/models/condition.dart';
 
 // ---------------------------------------------------------------------------
-// Fake catalog — no Isar required
+// Fake catalog: no Isar required
 // ---------------------------------------------------------------------------
 
 class _FakeConditionCatalog extends ConditionCatalogNotifier {
@@ -61,7 +61,7 @@ Widget _buildZone({
 // ---------------------------------------------------------------------------
 
 void main() {
-  group('OnboardingProfileZone — illness selector', () {
+  group('OnboardingProfileZone: illness selector', () {
     testWidgets('condition search field is present in Zone 3', (tester) async {
       await tester.pumpWidget(_buildZone(catalog: _testConditions));
       await tester.pump();
@@ -205,7 +205,7 @@ void main() {
       await tester.pumpWidget(_buildZone(catalog: _testConditions));
       await tester.pump();
 
-      // Don't type anything — results list should not appear
+      // Don't type anything: results list should not appear
       expect(find.byType(ListTile), findsNothing);
     });
 
@@ -224,7 +224,7 @@ void main() {
       await tester.enterText(find.byType(TextFormField).first, 'Sarah');
       await tester.pump();
 
-      // Select a condition — scroll the search field into view first
+      // Select a condition: scroll the search field into view first
       await tester.ensureVisible(
         find.byKey(const Key('onboarding_condition_search')),
       );

@@ -1,5 +1,5 @@
 name: health_flare
-description: "Health Flare — a chronic illness tracking companion."
+description: "Health Flare: a chronic illness tracking companion."
 publish_to: 'none'
 
 version: 1.8.0+11
@@ -29,14 +29,14 @@ dependencies:
   # Image picker (avatar + meal photos)
   image_picker: ^1.1.2
 
-  # Backup — share exported file and pick a backup file to restore
+  # Backup: share exported file and pick a backup file to restore
   share_plus: ^13.3.0
   file_picker: ^12.2.0
 
   # Open URLs in browser (privacy policy link)
   url_launcher: ^6.3.1
 
-  # Location (for weather capture — the only network call the app makes)
+  # Location (for weather capture: the only network call the app makes)
   geolocator: ^14.0.3
   http: ^1.3.2
 

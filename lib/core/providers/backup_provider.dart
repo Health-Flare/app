@@ -19,12 +19,12 @@ class BackupInProgress extends BackupResult {
   const BackupInProgress();
 }
 
-/// Export succeeded — the share sheet was shown.
+/// Export succeeded: the share sheet was shown.
 class BackupExportDone extends BackupResult {
   const BackupExportDone();
 }
 
-/// Restore was staged (overwrite mode) — user must restart to apply it.
+/// Restore was staged (overwrite mode): user must restart to apply it.
 class BackupRestoreStaged extends BackupResult {
   const BackupRestoreStaged();
 }
@@ -54,15 +54,15 @@ class BackupError extends BackupResult {
 
 /// Manages database export and all three restore modes.
 ///
-/// **Export** — calls [BackupService.export], then opens the OS share sheet.
+/// **Export**: calls [BackupService.export], then opens the OS share sheet.
 ///
-/// **Overwrite** (staged restore) — copies a user-chosen `.isar` file to the
+/// **Overwrite** (staged restore): copies a user-chosen `.isar` file to the
 /// pending-restore slot; [IsarService.open] applies it on next app launch.
 ///
-/// **Merge** — opens the backup inline as a secondary Isar instance and
+/// **Merge**: opens the backup inline as a secondary Isar instance and
 /// imports records that are not already in the main database. No restart needed.
 ///
-/// **Selective** — same as merge but the user first previews which categories
+/// **Selective**: same as merge but the user first previews which categories
 /// are available and picks what to import.
 class BackupNotifier extends Notifier<BackupResult> {
   @override
@@ -168,7 +168,7 @@ class BackupNotifier extends Notifier<BackupResult> {
       final categories = await ImportService.preview(path, isar);
 
       if (categories.isEmpty) {
-        // Nothing new to import — treat as done with 0 records.
+        // Nothing new to import: treat as done with 0 records.
         state = const ImportComplete(0);
         return;
       }

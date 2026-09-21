@@ -18,7 +18,7 @@ class ConditionDetailScreen extends ConsumerStatefulWidget {
 }
 
 class _ConditionDetailScreenState extends ConsumerState<ConditionDetailScreen> {
-  // Local editable state — mirrors widget.condition on init
+  // Local editable state: mirrors widget.condition on init
   late DateTime? _diagnosedAt;
   late ConditionStatus _status;
   late List<ConditionStatusEvent> _statusHistory;
@@ -196,7 +196,7 @@ class _ConditionDetailScreenState extends ConsumerState<ConditionDetailScreen> {
                     style: TextStyle(color: cs.primary),
                   )
                 : Text(
-                    'Not set — tap to add',
+                    'Not set, tap to add',
                     style: TextStyle(color: cs.onSurfaceVariant),
                   ),
             trailing: _diagnosedAt != null

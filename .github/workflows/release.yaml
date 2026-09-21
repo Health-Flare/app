@@ -6,7 +6,7 @@ on:
     tags:
       - "v*.*.*"
 
-# Flutter version kept in sync with ci.yaml — update both together.
+# Flutter version kept in sync with ci.yaml: update both together.
 env:
   FLUTTER_VERSION: "3.47.2"
 

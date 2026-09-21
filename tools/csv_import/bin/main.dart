@@ -48,7 +48,7 @@ void main(List<String> arguments) async {
   }
   if (rest.length > 1) {
     _die(
-      'Too many arguments — expected a single CSV file path.\n\n${_usage(parser)}',
+      'Too many arguments: expected a single CSV file path.\n\n${_usage(parser)}',
     );
   }
 
@@ -113,7 +113,7 @@ void main(List<String> arguments) async {
 
   stdout.writeln('──────────────────────────────');
   if (dryRun) {
-    stdout.writeln('DRY RUN — no changes written.');
+    stdout.writeln('DRY RUN: no changes written.');
     stdout.writeln('');
     stdout.writeln('  Would import : ${result.totalImported} records');
     stdout.writeln('    Journal    : ${result.journalImported}');

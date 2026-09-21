@@ -218,7 +218,7 @@ Feature: Profile Management
     Then the profile switcher is reachable without closing the form or losing my place in navigation
 
   # ---------------------------------------------------------------------------
-  # Wrong-profile recovery — moving an entry to another profile
+  # Wrong-profile recovery: moving an entry to another profile
   # ---------------------------------------------------------------------------
 
   Scenario: An existing entry can be moved to another profile

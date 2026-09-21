@@ -33,7 +33,7 @@ Feature: Activity and Exertion Logging
 
   Scenario: Log an activity with a perceived effort level
     When I open the new activity entry screen
-    And I enter "Housework — vacuumed and mopped" as the description
+    And I enter "Housework: vacuumed and mopped" as the description
     And I set perceived effort to 3 out of 5
     And I save the entry
     Then the activity entry is saved with effort level 3
@@ -76,7 +76,7 @@ Feature: Activity and Exertion Logging
     And 1 is labelled "Very light"
     And 3 is labelled "Moderate"
     And 5 is labelled "Maximum effort"
-    And the scale includes a visible note that effort is personal — not compared to anyone else
+    And the scale includes a visible note that effort is personal: not compared to anyone else
 
   Scenario: Effort level is optional
     When I open the new activity entry screen
@@ -116,7 +116,7 @@ Feature: Activity and Exertion Logging
     Given "Sarah" logged high-effort activity on "2026-03-10"
     And she has symptom entries on "2026-03-11" and "2026-03-12"
     When I view the symptom entries for "2026-03-12"
-    Then a contextual note suggests "High effort logged 2 days ago — possible PEM?"
+    Then a contextual note suggests "High effort logged 2 days ago: possible PEM?"
     And I can tap to view the activity entry that triggered the suggestion
 
   Scenario: PEM flag can be dismissed if not relevant
@@ -132,7 +132,7 @@ Feature: Activity and Exertion Logging
   Scenario: View activity log in reverse chronological order
     Given "Sarah" has the following activity entries:
       | Date       | Description      | Effort |
-      | 2026-03-09 | Rest day         | —      |
+      | 2026-03-09 | Rest day         | N/A    |
       | 2026-03-10 | Walked to clinic | 3      |
       | 2026-03-11 | Gentle yoga      | 2      |
     When I navigate to the activity log for "Sarah"

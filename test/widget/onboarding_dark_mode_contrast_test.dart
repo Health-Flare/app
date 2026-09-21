@@ -40,7 +40,7 @@ double _contrastRatio(Color a, Color b) {
 /// against its nearest ancestor [Container] background.
 ///
 /// Regression coverage for docs/features/onboarding.feature ›
-/// "Onboarding screen meets WCAG 2.1 AA colour contrast requirements" — this
+/// "Onboarding screen meets WCAG 2.1 AA colour contrast requirements": this
 /// scenario had no implementing test, which is how the onboarding privacy
 /// and profile-creation zones shipped with hardcoded light backgrounds
 /// (AppColors.surfaceVariant / AppColors.surface) that made theme-adaptive
@@ -101,7 +101,7 @@ void _expectReadableText(WidgetTester tester, Finder rootFinder) {
 }
 
 void main() {
-  group('Onboarding — dark mode readability (WCAG AA)', () {
+  group('Onboarding: dark mode readability (WCAG AA)', () {
     testWidgets('Privacy zone (Zone 2) text is readable in dark mode', (
       tester,
     ) async {

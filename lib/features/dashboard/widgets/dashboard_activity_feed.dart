@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:health_flare/core/router/app_router.dart';
 import 'package:health_flare/models/activity_item.dart';
 
-/// Renders the dashboard activity feed — a reverse-chronological list of
+/// Renders the dashboard activity feed: a reverse-chronological list of
 /// the active profile's most recent health events across all logged types.
 ///
 /// The provider ([dashboardActivityProvider]) has already capped the list

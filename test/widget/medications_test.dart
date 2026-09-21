@@ -144,7 +144,7 @@ Widget _buildDoseForm({required Medication med, DoseLog? doseLog}) {
 }
 
 // ---------------------------------------------------------------------------
-// MedicationsScreen — list screen
+// MedicationsScreen: list screen
 // ---------------------------------------------------------------------------
 
 void main() {

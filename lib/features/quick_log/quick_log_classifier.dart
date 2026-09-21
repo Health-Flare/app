@@ -32,18 +32,18 @@ abstract final class QuickLogClassifier {
   /// Classify [text] and return a suggested [QuickLogEntryType].
   ///
   /// Returns null when the text has fewer than [_minWords] words, unless it
-  /// confidently matches a vital reading (e.g. "74kg", "144cm", "4'8"") —
+  /// confidently matches a vital reading (e.g. "74kg", "144cm", "4'8""):
   /// those numeric+unit patterns are unambiguous enough to skip the
   /// word-count gate that guards the fuzzier keyword matches below.
   ///
   /// [conditionCatalog]/[trackedConditions] and [symptomCatalog]/
   /// [trackedSymptoms] let Condition and Symptom classification recognise a
   /// known or previously-tracked name even when it isn't in the generic
-  /// keyword lists below — mirroring how [QuickLogParser.matchMedication]
+  /// keyword lists below: mirroring how [QuickLogParser.matchMedication]
   /// checks the profile's real medications at save time. [loggedSymptomNames]
   /// covers the much more common case of a symptom typed into the standalone
   /// symptom entry form, which never creates a [UserSymptom] record at all
-  /// (see `recentSymptomNamesProvider`) — without it, a symptom logged that
+  /// (see `recentSymptomNamesProvider`): without it, a symptom logged that
   /// way is never recognised again. All of these default to empty so callers
   /// that only care about generic keyword classification (e.g. existing unit
   /// tests) don't need to pass them.
@@ -105,7 +105,7 @@ abstract final class QuickLogClassifier {
       return true;
     }
     // Number + recognised unit (including height in cm and respiratory rate
-    // in br/min — without this branch, "Respiratory rate 16 br/min" falls
+    // in br/min: without this branch, "Respiratory rate 16 br/min" falls
     // through to the word-count-gated keyword checks below and gets
     // misclassified as Meal, since "rate" contains the substring "ate").
     return RegExp(
@@ -183,7 +183,7 @@ abstract final class QuickLogClassifier {
     'sandwich',
   ]);
 
-  // Generic condition/diagnosis-status language — independent of whether the
+  // Generic condition/diagnosis-status language: independent of whether the
   // named condition itself is in the catalogue or already tracked, mirroring
   // how _matchesSymptom's generic word list works alongside catalogue-aware
   // matching.

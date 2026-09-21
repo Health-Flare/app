@@ -4,7 +4,7 @@ part 'journal_entry_isar.g.dart';
 
 /// Isar-annotated storage representation of a [JournalSnapshot].
 ///
-/// Stored inline (embedded) within [JournalEntryIsar] — there is no
+/// Stored inline (embedded) within [JournalEntryIsar]: there is no
 /// separate Isar collection for snapshots. Isar @embedded requires a
 /// default constructor with no required parameters.
 @embedded
@@ -18,7 +18,7 @@ class JournalSnapshotIsar {
 
 /// Isar-annotated storage representation of a [JournalEntry].
 ///
-/// The [snapshots] list is an embedded list — all snapshots are
+/// The [snapshots] list is an embedded list: all snapshots are
 /// serialised inline with the entry. This gives each entry a full
 /// autosave history without a separate collection.
 ///

@@ -3,14 +3,14 @@
 #
 # One command that assembles everything a release announcement, App Store
 # Connect submission, or Play Console listing update needs: release notes
-# (drafted from actual PR/issue history — see generate_release_notes.sh),
+# (drafted from actual PR/issue history: see generate_release_notes.sh),
 # a fresh screenshot sweep, and a fresh preview-video capture. Works over
-# any range — a single release, several skipped releases, a whole quarter —
+# any range (a single release, several skipped releases, a whole quarter)
 # because it's a thin wrapper around tools that already take a range.
 #
 # It does not require every tool to be runnable on this machine: screenshot
 # and video capture need Xcode (iOS) and/or the Android SDK (Android) and
-# only make sense on a real dev machine with simulators/emulators — this
+# only make sense on a real dev machine with simulators/emulators: this
 # script detects what's available and skips the rest with a clear note,
 # rather than failing outright. Release notes generation has no such
 # dependency and always runs.
@@ -85,13 +85,13 @@ fi
 mkdir -p "$OUT_DIR"
 
 echo "══════════════════════════════════════════════════════════"
-echo "  Health Flare — Release Kit"
+echo "  Health Flare: Release Kit"
 echo "  Range: ${SINCE} → ${UNTIL}${VERSION:+  (v${VERSION})}"
 echo "  Output: ${OUT_DIR}"
 echo "══════════════════════════════════════════════════════════"
 echo
 
-# ── 1. Release notes (always runs — no device dependency) ───────────────
+# ── 1. Release notes (always runs: no device dependency) ───────────────
 echo "── Release notes ──────────────────────────────────────────"
 NOTES_ARGS=(--since "$SINCE" --until "$UNTIL")
 [[ -n "$VERSION" ]] && NOTES_ARGS+=(--version "$VERSION")
@@ -100,7 +100,7 @@ if bash "${REPO_ROOT}/scripts/release/generate_release_notes.sh" "${NOTES_ARGS[@
     > "${OUT_DIR}/release-notes.md"; then
   echo "  wrote ${OUT_DIR}/release-notes.md"
 else
-  echo "  ⚠️  generate_release_notes.sh failed — see output above (likely gh auth)." >&2
+  echo "  ⚠️  generate_release_notes.sh failed: see output above (likely gh auth)." >&2
   rm -f "${OUT_DIR}/release-notes.md"
 fi
 
@@ -110,7 +110,7 @@ if bash "${REPO_ROOT}/scripts/release/generate_release_notes.sh" "${NOTES_ARGS[@
   echo "  wrote ${OUT_DIR}/store-blurb.md"
   cat "$BLURB_STDERR" >&2
 else
-  echo "  ⚠️  store-blurb generation failed — see output above." >&2
+  echo "  ⚠️  store-blurb generation failed: see output above." >&2
   cat "$BLURB_STDERR" >&2
   rm -f "${OUT_DIR}/store-blurb.md"
 fi
@@ -118,7 +118,7 @@ rm -f "$BLURB_STDERR"
 echo
 
 if [[ "$NOTES_ONLY" == true ]]; then
-  echo "── --notes-only set — skipping screenshot and video capture ─"
+  echo "── --notes-only set: skipping screenshot and video capture ─"
   echo
   echo "✅  Release kit ready: ${OUT_DIR}"
   exit 0
@@ -133,10 +133,10 @@ elif command -v xcrun >/dev/null 2>&1 && xcrun simctl list devices >/dev/null 2>
   if bash "${REPO_ROOT}/scripts/take_screenshots.sh" ${IOS_DEVICE:+"$IOS_DEVICE"}; then
     echo "  ✅ iOS screenshots captured"
   else
-    echo "  ⚠️  iOS screenshot sweep reported failures — check screenshots/appstore/" >&2
+    echo "  ⚠️  iOS screenshot sweep reported failures: check screenshots/appstore/" >&2
   fi
 else
-  echo "  skipped — no Xcode/simctl on this machine (this step needs a Mac)."
+  echo "  skipped: no Xcode/simctl on this machine (this step needs a Mac)."
 fi
 
 if [[ "$SKIP_SCREENSHOTS" == true ]]; then
@@ -146,10 +146,10 @@ elif [[ -n "${ANDROID_HOME:-}${ANDROID_SDK_ROOT:-}" ]] || [[ -d "$HOME/Library/A
   if bash "${REPO_ROOT}/scripts/take_screenshots_android.sh" ${ANDROID_AVD:+"$ANDROID_AVD"}; then
     echo "  ✅ Android screenshots captured"
   else
-    echo "  ⚠️  Android screenshot sweep reported failures — check screenshots/playstore/" >&2
+    echo "  ⚠️  Android screenshot sweep reported failures: check screenshots/playstore/" >&2
   fi
 else
-  echo "  skipped — no Android SDK detected on this machine."
+  echo "  skipped: no Android SDK detected on this machine."
 fi
 
 if [[ "$SKIP_SCREENSHOTS" != true ]]; then
@@ -168,10 +168,10 @@ elif command -v xcrun >/dev/null 2>&1 && xcrun simctl list devices >/dev/null 2>
   if bash "${REPO_ROOT}/scripts/take_video.sh" ${IOS_DEVICE:+"$IOS_DEVICE"}; then
     echo "  ✅ iOS video captured"
   else
-    echo "  ⚠️  iOS video capture reported failures — check videos/appstore/" >&2
+    echo "  ⚠️  iOS video capture reported failures: check videos/appstore/" >&2
   fi
 else
-  echo "  skipped iOS video — no Xcode/simctl on this machine."
+  echo "  skipped iOS video: no Xcode/simctl on this machine."
 fi
 
 if [[ "$SKIP_VIDEOS" == true ]]; then
@@ -181,10 +181,10 @@ elif [[ -n "${ANDROID_HOME:-}${ANDROID_SDK_ROOT:-}" ]] || [[ -d "$HOME/Library/A
   if bash "${REPO_ROOT}/scripts/take_video_android.sh" ${ANDROID_AVD:+"$ANDROID_AVD"}; then
     echo "  ✅ Android video captured"
   else
-    echo "  ⚠️  Android video capture reported failures — check videos/playstore/" >&2
+    echo "  ⚠️  Android video capture reported failures: check videos/playstore/" >&2
   fi
 else
-  echo "  skipped Android video — no Android SDK detected on this machine."
+  echo "  skipped Android video: no Android SDK detected on this machine."
 fi
 
 if [[ "$SKIP_VIDEOS" != true ]]; then

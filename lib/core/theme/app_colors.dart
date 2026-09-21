@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-/// HealthFlare Design System — Colour Palette v1.0
+/// HealthFlare Design System: Colour Palette v1.0
 ///
 /// These are the raw colour values. Use [AppTheme] to access them via
-/// [ThemeData] and [ColorScheme] in widgets — reach directly into this
+/// [ThemeData] and [ColorScheme] in widgets: reach directly into this
 /// class only when you genuinely need a colour that has no semantic slot.
 abstract final class AppColors {
   // ---------------------------------------------------------------------------
@@ -67,19 +67,19 @@ abstract final class AppColors {
   // Severity Scale (Symptom Logging)
   // ---------------------------------------------------------------------------
 
-  /// Level 1 — Clear.
+  /// Level 1: Clear.
   static const Color severityClear = Color(0xFFB8CCBF);
 
-  /// Level 2 — Mild.
+  /// Level 2: Mild.
   static const Color severityMild = Color(0xFFF5E6A3);
 
-  /// Level 3 — Moderate.
+  /// Level 3: Moderate.
   static const Color severityModerate = Color(0xFFF5A623);
 
-  /// Level 4 — Significant.
+  /// Level 4: Significant.
   static const Color severitySignificant = Color(0xFFF07560);
 
-  /// Level 5 — Severe.
+  /// Level 5: Severe.
   static const Color severitySevere = Color(0xFFC94F3A);
 
   /// Severity scale as a list (index 0 = Clear, index 4 = Severe).
@@ -116,12 +116,12 @@ abstract final class AppColors {
   ///
   /// Contrast on white: ~5.7:1 | on softCloud: ~5.1:1 | on ashWhite: ~5.5:1
   /// Safe for body and caption text on any light surface.
-  /// DO NOT apply withAlpha() — doing so will fail WCAG AA (4.5:1 minimum).
+  /// DO NOT apply withAlpha(): doing so will fail WCAG AA (4.5:1 minimum).
   static const Color textSubtle = Color(0xFF6B6560);
 
   /// Muted text for captions, placeholders (Deep Dusk at ~50%).
   ///
-  /// Contrast on white: ~2.7:1 — NOT WCAG AA compliant for readable text.
+  /// Contrast on white: ~2.7:1: NOT WCAG AA compliant for readable text.
   /// Restricted to: disabled button labels (which are exempt from contrast
   /// requirements). Never use for visible, actionable, or informational text.
   static const Color textMuted = Color(0xFF9E9790);
@@ -152,7 +152,7 @@ abstract final class AppColors {
   static const Color disabledText = textMuted;
 
   // ---------------------------------------------------------------------------
-  // Dark Mode (v2 scope — placeholders)
+  // Dark Mode (v2 scope: placeholders)
   // ---------------------------------------------------------------------------
 
   /// Dark mode background.

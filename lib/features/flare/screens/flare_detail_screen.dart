@@ -317,7 +317,7 @@ class FlareDetailScreen extends ConsumerWidget {
         title: const Text('Delete flare record?'),
         content: const Text(
           'The flare record will be removed. Entries logged during this '
-          'period keep their data — only the flare association is cleared.',
+          'period keep their data. Only the flare association is cleared.',
         ),
         actions: [
           TextButton(

@@ -2,12 +2,12 @@
 ///
 /// MVP: plain Dart class, held in memory via [ProfileListNotifier].
 /// When the Isar data layer is added this will gain `@Collection()`,
-/// `@Id()`, and generated code — the field names and types are chosen
+/// `@Id()`, and generated code: the field names and types are chosen
 /// to be Isar-compatible from the start so the migration is minimal.
 ///
 /// Future intent (per requirements §2): profiles are designed to become
 /// standalone accounts. The [id] field will map to the Isar document id
-/// and later to a remote user id — keep it stable.
+/// and later to a remote user id: keep it stable.
 class Profile {
   Profile({
     required this.id,
@@ -23,7 +23,7 @@ class Profile {
   /// incrementing int. Isar will manage this automatically later.
   final int id;
 
-  /// Display name — always present.
+  /// Display name: always present.
   final String name;
 
   /// Optional date of birth. Used in reports.

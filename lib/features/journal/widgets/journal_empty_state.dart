@@ -65,7 +65,7 @@ class JournalEmptyState extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'This is your space. Write whatever helps — how you\'re '
+              'This is your space. Write whatever helps: how you\'re '
               'feeling, what you noticed, things to tell your doctor.',
               style: tt.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
               textAlign: TextAlign.center,

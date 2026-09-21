@@ -8,7 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:health_flare/core/providers/condition_provider.dart';
 import 'package:health_flare/models/condition.dart';
 
-/// Zone 3 — Profile creation form (inline, no navigation away).
+/// Zone 3: Profile creation form (inline, no navigation away).
 ///
 /// The CTA button is always visible but disabled until [nameController]
 /// has a non-empty, valid value. This follows the requirement that the
@@ -113,7 +113,7 @@ class _OnboardingProfileZoneState extends ConsumerState<OnboardingProfileZone> {
     final results = _filteredResults(catalog);
 
     return Container(
-      // Theme-adaptive, not AppColors.surface — that constant is pinned
+      // Theme-adaptive, not AppColors.surface: that constant is pinned
       // white, which made onSurface/onSurfaceVariant text nearly invisible
       // in dark mode (near-white text on a white background).
       color: cs.surface,
@@ -185,7 +185,7 @@ class _OnboardingProfileZoneState extends ConsumerState<OnboardingProfileZone> {
               decoration: const InputDecoration(
                 labelText: 'Date of birth',
                 hintText: 'DD / MM / YYYY',
-                helperText: 'Optional — useful for reports',
+                helperText: 'Optional, useful for reports',
                 suffixIcon: Icon(Icons.calendar_today_outlined),
               ),
               onTap: () => _pickDateOfBirth(context),
@@ -212,7 +212,7 @@ class _OnboardingProfileZoneState extends ConsumerState<OnboardingProfileZone> {
             const SizedBox(height: 4),
 
             Text(
-              'Optional — search and add the conditions you want to track',
+              'Optional, search and add the conditions you want to track',
               style: tt.bodySmall?.copyWith(color: cs.onSurfaceVariant),
             ),
 
@@ -294,7 +294,7 @@ class _OnboardingProfileZoneState extends ConsumerState<OnboardingProfileZone> {
 
             const SizedBox(height: 40),
 
-            // CTA button — always visible, disabled until name is entered
+            // CTA button: always visible, disabled until name is entered
             Semantics(
               label: 'Create profile and get started',
               child: ElevatedButton(
@@ -402,7 +402,7 @@ class _AvatarPickerState extends State<_AvatarPicker> {
           onTap: () => _showPhotoOptions(context),
           child: Semantics(
             button: true,
-            label: 'Choose profile photo — optional',
+            label: 'Choose profile photo (optional)',
             child: CircleAvatar(
               radius: 44,
               backgroundColor: cs.surfaceContainerHighest,

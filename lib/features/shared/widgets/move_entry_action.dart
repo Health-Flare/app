@@ -6,7 +6,7 @@ import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/features/profiles/widgets/profile_avatar.dart';
 import 'package:health_flare/models/profile.dart';
 
-/// App-bar action for reassigning an existing entry to another profile —
+/// App-bar action for reassigning an existing entry to another profile:
 /// recovery for the "logged it under the wrong person" mistake.
 ///
 /// Renders nothing when only one profile exists. Tapping it opens a sheet
@@ -76,7 +76,7 @@ class _MoveTargetSheet extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.fromLTRB(24, 0, 24, 8),
             child: Text(
-              'The entry keeps its date and details — only the person '
+              'The entry keeps its date and details. Only the person '
               'it belongs to changes.',
               style: tt.bodySmall?.copyWith(color: cs.onSurfaceVariant),
             ),

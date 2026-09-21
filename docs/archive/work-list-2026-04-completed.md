@@ -1,6 +1,6 @@
-# Health Flare — Work List (Archived, 2026-08-24)
+# Health Flare: Work List (Archived, 2026-08-24)
 
-> **This document is complete and no longer active.** Every item WL-01 through WL-17 shipped —
+> **This document is complete and no longer active.** Every item WL-01 through WL-17 shipped: 
 > verified 2026-08-24 against `lib/features/` (all 17 feature directories this doc specced now
 > exist) and `migration_runner.dart` (`_targetVersion = 15`, past the v11 this doc planned for).
 > Kept for historical reference only. The current backlog lives in `docs/work-list.md`.
@@ -8,7 +8,7 @@
 ---
 
 Prioritized backlog for taking the app from current state (journal + sleep partially wired) to
-a trustworthy daily-use caregiver tool. Each item is written for a **fresh context window** —
+a trustworthy daily-use caregiver tool. Each item is written for a **fresh context window**: 
 all prerequisite knowledge is included inline.
 
 ---
@@ -35,8 +35,8 @@ cat lib/core/providers/journal_provider.dart  # canonical provider example
 ### Key architectural invariants
 | Rule | Detail |
 |---|---|
-| ID type | Isar auto-increment `int` — all collections, all foreign keys |
-| Imports | `package:health_flare/` only — no relative imports |
+| ID type | Isar auto-increment `int`: all collections, all foreign keys |
+| Imports | `package:health_flare/` only: no relative imports |
 | Provider pattern | Synchronous `Notifier<List<T>>`, async `_init()` via `addPostFrameCallback` |
 | Profile scoping | Every user-data collection has `late int profileId` indexed |
 | Migration | Increment `_targetVersion` in `MigrationRunner`, add `if (currentVersion < N)` block |
@@ -49,8 +49,8 @@ cat lib/core/providers/journal_provider.dart  # canonical provider example
 - Journal (list, composer with autosave/undo, detail, search, profile scoping)
 - Illness setup (condition catalog 1131 entries, symptom catalog 243, UserCondition, UserSymptom)
 - Sleep data model (`SleepEntryIsar` exists but **not registered** in Isar.open() yet)
-- Backup service: `BackupService.export()` (hot backup → share sheet) and `stagePendingRestore()` + startup apply — **fully implemented, needs UI only**
-- `BackupNotifier` provider — fully implemented, needs a surface in the Settings screen
+- Backup service: `BackupService.export()` (hot backup → share sheet) and `stagePendingRestore()` + startup apply: **fully implemented, needs UI only**
+- `BackupNotifier` provider: fully implemented, needs a surface in the Settings screen
 
 ### Schema version history
 | Version | Change |
@@ -83,10 +83,10 @@ tea label create --name "type:schema"        --color "#8b5cf6" --description "Is
 tea label create --name "type:infrastructure" --color "#1e293b"
 
 # Milestones
-tea milestone create --title "Phase 0 — Safety & Language"
-tea milestone create --title "Phase 1 — Core Tracking MVP"
-tea milestone create --title "Phase 2 — Enhanced Features"
-tea milestone create --title "Phase 3 — Intelligence & Insights"
+tea milestone create --title "Phase 0: Safety & Language"
+tea milestone create --title "Phase 1: Core Tracking MVP"
+tea milestone create --title "Phase 2: Enhanced Features"
+tea milestone create --title "Phase 3: Intelligence & Insights"
 ```
 
 ---
@@ -97,7 +97,7 @@ Use `claude --worktree` (or `Agent` with `isolation: worktree`) for items that t
 parts of the codebase. Merge order must respect schema version reservations.
 
 ```
-Phase 0 (sequential — establishes baseline for all branches):
+Phase 0 (sequential: establishes baseline for all branches):
   WL-01 → WL-02 → (WL-03 + WL-04 in parallel) → WL-05
 
 Phase 1 (parallel development, sequential merge by schema version):
@@ -117,7 +117,7 @@ Phase 2 (parallel after Phase 1 merged):
 
 ---
 
-## Phase 0 — Safety & Language
+## Phase 0: Safety & Language
 *Prerequisite for handoff. Nothing goes to Claire until all five items are merged to main.*
 
 ---
@@ -126,9 +126,9 @@ Phase 2 (parallel after Phase 1 merged):
 **Branch:** `fix/caregiver-language`
 **Priority:** P0
 **Labels:** `priority:p0` `type:fix`
-**Milestone:** Phase 0 — Safety & Language
+**Milestone:** Phase 0: Safety & Language
 **Schema change:** None
-**Parallel with:** Nothing — merge first
+**Parallel with:** Nothing: merge first
 
 **Problem:** `docs/features/onboarding.feature` line 176 says the prompt heading updates to
 "Now, how are you feeling today?" after an illness is added. This is first-person patient
@@ -140,7 +140,7 @@ is not the patient.
 profile-name-aware copy: "How is [name] doing today?", "Log [name]'s first entry."
 
 **Files to touch:**
-- `docs/features/onboarding.feature` — update scenarios to use profile-name framing
+- `docs/features/onboarding.feature`: update scenarios to use profile-name framing
 - The widget that renders the first-log prompt (find via grep for the current string)
 - Any widget tests that assert the first-person string
 
@@ -156,7 +156,7 @@ tea issue create \
   --title "Fix: caregiver language in first-log prompt" \
   --body "The first-log prompt uses first-person patient language ('how are you feeling today'). Replace with profile-name-aware copy ('How is [name] doing today?') throughout. See docs/work-list.md WL-01." \
   --label "priority:p0,type:fix" \
-  --milestone "Phase 0 — Safety & Language"
+  --milestone "Phase 0: Safety & Language"
 ```
 
 ---
@@ -165,8 +165,8 @@ tea issue create \
 **Branch:** `feature/sleep-complete`
 **Priority:** P0
 **Labels:** `priority:p0` `type:feature` `type:schema`
-**Milestone:** Phase 0 — Safety & Language
-**Schema change:** v4 — adds `SleepEntryIsarSchema` to `Isar.open()`; migration block is
+**Milestone:** Phase 0: Safety & Language
+**Schema change:** v4: adds `SleepEntryIsarSchema` to `Isar.open()`; migration block is
 a no-op (Isar handles structural addition automatically, just bump the version)
 **Parallel with:** WL-03, WL-04 (after this is merged)
 **Depends on:** WL-01 merged
@@ -183,7 +183,7 @@ screens may be partially built; verify and complete.
 5. Wire the FAB "Sleep" option on the dashboard to the sleep entry form
 6. Write/complete widget tests for the sleep entry form and list
 
-**Data model — already exists, verify fields:**
+**Data model: already exists, verify fields:**
 ```dart
 // lib/data/models/sleep_entry_isar.dart (already exists)
 @collection
@@ -212,7 +212,7 @@ tea issue create \
   --title "Complete sleep feature: register SleepEntryIsar, wire dashboard" \
   --body "SleepEntryIsar model exists but is not registered in Isar.open(). Add schema v4, wire the sleep feature end to end. See docs/work-list.md WL-02." \
   --label "priority:p0,type:feature,type:schema" \
-  --milestone "Phase 0 — Safety & Language"
+  --milestone "Phase 0: Safety & Language"
 ```
 
 ---
@@ -221,7 +221,7 @@ tea issue create \
 **Branch:** `feature/settings-screen`
 **Priority:** P0
 **Labels:** `priority:p0` `type:feature`
-**Milestone:** Phase 0 — Safety & Language
+**Milestone:** Phase 0: Safety & Language
 **Schema change:** None
 **Parallel with:** WL-04 (after WL-02 merged)
 
@@ -235,12 +235,12 @@ They just need a UI surface.
 3. Surface "Restore from backup" button → calls `stageRestore()`, then prompt restart
 4. Display current schema version (read from `AppSettings.schemaVersion` via Isar)
 5. Display app version (from `package_info_plus` or pubspec)
-6. Show last backup date (store `DateTime? lastExportDate` in `AppSettings` — update on each
+6. Show last backup date (store `DateTime? lastExportDate` in `AppSettings`: update on each
    successful export)
 
 **AppSettings change needed** (add field, bump schema v4 alongside WL-02):
 ```dart
-// lib/data/database/app_settings.dart — add one field:
+// lib/data/database/app_settings.dart: add one field:
 DateTime? lastExportDate;
 ```
 Coordinate with WL-02: both touch schema v4. Either batch them or have this item depend on
@@ -260,17 +260,17 @@ tea issue create \
   --title "Settings screen: backup/restore UI + schema version display" \
   --body "BackupService and BackupNotifier are fully implemented. Build the Settings screen to surface export, restore, and schema version. See docs/work-list.md WL-03." \
   --label "priority:p0,type:feature" \
-  --milestone "Phase 0 — Safety & Language"
+  --milestone "Phase 0: Safety & Language"
 ```
 
 ---
 
-### WL-04 · Profile visual identity — color accent per profile
+### WL-04 · Profile visual identity: color accent per profile
 **Branch:** `feature/profile-color-identity`
 **Priority:** P0
 **Labels:** `priority:p0` `type:feature` `type:schema`
-**Milestone:** Phase 0 — Safety & Language
-**Schema change:** v4 — add `int? colorSeed` to `ProfileIsar`; auto-assign on creation
+**Milestone:** Phase 0: Safety & Language
+**Schema change:** v4: add `int? colorSeed` to `ProfileIsar`; auto-assign on creation
 **Parallel with:** WL-03 (after WL-02 merged)
 
 **Problem:** With two children's profiles, a name label alone is insufficient to prevent
@@ -279,13 +279,13 @@ logging to the wrong child when working fast. A distinct color accent per profil
 
 **Data model change:**
 ```dart
-// lib/data/models/profile_isar.dart — add one field:
+// lib/data/models/profile_isar.dart: add one field:
 int? colorSeed;   // Material Color int; null = default app color
 ```
 
 **Domain model change:**
 ```dart
-// lib/models/profile.dart — add one field:
+// lib/models/profile.dart: add one field:
 final int? colorSeed;
 ```
 
@@ -293,7 +293,7 @@ final int? colorSeed;
 - On profile creation: if `colorSeed` is null, assign from a palette of 8 visually distinct
   Material 3 seed colors, cycling by profile count mod 8
 - The active `ColorScheme` in the app's `MaterialApp.theme` is derived from the active
-  profile's `colorSeed` — profile switch triggers a theme change
+  profile's `colorSeed`: profile switch triggers a theme change
 - If `colorSeed` is null (existing profiles before this migration), fall back to the default
   app seed color
 
@@ -325,7 +325,7 @@ tea issue create \
   --title "Profile visual identity: per-profile color accent (Material 3)" \
   --body "Add colorSeed to ProfileIsar. Derive app ColorScheme from active profile. Prevents wrong-child logging error. See docs/work-list.md WL-04." \
   --label "priority:p0,type:feature,type:schema" \
-  --milestone "Phase 0 — Safety & Language"
+  --milestone "Phase 0: Safety & Language"
 ```
 
 ---
@@ -334,16 +334,16 @@ tea issue create \
 **Branch:** `fix/nav-tab-destinations`
 **Priority:** P0
 **Labels:** `priority:p0` `type:fix`
-**Milestone:** Phase 0 — Safety & Language
+**Milestone:** Phase 0: Safety & Language
 **Schema change:** None
-**Parallel with:** Nothing — do after WL-01 through WL-04 merged
+**Parallel with:** Nothing: do after WL-01 through WL-04 merged
 
 **Problem:** The bottom nav spec lists Dashboard, Symptoms & Vitals, Medications, Meals,
 Reports. Currently only Dashboard and Journal are reachable. Unimplemented destinations show
 empty screens or crash, which will erode Claire's trust on first use.
 
 **Fix:** Until a tab destination is implemented, show a clear "Coming soon" empty state
-(not an error, not a blank screen). Remove tabs from the nav that have zero content —
+(not an error, not a blank screen). Remove tabs from the nav that have zero content: 
 or retain them with explicit placeholder screens that set expectations.
 
 **Decision:** Keep the Journal tab (it's implemented). Show "Coming soon" with a brief
@@ -363,12 +363,12 @@ tea issue create \
   --title "Fix: wire all nav tab destinations to real or placeholder screens" \
   --body "Unimplemented tabs must show intentional placeholders, not blank screens or crashes. See docs/work-list.md WL-05." \
   --label "priority:p0,type:fix" \
-  --milestone "Phase 0 — Safety & Language"
+  --milestone "Phase 0: Safety & Language"
 ```
 
 ---
 
-## Phase 1 — Core Tracking MVP
+## Phase 1: Core Tracking MVP
 *These three features, combined with the Phase 0 foundation, produce the minimum viable
 daily-use app for a caregiver managing two chronically ill children.*
 
@@ -378,8 +378,8 @@ daily-use app for a caregiver managing two chronically ill children.*
 **Branch:** `feature/symptoms-vitals`
 **Priority:** P1
 **Labels:** `priority:p1` `type:feature` `type:schema`
-**Milestone:** Phase 1 — Core Tracking MVP
-**Schema change:** v5 — adds `SymptomEntryIsar` and `VitalEntryIsar`
+**Milestone:** Phase 1: Core Tracking MVP
+**Schema change:** v5: adds `SymptomEntryIsar` and `VitalEntryIsar`
 **Parallel with:** WL-07, WL-08 (merge v5 before v6 and v7)
 **Spec:** `docs/features/symptoms_and_vitals.feature`
 
@@ -439,13 +439,13 @@ enum VitalType { heartRate, bloodPressure, weight, temperature,
 ```
 
 **Providers:**
-- `symptomEntryListProvider` — `Notifier<List<SymptomEntry>>`, same pattern as journalProvider
-- `vitalEntryListProvider` — `Notifier<List<VitalEntry>>`
+- `symptomEntryListProvider`: `Notifier<List<SymptomEntry>>`, same pattern as journalProvider
+- `vitalEntryListProvider`: `Notifier<List<VitalEntry>>`
 
 **Screens:**
-- `lib/features/symptoms_vitals/screens/symptoms_vitals_screen.dart` — list view (tabbed or sectioned: Symptoms / Vitals)
-- `lib/features/symptoms_vitals/screens/symptom_entry_form_screen.dart` — new/edit form
-- `lib/features/symptoms_vitals/screens/vital_entry_form_screen.dart` — new/edit form
+- `lib/features/symptoms_vitals/screens/symptoms_vitals_screen.dart`: list view (tabbed or sectioned: Symptoms / Vitals)
+- `lib/features/symptoms_vitals/screens/symptom_entry_form_screen.dart`: new/edit form
+- `lib/features/symptoms_vitals/screens/vital_entry_form_screen.dart`: new/edit form
 - `lib/features/symptoms_vitals/screens/symptom_entry_detail_screen.dart`
 
 **Key UX rules (from profiles.feature):**
@@ -469,7 +469,7 @@ tea issue create \
   --title "Feature: symptom entry logging + vital measurement logging (schema v5)" \
   --body "Add SymptomEntryIsar and VitalEntryIsar. Full CRUD with profile scoping and past-timestamp support. See docs/work-list.md WL-06 for schema design." \
   --label "priority:p1,type:feature,type:schema" \
-  --milestone "Phase 1 — Core Tracking MVP"
+  --milestone "Phase 1: Core Tracking MVP"
 ```
 
 ---
@@ -478,8 +478,8 @@ tea issue create \
 **Branch:** `feature/medications`
 **Priority:** P1
 **Labels:** `priority:p1` `type:feature` `type:schema`
-**Milestone:** Phase 1 — Core Tracking MVP
-**Schema change:** v6 — adds `MedicationIsar` and `DoseLogIsar`
+**Milestone:** Phase 1: Core Tracking MVP
+**Schema change:** v6: adds `MedicationIsar` and `DoseLogIsar`
 **Parallel with:** WL-06, WL-08 (merge after v5 is in main)
 **Spec:** `docs/features/medications.feature`
 
@@ -540,14 +540,14 @@ class DoseLogIsar {
 ```
 
 **Providers:**
-- `medicationListProvider` — `Notifier<List<Medication>>` (active + discontinued)
-- `doseLogProvider(int medicationId)` — family provider, `Notifier<List<DoseLog>>`
+- `medicationListProvider`: `Notifier<List<Medication>>` (active + discontinued)
+- `doseLogProvider(int medicationId)`: family provider, `Notifier<List<DoseLog>>`
 
 **Screens:**
-- `lib/features/medications/screens/medications_screen.dart` — list (active / discontinued sections)
-- `lib/features/medications/screens/medication_form_screen.dart` — add/edit medication
-- `lib/features/medications/screens/medication_detail_screen.dart` — detail with dose history
-- `lib/features/medications/screens/dose_log_form_screen.dart` — log a dose
+- `lib/features/medications/screens/medications_screen.dart`: list (active / discontinued sections)
+- `lib/features/medications/screens/medication_form_screen.dart`: add/edit medication
+- `lib/features/medications/screens/medication_detail_screen.dart`: detail with dose history
+- `lib/features/medications/screens/dose_log_form_screen.dart`: log a dose
 
 **Key UX rules:**
 - Supplements section is visually separated from medications (same data model, different `medicationType`)
@@ -571,7 +571,7 @@ tea issue create \
   --title "Feature: medication management + dose logging (schema v6)" \
   --body "Add MedicationIsar and DoseLogIsar. Full CRUD, dose history, supplements section, effectiveness tracking. See docs/work-list.md WL-07." \
   --label "priority:p1,type:feature,type:schema" \
-  --milestone "Phase 1 — Core Tracking MVP"
+  --milestone "Phase 1: Core Tracking MVP"
 ```
 
 ---
@@ -580,8 +580,8 @@ tea issue create \
 **Branch:** `feature/meals`
 **Priority:** P1
 **Labels:** `priority:p1` `type:feature` `type:schema`
-**Milestone:** Phase 1 — Core Tracking MVP
-**Schema change:** v7 — adds `MealEntryIsar`
+**Milestone:** Phase 1: Core Tracking MVP
+**Schema change:** v7: adds `MealEntryIsar`
 **Parallel with:** WL-06, WL-07 (merge after v6 is in main)
 **Spec:** `docs/features/meals.feature`
 
@@ -616,7 +616,7 @@ class MealEntryIsar {
   String? notes; String? photoPath; bool reactionFlagged; int? flareIsarId; }
 ```
 
-**Provider:** `mealEntryListProvider` — `Notifier<List<MealEntry>>`
+**Provider:** `mealEntryListProvider`: `Notifier<List<MealEntry>>`
 
 **Photo handling:**
 - Store photos in `{appDocumentsDir}/meal_photos/{isarId}.jpg`
@@ -628,7 +628,7 @@ class MealEntryIsar {
 - When `reactionFlagged = true`, query `SymptomEntryIsar` for the same `profileId`
   where `loggedAt` is within 6 hours after the meal's `loggedAt`
 - Display matched symptoms in the meal detail view as "Possible reactions"
-- This is read-only cross-collection query — no schema change needed
+- This is read-only cross-collection query: no schema change needed
 
 **Acceptance criteria:**
 - [ ] Log a meal with description, optional notes, optional photo
@@ -647,12 +647,12 @@ tea issue create \
   --title "Feature: meal logging with reaction flags (schema v7)" \
   --body "Add MealEntryIsar. Reaction flag + nearby symptom correlation in detail view. Photo support. Critical for EoE profile. See docs/work-list.md WL-08." \
   --label "priority:p1,type:feature,type:schema" \
-  --milestone "Phase 1 — Core Tracking MVP"
+  --milestone "Phase 1: Core Tracking MVP"
 ```
 
 ---
 
-## Phase 2 — Enhanced Features
+## Phase 2: Enhanced Features
 *Build after all Phase 1 items are merged to main. These require the core data types to exist.*
 
 ---
@@ -661,8 +661,8 @@ tea issue create \
 **Branch:** `feature/flare-tracking`
 **Priority:** P2
 **Labels:** `priority:p2` `type:feature` `type:schema`
-**Milestone:** Phase 2 — Enhanced Features
-**Schema change:** v8 — adds `FlareIsar`. After merge, back-fill `flareIsarId` onto existing
+**Milestone:** Phase 2: Enhanced Features
+**Schema change:** v8: adds `FlareIsar`. After merge, back-fill `flareIsarId` onto existing
 entry types by adding a nullable field to each (small migrations).
 **Spec:** `docs/features/flare.feature`
 
@@ -690,7 +690,7 @@ in the provider, not just the UI.
 
 **Back-filling flareIsarId on entry types:** After FlareIsar lands, the entry types
 (SymptomEntryIsar, VitalEntryIsar, DoseLogIsar, MealEntryIsar) need `flareIsarId` added.
-These fields are already present as comments in the v5–v7 schemas above — the fields are
+These fields are already present as comments in the v5–v7 schemas above: the fields are
 there from the start, just nullable and un-used until this item ships.
 
 **Dashboard integration:**
@@ -713,7 +713,7 @@ tea issue create \
   --title "Feature: flare tracking (schema v8)" \
   --body "Add FlareIsar. Dashboard indicator, start/end flow, condition attribution, entry tagging. See docs/work-list.md WL-09." \
   --label "priority:p2,type:feature,type:schema" \
-  --milestone "Phase 2 — Enhanced Features"
+  --milestone "Phase 2: Enhanced Features"
 ```
 
 ---
@@ -722,13 +722,13 @@ tea issue create \
 **Branch:** `feature/daily-checkin`
 **Priority:** P2
 **Labels:** `priority:p2` `type:feature` `type:schema`
-**Milestone:** Phase 2 — Enhanced Features
-**Schema change:** v9 — adds `DailyCheckinIsar`
+**Milestone:** Phase 2: Enhanced Features
+**Schema change:** v9: adds `DailyCheckinIsar`
 **Parallel with:** WL-09, WL-11
 **Spec:** `docs/features/daily-checkin.feature`
 
 > **Note for caregiver profiles:** Daily check-in wellbeing and stress is the *caregiver's*
-> observation of the child, not a self-report. "How is Ethan today overall? — 6/10." The
+> observation of the child, not a self-report. "How is Ethan today overall?: 6/10." The
 > cycle tracking field must remain hidden unless explicitly enabled per profile, and should
 > never appear on a child's profile without opt-in.
 
@@ -777,7 +777,7 @@ tea issue create \
   --title "Feature: daily check-in (schema v9)" \
   --body "Add DailyCheckinIsar. Dashboard prompt, wellbeing 1-10, stress, optional cycle phase. Caregiver copy: 'How is [name] doing today?' See docs/work-list.md WL-10." \
   --label "priority:p2,type:feature,type:schema" \
-  --milestone "Phase 2 — Enhanced Features"
+  --milestone "Phase 2: Enhanced Features"
 ```
 
 ---
@@ -786,8 +786,8 @@ tea issue create \
 **Branch:** `feature/doctor-visits`
 **Priority:** P2
 **Labels:** `priority:p2` `type:feature` `type:schema`
-**Milestone:** Phase 2 — Enhanced Features
-**Schema change:** v10 — adds `AppointmentIsar` with embedded `AppointmentQuestion` and
+**Milestone:** Phase 2: Enhanced Features
+**Schema change:** v10: adds `AppointmentIsar` with embedded `AppointmentQuestion` and
 `MedicationChange` objects
 **Parallel with:** WL-09, WL-10
 **Spec:** `docs/features/doctor-visits.feature`
@@ -853,7 +853,7 @@ tea issue create \
   --title "Feature: doctor visit and appointment tracking (schema v10)" \
   --body "Add AppointmentIsar with embedded questions and medication changes. Pre-visit question lists and post-visit outcomes. See docs/work-list.md WL-11." \
   --label "priority:p2,type:feature,type:schema" \
-  --milestone "Phase 2 — Enhanced Features"
+  --milestone "Phase 2: Enhanced Features"
 ```
 
 ---
@@ -862,14 +862,14 @@ tea issue create \
 **Branch:** `feature/quick-log`
 **Priority:** P2
 **Labels:** `priority:p2` `type:feature`
-**Milestone:** Phase 2 — Enhanced Features
-**Schema change:** None — quick log entries are promoted directly into existing typed
+**Milestone:** Phase 2: Enhanced Features
+**Schema change:** None: quick log entries are promoted directly into existing typed
 collections. Un-promoted general notes become journal entries.
 **Depends on:** WL-06, WL-07, WL-08 all merged (needs typed entry types to exist)
 **Spec:** `docs/features/quick-log.feature`
 
 **Classification strategy (offline, no ML model):**
-Keyword matching with ranked patterns. Run synchronously on the UI thread — no isolate needed
+Keyword matching with ranked patterns. Run synchronously on the UI thread: no isolate needed
 for this scope. A `QuickLogClassifier` class in `lib/features/quick_log/` with a `classify(String text)` method returning `EntryType?`.
 
 ```dart
@@ -887,7 +887,7 @@ for this scope. A `QuickLogClassifier` class in `lib/features/quick_log/` with a
 - Save without tapping "Add details" → creates the typed entry directly with text as the
   primary field (description for Meal, name for Symptom, body for Journal, etc.)
 - Tap "Add details" → opens the full form for that type, pre-filled with the quick-log text
-- After promotion, the original quick log text is the canonical record — no separate table
+- After promotion, the original quick log text is the canonical record: no separate table
 
 **Acceptance criteria:**
 - [ ] FAB on all main screens opens quick log sheet with keyboard raised immediately
@@ -906,21 +906,21 @@ tea issue create \
   --title "Feature: quick log with smart classification (no schema change)" \
   --body "FAB sheet with keyboard-on-open, local keyword classifier, promote to typed entry. Depends on WL-06/07/08. See docs/work-list.md WL-12." \
   --label "priority:p2,type:feature" \
-  --milestone "Phase 2 — Enhanced Features"
+  --milestone "Phase 2: Enhanced Features"
 ```
 
 ---
 
-## Phase 3 — Intelligence & Insights
+## Phase 3: Intelligence & Insights
 *Build after Phase 2. Requires weeks of data before it is meaningful.*
 
 ---
 
-### WL-13 · Reports — PDF and CSV export
+### WL-13 · Reports: PDF and CSV export
 **Branch:** `feature/reports`
 **Priority:** P3
 **Labels:** `priority:p3` `type:feature`
-**Milestone:** Phase 3 — Intelligence & Insights
+**Milestone:** Phase 3: Intelligence & Insights
 **Schema change:** None
 **Depends on:** WL-06 through WL-08 merged (needs data types)
 **Spec:** `docs/features/reports.feature`
@@ -945,19 +945,19 @@ tea issue create \
 **tea command:**
 ```bash
 tea issue create \
-  --title "Feature: reports — PDF and CSV export" \
+  --title "Feature: reports: PDF and CSV export" \
   --body "Date range + type picker, PDF via 'pdf' package, CSV export, OS share sheet. See docs/work-list.md WL-13." \
   --label "priority:p3,type:feature" \
-  --milestone "Phase 3 — Intelligence & Insights"
+  --milestone "Phase 3: Intelligence & Insights"
 ```
 
 ---
 
-### WL-14 · Pattern insights — in-app charts and correlations
+### WL-14 · Pattern insights: in-app charts and correlations
 **Branch:** `feature/pattern-insights`
 **Priority:** P3
 **Labels:** `priority:p3` `type:feature`
-**Milestone:** Phase 3 — Intelligence & Insights
+**Milestone:** Phase 3: Intelligence & Insights
 **Schema change:** None
 **Depends on:** WL-06, WL-07, WL-08, WL-09, WL-10 merged
 **Spec:** `docs/features/reports.feature` (pattern visualisation section)
@@ -970,15 +970,15 @@ tea issue create \
 - Meal reaction frequency (most-reacted ingredients)
 - Food trigger view: reaction-flagged meals + nearby symptoms
 
-**Chart library:** `fl_chart` (add to pubspec — pure Flutter, offline)
+**Chart library:** `fl_chart` (add to pubspec: pure Flutter, offline)
 
 **tea command:**
 ```bash
 tea issue create \
-  --title "Feature: pattern insights — in-app charts and correlations" \
+  --title "Feature: pattern insights: in-app charts and correlations" \
   --body "Symptom trends, flare overlays, sleep/symptom correlation, food trigger view. fl_chart. Needs weeks of data. See docs/work-list.md WL-14." \
   --label "priority:p3,type:feature" \
-  --milestone "Phase 3 — Intelligence & Insights"
+  --milestone "Phase 3: Intelligence & Insights"
 ```
 
 ---
@@ -987,8 +987,8 @@ tea issue create \
 **Branch:** `feature/activity-logging`
 **Priority:** P3
 **Labels:** `priority:p3` `type:feature` `type:schema`
-**Milestone:** Phase 3 — Intelligence & Insights
-**Schema change:** v11 — adds `ActivityEntryIsar`
+**Milestone:** Phase 3: Intelligence & Insights
+**Schema change:** v11: adds `ActivityEntryIsar`
 **Spec:** `docs/features/activity.feature`
 
 **New Isar collection:**
@@ -1014,7 +1014,7 @@ tea issue create \
   --title "Feature: activity logging (schema v11)" \
   --body "Add ActivityEntryIsar. Type, effort level 1-5, duration. Correlates with next-day symptoms in pattern insights. See docs/work-list.md WL-15." \
   --label "priority:p3,type:feature,type:schema" \
-  --milestone "Phase 3 — Intelligence & Insights"
+  --milestone "Phase 3: Intelligence & Insights"
 ```
 
 ---
@@ -1023,8 +1023,8 @@ tea issue create \
 **Branch:** `feature/weather-tracking`
 **Priority:** P3
 **Labels:** `priority:p3` `type:feature`
-**Milestone:** Phase 3 — Intelligence & Insights
-**Schema change:** None new — `WeatherSnapshot` is stored as embedded fields on entry
+**Milestone:** Phase 3: Intelligence & Insights
+**Schema change:** None new: `WeatherSnapshot` is stored as embedded fields on entry
 types that already have a `weatherSnapshot` nullable embedded field (add this field during
 v5–v7 migrations, null until weather is enabled)
 **Note:** Weather is the ONLY network call the app makes. All other network access is
@@ -1038,7 +1038,7 @@ tea issue create \
   --title "Feature: weather tracking integration" \
   --body "Location permission opt-in, weather API (only network call in app), barometric pressure stored on entries, pattern correlation in insights. See docs/work-list.md WL-16." \
   --label "priority:p3,type:feature" \
-  --milestone "Phase 3 — Intelligence & Insights"
+  --milestone "Phase 3: Intelligence & Insights"
 ```
 
 ---
@@ -1049,7 +1049,7 @@ tea issue create \
 **Branch:** `ci/migration-smoke-test`
 **Priority:** P1
 **Labels:** `priority:p1` `type:infrastructure`
-**Milestone:** Phase 1 — Core Tracking MVP
+**Milestone:** Phase 1: Core Tracking MVP
 **Parallel with:** WL-06, WL-07, WL-08 (can be developed concurrently)
 
 **Problem:** CI validates code quality and build integrity but has no test that runs
@@ -1075,7 +1075,7 @@ tea issue create \
   --title "CI: migration smoke test against seeded fixture data" \
   --body "Test that runs MigrationRunner against realistic fixture data and asserts data integrity post-migration. See docs/work-list.md WL-17." \
   --label "priority:p1,type:infrastructure" \
-  --milestone "Phase 1 — Core Tracking MVP"
+  --milestone "Phase 1: Core Tracking MVP"
 ```
 
 ---

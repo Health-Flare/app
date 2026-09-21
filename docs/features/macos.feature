@@ -4,7 +4,7 @@ Feature: macOS Desktop Application
   So that the app integrates naturally with my Mac and is recognisable in the Dock and Finder
 
   # ---------------------------------------------------------------------------
-  # App icon — asset completeness
+  # App icon: asset completeness
   # ---------------------------------------------------------------------------
 
   Scenario: The macOS app icon is present and valid at all required sizes
@@ -31,14 +31,14 @@ Feature: macOS Desktop Application
     And the pipeline does not produce a .app bundle with incomplete icon assets
 
   # ---------------------------------------------------------------------------
-  # App icon — visual identity
+  # App icon: visual identity
   # ---------------------------------------------------------------------------
 
   Scenario: The macOS icon uses the Health Flare brand identity
     Given the exported macOS app icon set
     Then it uses the same visual identity, colour palette, and mark as the iOS and Android icons
     And the icon artwork is square with a fully opaque (non-transparent) background
-    And the icon does not apply manual corner rounding — macOS applies the squircle mask automatically
+    And the icon does not apply manual corner rounding: macOS applies the squircle mask automatically
 
   Scenario: The icon is not the default Flutter or placeholder icon
     Given the macOS app is built from this repository
@@ -46,7 +46,7 @@ Feature: macOS Desktop Application
     And the icon is never a solid colour placeholder with no artwork
 
   # ---------------------------------------------------------------------------
-  # App icon — runtime visibility
+  # App icon: runtime visibility
   # ---------------------------------------------------------------------------
 
   Scenario: The Health Flare icon appears in the Dock when the app is running

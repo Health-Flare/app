@@ -13,7 +13,7 @@ Feature: Journaling
     Given a profile named "Sarah" exists and is active
 
   # ---------------------------------------------------------------------------
-  # Creating an entry — minimal (quick) path
+  # Creating an entry: minimal (quick) path
   # ---------------------------------------------------------------------------
 
   Scenario: Write a minimal entry with body text only
@@ -40,7 +40,7 @@ Feature: Journaling
     And no entry is saved
 
   # ---------------------------------------------------------------------------
-  # Creating an entry — enriched path
+  # Creating an entry: enriched path
   # ---------------------------------------------------------------------------
 
   Scenario: Write an entry with a title

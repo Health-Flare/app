@@ -93,7 +93,7 @@ class SleepCorrelationCard extends StatelessWidget {
     }
     if (poor > good) {
       return 'After poor sleep nights, next-day symptom severity averaged '
-          '${poor.toStringAsFixed(1)}/10 — '
+          '${poor.toStringAsFixed(1)}/10, '
           '${diff.toStringAsFixed(1)} points higher than after good sleep '
           '(${good.toStringAsFixed(1)}/10).';
     }

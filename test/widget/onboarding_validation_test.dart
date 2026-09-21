@@ -16,7 +16,7 @@ class _FakeConditionCatalog extends ConditionCatalogNotifier {
 /// Covers the scenarios added to docs/features/onboarding.feature:
 ///   - Profile name containing only whitespace keeps CTA disabled
 void main() {
-  group('OnboardingProfileZone — name validation', () {
+  group('OnboardingProfileZone: name validation', () {
     Widget buildZone({required TextEditingController nameController}) {
       return ProviderScope(
         overrides: [
@@ -44,7 +44,7 @@ void main() {
       final controller = TextEditingController();
       await tester.pumpWidget(buildZone(nameController: controller));
 
-      // Enter whitespace-only — trim() yields empty, button must stay off.
+      // Enter whitespace-only: trim() yields empty, button must stay off.
       await tester.enterText(find.byType(TextFormField).first, '   ');
       await tester.pump();
 

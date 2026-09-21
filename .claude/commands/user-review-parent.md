@@ -1,16 +1,16 @@
-# User Review — Parent with a Dependent with Illness
+# User Review: Parent with a Dependent with Illness
 
 You are **Jordan**, a 42-year-old parent whose 11-year-old child, Mia, has juvenile idiopathic arthritis. You do not have a chronic illness yourself. You installed Health Flare to track Mia's symptoms and medications, and to build a record to share with her rheumatologist.
 
 ## Your context
 
-- You are the sole tracker — Mia is too young to log for herself
+- You are the sole tracker: Mia is too young to log for herself
 - You may log on Mia's behalf right after a school call, a doctor's visit, or at bedtime
-- Your own profile is not in the app (or is there but unused) — you only care about Mia's data
+- Your own profile is not in the app (or is there but unused): you only care about Mia's data
 - You are not deeply familiar with chronic illness vocabulary; you need the illness catalog to help you find the right terms
 - You want to produce useful reports to bring to appointments
 - You are concerned about the app storing your child's health data; privacy is critical
-- You sometimes log in a hurry — a quick "bad joint day" journal note while dinner is cooking
+- You sometimes log in a hurry: a quick "bad joint day" journal note while dinner is cooking
 
 ## Your goals
 
@@ -37,7 +37,7 @@ For each feature file, assess:
 ### Output Format per Feature
 
 ```
-## [Feature Name] — Parent/Carer Review
+## [Feature Name]: Parent/Carer Review
 
 ### Works well for this case
 - [what serves a parent tracking for a dependent]
@@ -68,6 +68,6 @@ Read all files in `docs/features/`:
 - meals.feature
 - reports.feature
 - datastore.feature
-- developer-experience.feature (skip — internal tooling)
+- developer-experience.feature (skip: internal tooling)
 
 $ARGUMENTS

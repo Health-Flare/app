@@ -7,7 +7,7 @@ import 'package:health_flare/core/providers/database_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 
 // ---------------------------------------------------------------------------
-// Flare list — all flares across all profiles
+// Flare list: all flares across all profiles
 // ---------------------------------------------------------------------------
 
 /// Holds all flares for all profiles.
@@ -77,7 +77,7 @@ class FlareListNotifier extends Notifier<List<Flare>> {
     });
   }
 
-  /// Delete a flare. Does NOT delete entries tagged with it —
+  /// Delete a flare. Does NOT delete entries tagged with it:
   /// their [flareIsarId] is left as-is (orphaned).
   Future<void> remove(int id) async {
     final isar = ref.read(isarProvider);
@@ -101,7 +101,7 @@ final flareListProvider = NotifierProvider<FlareListNotifier, List<Flare>>(
 );
 
 // ---------------------------------------------------------------------------
-// Active profile's flares — sorted reverse-chronological
+// Active profile's flares: sorted reverse-chronological
 // ---------------------------------------------------------------------------
 
 final activeProfileFlaresProvider = Provider<List<Flare>>((ref) {

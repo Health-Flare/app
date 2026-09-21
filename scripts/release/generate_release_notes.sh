@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 # scripts/release/generate_release_notes.sh
 #
-# Draft polished, user-facing release notes for ANY range of commits — one
-# release, a gap of several skipped releases, or a whole quarter — by
+# Draft polished, user-facing release notes for ANY range of commits: one
+# release, a gap of several skipped releases, or a whole quarter: by
 # walking the PRs and issues that actually shipped in that range, not by
 # relying on the Unreleased section having been kept up to date.
 #
 # Why this exists: CHANGELOG.md's [Unreleased] section is the primary,
 # hand-curated source (see its own "How to use this file" header) and stays
-# that way — a human writing entries as they merge produces better prose
+# that way: a human writing entries as they merge produces better prose
 # than any script. This tool is for the cases that workflow doesn't cover:
 #   - a retroactive writeup spanning several past tags
 #   - a contributor forgot to add an Unreleased entry and it shipped anyway
@@ -21,11 +21,11 @@
 # ── The historical Gitea wrinkle ────────────────────────────────────────
 # Before the repo moved fully to GitHub (2026-09-13), PRs merged on Gitea,
 # which push-mirrored to GitHub in near real time. `gh pr list --state
-# merged` was unreliable for that era — GitHub only ever saw the resulting
+# merged` was unreliable for that era: GitHub only ever saw the resulting
 # merge commit, never a merge performed through its own API, so its
 # `merged` flag read false on PRs that were very much merged (confirmed
 # against #3-#18: every one showed merged:false despite being in `main`'s
-# history). So this script never filters or trusts that flag — it finds
+# history). So this script never filters or trusts that flag: it finds
 # PR numbers by walking git history directly, then uses `gh` only to fetch
 # metadata (title/labels/body) for numbers it already knows shipped. This
 # also means a retroactive `--since` spanning the Gitea era still works.
@@ -45,7 +45,7 @@
 #   --version X.Y.Z      Label the draft with a version heading instead of
 #                        the raw ref range.
 #   --include-internal   Also list docs/chore/ci/test/build/style entries
-#                        (omitted by default — not user-facing).
+#                        (omitted by default: not user-facing).
 #   --store-blurb        Emit condensed prose paragraphs instead of a
 #                        Keep-a-Changelog section, sized for App Store /
 #                        Play Store "what's new" fields (see character
@@ -104,7 +104,7 @@ if [[ -z "$REPO" ]]; then
   fi
 fi
 
-# Resolve --since/--until to real git refs — accepts tags, SHAs, or dates.
+# Resolve --since/--until to real git refs: accepts tags, SHAs, or dates.
 resolve_ref() {
   local input="$1"
   if git rev-parse --verify --quiet "${input}^{commit}" >/dev/null; then
@@ -148,10 +148,10 @@ git log --first-parent --format='%H%x09%s' "${SINCE_REF}..${UNTIL_REF}" | while 
   if [[ -n "$pr_num" ]]; then
     echo "$pr_num" >> "$PR_NUMBERS_FILE"
   elif [[ ! "$subject" =~ ^Merge\  && ! "$subject" =~ ^release:\ v[0-9] ]]; then
-    # Non-merge commit with no PR reference — keep as a fallback entry so
+    # Non-merge commit with no PR reference: keep as a fallback entry so
     # direct-to-main commits (or squash merges without "(#N)") aren't
     # silently dropped from the draft. "release: vX.Y.Z" bump commits are
-    # excluded — they're the release mechanism, not a user-facing change.
+    # excluded: they're the release mechanism, not a user-facing change.
     printf '%s\t%s\n' "${sha:0:12}" "$subject" >> "$COMMIT_FALLBACK_FILE"
   fi
 done
@@ -246,7 +246,7 @@ render_bullets() {
 }
 
 if [[ "$STORE_BLURB" == true ]]; then
-  echo "# Store blurb draft — ${VERSION:-${SINCE}..${UNTIL}}"
+  echo "# Store blurb draft: ${VERSION:-${SINCE}..${UNTIL}}"
   echo
   for cat in Added Changed Fixed; do
     prose="$(jq -r --arg cat "$cat" '.[] | select(.category == $cat) | .text' "$DRAFT_JSON" \
@@ -262,8 +262,8 @@ if [[ "$STORE_BLURB" == true ]]; then
   done
   FULL_TEXT="$(jq -r '.[] | select(.category=="Added" or .category=="Changed" or .category=="Fixed") | .text' "$DRAFT_JSON" | tr '\n' ' ')"
   echo "── character counts (trim to fit) ──" >&2
-  echo "App Store 'What's New' limit: 4000 — draft prose above is a starting point, not a copy-paste." >&2
-  echo "Play Store 'Recent changes' limit: 500 — this draft will need real trimming, not just this joined text (${#FULL_TEXT} chars unformatted)." >&2
+  echo "App Store 'What's New' limit: 4000: draft prose above is a starting point, not a copy-paste." >&2
+  echo "Play Store 'Recent changes' limit: 500: this draft will need real trimming, not just this joined text (${#FULL_TEXT} chars unformatted)." >&2
   exit 0
 fi
 
@@ -286,7 +286,7 @@ done
 
 other_bullets="$(render_bullets "Other")"
 if [[ -n "$other_bullets" ]]; then
-  echo "### Needs triage (no conventional-commit prefix — categorize by hand)"
+  echo "### Needs triage (no conventional-commit prefix: categorize by hand)"
   echo "$other_bullets"
   echo
 fi
@@ -294,7 +294,7 @@ fi
 if [[ "$INCLUDE_INTERNAL" == true ]]; then
   internal_bullets="$(render_bullets "Internal")"
   if [[ -n "$internal_bullets" ]]; then
-    echo "### Internal (docs/chore/ci/test/build/style — not user-facing)"
+    echo "### Internal (docs/chore/ci/test/build/style: not user-facing)"
     echo "$internal_bullets"
     echo
   fi
@@ -308,7 +308,7 @@ if [[ -s "$CLOSED_ISSUES_FILE" ]]; then
     if [[ -n "$issue_json" ]]; then
       echo "$issue_json" | jq -r '"- #" + (.number|tostring) + " " + .title + " (" + .url + ")"'
     else
-      echo "- #${issue_num} (could not fetch title — check it wasn't a PR self-reference)"
+      echo "- #${issue_num} (could not fetch title: check it wasn't a PR self-reference)"
     fi
   done
   echo
@@ -317,4 +317,4 @@ fi
 pr_count="$(jq '[.[] | select(.pr.number != null)] | length' "$DRAFT_JSON")"
 echo "---" >&2
 echo "Drafted from ${pr_count} PR(s) in ${REPO} between ${SINCE} and ${UNTIL}." >&2
-echo "This is a draft for a human to edit — voice, tense, and grouping per CHANGELOG.md's own rules." >&2
+echo "This is a draft for a human to edit: voice, tense, and grouping per CHANGELOG.md's own rules." >&2

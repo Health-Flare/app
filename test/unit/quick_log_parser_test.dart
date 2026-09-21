@@ -373,11 +373,11 @@ void main() {
     );
 
     // Regression: symptoms typed into the standalone symptom entry form
-    // (the everyday path) only ever create a SymptomEntry.name string — no
-    // UserSymptom record — so a real user's "Brain fog" went undetected on
+    // (the everyday path) only ever create a SymptomEntry.name string (no
+    // UserSymptom record), so a real user's "Brain fog" went undetected on
     // every later Quick Log mention until loggedNames was added.
     test('matches a symptom that was only ever typed into the full entry form '
-        '(no UserSymptom record — logged name only)', () {
+        '(no UserSymptom record: logged name only)', () {
       final match = QuickLogParser.matchSymptom(
         'Brain fog again, hard to focus',
         const [],
@@ -484,7 +484,7 @@ void main() {
 
     test('does not crash on a parenthesised name (regex metacharacters '
         'in a would-be acronym)', () {
-      // "Lupus (SLE)" would naively acronym to "L(" — an invalid, unescaped
+      // "Lupus (SLE)" would naively acronym to "L(": an invalid, unescaped
       // regex that throws FormatException on every call, not just one that
       // matches "Lupus (SLE)".
       expect(

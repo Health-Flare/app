@@ -67,7 +67,7 @@ class _ReportGenerator {
         await SharePlus.instance.share(
           ShareParams(
             files: [XFile(file.path, mimeType: 'application/pdf')],
-            subject: 'Health report — ${profile.name}',
+            subject: 'Health report for ${profile.name}',
           ),
         );
       } else {
@@ -77,7 +77,7 @@ class _ReportGenerator {
         await SharePlus.instance.share(
           ShareParams(
             files: [XFile(file.path, mimeType: 'text/csv')],
-            subject: 'Health data — ${profile.name}',
+            subject: 'Health data for ${profile.name}',
           ),
         );
       }

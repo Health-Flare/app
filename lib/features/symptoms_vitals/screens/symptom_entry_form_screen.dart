@@ -166,7 +166,7 @@ class _SymptomEntryFormScreenState
     final isEdit = widget.entry != null;
     final suggestionNames = ref.watch(recentSymptomNamesProvider);
 
-    // Watch weather for new entries — capture and display when available.
+    // Watch weather for new entries: capture and display when available.
     final weatherAsync = isEdit ? null : ref.watch(currentWeatherProvider);
     weatherAsync?.whenData((w) {
       if (w != null && _capturedWeather == null) {
@@ -358,7 +358,7 @@ class _SymptomEntryFormScreenState
 }
 
 // ---------------------------------------------------------------------------
-// Severity selector — 10 numbered buttons
+// Severity selector: 10 numbered buttons
 // ---------------------------------------------------------------------------
 
 class _SeveritySelector extends StatelessWidget {

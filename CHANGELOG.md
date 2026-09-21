@@ -15,7 +15,7 @@ How to use this file
    subsection (`Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`).
 
 2. Use the past tense and a user-facing voice. Avoid commit hashes and PR
-   numbers in the entry text — link to PRs/issues at the bottom of the file
+   numbers in the entry text: link to PRs/issues at the bottom of the file
    or inline only when it adds context for users.
 
 3. When cutting a release:
@@ -23,24 +23,24 @@ How to use this file
      - Rename `## [Unreleased]` to `## [X.Y.Z] - YYYY-MM-DD`.
      - Add a fresh, empty `## [Unreleased]` block above it.
      - Update the comparison links at the bottom of the file.
-     - Commit the change, then tag `vX.Y.Z` and push the tag — the release
+     - Commit the change, then tag `vX.Y.Z` and push the tag: the release
        workflow takes it from there (see `.github/workflows/release.yaml`).
 
 4. Forgot to keep Unreleased up to date, or writing notes for a range that
    spans several past releases? `scripts/release/generate_release_notes.sh`
    drafts this same Keep-a-Changelog shape (plus store-blurb prose) from
-   actual PR/issue history for any `--since`/`--until` range — a starting
+   actual PR/issue history for any `--since`/`--until` range: a starting
    point to edit, not a replacement for writing entries as you go. See
    `docs/release-kit.md` for the full release-notes/screenshots/videos
    workflow.
 
 Subsection meanings (from Keep a Changelog):
-  Added       — for new features.
-  Changed     — for changes in existing functionality.
-  Deprecated  — for soon-to-be-removed features.
-  Removed     — for now-removed features.
-  Fixed       — for any bug fixes.
-  Security    — for vulnerabilities.
+  Added: for new features.
+  Changed: for changes in existing functionality.
+  Deprecated: for soon-to-be-removed features.
+  Removed: for now-removed features.
+  Fixed: for any bug fixes.
+  Security: for vulnerabilities.
 -->
 
 ## [Unreleased]
@@ -66,14 +66,14 @@ Subsection meanings (from Keep a Changelog):
 ## [1.8.0] - 2026-09-18
 
 ### Added
-- Release kit — `scripts/release/generate_release_notes.sh` drafts release
+- Release kit: `scripts/release/generate_release_notes.sh` drafts release
   notes and store "what's new" blurbs from actual PR/issue history for any
   date/tag range, `scripts/take_video.sh` and `scripts/take_video_android.sh`
   capture an App Store/Play Store preview video from a new guided-tour
   integration test, and `scripts/release/build_release_kit.sh` runs all
   three (plus the existing screenshot sweep) together. See
   `docs/release-kit.md`.
-- Sleep tracking is now reachable from the app — a nav bar destination and
+- Sleep tracking is now reachable from the app: a nav bar destination and
   quick-create FAB for logging a sleep entry, and a way to delete one.
   Tapping a sleep entry on the dashboard now opens it for editing instead
   of a blank create form.
@@ -92,7 +92,7 @@ Subsection meanings (from Keep a Changelog):
 
 ### Fixed
 - Quick Log no longer drops the pulse reading from a combined entry like
-  "BP 118/76, pulse 68bpm" — both vitals are now saved. Pulse/heart-rate
+  "BP 118/76, pulse 68bpm": both vitals are now saved. Pulse/heart-rate
   phrasing without an explicit "bpm" unit ("Pulse 72", "HR 72", "72 beats
   per minute") is now recognised too, and unrelated text with a slash
   (like "Ate 3/4 of a sandwich") no longer mistakenly suggests a blood
@@ -128,7 +128,7 @@ Subsection meanings (from Keep a Changelog):
 ## [1.7.0] - 2026-09-13
 
 ### Added
-- **Guided onboarding redesign** — replaces the single long-scroll onboarding
+- **Guided onboarding redesign**: replaces the single long-scroll onboarding
   screen with a 4-step flow (Welcome, What you can track, Your privacy,
   Create profile) sharing one minimal progress-dot header. The first three
   steps can be skipped straight to the mandatory Create profile step. The
@@ -147,7 +147,7 @@ Subsection meanings (from Keep a Changelog):
 
 ### Fixed
 - Quick log now detects height (in cm, or feet and inches) as a vital
-  measurement — previously it wasn't recognised at all.
+  measurement: previously it wasn't recognised at all.
 - Onboarding: fixed overflow and off-screen tap targets on the redesigned
   first-log and feature-highlight steps, and fixed low-contrast chip labels
   on the "what you can track" step.
@@ -210,7 +210,7 @@ Subsection meanings (from Keep a Changelog):
 - _Nothing yet._
 
 ### Fixed
-- **Dark mode — onboarding readability:** the privacy and profile-creation zones and the weather opt-in sheet used hardcoded light background colours (`AppColors.surfaceVariant`, `AppColors.surface`, `AppColors.paleSky`) while their text used theme-adaptive colours, so in dark mode the text rendered in a near-white shade against a background that stayed light — in the privacy zone this was the *same* colour as the background, making it fully invisible. Onboarding now uses `ColorScheme` tokens throughout so backgrounds track the active theme.
+- **Dark mode: onboarding readability:** the privacy and profile-creation zones and the weather opt-in sheet used hardcoded light background colours (`AppColors.surfaceVariant`, `AppColors.surface`, `AppColors.paleSky`) while their text used theme-adaptive colours, so in dark mode the text rendered in a near-white shade against a background that stayed light: in the privacy zone this was the *same* colour as the background, making it fully invisible. Onboarding now uses `ColorScheme` tokens throughout so backgrounds track the active theme.
 
 ### Security
 - _Nothing yet._
@@ -238,13 +238,13 @@ Subsection meanings (from Keep a Changelog):
 ## [1.3.0] - 2026-05-26
 
 ### Added
-- **Profile icon button** — persistent `ProfileIconButton` in every app bar replaces the floating overlay. Tap opens the profile switcher; swipe up cycles to the previous profile (wrapping from first to last), swipe down cycles to the next (wrapping from last to first). No-op when only one profile exists.
-- `HFAppBar` — shared `PreferredSizeWidget` app bar component that always appends `ProfileIconButton` as the rightmost action. All screens now use this single component, so the profile icon behaviour is defined once and applied everywhere.
-- `docs/features/profile-icon.feature` — full Gherkin spec for profile icon placement, tap, swipe gesture, and single-profile guard behaviour.
+- **Profile icon button**: persistent `ProfileIconButton` in every app bar replaces the floating overlay. Tap opens the profile switcher; swipe up cycles to the previous profile (wrapping from first to last), swipe down cycles to the next (wrapping from last to first). No-op when only one profile exists.
+- `HFAppBar`: shared `PreferredSizeWidget` app bar component that always appends `ProfileIconButton` as the rightmost action. All screens now use this single component, so the profile icon behaviour is defined once and applied everywhere.
+- `docs/features/profile-icon.feature`: full Gherkin spec for profile icon placement, tap, swipe gesture, and single-profile guard behaviour.
 - Code-reuse scenarios added to `docs/features/developer-experience.feature` (shared widget extraction, single-source-of-truth for behaviour, no duplicated constants, theme tokens, `AppRoutes`, layout workarounds in the shared component only).
 
 ### Changed
-- `AppShell` simplified from `ConsumerWidget` to `StatelessWidget` — the profile avatar overlay and `_isRootRoute` heuristic are removed. The profile icon is now layout-participating (inside each screen's app bar) rather than floating above all content.
+- `AppShell` simplified from `ConsumerWidget` to `StatelessWidget`: the profile avatar overlay and `_isRootRoute` heuristic are removed. The profile icon is now layout-participating (inside each screen's app bar) rather than floating above all content.
 - All 32 screens migrated from bare `AppBar` to `HFAppBar`.
 - Removed `SizedBox(width: 56)` spacer hacks from dashboard, journal list, journal detail, and journal composer screens.
 
@@ -256,8 +256,8 @@ Subsection meanings (from Keep a Changelog):
 
 ### Fixed
 - Profile avatar no longer obscures app bar action buttons (edit, delete, etc.) on detail and form screens. Closes #83.
-- **macOS — weather capture:** outbound network requests and location access were silently blocked by the app sandbox. Added the required entitlements (`network.client`, `personal-information.location`) and `NSLocationWhenInUseUsageDescription` so weather snapshots are captured correctly.
-- **macOS — profile picture:** tapping the avatar crashed or did nothing because `image_picker` has no macOS implementation. The profile sheet and onboarding zone now use the system file picker on macOS instead.
+- **macOS: weather capture:** outbound network requests and location access were silently blocked by the app sandbox. Added the required entitlements (`network.client`, `personal-information.location`) and `NSLocationWhenInUseUsageDescription` so weather snapshots are captured correctly.
+- **macOS: profile picture:** tapping the avatar crashed or did nothing because `image_picker` has no macOS implementation. The profile sheet and onboarding zone now use the system file picker on macOS instead.
 
 ### Security
 - _Nothing yet._
@@ -265,8 +265,8 @@ Subsection meanings (from Keep a Changelog):
 ## [1.2.0] - 2026-05-07
 
 ### Added
-- **Weather tracking** (opt-in) — when enabled for a profile, the current conditions at log time are automatically captured on symptom, meal, activity, and daily check-in entries. Conditions are displayed read-only on entry detail screens. Fails silently if location permission is denied or unavailable; entries always save normally.
-- Database schema upgraded to v14 (adds an embedded `WeatherSnapshot` to symptom, meal, activity, and daily check-in entries; existing entries read back with no weather data — no migration required).
+- **Weather tracking** (opt-in), when enabled for a profile, the current conditions at log time are automatically captured on symptom, meal, activity, and daily check-in entries. Conditions are displayed read-only on entry detail screens. Fails silently if location permission is denied or unavailable; entries always save normally.
+- Database schema upgraded to v14 (adds an embedded `WeatherSnapshot` to symptom, meal, activity, and daily check-in entries; existing entries read back with no weather data: no migration required).
 
 ### Fixed
 - Profile avatar overlay no longer appears on top of action buttons on entry detail and form screens.
@@ -276,8 +276,8 @@ Subsection meanings (from Keep a Changelog):
 
 ### Added
 - Unified **Tracking** tab in bottom navigation, combining Symptoms and Illnesses into a single tabbed view.
-- Condition status tracking — each illness can now be marked **Active** or **In Recovery**.
-- Recovery and relapse timeline — record status change events against any condition and view the full history.
+- Condition status tracking: each illness can now be marked **Active** or **In Recovery**.
+- Recovery and relapse timeline: record status change events against any condition and view the full history.
 - Diagnosis date field on tracked conditions, shown alongside the tracking start date.
 - New **Condition Detail** screen with status, dates, history, and quick actions.
 - New `Chronic Fatigue Syndrome` and `Brain fog` entries in the demo dataset.
