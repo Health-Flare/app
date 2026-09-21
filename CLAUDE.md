@@ -306,6 +306,19 @@ flutter test test/widget/onboarding_screen_test.dart
 - No cloud sync
 - Clear, specific privacy statements (no vague "we value privacy")
 
+### Internationalization (i18n)
+
+Not yet implemented — every user-facing string is currently a hardcoded
+English literal, and `MaterialApp` doesn't set `locale`/
+`localizationsDelegates`/`supportedLocales`. `intl` is already a dependency
+(used for `DateFormat`) but not for translation. See
+`docs/decisions/i18n-strategy.md` for the full investigation and the
+resulting tracking issues (`i18n` label). Short version:
+`flutter_localizations` (SDK) + `intl` (already a dependency) + `flutter
+gen-l10n`, not a third-party package — smallest possible supply-chain delta,
+with correct ICU plural/RTL support the DIY or roll-your-own route doesn't
+get you for free.
+
 ## Troubleshooting
 
 ### Isar "Failed to load dynamic library"
