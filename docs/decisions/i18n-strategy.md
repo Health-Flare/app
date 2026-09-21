@@ -218,5 +218,6 @@ bite:
 
 ## Tracking issues
 
-See the `i18n` label on GitHub for the full breakdown; the infrastructure
-issue is the dependency root for everything else in this list.
+See [#37](https://github.com/Health-Flare/app/issues/37) for the full
+breakdown and sub-issues (#38–#46); the infrastructure issue (#38) is the
+dependency root for everything else in that list.

@@ -312,8 +312,9 @@ Not yet implemented — every user-facing string is currently a hardcoded
 English literal, and `MaterialApp` doesn't set `locale`/
 `localizationsDelegates`/`supportedLocales`. `intl` is already a dependency
 (used for `DateFormat`) but not for translation. See
-`docs/decisions/i18n-strategy.md` for the full investigation and the
-resulting tracking issues (`i18n` label). Short version:
+`docs/decisions/i18n-strategy.md` for the full investigation and
+[#37](https://github.com/Health-Flare/app/issues/37) for the tracking
+issues. Short version:
 `flutter_localizations` (SDK) + `intl` (already a dependency) + `flutter
 gen-l10n`, not a third-party package — smallest possible supply-chain delta,
 with correct ICU plural/RTL support the DIY or roll-your-own route doesn't
