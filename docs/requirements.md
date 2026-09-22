@@ -1,4 +1,4 @@
-# Health Flare — Product Requirements
+# Health Flare: Product Requirements
 
 **Version:** 0.1
 **Date:** 2026-02-17
@@ -78,7 +78,7 @@ If only one profile exists, it is always active. If multiple exist, the last-use
 The user can log a symptom for the active profile. A symptom log entry includes:
 - Date and time (defaults to now, editable)
 - Symptom name or description (free text, with optional saved shortcuts for commonly used symptoms)
-- Severity (a numeric scale of 1–10, or a simple low/medium/high option — to be decided at design time)
+- Severity (a numeric scale of 1–10, or a simple low/medium/high option: to be decided at design time)
 - Optional notes
 
 ### 7.2 Logging Vitals
@@ -135,7 +135,7 @@ The user can mark a medication as discontinued (set an end date) rather than del
 ### 9.1 Logging a Meal
 The user can log a meal or food item for the active profile. A meal log entry includes:
 - Date and time (defaults to now, editable)
-- Meal description (free text — what was eaten)
+- Meal description (free text: what was eaten)
 - Optional photo (taken from camera or chosen from library)
 - Optional notes
 
@@ -151,7 +151,7 @@ The user can view a chronological list of past meal entries for the active profi
 
 ### 10.1 Purpose
 
-A journal entry is an unstructured, timestamped personal narrative tied to a profile. It captures the qualitative experience of living with chronic illness — the texture of a day, concerns to raise with a doctor, observations that do not fit a field. Journal entries complement the structured data plane (symptoms, vitals, medications, meals) rather than replacing it.
+A journal entry is an unstructured, timestamped personal narrative tied to a profile. It captures the qualitative experience of living with chronic illness: the texture of a day, concerns to raise with a doctor, observations that do not fit a field. Journal entries complement the structured data plane (symptoms, vitals, medications, meals) rather than replacing it.
 
 ### 10.2 Creating a Journal Entry
 
@@ -191,7 +191,7 @@ The user can delete any journal entry after an explicit confirmation. Deletion i
 ### 11.1 Report Scope
 The user can generate a report for the active profile. The user selects:
 - Date range (e.g. last 7 days, last 30 days, custom range)
-- Which data types to include (symptoms, vitals, medications, meals — any combination)
+- Which data types to include (symptoms, vitals, medications, meals: any combination)
 
 ### 11.2 Report Content
 A report contains a readable summary of the selected data, organised chronologically. Where relevant, it highlights patterns (e.g. meals followed by symptoms). Reports are intended to be useful for a doctor or specialist appointment.
@@ -211,16 +211,16 @@ The user can export raw data as a CSV file. Each data type (symptoms, vitals, me
 
 ### 12.1 Primary Navigation
 The app has a clear primary navigation structure with five tabs:
-- Dashboard — the current profile's summary view
-- Symptoms — symptom and vitals log
-- Medications — medication and dose tracking
-- Meals — meal log
-- Journal — freeform personal journal
+- Dashboard: the current profile's summary view
+- Symptoms: symptom and vitals log
+- Medications: medication and dose tracking
+- Meals: meal log
+- Journal: freeform personal journal
 
 Reports is accessible via an icon button in the Dashboard app bar. It does not occupy a primary navigation slot because it is used infrequently (typically before a doctor appointment) rather than daily.
 
 ### 12.2 Quick Entry
-The user should be able to log a new symptom, vital, dose, meal, or journal entry within a minimal number of taps from any screen. Speed of entry is important — the app must not be cumbersome to use during a moment of need.
+The user should be able to log a new symptom, vital, dose, meal, or journal entry within a minimal number of taps from any screen. Speed of entry is important: the app must not be cumbersome to use during a moment of need.
 
 ### 12.3 Profile Switcher
 Profile switching is accessible from a persistent location (e.g. top of the screen or a settings panel). The active profile name is always visible.
@@ -232,34 +232,34 @@ When a user first opens the app or creates a new profile, they are guided clearl
 
 ## 13. Onboarding
 
-Onboarding is a first-class experience. It sets the tone for the entire relationship between the user and the app. It must be warm and encouraging — not clinical, not corporate. The user should finish onboarding feeling like Health Flare is on their side.
+Onboarding is a first-class experience. It sets the tone for the entire relationship between the user and the app. It must be warm and encouraging: not clinical, not corporate. The user should finish onboarding feeling like Health Flare is on their side.
 
 ### 13.1 Trigger
 
-Onboarding is shown exactly once: when the app is launched for the very first time and no profiles exist. It is never shown again after a profile has been created. It must not be skippable — the app cannot function without at least one profile.
+Onboarding is shown exactly once: when the app is launched for the very first time and no profiles exist. It is never shown again after a profile has been created. It must not be skippable: the app cannot function without at least one profile.
 
 ### 13.2 Structure: One Screen, Three Zones
 
 Onboarding is presented as a single, scrollable (or paged) screen divided into three zones. There is no multi-step wizard. The goal is minimal friction.
 
-**Zone 1 — Purpose and welcome**
+**Zone 1: Purpose and welcome**
 - Communicates what Health Flare is and who it is for in plain, human language.
 - Reinforces that the app is a companion on a health journey, not a replacement for professional care.
 - Warm, encouraging tone. No jargon.
 
-**Zone 2 — Privacy and data promise**
+**Zone 2: Privacy and data promise**
 - A single clear headline commitment: all data stays on this device.
 - Followed by 3–4 concise supporting statements (e.g. no accounts required, no cloud uploads, data only leaves if the user explicitly exports it).
 - A visible "Learn more" option expands a plain-English explanation of the full data model for users who want to understand it in depth. This expanded view is written for a non-technical audience but is detailed enough to satisfy a technically minded one.
 
-**Zone 3 — Profile creation**
+**Zone 3: Profile creation**
 - Directly below the privacy section, the user creates their first profile without navigating away.
 - The form asks for a name (required), date of birth (optional), and avatar (optional).
 - A clear, encouraging call-to-action button completes onboarding and enters the app.
 
 ### 13.3 Post-Setup: First-Log Prompt
 
-Immediately after the first profile is created, the user is taken into the app and shown a focused prompt asking them to log their first entry. This is not a tutorial — it is an action. The prompt:
+Immediately after the first profile is created, the user is taken into the app and shown a focused prompt asking them to log their first entry. This is not a tutorial: it is an action. The prompt:
 - Briefly explains why logging regularly is valuable (habit formation, pattern detection).
 - Offers a choice of what to log first: a symptom, a vital, a meal, or a medication.
 - Tapping any option opens the relevant quick-entry form.

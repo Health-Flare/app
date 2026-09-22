@@ -13,7 +13,7 @@ import 'package:health_flare/core/providers/database_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 
 // ---------------------------------------------------------------------------
-// Condition catalogue — all seeded + custom conditions
+// Condition catalogue: all seeded + custom conditions
 // ---------------------------------------------------------------------------
 
 /// All conditions in the global catalogue, sorted alphabetically.
@@ -58,7 +58,7 @@ final conditionCatalogProvider =
     );
 
 // ---------------------------------------------------------------------------
-// Symptom catalogue — all seeded + custom symptoms
+// Symptom catalogue: all seeded + custom symptoms
 // ---------------------------------------------------------------------------
 
 class SymptomCatalogNotifier extends Notifier<List<Symptom>> {
@@ -99,7 +99,7 @@ final symptomCatalogProvider =
     );
 
 // ---------------------------------------------------------------------------
-// User conditions — tracked conditions for the active profile
+// User conditions: tracked conditions for the active profile
 // ---------------------------------------------------------------------------
 
 class UserConditionListNotifier extends Notifier<List<UserCondition>> {
@@ -197,7 +197,7 @@ final userConditionListProvider =
     );
 
 // ---------------------------------------------------------------------------
-// User symptoms — tracked symptoms for the active profile
+// User symptoms: tracked symptoms for the active profile
 // ---------------------------------------------------------------------------
 
 class UserSymptomListNotifier extends Notifier<List<UserSymptom>> {
@@ -286,7 +286,7 @@ final userSymptomListProvider =
 // ---------------------------------------------------------------------------
 
 /// Filters [items] by [query] with starts-with entries ranked first, then
-/// contains entries — all alphabetically within each group.
+/// contains entries: all alphabetically within each group.
 ///
 /// Used as a pure function so it can be called from both providers and
 /// build methods without extra overhead.

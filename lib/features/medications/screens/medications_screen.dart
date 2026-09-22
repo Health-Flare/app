@@ -9,7 +9,7 @@ import 'package:health_flare/core/router/app_router.dart';
 import 'package:health_flare/models/medication.dart';
 import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 
-/// Main medications screen — lists active medications and supplements,
+/// Main medications screen: lists active medications and supplements,
 /// with a collapsed section for discontinued entries.
 class MedicationsScreen extends ConsumerWidget {
   const MedicationsScreen({super.key});

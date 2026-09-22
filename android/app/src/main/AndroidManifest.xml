@@ -2,7 +2,7 @@
     <!-- Camera permission for taking profile photos (declared; image_picker
          handles runtime requests on Android 10 and below). -->
     <uses-permission android:name="android.permission.CAMERA"/>
-    <!-- Coarse location for weather fetch — coordinates are used only to call the weather API and never stored -->
+    <!-- Coarse location for weather fetch: coordinates are used only to call the weather API and never stored -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.INTERNET"/>
     <application

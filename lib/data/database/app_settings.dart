@@ -8,7 +8,7 @@ part 'app_settings.g.dart';
 /// Holds persisted app-level state that doesn't belong to a specific profile.
 @collection
 class AppSettings {
-  /// Fixed id — always 1. There is exactly one AppSettings document.
+  /// Fixed id: always 1. There is exactly one AppSettings document.
   Id id = 1;
 
   /// The id of the currently active profile, or null if none is selected.

@@ -19,7 +19,7 @@ class _FakeProfileList extends ProfileListNotifier {
 }
 
 // ---------------------------------------------------------------------------
-// Unit tests — InsightData model helpers
+// Unit tests: InsightData model helpers
 // ---------------------------------------------------------------------------
 
 void main() {
@@ -93,7 +93,7 @@ void main() {
   });
 
   // ---------------------------------------------------------------------------
-  // Widget tests — InsightsScreen
+  // Widget tests: InsightsScreen
   // ---------------------------------------------------------------------------
 
   group('InsightsScreen', () {

@@ -1,25 +1,25 @@
 # Health Flare Design System
 
-**Version 1.0 — Living Document**
+**Version 1.0: Living Document**
 
 ---
 
 ## Design Philosophy
 
-Health Flare lives at the intersection of two emotional truths: the weight of managing a child's chronic condition, and the quiet determination of families who do it every day. The design must never feel clinical, anxious, or cluttered. It should feel like morning light — warm, clear, and full of forward momentum.
+Health Flare lives at the intersection of two emotional truths: the weight of managing a child's chronic condition, and the quiet determination of families who do it every day. The design must never feel clinical, anxious, or cluttered. It should feel like morning light: warm, clear, and full of forward momentum.
 
 ### Core design principles:
 
 - **Warm clarity over cold sterility.** This is not a hospital app.
-- **Calm confidence** — every screen should feel manageable, never overwhelming.
-- **Honest softness** — gentle without being saccharine. Parents are the primary users; they need to trust it.
-- **Progressive warmth** — the more someone uses the app, the more personalised and familiar it feels.
+- **Calm confidence**: every screen should feel manageable, never overwhelming.
+- **Honest softness**: gentle without being saccharine. Parents are the primary users; they need to trust it.
+- **Progressive warmth**: the more someone uses the app, the more personalised and familiar it feels.
 
 ---
 
 ## Brand Concept: The Flare
 
-The name HealthFlare references the medical concept of a "flare" (symptom episode), but the brand reclaims it — transforming a word associated with difficulty into one associated with light, dawn, and visibility. The visual language draws from early morning light breaking through: warm amber rising into soft sky, clear air, the sense that you can see clearly today.
+The name HealthFlare references the medical concept of a "flare" (symptom episode), but the brand reclaims it: transforming a word associated with difficulty into one associated with light, dawn, and visibility. The visual language draws from early morning light breaking through: warm amber rising into soft sky, clear air, the sense that you can see clearly today.
 
 ---
 
@@ -53,11 +53,11 @@ The name HealthFlare references the medical concept of a "flare" (symptom episod
 | Warning / Mild concern | Flare Amber | `#F5A623` |
 | Alert / Active flare | Dawn Coral | `#F07560` |
 | Info               | Morning Sky | `#6BB8D4` |
-| Destructive / Delete | —         | `#C94F3A` |
+| Destructive / Delete | N/A | `#C94F3A` |
 
 ### Severity Scale (Symptom Logging)
 
-Used for symptom intensity selectors — a 5-step warm gradient, never red-to-green (avoids traffic light anxiety).
+Used for symptom intensity selectors: a 5-step warm gradient, never red-to-green (avoids traffic light anxiety).
 
 | Level | Name        | Hex       |
 |-------|-------------|-----------|
@@ -74,13 +74,13 @@ Used for symptom intensity selectors — a 5-step warm gradient, never red-to-gr
 ### Font Families
 
 **Display / Headings: Fraunces**
-A variable serif with a warm, optical personality. It has softness without fragility — trustworthy and approachable. Used for app name, marketing headlines, section titles.
+A variable serif with a warm, optical personality. It has softness without fragility: trustworthy and approachable. Used for app name, marketing headlines, section titles.
 
 **Body / UI: DM Sans**
 Clean, humanist sans-serif with a warm baseline. Excellent legibility at small sizes on mobile. Used for all body copy, labels, navigation, data display.
 
 **Mono / Data: DM Mono**
-For timestamps, data values, medical codes, and log entries — pairs naturally with DM Sans.
+For timestamps, data values, medical codes, and log entries: pairs naturally with DM Sans.
 
 ### Type Scale
 
@@ -149,11 +149,11 @@ Shadows use warm tones (amber-shifted, not grey) to maintain the warm palette fe
 
 ## Iconography
 
-**Style:** Rounded line icons with 1.5px stroke weight. Avoid sharp/angular icon sets — they conflict with the warmth of the palette.
+**Style:** Rounded line icons with 1.5px stroke weight. Avoid sharp/angular icon sets: they conflict with the warmth of the palette.
 
 **Recommended library:** Phosphor Icons (Duotone weight for feature icons, Regular for UI)
 
-**Feature icon treatment:** Key app icons (log, insights, timeline, share) rendered in Duotone style using Flare Amber + Dawn Coral as fill layers over the line — creates a distinctive branded feel for the app's core verbs.
+**Feature icon treatment:** Key app icons (log, insights, timeline, share) rendered in Duotone style using Flare Amber + Dawn Coral as fill layers over the line: creates a distinctive branded feel for the app's core verbs.
 
 ---
 
@@ -163,11 +163,11 @@ Shadows use warm tones (amber-shifted, not grey) to maintain the warm palette fe
 
 | Variant     | Background     | Text       | Border      |
 |-------------|----------------|------------|-------------|
-| Primary     | Flare Amber    | Deep Dusk  | —           |
+| Primary     | Flare Amber    | Deep Dusk  | N/A |
 | Secondary   | Sunrise Peach  | Deep Dusk  | Warm Linen  |
 | Ghost       | Transparent    | Deep Dusk  | Warm Linen  |
-| Destructive | `#C94F3A`      | White      | —           |
-| Disabled    | Warm Linen     | `#9E9790`  | —           |
+| Destructive | `#C94F3A`      | White      | N/A |
+| Disabled    | Warm Linen     | `#9E9790`  | N/A |
 
 - Border radius: radius-md (12px)
 - Padding: 12px 20px (standard), 10px 16px (compact)
@@ -193,7 +193,7 @@ Shadows use warm tones (amber-shifted, not grey) to maintain the warm palette fe
 
 ## Motion & Animation
 
-**Principle:** Purposeful, never decorative. Animations should communicate state changes, guide attention, and reward interaction — not perform.
+**Principle:** Purposeful, never decorative. Animations should communicate state changes, guide attention, and reward interaction: not perform.
 
 | Interaction              | Duration | Easing                              |
 |--------------------------|----------|-------------------------------------|
@@ -203,17 +203,17 @@ Shadows use warm tones (amber-shifted, not grey) to maintain the warm palette fe
 | Skeleton loading shimmer | 1.5s     | linear (loop)                       |
 | Onboarding reveals       | 400ms    | `cubic-bezier(0.16, 1, 0.3, 1)` (spring-like) |
 
-Skeleton loading shimmer uses Warm Linen → Sunrise Peach → Warm Linen — warm, not grey.
+Skeleton loading shimmer uses Warm Linen → Sunrise Peach → Warm Linen: warm, not grey.
 
 ---
 
 ## Illustration Style
 
-**Style:** Soft, flat vector with organic shapes. No gradients on figures — use flat fills from the palette. Subtle grain overlay (5% opacity noise) to add texture and warmth.
+**Style:** Soft, flat vector with organic shapes. No gradients on figures: use flat fills from the palette. Subtle grain overlay (5% opacity noise) to add texture and warmth.
 
-**Character approach:** Abstract/symbolic — no literal child depictions. Use nature metaphors: sun, clouds, waves, growth, light. This avoids age-specific representation and keeps the focus universal.
+**Character approach:** Abstract/symbolic: no literal child depictions. Use nature metaphors: sun, clouds, waves, growth, light. This avoids age-specific representation and keeps the focus universal.
 
-**Onboarding illustrations:** Loose, expressive brushstroke-adjacent shapes in Sunrise Peach, Flare Amber, and Pale Sky — feels handmade, warm, trustworthy.
+**Onboarding illustrations:** Loose, expressive brushstroke-adjacent shapes in Sunrise Peach, Flare Amber, and Pale Sky: feels handmade, warm, trustworthy.
 
 ---
 
@@ -221,7 +221,7 @@ Skeleton loading shimmer uses Warm Linen → Sunrise Peach → Warm Linen — wa
 
 **Wordmark:** "HealthFlare" set in Fraunces, weight 600. The "Flare" portion optionally accented in Flare Amber.
 
-**Symbol:** A stylised sunrise/flare mark — a semicircle base with radiating soft lines, rendered in the amber-to-coral gradient. Works at 16px (favicon) through 512px (app icon).
+**Symbol:** A stylised sunrise/flare mark: a semicircle base with radiating soft lines, rendered in the amber-to-coral gradient. Works at 16px (favicon) through 512px (app icon).
 
 **Clear space:** Minimum clear space equal to the cap-height of the wordmark on all sides.
 
@@ -231,7 +231,7 @@ Skeleton loading shimmer uses Warm Linen → Sunrise Peach → Warm Linen — wa
 
 ## Dark Mode Considerations (v2 scope)
 
-Not in v1 scope, but the palette is designed to adapt. Deep Dusk inverts to Soft Cloud, Ash White surfaces become `#1E1C1A`. Amber and coral accents remain unchanged — they read well on both light and dark surfaces.
+Not in v1 scope, but the palette is designed to adapt. Deep Dusk inverts to Soft Cloud, Ash White surfaces become `#1E1C1A`. Amber and coral accents remain unchanged: they read well on both light and dark surfaces.
 
 ---
 
@@ -240,10 +240,10 @@ Not in v1 scope, but the palette is designed to adapt. Deep Dusk inverts to Soft
 - All text/background colour combinations meet WCAG AA minimum (4.5:1 for body, 3:1 for large text).
 - Deep Dusk on Soft Cloud: 11.2:1 ✓
 - Deep Dusk on Flare Amber: 5.8:1 ✓ (primary button)
-- Morning Sky on white requires care — use only for large text or decorative UI, never for small body copy alone.
-- Focus states use the amber ring (shadow-focus) — visible and on-brand.
+- Morning Sky on white requires care: use only for large text or decorative UI, never for small body copy alone.
+- Focus states use the amber ring (shadow-focus): visible and on-brand.
 - Minimum touch target: 44×44px on all interactive elements.
-- Severity scale deliberately avoids red/green to be colourblind-accessible — uses warm gradient that reads by luminance as well as hue.
+- Severity scale deliberately avoids red/green to be colourblind-accessible: uses warm gradient that reads by luminance as well as hue.
 
 ---
 
@@ -259,6 +259,6 @@ Not in v1 scope, but the palette is designed to adapt. Deep Dusk inverts to Soft
 
 ---
 
-**HealthFlare Design System — healthflare.org**
+**HealthFlare Design System: healthflare.org**
 
 *Maintained alongside the PRD. Update version number on any breaking palette or type changes.*

@@ -12,7 +12,7 @@ import 'package:health_flare/models/user_condition.dart';
 import 'package:health_flare/models/user_symptom.dart';
 
 // ---------------------------------------------------------------------------
-// Fake notifiers — subclass real notifiers, override build() to skip Isar
+// Fake notifiers: subclass real notifiers, override build() to skip Isar
 // ---------------------------------------------------------------------------
 
 class _FakeConditionCatalog extends ConditionCatalogNotifier {
@@ -76,7 +76,7 @@ Widget buildIllnessScreen({
 // ---------------------------------------------------------------------------
 
 void main() {
-  group('IllnessScreen — custom condition guard', () {
+  group('IllnessScreen: custom condition guard', () {
     testWidgets('whitespace search query does not show Add custom tile', (
       tester,
     ) async {
@@ -101,7 +101,7 @@ void main() {
       await tester.pumpWidget(buildIllnessScreen(conditions: [arthritis]));
       await tester.pump();
 
-      // rankSearch is case-insensitive — "ARTHRITIS" matches "Arthritis".
+      // rankSearch is case-insensitive: "ARTHRITIS" matches "Arthritis".
       await tester.enterText(find.byType(TextField), 'ARTHRITIS');
       await tester.pump();
 
@@ -126,7 +126,7 @@ void main() {
     });
   });
 
-  group('IllnessScreen — Add to profile button state', () {
+  group('IllnessScreen: Add to profile button state', () {
     testWidgets('"Add to profile" is disabled with no selections', (
       tester,
     ) async {
@@ -173,7 +173,7 @@ void main() {
         await tester.enterText(find.byType(TextField), 'arth');
         await tester.pump();
 
-        // All three contain 'arth' — all should be visible.
+        // All three contain 'arth': all should be visible.
         expect(find.text('Arthritis'), findsOneWidget);
         expect(find.text('Osteoarthritis'), findsOneWidget);
         expect(find.text('Reactive arthritis'), findsOneWidget);
@@ -181,7 +181,7 @@ void main() {
     );
   });
 
-  group('IllnessScreen — arriving from Quick Log "Add details"', () {
+  group('IllnessScreen: arriving from Quick Log "Add details"', () {
     testWidgets(
       'a matched catalogue condition is pre-selected, not shown for search',
       (tester) async {
@@ -199,7 +199,7 @@ void main() {
 
         // Pre-selected → shown as a removable "Selected" chip (and still
         // listed below, since only already-tracked conditions are excluded
-        // from the browsable list — pending selections are not).
+        // from the browsable list: pending selections are not).
         expect(find.text('Fibromyalgia'), findsWidgets);
         final button = tester.widget<FilledButton>(
           find.widgetWithText(FilledButton, 'Add to profile'),

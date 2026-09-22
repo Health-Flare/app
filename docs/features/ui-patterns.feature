@@ -4,7 +4,7 @@ Feature: UI Patterns and Design Language
   So that every screen behaves predictably and is easy to maintain
 
   # ---------------------------------------------------------------------------
-  # Primary action buttons — placement
+  # Primary action buttons: placement
   # ---------------------------------------------------------------------------
 
   Scenario: Primary action buttons live in Scaffold.bottomNavigationBar
@@ -20,7 +20,7 @@ Feature: UI Patterns and Design Language
     And it expands to fill the available width
 
   # ---------------------------------------------------------------------------
-  # Primary action buttons — style
+  # Primary action buttons: style
   # ---------------------------------------------------------------------------
 
   Scenario: Primary action buttons use FilledButton
@@ -39,7 +39,7 @@ Feature: UI Patterns and Design Language
     Given a screen that requires at least one selection or field to be valid
     When no valid input has been provided
     Then the primary action button is disabled via a null onPressed
-    And not hidden — the button remains visible in its disabled state
+    And not hidden: the button remains visible in its disabled state
 
   # ---------------------------------------------------------------------------
   # Button vocabulary

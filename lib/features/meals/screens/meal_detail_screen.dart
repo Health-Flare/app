@@ -39,7 +39,7 @@ class MealDetailScreen extends ConsumerWidget {
       );
     }
 
-    // Symptom entries within ±6 hours of this meal — shown when reaction is flagged.
+    // Symptom entries within ±6 hours of this meal: shown when reaction is flagged.
     final nearbySymptoms = entry.hasReaction
         ? ref.watch(activeProfileSymptomEntriesProvider).where((s) {
             final diff = s.loggedAt.difference(entry.loggedAt).abs();

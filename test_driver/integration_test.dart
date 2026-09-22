@@ -4,7 +4,7 @@ import 'package:integration_test/integration_test_driver_extended.dart';
 
 /// Driver entry-point for screenshot capture.
 ///
-/// Run via scripts/take_screenshots.sh (recommended — sweeps every required
+/// Run via scripts/take_screenshots.sh (recommended: sweeps every required
 /// App Store device class into its own subdirectory) or directly:
 ///
 ///   SCREENSHOT_DIR=screenshots/adhoc flutter drive \

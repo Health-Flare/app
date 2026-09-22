@@ -4,7 +4,7 @@
 
   packageRules: [
     // Runtime app dependencies (pubspec.yaml `dependencies:`) sit on top of
-    // platform channels — biometrics, secure storage, encrypted SQLite —
+    // platform channels (biometrics, secure storage, encrypted SQLite),
     // where this repo has already hit real breakage from routine-looking
     // bumps (see CLAUDE.md's biometric-gate notes). Never auto-merge these;
     // always read the changelog first.
@@ -15,8 +15,8 @@
     },
 
     // Dev-only tooling (lints, build_runner, test helpers): lower risk than
-    // runtime deps. Patch/minor can merge on their own once CI — analyze,
-    // format, the offline-URL scan, and the test suite — is green.
+    // runtime deps. Patch/minor can merge on their own once CI (analyze,
+    // format, the offline-URL scan, and the test suite) is green.
     {
       groupName: 'dev tooling (non-major)',
       matchManagers: ['pub'],
@@ -28,7 +28,7 @@
 
     // riverpod / flutter_riverpod / riverpod_annotation / riverpod_generator
     // must move together (they span both dependencies: and
-    // dev_dependencies:, and a partial bump doesn't build — see the
+    // dev_dependencies:, and a partial bump doesn't build: see the
     // riverpod_generator 2.x -> 4.x migration in git history). Group into
     // one PR; comes after the dev-tooling rule above so it overrides
     // auto-merge for riverpod_generator specifically.

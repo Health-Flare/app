@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-/// HealthFlare Design System — Typography v1.0
+/// HealthFlare Design System: Typography v1.0
 ///
 /// Font Families:
-/// - Display/Headings: Fraunces — warm, optical serif
-/// - Body/UI: DM Sans — clean humanist sans-serif
-/// - Mono/Data: DM Mono — for timestamps, data values, codes
+/// - Display/Headings: Fraunces: warm, optical serif
+/// - Body/UI: DM Sans: clean humanist sans-serif
+/// - Mono/Data: DM Mono: for timestamps, data values, codes
 ///
 /// Fonts are bundled as assets (assets/fonts/). Exposed as a [TextTheme]
 /// ready to drop into [ThemeData].
@@ -30,7 +30,7 @@ abstract final class AppTextStyles {
   // Display Styles (Fraunces)
   // ---------------------------------------------------------------------------
 
-  /// display-xl: 40px, weight 600 — Marketing hero headlines.
+  /// display-xl: 40px, weight 600: Marketing hero headlines.
   static const TextStyle displayXl = TextStyle(
     fontFamily: _fraunces,
     fontSize: 40,
@@ -38,7 +38,7 @@ abstract final class AppTextStyles {
     height: _displayLineHeight,
   );
 
-  /// display-lg: 32px, weight 600 — App section headers.
+  /// display-lg: 32px, weight 600: App section headers.
   static const TextStyle displayLg = TextStyle(
     fontFamily: _fraunces,
     fontSize: 32,
@@ -46,7 +46,7 @@ abstract final class AppTextStyles {
     height: _displayLineHeight,
   );
 
-  /// display-md: 24px, weight 500 — Card titles, modal headers.
+  /// display-md: 24px, weight 500: Card titles, modal headers.
   static const TextStyle displayMd = TextStyle(
     fontFamily: _fraunces,
     fontSize: 24,
@@ -58,7 +58,7 @@ abstract final class AppTextStyles {
   // Heading Styles (DM Sans)
   // ---------------------------------------------------------------------------
 
-  /// heading-sm: 18px, weight 600 — Sub-section headers.
+  /// heading-sm: 18px, weight 600: Sub-section headers.
   static const TextStyle headingSm = TextStyle(
     fontFamily: _dmSans,
     fontSize: 18,
@@ -70,7 +70,7 @@ abstract final class AppTextStyles {
   // Body Styles (DM Sans)
   // ---------------------------------------------------------------------------
 
-  /// body-lg: 16px, weight 400 — Primary body copy.
+  /// body-lg: 16px, weight 400: Primary body copy.
   static const TextStyle bodyLg = TextStyle(
     fontFamily: _dmSans,
     fontSize: 16,
@@ -78,7 +78,7 @@ abstract final class AppTextStyles {
     height: _bodyLineHeight,
   );
 
-  /// body-md: 14px, weight 400 — Secondary body, descriptions.
+  /// body-md: 14px, weight 400: Secondary body, descriptions.
   static const TextStyle bodyMd = TextStyle(
     fontFamily: _dmSans,
     fontSize: 14,
@@ -90,7 +90,7 @@ abstract final class AppTextStyles {
   // Label Styles (DM Sans)
   // ---------------------------------------------------------------------------
 
-  /// label: 13px, weight 500 — Form labels, UI labels.
+  /// label: 13px, weight 500: Form labels, UI labels.
   static const TextStyle label = TextStyle(
     fontFamily: _dmSans,
     fontSize: 13,
@@ -98,7 +98,7 @@ abstract final class AppTextStyles {
     height: _labelLineHeight,
   );
 
-  /// caption: 12px, weight 400 — Timestamps, footnotes.
+  /// caption: 12px, weight 400: Timestamps, footnotes.
   static const TextStyle caption = TextStyle(
     fontFamily: _dmSans,
     fontSize: 12,
@@ -110,7 +110,7 @@ abstract final class AppTextStyles {
   // Data Styles (DM Mono)
   // ---------------------------------------------------------------------------
 
-  /// data: 14px, weight 400 — Log values, stats, codes.
+  /// data: 14px, weight 400: Log values, stats, codes.
   static const TextStyle data = TextStyle(
     fontFamily: _dmMono,
     fontSize: 14,
@@ -136,15 +136,15 @@ abstract final class AppTextStyles {
 
   /// Full [TextTheme] mapping design system tokens to Material roles.
   static const TextTheme textTheme = TextTheme(
-    // Display — using Fraunces
+    // Display: using Fraunces
     displayLarge: displayXl,
     displayMedium: displayLg,
     displaySmall: displayMd,
-    // Headline — using Fraunces for larger, DM Sans for smaller
+    // Headline: using Fraunces for larger, DM Sans for smaller
     headlineLarge: displayLg,
     headlineMedium: displayMd,
     headlineSmall: headingSm,
-    // Title — DM Sans
+    // Title: DM Sans
     titleLarge: headingSm,
     titleMedium: TextStyle(
       fontFamily: _dmSans,
@@ -158,11 +158,11 @@ abstract final class AppTextStyles {
       fontWeight: FontWeight.w600,
       height: _labelLineHeight,
     ),
-    // Body — DM Sans
+    // Body: DM Sans
     bodyLarge: bodyLg,
     bodyMedium: bodyMd,
     bodySmall: caption,
-    // Label — DM Sans
+    // Label: DM Sans
     labelLarge: button,
     labelMedium: label,
     labelSmall: caption,

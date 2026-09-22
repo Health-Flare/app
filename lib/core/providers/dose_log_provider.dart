@@ -7,7 +7,7 @@ import 'package:health_flare/core/providers/database_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 
 // ---------------------------------------------------------------------------
-// Dose log list — all dose logs across all profiles
+// Dose log list: all dose logs across all profiles
 // ---------------------------------------------------------------------------
 
 /// Holds all dose log entries for all profiles.

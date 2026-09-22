@@ -21,7 +21,7 @@ on each supported platform receives security fixes.
 | Older releases   | :x:                |
 
 If you are running an older build, please update to the latest release before
-filing a report — the issue may already be fixed.
+filing a report: the issue may already be fixed.
 
 ---
 
@@ -43,7 +43,7 @@ In-scope examples:
 - Issues in how exports (PDF/CSV/backup files) are generated, named, or
   shared that could leak data unintentionally.
 - Issues that cause Health Flare to make unexpected outbound network requests
-  (this would violate our offline-first guarantee — see `README.md`).
+  (this would violate our offline-first guarantee: see `README.md`).
 - Vulnerabilities in our build, signing, or release tooling that could let an
   attacker ship a tampered binary.
 - Supply-chain issues in pinned dependencies (`pubspec.lock`) that materially
@@ -59,7 +59,7 @@ Out of scope:
 - Issues in third-party services we link to (e.g. an external privacy-policy
   page or app-store listing).
 - Missing security headers / TLS configuration on `git.ahosking.com` or other
-  infrastructure that does not host user data — please report those to the
+  infrastructure that does not host user data: please report those to the
   infrastructure operator directly.
 - Denial-of-service that requires an attacker to already have full local
   control of the user's device.
@@ -120,7 +120,7 @@ the upstream fix.
 We follow a coordinated-disclosure model. We ask that you:
 
 - Give us a reasonable opportunity to investigate and ship a fix before
-  disclosing the issue publicly — typically **90 days** from the date we
+  disclosing the issue publicly: typically **90 days** from the date we
   acknowledge the report, or sooner if a fix has shipped.
 - Avoid accessing, modifying, or deleting data that does not belong to you.
 - Avoid privacy violations, degradation of service, or destruction of data
@@ -157,7 +157,7 @@ distribute a modified build:
 - Re-sign builds with your own signing keys; do not reuse upstream keys.
 - Re-run `bash scripts/check_urls.sh` and `bash scripts/check_deps.sh` before
   publishing a release.
-- Set up your own security contact — the `security@healthflare.org` address
+- Set up your own security contact: the `security@healthflare.org` address
   only handles reports for upstream Health Flare builds distributed by
   Automated Bytes Incorporated.
 

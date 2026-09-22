@@ -11,7 +11,7 @@ Feature: Persistent Profile Icon
     Given the app is installed and at least one profile named "Sarah" exists and is active
 
   # ---------------------------------------------------------------------------
-  # Placement — single persistent component
+  # Placement: single persistent component
   # ---------------------------------------------------------------------------
 
   Scenario: Profile icon is always visible in the top navigation
@@ -47,7 +47,7 @@ Feature: Persistent Profile Icon
     And I can see all available profiles
 
   # ---------------------------------------------------------------------------
-  # Swipe to switch — two profiles
+  # Swipe to switch: two profiles
   # ---------------------------------------------------------------------------
 
   Scenario: Swiping up on the profile icon switches to the other profile when two exist
@@ -72,7 +72,7 @@ Feature: Persistent Profile Icon
     And all content on screen updates to reflect "Sarah"'s data
 
   # ---------------------------------------------------------------------------
-  # Swipe to switch — three or more profiles
+  # Swipe to switch: three or more profiles
   # ---------------------------------------------------------------------------
 
   Scenario: Swiping up moves to the profile above the current one in the list

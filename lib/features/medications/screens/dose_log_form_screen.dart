@@ -12,7 +12,7 @@ import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 /// Full-screen form for logging or editing a dose entry.
 ///
 /// Pass [doseLog] to open in edit mode; leave null for a new dose.
-/// [medication] is always required — used to pre-fill amount/unit.
+/// [medication] is always required: used to pre-fill amount/unit.
 class DoseLogFormScreen extends ConsumerStatefulWidget {
   const DoseLogFormScreen({super.key, required this.medication, this.doseLog});
 
@@ -195,7 +195,7 @@ class _DoseLogFormScreenState extends ConsumerState<DoseLogFormScreen> {
     return Scaffold(
       appBar: HFAppBar(
         title: Text(
-          isEdit ? 'Edit dose' : 'Log dose — ${widget.medication.name}',
+          isEdit ? 'Edit dose' : 'Log dose for ${widget.medication.name}',
         ),
         actions: [
           if (isEdit)

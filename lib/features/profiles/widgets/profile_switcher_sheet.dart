@@ -7,7 +7,7 @@ import 'package:health_flare/models/profile.dart';
 import 'package:health_flare/features/profiles/widgets/profile_avatar.dart';
 import 'package:health_flare/features/profiles/widgets/add_profile_sheet.dart';
 
-/// Modal bottom sheet — profile switcher.
+/// Modal bottom sheet: profile switcher.
 ///
 /// Shows all profiles with the active one highlighted. The user can:
 ///   • Tap a profile to switch to it
@@ -233,7 +233,7 @@ class _BackupTiles extends ConsumerWidget {
             ),
             title: const Text('Restore backup'),
             subtitle: const Text(
-              'Replace all data from a backup file — requires restart',
+              'Replace all data from a backup file, requires restart',
             ),
             onTap: isBusy
                 ? null

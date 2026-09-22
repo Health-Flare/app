@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Pre-commit hook — mirrors the CI gates in .github/workflows/ci.yml
+# Pre-commit hook: mirrors the CI gates in .github/workflows/ci.yml
 # (Formatting, Offline integrity scan, Static analysis, Tests) so a commit
 # that would fail CI is caught locally first.
 #
@@ -23,24 +23,24 @@ echo "$STAGED_DART" | xargs git add
 
 echo "→ Offline integrity scan (scripts/check_urls.sh)..."
 if ! bash scripts/check_urls.sh; then
-  echo "❌ Offline integrity scan failed — see above."
+  echo "❌ Offline integrity scan failed: see above."
   exit 1
 fi
 
 echo "→ Static analysis (flutter analyze --fatal-infos)..."
 if ! flutter analyze --fatal-infos; then
-  echo "❌ flutter analyze failed — fix the issues above before committing."
+  echo "❌ flutter analyze failed: fix the issues above before committing."
   exit 1
 fi
 
 # Golden-file tests are excluded here: they're pixel-diffed against reference
 # PNGs rendered on ubuntu-latest, and commonly diff on macOS/Windows purely
 # from anti-aliasing (see .github/workflows/regen-goldens.yaml). CI still
-# gates them on Linux — this hook covers everything else.
+# gates them on Linux: this hook covers everything else.
 TEST_TARGETS=$(find test -mindepth 1 -maxdepth 1 ! -name golden ! -name goldens)
 echo "→ Running tests (flutter test, excluding test/golden)..."
 if ! flutter test --reporter=compact $TEST_TARGETS; then
-  echo "❌ flutter test failed — fix the failing tests above before committing."
+  echo "❌ flutter test failed: fix the failing tests above before committing."
   echo "   (Golden-file tests are skipped locally; CI verifies them on Linux.)"
   exit 1
 fi

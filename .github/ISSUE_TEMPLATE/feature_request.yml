@@ -5,7 +5,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Health Flare follows a feature-file-first workflow — behavior is specified in
+        Health Flare follows a feature-file-first workflow: behavior is specified in
         `docs/features/*.feature` before it's built. A good feature request sketches what
         that spec would say.
 

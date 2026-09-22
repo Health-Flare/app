@@ -82,7 +82,7 @@ List<CsvRow> parseCsv(String filePath) {
         entryType = CsvEntryType.symptom;
       default:
         stderr.writeln(
-          '  ⚠  Line $lineNum: unknown type "$typeRaw" — skipped.',
+          '  ⚠  Line $lineNum: unknown type "$typeRaw": skipped.',
         );
         continue;
     }
@@ -90,13 +90,13 @@ List<CsvRow> parseCsv(String filePath) {
     // --- date ---
     final dateRaw = colDate < row.length ? row[colDate].toString().trim() : '';
     if (dateRaw.isEmpty) {
-      stderr.writeln('  ⚠  Line $lineNum: missing date — skipped.');
+      stderr.writeln('  ⚠  Line $lineNum: missing date: skipped.');
       continue;
     }
     final date = _parseDate(dateRaw);
     if (date == null) {
       stderr.writeln(
-        '  ⚠  Line $lineNum: cannot parse date "$dateRaw" — skipped. '
+        '  ⚠  Line $lineNum: cannot parse date "$dateRaw": skipped. '
         'Expected YYYY-MM-DD or YYYY-MM-DD HH:MM:SS.',
       );
       continue;
@@ -128,13 +128,13 @@ List<CsvRow> parseCsv(String filePath) {
     // Validate required fields per type.
     if (entryType == CsvEntryType.journal && body == null && title == null) {
       stderr.writeln(
-        '  ⚠  Line $lineNum: journal row has no title or body — skipped.',
+        '  ⚠  Line $lineNum: journal row has no title or body: skipped.',
       );
       continue;
     }
     if (entryType == CsvEntryType.symptom && title == null) {
       stderr.writeln(
-        '  ⚠  Line $lineNum: symptom row has no name (title column) — skipped.',
+        '  ⚠  Line $lineNum: symptom row has no name (title column): skipped.',
       );
       continue;
     }

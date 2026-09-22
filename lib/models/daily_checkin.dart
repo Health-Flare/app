@@ -24,7 +24,7 @@ class DailyCheckin {
   final int id;
   final int profileId;
 
-  /// Date-only anchor — only the year/month/day components are meaningful.
+  /// Date-only anchor: only the year/month/day components are meaningful.
   final DateTime checkinDate;
 
   /// Overall wellbeing 1–10.

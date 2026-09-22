@@ -7,7 +7,7 @@ part 'profile_isar.g.dart';
 /// Isar-annotated storage representation of a [Profile].
 ///
 /// Uses mutable fields as required by Isar. Converted to/from the immutable
-/// [Profile] domain class at the provider boundary — UI code never
+/// [Profile] domain class at the provider boundary: UI code never
 /// interacts with this class directly.
 @collection
 class ProfileIsar {
@@ -22,7 +22,7 @@ class ProfileIsar {
   String? avatarPath;
 
   /// Whether the first-log prompt has been shown for this profile.
-  /// Set to true the moment the prompt is displayed — never shown again after.
+  /// Set to true the moment the prompt is displayed: never shown again after.
   bool firstLogShown = false;
 
   /// Whether the user opted in to weather tracking for this profile.

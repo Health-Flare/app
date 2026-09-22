@@ -1,7 +1,7 @@
 # Trademarks
 
 Health Flare's source code is free software, licensed under the [GNU GPL-3.0](LICENSE.md).
-That license covers the code — it does not extend to the "Health Flare" name, wordmark, or app
+That license covers the code: it does not extend to the "Health Flare" name, wordmark, or app
 icon, which are trademarks of Automated Bytes Incorporated.
 
 This split is deliberate and common in free-software projects (Mozilla/Firefox, Signal, and VLC
@@ -24,7 +24,7 @@ If you distribute a modified build, please:
   up your own security contact).
 
 Unmodified redistribution of the official build (e.g. mirroring the signed APK as released) is
-fine and doesn't require a name change — this restriction is about avoiding user confusion when
+fine and doesn't require a name change: this restriction is about avoiding user confusion when
 the app's actual behavior has changed, not about restricting redistribution.
 
 If you'd like to use the Health Flare name for an official-sounding listing, a joint release, or

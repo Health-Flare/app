@@ -29,7 +29,7 @@ UserSymptom _trackedSymptom(int symptomId, String name) => UserSymptom(
 );
 
 void main() {
-  group('QuickLogClassifier — full vital type coverage', () {
+  group('QuickLogClassifier: full vital type coverage', () {
     test('classifies every documented vital type', () {
       const cases = {
         'HR 72': QuickLogEntryType.vital,
@@ -58,7 +58,7 @@ void main() {
     });
   });
 
-  group('QuickLogClassifier — condition detection', () {
+  group('QuickLogClassifier: condition detection', () {
     test('without any catalogue/tracked data, condition text is not '
         'misclassified as a Condition', () {
       expect(
@@ -129,7 +129,7 @@ void main() {
     });
   });
 
-  group('QuickLogClassifier — catalogue/user-aware symptom detection', () {
+  group('QuickLogClassifier: catalogue/user-aware symptom detection', () {
     test('a catalogue symptom outside the generic word list is recognised', () {
       expect(
         QuickLogClassifier.classify(
@@ -160,7 +160,7 @@ void main() {
     });
 
     // Regression: a symptom logged only via the standalone symptom entry
-    // form (no UserSymptom record — see recentSymptomNamesProvider) must
+    // form (no UserSymptom record: see recentSymptomNamesProvider) must
     // still be recognised on a later Quick Log mention.
     test('a symptom logged only via the full entry form (no UserSymptom '
         'record) is recognised on later mentions', () {

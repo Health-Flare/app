@@ -170,7 +170,7 @@ class _AddProfileSheetState extends ConsumerState<AddProfileSheet> {
     final tt = Theme.of(context).textTheme;
     final profileCount = ref.watch(profileListProvider).length;
     // Build a temporary profile for the avatar preview.
-    // _avatarPath takes precedence — it reflects any newly picked image.
+    // _avatarPath takes precedence: it reflects any newly picked image.
     final previewProfile = Profile(
       id: widget.existing?.id ?? 0,
       name: _nameController.text.trim().isEmpty
@@ -215,7 +215,7 @@ class _AddProfileSheetState extends ConsumerState<AddProfileSheet> {
                       onTap: () => _showPhotoOptions(context),
                       child: Semantics(
                         button: true,
-                        label: 'Choose profile photo — optional',
+                        label: 'Choose profile photo (optional)',
                         child: Stack(
                           children: [
                             // Rebuild avatar preview as name changes
@@ -314,7 +314,7 @@ class _AddProfileSheetState extends ConsumerState<AddProfileSheet> {
                   decoration: const InputDecoration(
                     labelText: 'Date of birth',
                     hintText: 'DD / MM / YYYY',
-                    helperText: 'Optional — useful for reports',
+                    helperText: 'Optional, useful for reports',
                     suffixIcon: Icon(Icons.calendar_today_outlined),
                   ),
                   onTap: _pickDob,

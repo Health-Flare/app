@@ -15,7 +15,7 @@ import 'package:health_flare/models/profile.dart';
 import 'package:health_flare/models/weather_snapshot.dart';
 
 // ---------------------------------------------------------------------------
-// Golden file tests — reference images live in test/goldens/.
+// Golden file tests: reference images live in test/goldens/.
 //
 // Regenerate after an intentional visual change:
 //   flutter test --update-goldens test/golden

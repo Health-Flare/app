@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# take_video.sh — record an App Store preview video on an iOS simulator.
+# take_video.sh: record an App Store preview video on an iOS simulator.
 #
 # Usage:
 #   ./scripts/take_video.sh                    # record on the default device class
@@ -14,17 +14,17 @@
 # the background, runs the integration_test walkthrough
 # (integration_test/video_walkthrough_test.dart) via `flutter drive`, then
 # stops the recording once the walkthrough completes. The walkthrough itself
-# defines the scenes and how long each one holds — edit that file to change
+# defines the scenes and how long each one holds: edit that file to change
 # what gets recorded, not this script.
 #
 # App Store Connect app previews (docs/apple-app-store-checklist.md):
 #   15-30 seconds, H.264 or ProRes, matching one of the required screenshot
 #   device-class resolutions. This script records at whatever resolution the
-#   chosen simulator renders at — re-encode/crop in a video editor to match
+#   chosen simulator renders at: re-encode/crop in a video editor to match
 #   the exact App Store Connect spec for the device class you're targeting;
 #   this script produces the raw source material, not the final upload.
 #
-# Requirements: same as take_screenshots.sh — Xcode + an iOS Simulator
+# Requirements: same as take_screenshots.sh: Xcode + an iOS Simulator
 # runtime, flutter in $PATH, jq.
 
 set -euo pipefail
@@ -78,13 +78,13 @@ record_walkthrough() {
   # simctl only allows one active host recording at a time across every
   # simulator. If a previous run's recorder never got cleaned up, this one
   # fails immediately ("Host recording is already in progress") but the
-  # background job still exits "successfully" from bash's point of view —
+  # background job still exits "successfully" from bash's point of view: 
   # nothing here was checking that recordVideo actually attached before
   # driving the walkthrough, so the whole run could report success with no
   # video ever produced. `jobs %%` still reporting Running is a cheap signal
   # that the process is still alive rather than having exited immediately.
   if ! kill -0 "$record_pid" 2>/dev/null; then
-    echo "❌  recordVideo exited immediately — see output above (often a stale 'Host recording already in progress' lock; try 'xcrun simctl shutdown all' and retry)." >&2
+    echo "❌  recordVideo exited immediately: see output above (often a stale 'Host recording already in progress' lock; try 'xcrun simctl shutdown all' and retry)." >&2
     return 1
   fi
 
@@ -94,13 +94,13 @@ record_walkthrough() {
     --target=integration_test/video_walkthrough_test.dart \
     --device-id="$device_id" || drive_status=$?
 
-  # simctl recordVideo finalizes the file on SIGINT — a hard kill leaves a
+  # simctl recordVideo finalizes the file on SIGINT: a hard kill leaves a
   # corrupt/unplayable .mov.
   kill -INT "$record_pid" 2>/dev/null || true
   wait "$record_pid" 2>/dev/null || true
 
   if [[ ! -s "$out_file" ]]; then
-    echo "❌  $out_file is empty — the recording never got finalized." >&2
+    echo "❌  $out_file is empty: the recording never got finalized." >&2
     return 1
   fi
 
@@ -137,7 +137,7 @@ if [[ $# -ge 1 ]]; then
     echo "✅  Done. Video written to $OUT_FILE"
   else
     echo ""
-    echo "⚠️   Walkthrough test failed — video up to that point still saved to $OUT_FILE"
+    echo "⚠️   Walkthrough test failed: video up to that point still saved to $OUT_FILE"
     exit 1
   fi
   exit 0
@@ -145,7 +145,7 @@ fi
 
 # ── Default mode ─────────────────────────────────────────────────────────
 
-echo "No device given — recording on the default App Store device class ($DEFAULT_DEVICE_NAME)."
+echo "No device given: recording on the default App Store device class ($DEFAULT_DEVICE_NAME)."
 echo "(Pass a device name, e.g. \"iPhone 16\", to record on a specific simulator.)"
 echo ""
 
@@ -168,6 +168,6 @@ if record_walkthrough "$DEVICE_ID" "$OUT_FILE"; then
   echo "✅  Done. Video written to $OUT_FILE"
 else
   echo ""
-  echo "⚠️   Walkthrough test failed — video up to that point still saved to $OUT_FILE"
+  echo "⚠️   Walkthrough test failed: video up to that point still saved to $OUT_FILE"
   exit 1
 fi

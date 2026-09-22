@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:health_flare/core/theme/app_colors.dart';
 import 'package:health_flare/core/theme/app_text_styles.dart';
 
-/// HealthFlare Design System — Theme v1.0
+/// HealthFlare Design System: Theme v1.0
 ///
 /// Usage:
 /// ```dart
@@ -142,7 +142,7 @@ abstract final class AppTheme {
   );
 
   // ---------------------------------------------------------------------------
-  // Dark Theme (v2 scope — placeholder)
+  // Dark Theme (v2 scope: placeholder)
   // ---------------------------------------------------------------------------
 
   static ThemeData get dark => ThemeData(
@@ -165,7 +165,7 @@ abstract final class AppTheme {
     chipTheme: _chipTheme(_darkColorScheme),
   );
 
-  // Dark theme does not vary per profile — profiles are typically used
+  // Dark theme does not vary per profile: profiles are typically used
   // in light mode. Dark support is v2 scope.
 
   // ---------------------------------------------------------------------------
@@ -278,7 +278,7 @@ abstract final class AppTheme {
         filled: true,
         // Use brightness-adaptive fill so text is always readable.
         // Light: ashWhite on softCloud scaffold (~legible).
-        // Dark: darkSurface as fill — onSurface (softCloud) text gives ~13:1.
+        // Dark: darkSurface as fill: onSurface (softCloud) text gives ~13:1.
         // Never hardcode a light fill; in dark mode onSurface is light,
         // making light-text-on-light-fill effectively invisible.
         fillColor: cs.brightness == Brightness.light
@@ -308,7 +308,7 @@ abstract final class AppTheme {
           borderRadius: borderRadiusMd,
           borderSide: BorderSide(color: cs.error, width: 2),
         ),
-        // Use onSurfaceVariant at full opacity — it achieves ~5.5:1 on ashWhite
+        // Use onSurfaceVariant at full opacity: it achieves ~5.5:1 on ashWhite
         // fill and ~5.1:1 on softCloud. Never apply withAlpha() to label/hint
         // text: even a modest reduction (e.g. withAlpha(153) = 60%) can drop
         // contrast below the WCAG AA minimum of 4.5:1.
@@ -337,7 +337,7 @@ abstract final class AppTheme {
   static OutlinedButtonThemeData _outlinedButtonTheme(ColorScheme cs) =>
       OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          // Adaptive colors — hardcoded light values (deepDusk, sunrisePeach)
+          // Adaptive colors: hardcoded light values (deepDusk, sunrisePeach)
           // are unreadable in dark mode.
           foregroundColor: cs.onSurface,
           backgroundColor: cs.surfaceContainerHighest,
@@ -352,7 +352,7 @@ abstract final class AppTheme {
   static TextButtonThemeData _textButtonTheme(ColorScheme cs) =>
       TextButtonThemeData(
         style: TextButton.styleFrom(
-          // Use cs.onSurface — adapts to dark mode (was hardcoded deepDusk,
+          // Use cs.onSurface: adapts to dark mode (was hardcoded deepDusk,
           // which is invisible dark-on-dark in dark mode).
           foregroundColor: cs.onSurface,
           padding: const EdgeInsets.symmetric(

@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# take_quick_log_screenshots.sh — capture one screenshot of the Quick Log
+# take_quick_log_screenshots.sh: capture one screenshot of the Quick Log
 # sheet per suggested entry type (Meal, Symptom, Vital, Medication, Doctor
 # Visit, Sleep, Condition, plus the catalogue/tracked/generic-keyword paths
-# for Condition and Symptom detection) — see
+# for Condition and Symptom detection): see
 # integration_test/quick_log_screenshot_test.dart.
 #
-# This is a documentation/demo tool, not a CI or App Store artifact — it's
+# This is a documentation/demo tool, not a CI or App Store artifact: it's
 # meant to be run on demand (e.g. to refresh a PR description or a doc after
 # a classifier change), not on every commit. Deliberately kept separate from
 # scripts/take_screenshots.sh (the App Store sweep), which walks the whole
@@ -41,14 +41,14 @@ find_device_id() {
       '[.devices | to_entries[] | .value[] | select(.name == $name and .isAvailable == true)] | first | .udid // empty'
 }
 
-# First already-booted simulator, if any — lets this reuse whatever's open
+# First already-booted simulator, if any: lets this reuse whatever's open
 # instead of always booting a specific device.
 find_booted_device_id() {
   xcrun simctl list devices booted -j \
     | jq -r '[.devices | to_entries[] | .value[]] | first | .udid // empty'
 }
 
-# First available iPhone simulator — used when no device is named and none
+# First available iPhone simulator: used when no device is named and none
 # is booted. Apple renames simulators every hardware generation, so this
 # picks whatever's actually installed instead of hardcoding a model name
 # that inevitably goes stale (see scripts/take_screenshots.sh's comments).
@@ -97,7 +97,7 @@ else
   if [[ -n "$DEVICE_ID" ]]; then
     echo "Using already-booted simulator ($DEVICE_ID)."
   else
-    echo "No device given and none booted — picking any available iPhone simulator."
+    echo "No device given and none booted: picking any available iPhone simulator."
     DEVICE_ID=$(find_any_iphone_device_id)
     if [[ -z "$DEVICE_ID" ]]; then
       echo "❌  No iPhone simulator is installed."

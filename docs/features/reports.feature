@@ -173,7 +173,7 @@ Feature: Reports and Data Export
 
   # Exporting to PDF or CSV puts the analytical burden on the user.
   # In-app visualisation surfaces patterns without requiring any external tool.
-  # These views are read-only — they help the user understand their data,
+  # These views are read-only: they help the user understand their data,
   # not create new entries.
 
   Scenario: View a symptom trend chart for a specific symptom
@@ -271,7 +271,7 @@ Feature: Reports and Data Export
     And average symptom severity on days following rest or low-effort activity
 
   # ---------------------------------------------------------------------------
-  # Report content — new data types
+  # Report content: new data types
   # ---------------------------------------------------------------------------
 
   Scenario: Generate a report including all new data types

@@ -2,7 +2,7 @@
 ///
 /// [bedtime] and [wakeTime] are stored as full [DateTime] values so that
 /// cross-midnight sessions are represented correctly. [duration] and [date]
-/// are derived fields — never stored separately.
+/// are derived fields: never stored separately.
 ///
 /// [isNap] is set automatically by the provider when a second entry is saved
 /// for the same calendar date (determined by [wakeTime.date]).
@@ -54,10 +54,10 @@ class SleepEntry {
     return m == 0 ? '${h}h' : '${h}h ${m}m';
   }
 
-  /// The calendar date of this entry — the day the user woke up.
+  /// The calendar date of this entry: the day the user woke up.
   DateTime get date => DateTime(wakeTime.year, wakeTime.month, wakeTime.day);
 
-  /// True when [wakeTime] is not after [bedtime] — an invalid configuration.
+  /// True when [wakeTime] is not after [bedtime]: an invalid configuration.
   bool get isInvalidTiming => !wakeTime.isAfter(bedtime);
 
   // ── Copy ─────────────────────────────────────────────────────────────────

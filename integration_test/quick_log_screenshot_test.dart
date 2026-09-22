@@ -1,6 +1,6 @@
 // ignore_for_file: avoid_print
 
-// Dedicated, self-contained screenshot suite for Quick Log — deliberately
+// Dedicated, self-contained screenshot suite for Quick Log: deliberately
 // kept out of screenshot_test.dart (which walks the whole app) so it's fast
 // enough to run on demand, e.g. to refresh docs or a PR description after a
 // classifier change:
@@ -15,7 +15,7 @@
 //
 // Each test opens the sheet and types one sample text, so both the type
 // chip and the primary button's "Quick Add: <Type>" / "Add to Journal"
-// label (see quick_log_sheet.dart) are visible in the resulting image —
+// label (see quick_log_sheet.dart) are visible in the resulting image:
 // covering every QuickLogEntryType the classifier can suggest, including
 // the catalogue-matched, tracked-custom, and generic-keyword paths for
 // Condition and Symptom detection (see quick_log_classifier.dart).
@@ -60,7 +60,7 @@ import 'package:health_flare/models/user_symptom.dart';
 import 'package:health_flare/models/vital_entry.dart';
 
 // ---------------------------------------------------------------------------
-// Sample data — just enough for the dashboard + Quick Log to render and for
+// Sample data: just enough for the dashboard + Quick Log to render and for
 // each classification path to have something to match against.
 // ---------------------------------------------------------------------------
 
@@ -87,7 +87,7 @@ final _conditionCatalog = [
 ];
 
 // A tracked condition with no catalogue entry, matched only via its acronym
-// ("Chronic Fatigue Syndrome" → "CFS") — and, deliberately, one whose name
+// ("Chronic Fatigue Syndrome" → "CFS"), and, deliberately, one whose name
 // contains a parenthesis ("Lupus (SLE)") to keep exercising the acronym
 // crash fix in QuickLogParser.textMentionsName on every real run of this
 // suite, not just in unit tests.
@@ -111,7 +111,7 @@ final _trackedConditions = [
 // A catalogue symptom outside Quick Log's generic keyword list.
 final _symptomCatalog = [const Symptom(id: 301, name: 'Photophobia')];
 
-// A tracked custom symptom the user created once via the full form —
+// A tracked custom symptom the user created once via the full form:
 // recognised here on a later Quick Log mention with no keyword involved.
 final _trackedSymptoms = [
   UserSymptom(
@@ -124,7 +124,7 @@ final _trackedSymptoms = [
 ];
 
 // ---------------------------------------------------------------------------
-// Fake notifiers — override build() to skip Isar
+// Fake notifiers: override build() to skip Isar
 // ---------------------------------------------------------------------------
 
 class _FakeProfileList extends ProfileListNotifier {
@@ -283,7 +283,7 @@ Future<void> _settle(WidgetTester tester) async {
 }
 
 // On Android, convertFlutterSurfaceToImage() may only be called once per
-// test — reset per-test via setUp below.
+// test: reset per-test via setUp below.
 bool _surfaceConverted = false;
 
 Future<void> _screenshot(
@@ -397,7 +397,7 @@ void main() {
       );
     });
 
-    // Condition catalogue match — not yet tracked (see _conditionCatalog).
+    // Condition catalogue match: not yet tracked (see _conditionCatalog).
     testWidgets('08_condition_catalogue', (tester) async {
       await _shootQuickLog(
         binding,
@@ -408,7 +408,7 @@ void main() {
     });
 
     // Condition matched by acronym against a profile's own tracked
-    // condition ("Chronic Fatigue Syndrome" → "CFS") — not in any catalogue.
+    // condition ("Chronic Fatigue Syndrome" → "CFS"): not in any catalogue.
     testWidgets('09_condition_tracked_acronym', (tester) async {
       await _shootQuickLog(
         binding,
@@ -418,7 +418,7 @@ void main() {
       );
     });
 
-    // Generic diagnosis-status language — no catalogue/tracked name needed.
+    // Generic diagnosis-status language: no catalogue/tracked name needed.
     testWidgets('10_condition_diagnosis_language', (tester) async {
       await _shootQuickLog(
         binding,

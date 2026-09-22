@@ -112,7 +112,7 @@ class JournalEntryCard extends StatelessWidget {
     if (entry.title != null && entry.title!.trim().isNotEmpty) {
       return entry.body.trim().isNotEmpty;
     }
-    // No title set — the first line is the display title. Show additional lines.
+    // No title set: the first line is the display title. Show additional lines.
     final lines = entry.body
         .split('\n')
         .where((l) => l.trim().isNotEmpty)

@@ -9,7 +9,7 @@ import 'package:health_flare/core/providers/database_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 
 // ---------------------------------------------------------------------------
-// DailyCheckin list — all check-ins across all profiles
+// DailyCheckin list: all check-ins across all profiles
 // ---------------------------------------------------------------------------
 
 /// Holds all daily check-ins for all profiles.
@@ -42,7 +42,7 @@ class DailyCheckinListNotifier extends Notifier<List<DailyCheckin>> {
   /// Save a new check-in. Enforces one per profile per calendar day.
   ///
   /// If a check-in for [checkinDate]'s calendar day already exists,
-  /// throws a [StateError] — callers should open the existing entry for editing.
+  /// throws a [StateError]: callers should open the existing entry for editing.
   Future<int> add({
     required int profileId,
     required DateTime checkinDate,
@@ -118,7 +118,7 @@ final dailyCheckinListProvider =
     );
 
 // ---------------------------------------------------------------------------
-// Active profile's check-ins — sorted reverse-chronological
+// Active profile's check-ins: sorted reverse-chronological
 // ---------------------------------------------------------------------------
 
 final activeProfileCheckinsProvider = Provider<List<DailyCheckin>>((ref) {

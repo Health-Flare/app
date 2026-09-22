@@ -43,7 +43,7 @@ This data is stored in a private, sandboxed database on your device. It is not a
 
 ## Backups
 
-Health Flare includes an optional backup feature that lets you export a copy of your data as a file. This export happens **only when you explicitly request it**, and the resulting file goes only where you choose to send it — for example, saving it to your Files app, sending it to yourself via AirDrop, or attaching it to an email.
+Health Flare includes an optional backup feature that lets you export a copy of your data as a file. This export happens **only when you explicitly request it**, and the resulting file goes only where you choose to send it: for example, saving it to your Files app, sending it to yourself via AirDrop, or attaching it to an email.
 
 We never receive, process, or have access to any backup files you create.
 

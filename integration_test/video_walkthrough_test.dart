@@ -142,7 +142,7 @@ final _journalEntries = [
     snapshots: [
       JournalSnapshot(
         body:
-            'Rough day — fatigue hit hard after lunch. '
+            'Rough day. Fatigue hit hard after lunch. '
             'Managed a short walk but had to rest for two hours afterwards. '
             "Joint pain in knees is a 6/10 today. Tomorrow's rheumatology "
             'appointment can\'t come soon enough.',
@@ -170,7 +170,7 @@ final _journalEntries = [
         body:
             'Feeling much better than last week. '
             'Morning stiffness was only about 20 minutes today. '
-            'Went to the farmers market with mum — first outing in weeks!',
+            'Went to the farmers market with mum, first outing in weeks!',
         title: 'A good day',
         savedAt: DateTime(2026, 4, 30, 18, 0),
       ),
@@ -193,7 +193,7 @@ final _meals = [
     id: 2,
     profileId: 1,
     description: 'Gluten-free pasta with roasted vegetables',
-    notes: 'Felt slightly bloated after — monitor this.',
+    notes: 'Felt slightly bloated after. Monitor this.',
     hasReaction: true,
     loggedAt: DateTime(2026, 5, 3, 19, 30),
     createdAt: DateTime(2026, 5, 3, 19, 30),
@@ -238,7 +238,7 @@ final _checkins = [
   ),
 ];
 
-// Conditions — showcases Active + In recovery grouping and diagnosis dates.
+// Conditions: showcases Active + In recovery grouping and diagnosis dates.
 final _userConditions = [
   UserCondition(
     id: 1,
@@ -321,7 +321,7 @@ final _doseLogs = [
 ];
 
 // ---------------------------------------------------------------------------
-// Fake notifiers — override build() to skip Isar
+// Fake notifiers: override build() to skip Isar
 // ---------------------------------------------------------------------------
 
 class _FakeProfileList extends ProfileListNotifier {
@@ -541,12 +541,12 @@ Future<void> _settle(WidgetTester tester) async {
   await tester.pump(const Duration(milliseconds: 400));
 }
 
-/// Holds on the current frame for [seconds] of real wall-clock time — long
+/// Holds on the current frame for [seconds] of real wall-clock time: long
 /// enough for a viewer (or the external screen recorder) to actually read
 /// the screen, not just flash past it.
 ///
 /// Each scene rebuilds the widget tree from scratch via pumpWidget rather
-/// than navigating between scenes with Back buttons — this mirrors
+/// than navigating between scenes with Back buttons: this mirrors
 /// screenshot_test.dart's per-screen approach and avoids depending on
 /// back-navigation affordances this file hasn't verified the finders for.
 /// The short rebuild flash between scenes is expected; edit clips at cut
@@ -580,12 +580,12 @@ void main() {
     //
     // Each scene below gets its own Key on the ProviderScope. Without one,
     // Flutter reconciles same-type widgets in place across pumpWidget calls
-    // instead of remounting — so overriding a NotifierProvider with a
+    // instead of remounting, so overriding a NotifierProvider with a
     // different fake class has no effect on a Notifier that already built
     // once (only future/new elements pick up the new override), and the app
     // silently keeps showing whatever screen the previous scene left it on.
-    // A fresh Key forces a full teardown/remount — a fresh ProviderContainer
-    // per scene — so every scene's overrides actually take effect and
+    // A fresh Key forces a full teardown/remount: a fresh ProviderContainer
+    // per scene, so every scene's overrides actually take effect and
     // GoRouter's initialLocation is re-evaluated from scratch.
     await tester.pumpWidget(
       ProviderScope(
@@ -595,20 +595,20 @@ void main() {
       ),
     );
     await _settle(tester);
-    await _hold(tester, 2.5, 'onboarding — welcome');
+    await _hold(tester, 2.5, 'onboarding: welcome');
 
     final nextButton = find.widgetWithText(FilledButton, 'Next');
     await tester.tap(nextButton);
     await _settle(tester);
-    await _hold(tester, 2.5, 'onboarding — what you can track');
+    await _hold(tester, 2.5, 'onboarding: what you can track');
 
     await tester.tap(nextButton);
     await _settle(tester);
-    await _hold(tester, 2.5, 'onboarding — your privacy');
+    await _hold(tester, 2.5, 'onboarding: your privacy');
 
     await tester.tap(nextButton);
     await _settle(tester);
-    await _hold(tester, 2, 'onboarding — create profile');
+    await _hold(tester, 2, 'onboarding: create profile');
 
     // ── Scene 2: dashboard, populated ───────────────────────────────────
     await tester.pumpWidget(
@@ -621,7 +621,7 @@ void main() {
     await _settle(tester);
     await _hold(tester, 3, 'dashboard');
 
-    // ── Scene 3: tracking — symptoms ────────────────────────────────────
+    // ── Scene 3: tracking: symptoms ────────────────────────────────────
     await tester.pumpWidget(
       ProviderScope(
         key: const ValueKey('scene-tracking-symptoms'),
@@ -632,9 +632,9 @@ void main() {
     await _settle(tester);
     await tester.tap(find.text('Tracking'));
     await _settle(tester);
-    await _hold(tester, 2.5, 'tracking — symptoms');
+    await _hold(tester, 2.5, 'tracking: symptoms');
 
-    // ── Scene 4: tracking — illnesses → condition detail ───────────────
+    // ── Scene 4: tracking: illnesses → condition detail ───────────────
     await tester.pumpWidget(
       ProviderScope(
         key: const ValueKey('scene-tracking-illnesses'),
@@ -647,7 +647,7 @@ void main() {
     await _settle(tester);
     await tester.tap(find.text('Illnesses'));
     await _settle(tester);
-    await _hold(tester, 2, 'tracking — illnesses');
+    await _hold(tester, 2, 'tracking: illnesses');
     await tester.tap(find.text('Fibromyalgia'));
     await _settle(tester);
     await _hold(tester, 2.5, 'condition detail');
@@ -665,7 +665,7 @@ void main() {
     await _settle(tester);
     await _hold(tester, 2.5, 'medications');
 
-    // ── Scene 6: journal — list → composer ──────────────────────────────
+    // ── Scene 6: journal: list → composer ──────────────────────────────
     await tester.pumpWidget(
       ProviderScope(
         key: const ValueKey('scene-journal'),
@@ -676,12 +676,12 @@ void main() {
     await _settle(tester);
     await tester.tap(find.text('Journal'));
     await _settle(tester);
-    await _hold(tester, 2, 'journal — entries');
+    await _hold(tester, 2, 'journal: entries');
 
     await tester.tap(find.byTooltip('New journal entry'));
     await _settle(tester);
     await tester.pump(); // weather postFrameCallback
-    await _hold(tester, 2.5, 'journal — new entry composer');
+    await _hold(tester, 2.5, 'journal: new entry composer');
 
     // ── Scene 7: symptom form with weather chip ─────────────────────────
     await tester.pumpWidget(
@@ -697,7 +697,7 @@ void main() {
     await tester.tap(find.byTooltip('Log symptom'));
     await _settle(tester);
     await tester.pump(); // weather postFrameCallback
-    await _hold(tester, 3, 'log symptom — with weather');
+    await _hold(tester, 3, 'log symptom: with weather');
 
     print('🎬  walkthrough complete');
   });

@@ -138,7 +138,7 @@ void main() {
       await tester.pump();
 
       expect(find.byKey(const Key('sleep_quality_selector')), findsOneWidget);
-      // No filled quality button — all five are present but none active
+      // No filled quality button: all five are present but none active
       final selector = find.byKey(const Key('sleep_quality_selector'));
       expect(selector, findsOneWidget);
     });
@@ -347,7 +347,7 @@ void main() {
       );
       await tester.pump();
 
-      // After selecting 3 the button changes appearance — we confirm no crash
+      // After selecting 3 the button changes appearance: we confirm no crash
       // and only one button is selected by checking state indirectly.
       expect(find.byKey(const Key('sleep_quality_selector')), findsOneWidget);
     });

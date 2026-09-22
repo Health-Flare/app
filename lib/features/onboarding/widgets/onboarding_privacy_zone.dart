@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Step 3 — Privacy & data promise.
+/// Step 3: Privacy & data promise.
 ///
 /// Shows a headline commitment, 4 supporting facts, and an expandable
 /// "How does this work?" section with full plain-English detail.
@@ -55,7 +55,7 @@ class _OnboardingPrivacyZoneState extends State<OnboardingPrivacyZone>
     final tt = Theme.of(context).textTheme;
 
     return Container(
-      // Theme-adaptive, not AppColors.surfaceVariant — that constant is
+      // Theme-adaptive, not AppColors.surfaceVariant: that constant is
       // pinned light, which made onSurface text invisible in dark mode
       // (both resolved to the same near-white colour).
       color: cs.surfaceContainerHighest,
@@ -158,7 +158,7 @@ class _OnboardingPrivacyZoneState extends State<OnboardingPrivacyZone>
     const facts = [
       (
         icon: Icons.no_accounts_outlined,
-        text: 'No account or login required — ever.',
+        text: 'No account or login required, ever.',
       ),
       (
         icon: Icons.cloud_off_outlined,
@@ -217,14 +217,14 @@ class _ExpandedPrivacyDetail extends StatelessWidget {
     final tt = Theme.of(context).textTheme;
 
     final paragraphs = [
-      'All of your health records — symptoms, vitals, medications, meals, and '
-          'reports — are stored in a local database on this device only. This is '
+      'All of your health records (symptoms, vitals, medications, meals, and '
+          'reports) are stored in a local database on this device only. This is '
           'not a backup. This is the only copy.',
       'No network connection is required to use Health Flare. No data is sent '
           'anywhere in the background. There are no analytics trackers, no usage '
           'reports, and no third-party services with access to your records.',
       'When you export a report as a PDF or CSV, that file is created on your '
-          'device. You decide where it goes — whether that\'s an email to your '
+          'device. You decide where it goes, whether that\'s an email to your '
           'doctor, a message to a family member, or a folder on your computer. '
           "Health Flare doesn't know what you did with it.",
       'If you delete a profile, it is removed from the main views of the '

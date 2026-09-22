@@ -49,7 +49,7 @@ import 'package:health_flare/models/activity_entry.dart';
 import 'package:health_flare/models/appointment.dart';
 
 // ---------------------------------------------------------------------------
-// Route names — use these constants everywhere instead of raw strings.
+// Route names: use these constants everywhere instead of raw strings.
 // ---------------------------------------------------------------------------
 
 abstract final class AppRoutes {
@@ -143,21 +143,21 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       return null; // no redirect needed
     },
     routes: [
-      // Onboarding — standalone, no shell
+      // Onboarding: standalone, no shell
       GoRoute(
         path: AppRoutes.onboarding,
         name: 'onboarding',
         builder: (context, state) => const OnboardingScreen(),
       ),
 
-      // Settings — full-screen push, outside the shell nav bar
+      // Settings: full-screen push, outside the shell nav bar
       GoRoute(
         path: AppRoutes.settings,
         name: 'settings',
         builder: (context, state) => const SettingsScreen(),
       ),
 
-      // Main app shell — wraps all tab destinations
+      // Main app shell: wraps all tab destinations
       ShellRoute(
         builder: (context, state, child) => AppShell(child: child),
         routes: [

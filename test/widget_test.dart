@@ -36,7 +36,7 @@ import 'package:health_flare/models/user_symptom.dart';
 import 'package:health_flare/models/vital_entry.dart';
 
 // ---------------------------------------------------------------------------
-// Fake notifiers — skip Isar by overriding build()
+// Fake notifiers: skip Isar by overriding build()
 // ---------------------------------------------------------------------------
 
 class _FakeProfileList extends ProfileListNotifier {
@@ -183,7 +183,7 @@ List<Override> _appOverrides({
 ];
 
 // ---------------------------------------------------------------------------
-// Tests — routing / app-level behaviour
+// Tests: routing / app-level behaviour
 //
 // Form-level tests (CTA enabled/disabled, whitespace validation) are in
 // test/widget/onboarding_validation_test.dart, which pumps OnboardingProfileZone
@@ -202,7 +202,7 @@ void main() {
         ),
       );
       // One pump handles post-frame callbacks. The repeating welcome animation
-      // means pumpAndSettle never settles — use pump(Duration) instead.
+      // means pumpAndSettle never settles: use pump(Duration) instead.
       await tester.pump(const Duration(milliseconds: 100));
 
       expect(find.text('Your health story,\nin your hands.'), findsOneWidget);

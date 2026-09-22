@@ -12,7 +12,7 @@ Feature: Flare Tracking
   # What is a flare
   # ---------------------------------------------------------------------------
 
-  # A flare is a period of elevated disease activity — a user-declared state
+  # A flare is a period of elevated disease activity: a user-declared state
   # that persists until the user marks it as over. All health data logged during
   # an active flare is implicitly associated with that flare period.
   # The app never auto-detects flares; the user always initiates and closes them.
@@ -228,7 +228,7 @@ Feature: Flare Tracking
     Given "Sarah" has a completed flare in her history
     When I choose to delete the flare record
     Then I am shown a confirmation dialog warning that the flare record will be removed
-    And entries logged during that period are not deleted — only the flare association is removed
+    And entries logged during that period are not deleted: only the flare association is removed
     When I confirm
     Then the flare record is removed
     And the associated entries remain in Sarah's logs without a flare tag

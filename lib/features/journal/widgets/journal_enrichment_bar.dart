@@ -77,7 +77,7 @@ class JournalEnrichmentBar extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
         children: [
-          // Date chip — shown in create mode (tappable) and edit mode (read-only)
+          // Date chip: shown in create mode (tappable) and edit mode (read-only)
           if (dateLabel != null) ...[
             _EnrichmentChip(
               icon: Icons.calendar_today_rounded,

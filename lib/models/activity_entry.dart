@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 
 import 'package:health_flare/models/weather_snapshot.dart';
 
-/// Activity type options — chronic-illness appropriate, not fitness-focused.
+/// Activity type options: chronic-illness appropriate, not fitness-focused.
 enum ActivityType {
   walking('walking', 'Walking'),
   gentleExercise('gentle_exercise', 'Gentle exercise / yoga'),

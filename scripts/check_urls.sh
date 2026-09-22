@@ -26,7 +26,7 @@ IGNORE_FILE="$REPO_ROOT/.url-scan-ignore"
 VIOLATIONS=0
 
 echo "──────────────────────────────────────────────"
-echo "  Health Flare — Offline Integrity Scan"
+echo "  Health Flare: Offline Integrity Scan"
 echo "──────────────────────────────────────────────"
 
 # ── 1. Scan for hardcoded URLs in non-comment Dart lines ──────────────────────
@@ -116,7 +116,7 @@ echo ""
 echo "=== Verifying google_fonts is not in pubspec.yaml ==="
 
 if grep -q "google_fonts" pubspec.yaml; then
-  echo "❌  google_fonts found in pubspec.yaml — all fonts must be bundled as assets."
+  echo "❌  google_fonts found in pubspec.yaml: all fonts must be bundled as assets."
   VIOLATIONS=$((VIOLATIONS + 1))
 else
   echo "✅  google_fonts not present in pubspec.yaml."

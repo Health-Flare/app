@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# take_screenshots.sh — capture App Store screenshots on iOS simulators.
+# take_screenshots.sh: capture App Store screenshots on iOS simulators.
 #
 # Usage:
 #   ./scripts/take_screenshots.sh                    # sweep every required App Store device class
@@ -11,22 +11,22 @@
 #   screenshots/adhoc/<NAME>.png             single-device mode (explicit device name given)
 #
 # Requirements:
-#   • Xcode + the iOS Simulator runtime downloaded — Xcode → Settings → Platforms,
+#   • Xcode + the iOS Simulator runtime downloaded: Xcode → Settings → Platforms,
 #     or `xcodebuild -downloadPlatform iOS`. `xcrun simctl list devices available`
 #     must show at least one iOS runtime before this script can do anything.
 #   • flutter in $PATH
 #   • jq  (brew install jq)
 #
 # App Store Connect screenshot requirements (docs/apple-app-store-checklist.md, Phase 3):
-#   6.9" iPhone (Pro Max class) — required
-#   6.5" iPhone (Plus class)    — required
-#   13"  iPad   (Pro class)     — required because TARGETED_DEVICE_FAMILY = "1,2" in
+#   6.9" iPhone (Pro Max class): required
+#   6.5" iPhone (Plus class): required
+#   13"  iPad   (Pro class): required because TARGETED_DEVICE_FAMILY = "1,2" in
 #                                  ios/Runner.xcodeproj (the app is built as universal)
 #
 # The simulator names below match Xcode's current device-class naming. Apple
 # renames simulators every hardware generation, so if `xcrun simctl list`
 # doesn't have an exact match, this script prints the closest available
-# devices instead of guessing — update DEVICE_CLASS_NAMES below to match
+# devices instead of guessing: update DEVICE_CLASS_NAMES below to match
 # whatever's actually installed.
 
 set -euo pipefail
@@ -119,15 +119,15 @@ if [[ $# -ge 1 ]]; then
   exit 0
 fi
 
-# ── Sweep mode (default — every required App Store device class) ──────────
+# ── Sweep mode (default: every required App Store device class) ──────────
 
-echo "No device given — sweeping all required App Store device classes."
+echo "No device given: sweeping all required App Store device classes."
 echo "(Pass a device name, e.g. \"iPhone 16\", to capture just one.)"
 echo ""
 
-SKIPPED_CLASSES=()   # simulator not installed — never attempted
+SKIPPED_CLASSES=()   # simulator not installed: never attempted
 CAPTURED_CLASSES=()  # ran cleanly, every screenshot test passed
-PARTIAL_CLASSES=()   # ran, but one or more screenshot tests failed —
+PARTIAL_CLASSES=()   # ran, but one or more screenshot tests failed: 
                       # screenshots up to and including the failure are
                       # still written (integration_test saves on failure),
                       # but the set may be incomplete.
@@ -140,7 +140,7 @@ for i in "${!DEVICE_CLASS_SLUGS[@]}"; do
 
   DEVICE_ID=$(find_device_id "$DEVICE_NAME")
   if [[ -z "$DEVICE_ID" ]]; then
-    echo "⚠️   Simulator \"$DEVICE_NAME\" not installed — skipping ${SLUG}."
+    echo "⚠️   Simulator \"$DEVICE_NAME\" not installed: skipping ${SLUG}."
     echo "     Install it via Xcode → Settings → Platforms, or update"
     echo "     DEVICE_CLASS_NAMES in this script if Xcode renamed it."
     SKIPPED_CLASSES+=("$SLUG")
@@ -153,12 +153,12 @@ for i in "${!DEVICE_CLASS_SLUGS[@]}"; do
 
   OUT_DIR="$OUT_ROOT/appstore/$SLUG"
   # A failed screenshot test (e.g. a widget-finder issue on this specific
-  # device) shouldn't abort the whole sweep — move on to the next device
+  # device) shouldn't abort the whole sweep: move on to the next device
   # class and report the partial result in the summary below.
   if run_screenshot_suite "$DEVICE_ID" "$OUT_DIR"; then
     CAPTURED_CLASSES+=("$SLUG")
   else
-    echo "⚠️   One or more screenshot tests failed on ${SLUG} — see log above."
+    echo "⚠️   One or more screenshot tests failed on ${SLUG}: see log above."
     PARTIAL_CLASSES+=("$SLUG")
   fi
   echo ""
