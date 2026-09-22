@@ -3,12 +3,16 @@ import 'dart:io';
 import 'package:isar_community/isar.dart';
 import 'package:path_provider/path_provider.dart';
 
+import 'package:health_flare/data/database/backup_encryption.dart';
+
 /// Handles hot-backup export and staged restore for the Isar database.
 ///
 /// ## Export
 /// [export] calls [Isar.copyToFile] on the live instance, producing a clean
 /// snapshot in the system temp directory. The caller is responsible for sharing
-/// or saving the file.
+/// or saving the file. [exportEncrypted] does the same but password-locks the
+/// result (see [EncryptedBackupCodec]) — the plaintext snapshot never leaves
+/// the temp directory and is deleted once encryption completes.
 ///
 /// ## Restore
 /// [stagePendingRestore] copies a user-supplied file to a well-known
@@ -55,6 +59,29 @@ class BackupService {
     final path = '${tmp.path}/healthflare_backup_$stamp.isar';
     await isar.copyToFile(path);
     return path;
+  }
+
+  /// Creates a password-encrypted hot backup of [isar] and returns the path
+  /// to the resulting `.hfbackup` file.
+  ///
+  /// Internally calls [export] to build the plaintext snapshot, encrypts it
+  /// with [EncryptedBackupCodec.encryptFile], then deletes the plaintext
+  /// copy — only the encrypted file is left on disk.
+  static Future<String> exportEncrypted(Isar isar, String password) async {
+    final plainPath = await export(isar);
+    try {
+      final encPath =
+          '${plainPath.substring(0, plainPath.length - '.isar'.length)}'
+          '${EncryptedBackupFormat.extension}';
+      return await EncryptedBackupCodec.encryptFile(
+        plainPath: plainPath,
+        outPath: encPath,
+        password: password,
+      );
+    } finally {
+      final plainFile = File(plainPath);
+      if (plainFile.existsSync()) await plainFile.delete();
+    }
   }
 
   /// Copies [sourceFilePath] to the pending restore slot.

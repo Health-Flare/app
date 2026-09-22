@@ -130,6 +130,13 @@ Future<Isar> _openIsar(String name, {String directory = ''}) {
   return Isar.open(_schemas, directory: directory, name: name);
 }
 
+/// A fresh suffix per call so instance names never collide with a
+/// leftover `.isar` file from a previous local test run — `directory: ''`
+/// resolves to the working directory, which isn't cleaned between runs the
+/// way a real CI checkout would be. Matches the pattern already used by
+/// migration_test.dart/move_to_profile_test.dart.
+String _uid() => '${DateTime.now().microsecondsSinceEpoch}';
+
 const _password = 'correcthorsebattery';
 
 void main() {
@@ -342,7 +349,7 @@ void main() {
     });
 
     test('produces a file with the .hfbackup extension', () async {
-      final isar = await _openIsar('export_enc_extension');
+      final isar = await _openIsar('export_enc_extension_${_uid()}');
       await isar.writeTxn(
         () => isar.profileIsars.put(ProfileIsar()..name = 'Sarah'),
       );
@@ -356,7 +363,7 @@ void main() {
     test(
       'the exported file is not readable as a plain Isar database',
       () async {
-        final isar = await _openIsar('export_enc_not_plain');
+        final isar = await _openIsar('export_enc_not_plain_${_uid()}');
         await isar.writeTxn(
           () => isar.profileIsars.put(ProfileIsar()..name = 'Sarah'),
         );
@@ -370,7 +377,7 @@ void main() {
     test(
       'no unencrypted intermediate copy of the backup survives on disk',
       () async {
-        final isar = await _openIsar('export_enc_no_leftover');
+        final isar = await _openIsar('export_enc_no_leftover_${_uid()}');
         await isar.writeTxn(
           () => isar.profileIsars.put(ProfileIsar()..name = 'Sarah'),
         );
@@ -424,7 +431,7 @@ void main() {
     test(
       'merge: decrypting then importing adds the same records as a plain backup',
       () async {
-        final source = await _openIsar('import_merge_source');
+        final source = await _openIsar('import_merge_source_${_uid()}');
         await source.writeTxn(
           () => source.profileIsars.put(ProfileIsar()..name = 'Sarah'),
         );
@@ -438,7 +445,7 @@ void main() {
           password: _password,
         );
 
-        final main = await _openIsar('import_merge_main');
+        final main = await _openIsar('import_merge_main_${_uid()}');
         final added = await ImportService.mergeAll(decPath, main);
 
         expect(added, 1);
@@ -450,7 +457,7 @@ void main() {
     test(
       'selective: decrypting once is enough for both preview and the commit',
       () async {
-        final source = await _openIsar('import_selective_source');
+        final source = await _openIsar('import_selective_source_${_uid()}');
         await source.writeTxn(() async {
           await source.profileIsars.put(ProfileIsar()..name = 'Sarah');
         });
@@ -467,7 +474,7 @@ void main() {
           password: _password,
         );
 
-        final main = await _openIsar('import_selective_main');
+        final main = await _openIsar('import_selective_main_${_uid()}');
         final categories = await ImportService.preview(decPath, main);
         expect(
           categories.any((c) => c.id == ImportCategoryId.profiles),
@@ -492,7 +499,7 @@ void main() {
         await live.close();
 
         // A separate encrypted backup with different data.
-        final source = await _openIsar('import_overwrite_source');
+        final source = await _openIsar('import_overwrite_source_${_uid()}');
         await source.writeTxn(
           () => source.profileIsars.put(ProfileIsar()..name = 'NewData'),
         );
@@ -521,7 +528,7 @@ void main() {
     test(
       'a plain, pre-encryption .isar backup is never routed through decryption',
       () async {
-        final source = await _openIsar('import_legacy_source');
+        final source = await _openIsar('import_legacy_source_${_uid()}');
         await source.writeTxn(
           () => source.profileIsars.put(ProfileIsar()..name = 'Dad'),
         );
@@ -530,7 +537,7 @@ void main() {
 
         expect(await EncryptedBackupCodec.isEncrypted(plainPath), isFalse);
 
-        final main = await _openIsar('import_legacy_main');
+        final main = await _openIsar('import_legacy_main_${_uid()}');
         final added = await ImportService.mergeAll(plainPath, main);
         expect(added, 1);
       },
