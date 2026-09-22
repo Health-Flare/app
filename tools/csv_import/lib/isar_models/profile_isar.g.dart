@@ -248,7 +248,7 @@ extension ProfileIsarQueryWhere
 extension ProfileIsarQueryFilter
     on QueryBuilder<ProfileIsar, ProfileIsar, QFilterCondition> {
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
-  avatarPathIsNull() {
+      avatarPathIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNull(property: r'avatarPath'),
@@ -257,7 +257,7 @@ extension ProfileIsarQueryFilter
   }
 
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
-  avatarPathIsNotNull() {
+      avatarPathIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNotNull(property: r'avatarPath'),
@@ -266,7 +266,7 @@ extension ProfileIsarQueryFilter
   }
 
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
-  avatarPathEqualTo(String? value, {bool caseSensitive = true}) {
+      avatarPathEqualTo(String? value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(
@@ -279,7 +279,7 @@ extension ProfileIsarQueryFilter
   }
 
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
-  avatarPathGreaterThan(
+      avatarPathGreaterThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -297,7 +297,7 @@ extension ProfileIsarQueryFilter
   }
 
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
-  avatarPathLessThan(
+      avatarPathLessThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -315,7 +315,7 @@ extension ProfileIsarQueryFilter
   }
 
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
-  avatarPathBetween(
+      avatarPathBetween(
     String? lower,
     String? upper, {
     bool includeLower = true,
@@ -337,7 +337,7 @@ extension ProfileIsarQueryFilter
   }
 
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
-  avatarPathStartsWith(String value, {bool caseSensitive = true}) {
+      avatarPathStartsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.startsWith(
@@ -350,7 +350,7 @@ extension ProfileIsarQueryFilter
   }
 
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
-  avatarPathEndsWith(String value, {bool caseSensitive = true}) {
+      avatarPathEndsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.endsWith(
@@ -363,7 +363,7 @@ extension ProfileIsarQueryFilter
   }
 
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
-  avatarPathContains(String value, {bool caseSensitive = true}) {
+      avatarPathContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.contains(
@@ -376,7 +376,7 @@ extension ProfileIsarQueryFilter
   }
 
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
-  avatarPathMatches(String pattern, {bool caseSensitive = true}) {
+      avatarPathMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.matches(
@@ -389,7 +389,7 @@ extension ProfileIsarQueryFilter
   }
 
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
-  avatarPathIsEmpty() {
+      avatarPathIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'avatarPath', value: ''),
@@ -398,7 +398,7 @@ extension ProfileIsarQueryFilter
   }
 
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
-  avatarPathIsNotEmpty() {
+      avatarPathIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(property: r'avatarPath', value: ''),
@@ -407,7 +407,7 @@ extension ProfileIsarQueryFilter
   }
 
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
-  colorSeedIsNull() {
+      colorSeedIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNull(property: r'colorSeed'),
@@ -416,7 +416,7 @@ extension ProfileIsarQueryFilter
   }
 
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
-  colorSeedIsNotNull() {
+      colorSeedIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNotNull(property: r'colorSeed'),
@@ -425,7 +425,7 @@ extension ProfileIsarQueryFilter
   }
 
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
-  colorSeedEqualTo(int? value) {
+      colorSeedEqualTo(int? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'colorSeed', value: value),
@@ -434,7 +434,7 @@ extension ProfileIsarQueryFilter
   }
 
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
-  colorSeedGreaterThan(int? value, {bool include = false}) {
+      colorSeedGreaterThan(int? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -447,7 +447,7 @@ extension ProfileIsarQueryFilter
   }
 
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
-  colorSeedLessThan(int? value, {bool include = false}) {
+      colorSeedLessThan(int? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -460,7 +460,7 @@ extension ProfileIsarQueryFilter
   }
 
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
-  colorSeedBetween(
+      colorSeedBetween(
     int? lower,
     int? upper, {
     bool includeLower = true,
@@ -480,7 +480,7 @@ extension ProfileIsarQueryFilter
   }
 
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
-  cycleTrackingEnabledEqualTo(bool value) {
+      cycleTrackingEnabledEqualTo(bool value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(
@@ -492,7 +492,7 @@ extension ProfileIsarQueryFilter
   }
 
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
-  dateOfBirthIsNull() {
+      dateOfBirthIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNull(property: r'dateOfBirth'),
@@ -501,7 +501,7 @@ extension ProfileIsarQueryFilter
   }
 
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
-  dateOfBirthIsNotNull() {
+      dateOfBirthIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNotNull(property: r'dateOfBirth'),
@@ -510,7 +510,7 @@ extension ProfileIsarQueryFilter
   }
 
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
-  dateOfBirthEqualTo(DateTime? value) {
+      dateOfBirthEqualTo(DateTime? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'dateOfBirth', value: value),
@@ -519,7 +519,7 @@ extension ProfileIsarQueryFilter
   }
 
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
-  dateOfBirthGreaterThan(DateTime? value, {bool include = false}) {
+      dateOfBirthGreaterThan(DateTime? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -532,7 +532,7 @@ extension ProfileIsarQueryFilter
   }
 
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
-  dateOfBirthLessThan(DateTime? value, {bool include = false}) {
+      dateOfBirthLessThan(DateTime? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -545,7 +545,7 @@ extension ProfileIsarQueryFilter
   }
 
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
-  dateOfBirthBetween(
+      dateOfBirthBetween(
     DateTime? lower,
     DateTime? upper, {
     bool includeLower = true,
@@ -565,7 +565,7 @@ extension ProfileIsarQueryFilter
   }
 
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
-  firstLogShownEqualTo(bool value) {
+      firstLogShownEqualTo(bool value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'firstLogShown', value: value),
@@ -771,7 +771,7 @@ extension ProfileIsarQueryFilter
   }
 
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
-  nameIsNotEmpty() {
+      nameIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(property: r'name', value: ''),
@@ -780,7 +780,7 @@ extension ProfileIsarQueryFilter
   }
 
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
-  weatherOptInShownEqualTo(bool value) {
+      weatherOptInShownEqualTo(bool value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'weatherOptInShown', value: value),
@@ -789,7 +789,7 @@ extension ProfileIsarQueryFilter
   }
 
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
-  weatherTrackingEnabledEqualTo(bool value) {
+      weatherTrackingEnabledEqualTo(bool value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(
@@ -834,14 +834,14 @@ extension ProfileIsarQuerySortBy
   }
 
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy>
-  sortByCycleTrackingEnabled() {
+      sortByCycleTrackingEnabled() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'cycleTrackingEnabled', Sort.asc);
     });
   }
 
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy>
-  sortByCycleTrackingEnabledDesc() {
+      sortByCycleTrackingEnabledDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'cycleTrackingEnabled', Sort.desc);
     });
@@ -866,7 +866,7 @@ extension ProfileIsarQuerySortBy
   }
 
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy>
-  sortByFirstLogShownDesc() {
+      sortByFirstLogShownDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'firstLogShown', Sort.desc);
     });
@@ -885,28 +885,28 @@ extension ProfileIsarQuerySortBy
   }
 
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy>
-  sortByWeatherOptInShown() {
+      sortByWeatherOptInShown() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'weatherOptInShown', Sort.asc);
     });
   }
 
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy>
-  sortByWeatherOptInShownDesc() {
+      sortByWeatherOptInShownDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'weatherOptInShown', Sort.desc);
     });
   }
 
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy>
-  sortByWeatherTrackingEnabled() {
+      sortByWeatherTrackingEnabled() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'weatherTrackingEnabled', Sort.asc);
     });
   }
 
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy>
-  sortByWeatherTrackingEnabledDesc() {
+      sortByWeatherTrackingEnabledDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'weatherTrackingEnabled', Sort.desc);
     });
@@ -940,14 +940,14 @@ extension ProfileIsarQuerySortThenBy
   }
 
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy>
-  thenByCycleTrackingEnabled() {
+      thenByCycleTrackingEnabled() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'cycleTrackingEnabled', Sort.asc);
     });
   }
 
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy>
-  thenByCycleTrackingEnabledDesc() {
+      thenByCycleTrackingEnabledDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'cycleTrackingEnabled', Sort.desc);
     });
@@ -972,7 +972,7 @@ extension ProfileIsarQuerySortThenBy
   }
 
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy>
-  thenByFirstLogShownDesc() {
+      thenByFirstLogShownDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'firstLogShown', Sort.desc);
     });
@@ -1003,28 +1003,28 @@ extension ProfileIsarQuerySortThenBy
   }
 
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy>
-  thenByWeatherOptInShown() {
+      thenByWeatherOptInShown() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'weatherOptInShown', Sort.asc);
     });
   }
 
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy>
-  thenByWeatherOptInShownDesc() {
+      thenByWeatherOptInShownDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'weatherOptInShown', Sort.desc);
     });
   }
 
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy>
-  thenByWeatherTrackingEnabled() {
+      thenByWeatherTrackingEnabled() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'weatherTrackingEnabled', Sort.asc);
     });
   }
 
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy>
-  thenByWeatherTrackingEnabledDesc() {
+      thenByWeatherTrackingEnabledDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'weatherTrackingEnabled', Sort.desc);
     });
@@ -1048,7 +1048,7 @@ extension ProfileIsarQueryWhereDistinct
   }
 
   QueryBuilder<ProfileIsar, ProfileIsar, QDistinct>
-  distinctByCycleTrackingEnabled() {
+      distinctByCycleTrackingEnabled() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'cycleTrackingEnabled');
     });
@@ -1075,14 +1075,14 @@ extension ProfileIsarQueryWhereDistinct
   }
 
   QueryBuilder<ProfileIsar, ProfileIsar, QDistinct>
-  distinctByWeatherOptInShown() {
+      distinctByWeatherOptInShown() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'weatherOptInShown');
     });
   }
 
   QueryBuilder<ProfileIsar, ProfileIsar, QDistinct>
-  distinctByWeatherTrackingEnabled() {
+      distinctByWeatherTrackingEnabled() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'weatherTrackingEnabled');
     });
@@ -1110,7 +1110,7 @@ extension ProfileIsarQueryProperty
   }
 
   QueryBuilder<ProfileIsar, bool, QQueryOperations>
-  cycleTrackingEnabledProperty() {
+      cycleTrackingEnabledProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'cycleTrackingEnabled');
     });
@@ -1135,14 +1135,14 @@ extension ProfileIsarQueryProperty
   }
 
   QueryBuilder<ProfileIsar, bool, QQueryOperations>
-  weatherOptInShownProperty() {
+      weatherOptInShownProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'weatherOptInShown');
     });
   }
 
   QueryBuilder<ProfileIsar, bool, QQueryOperations>
-  weatherTrackingEnabledProperty() {
+      weatherTrackingEnabledProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'weatherTrackingEnabled');
     });

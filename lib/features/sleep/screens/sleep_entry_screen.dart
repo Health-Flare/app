@@ -45,15 +45,28 @@ DateTime shiftedBedtimeForNewWakeTime({
 /// Pass [entry] to open in edit mode; leave null for a new entry.
 /// Defaults: bedtime = yesterday 23:00, wake = today 07:00.
 class SleepEntryScreen extends ConsumerStatefulWidget {
-  const SleepEntryScreen({super.key, this.entry, this.initialNotes});
+  const SleepEntryScreen({super.key, this.entry, this.prefill});
 
   final SleepEntry? entry;
 
-  /// Pre-fills the notes field for a new entry (quick-log "Add details").
-  final String? initialNotes;
+  /// Pre-fills a new entry from Quick Log's "Add details" — notes always,
+  /// and bedtime/wake time too when Quick Log parsed a clock-time range out
+  /// of the typed text.
+  final SleepEntryPrefill? prefill;
 
   @override
   ConsumerState<SleepEntryScreen> createState() => _SleepEntryScreenState();
+}
+
+/// Carries Quick Log's typed text and, when a bedtime/wake-time range was
+/// parsed from it, the resulting times into [SleepEntryScreen] as its route
+/// `extra`.
+class SleepEntryPrefill {
+  const SleepEntryPrefill({this.notes, this.bedtime, this.wakeTime});
+
+  final String? notes;
+  final DateTime? bedtime;
+  final DateTime? wakeTime;
 }
 
 class _SleepEntryScreenState extends ConsumerState<SleepEntryScreen> {
@@ -78,15 +91,19 @@ class _SleepEntryScreenState extends ConsumerState<SleepEntryScreen> {
       final now = DateTime.now();
       final today = DateTime(now.year, now.month, now.day);
       final yesterday = today.subtract(const Duration(days: 1));
-      _bedtime = yesterday.add(const Duration(hours: 23));
-      _wakeTime = today.add(const Duration(hours: 7));
+      _bedtime =
+          widget.prefill?.bedtime ?? yesterday.add(const Duration(hours: 23));
+      _wakeTime =
+          widget.prefill?.wakeTime ?? today.add(const Duration(hours: 7));
       final profileId = ref.read(activeProfileProvider);
       _isNap =
           profileId != null &&
           ref
               .read(sleepEntryListProvider)
               .any((e) => e.profileId == profileId && e.date == today);
-      _notesController = TextEditingController(text: widget.initialNotes ?? '');
+      _notesController = TextEditingController(
+        text: widget.prefill?.notes ?? '',
+      );
     }
   }
 

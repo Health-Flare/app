@@ -305,7 +305,7 @@ extension MealEntryIsarQueryWhere
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterWhereClause>
-  profileIdEqualTo(int profileId) {
+      profileIdEqualTo(int profileId) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IndexWhereClause.equalTo(indexName: r'profileId', value: [profileId]),
@@ -314,7 +314,7 @@ extension MealEntryIsarQueryWhere
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterWhereClause>
-  profileIdNotEqualTo(int profileId) {
+      profileIdNotEqualTo(int profileId) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -357,7 +357,7 @@ extension MealEntryIsarQueryWhere
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterWhereClause>
-  profileIdGreaterThan(int profileId, {bool include = false}) {
+      profileIdGreaterThan(int profileId, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IndexWhereClause.between(
@@ -371,7 +371,7 @@ extension MealEntryIsarQueryWhere
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterWhereClause>
-  profileIdLessThan(int profileId, {bool include = false}) {
+      profileIdLessThan(int profileId, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IndexWhereClause.between(
@@ -385,7 +385,7 @@ extension MealEntryIsarQueryWhere
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterWhereClause>
-  profileIdBetween(
+      profileIdBetween(
     int lowerProfileId,
     int upperProfileId, {
     bool includeLower = true,
@@ -415,7 +415,7 @@ extension MealEntryIsarQueryWhere
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterWhereClause>
-  loggedAtNotEqualTo(DateTime loggedAt) {
+      loggedAtNotEqualTo(DateTime loggedAt) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -458,7 +458,7 @@ extension MealEntryIsarQueryWhere
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterWhereClause>
-  loggedAtGreaterThan(DateTime loggedAt, {bool include = false}) {
+      loggedAtGreaterThan(DateTime loggedAt, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IndexWhereClause.between(
@@ -472,7 +472,7 @@ extension MealEntryIsarQueryWhere
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterWhereClause>
-  loggedAtLessThan(DateTime loggedAt, {bool include = false}) {
+      loggedAtLessThan(DateTime loggedAt, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IndexWhereClause.between(
@@ -508,7 +508,7 @@ extension MealEntryIsarQueryWhere
 extension MealEntryIsarQueryFilter
     on QueryBuilder<MealEntryIsar, MealEntryIsar, QFilterCondition> {
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
-  createdAtEqualTo(DateTime value) {
+      createdAtEqualTo(DateTime value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'createdAt', value: value),
@@ -517,7 +517,7 @@ extension MealEntryIsarQueryFilter
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
-  createdAtGreaterThan(DateTime value, {bool include = false}) {
+      createdAtGreaterThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -530,7 +530,7 @@ extension MealEntryIsarQueryFilter
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
-  createdAtLessThan(DateTime value, {bool include = false}) {
+      createdAtLessThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -543,7 +543,7 @@ extension MealEntryIsarQueryFilter
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
-  createdAtBetween(
+      createdAtBetween(
     DateTime lower,
     DateTime upper, {
     bool includeLower = true,
@@ -563,7 +563,7 @@ extension MealEntryIsarQueryFilter
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
-  descriptionEqualTo(String value, {bool caseSensitive = true}) {
+      descriptionEqualTo(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(
@@ -576,7 +576,7 @@ extension MealEntryIsarQueryFilter
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
-  descriptionGreaterThan(
+      descriptionGreaterThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -594,7 +594,7 @@ extension MealEntryIsarQueryFilter
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
-  descriptionLessThan(
+      descriptionLessThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -612,7 +612,7 @@ extension MealEntryIsarQueryFilter
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
-  descriptionBetween(
+      descriptionBetween(
     String lower,
     String upper, {
     bool includeLower = true,
@@ -634,7 +634,7 @@ extension MealEntryIsarQueryFilter
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
-  descriptionStartsWith(String value, {bool caseSensitive = true}) {
+      descriptionStartsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.startsWith(
@@ -647,7 +647,7 @@ extension MealEntryIsarQueryFilter
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
-  descriptionEndsWith(String value, {bool caseSensitive = true}) {
+      descriptionEndsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.endsWith(
@@ -660,7 +660,7 @@ extension MealEntryIsarQueryFilter
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
-  descriptionContains(String value, {bool caseSensitive = true}) {
+      descriptionContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.contains(
@@ -673,7 +673,7 @@ extension MealEntryIsarQueryFilter
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
-  descriptionMatches(String pattern, {bool caseSensitive = true}) {
+      descriptionMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.matches(
@@ -686,7 +686,7 @@ extension MealEntryIsarQueryFilter
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
-  descriptionIsEmpty() {
+      descriptionIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'description', value: ''),
@@ -695,7 +695,7 @@ extension MealEntryIsarQueryFilter
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
-  descriptionIsNotEmpty() {
+      descriptionIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(property: r'description', value: ''),
@@ -704,7 +704,7 @@ extension MealEntryIsarQueryFilter
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
-  flareIsarIdIsNull() {
+      flareIsarIdIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNull(property: r'flareIsarId'),
@@ -713,7 +713,7 @@ extension MealEntryIsarQueryFilter
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
-  flareIsarIdIsNotNull() {
+      flareIsarIdIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNotNull(property: r'flareIsarId'),
@@ -722,7 +722,7 @@ extension MealEntryIsarQueryFilter
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
-  flareIsarIdEqualTo(int? value) {
+      flareIsarIdEqualTo(int? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'flareIsarId', value: value),
@@ -731,7 +731,7 @@ extension MealEntryIsarQueryFilter
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
-  flareIsarIdGreaterThan(int? value, {bool include = false}) {
+      flareIsarIdGreaterThan(int? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -744,7 +744,7 @@ extension MealEntryIsarQueryFilter
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
-  flareIsarIdLessThan(int? value, {bool include = false}) {
+      flareIsarIdLessThan(int? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -757,7 +757,7 @@ extension MealEntryIsarQueryFilter
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
-  flareIsarIdBetween(
+      flareIsarIdBetween(
     int? lower,
     int? upper, {
     bool includeLower = true,
@@ -777,7 +777,7 @@ extension MealEntryIsarQueryFilter
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
-  hasReactionEqualTo(bool value) {
+      hasReactionEqualTo(bool value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'hasReaction', value: value),
@@ -796,7 +796,7 @@ extension MealEntryIsarQueryFilter
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
-  idGreaterThan(Id value, {bool include = false}) {
+      idGreaterThan(Id value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -843,7 +843,7 @@ extension MealEntryIsarQueryFilter
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
-  loggedAtEqualTo(DateTime value) {
+      loggedAtEqualTo(DateTime value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'loggedAt', value: value),
@@ -852,7 +852,7 @@ extension MealEntryIsarQueryFilter
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
-  loggedAtGreaterThan(DateTime value, {bool include = false}) {
+      loggedAtGreaterThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -865,7 +865,7 @@ extension MealEntryIsarQueryFilter
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
-  loggedAtLessThan(DateTime value, {bool include = false}) {
+      loggedAtLessThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -878,7 +878,7 @@ extension MealEntryIsarQueryFilter
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
-  loggedAtBetween(
+      loggedAtBetween(
     DateTime lower,
     DateTime upper, {
     bool includeLower = true,
@@ -898,7 +898,7 @@ extension MealEntryIsarQueryFilter
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
-  notesIsNull() {
+      notesIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNull(property: r'notes'),
@@ -907,7 +907,7 @@ extension MealEntryIsarQueryFilter
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
-  notesIsNotNull() {
+      notesIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNotNull(property: r'notes'),
@@ -916,7 +916,7 @@ extension MealEntryIsarQueryFilter
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
-  notesEqualTo(String? value, {bool caseSensitive = true}) {
+      notesEqualTo(String? value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(
@@ -929,7 +929,7 @@ extension MealEntryIsarQueryFilter
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
-  notesGreaterThan(
+      notesGreaterThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -947,7 +947,7 @@ extension MealEntryIsarQueryFilter
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
-  notesLessThan(
+      notesLessThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -965,7 +965,7 @@ extension MealEntryIsarQueryFilter
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
-  notesBetween(
+      notesBetween(
     String? lower,
     String? upper, {
     bool includeLower = true,
@@ -987,7 +987,7 @@ extension MealEntryIsarQueryFilter
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
-  notesStartsWith(String value, {bool caseSensitive = true}) {
+      notesStartsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.startsWith(
@@ -1000,7 +1000,7 @@ extension MealEntryIsarQueryFilter
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
-  notesEndsWith(String value, {bool caseSensitive = true}) {
+      notesEndsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.endsWith(
@@ -1013,7 +1013,7 @@ extension MealEntryIsarQueryFilter
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
-  notesContains(String value, {bool caseSensitive = true}) {
+      notesContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.contains(
@@ -1026,7 +1026,7 @@ extension MealEntryIsarQueryFilter
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
-  notesMatches(String pattern, {bool caseSensitive = true}) {
+      notesMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.matches(
@@ -1039,7 +1039,7 @@ extension MealEntryIsarQueryFilter
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
-  notesIsEmpty() {
+      notesIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'notes', value: ''),
@@ -1048,7 +1048,7 @@ extension MealEntryIsarQueryFilter
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
-  notesIsNotEmpty() {
+      notesIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(property: r'notes', value: ''),
@@ -1057,7 +1057,7 @@ extension MealEntryIsarQueryFilter
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
-  photoPathIsNull() {
+      photoPathIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNull(property: r'photoPath'),
@@ -1066,7 +1066,7 @@ extension MealEntryIsarQueryFilter
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
-  photoPathIsNotNull() {
+      photoPathIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNotNull(property: r'photoPath'),
@@ -1075,7 +1075,7 @@ extension MealEntryIsarQueryFilter
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
-  photoPathEqualTo(String? value, {bool caseSensitive = true}) {
+      photoPathEqualTo(String? value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(
@@ -1088,7 +1088,7 @@ extension MealEntryIsarQueryFilter
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
-  photoPathGreaterThan(
+      photoPathGreaterThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -1106,7 +1106,7 @@ extension MealEntryIsarQueryFilter
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
-  photoPathLessThan(
+      photoPathLessThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -1124,7 +1124,7 @@ extension MealEntryIsarQueryFilter
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
-  photoPathBetween(
+      photoPathBetween(
     String? lower,
     String? upper, {
     bool includeLower = true,
@@ -1146,7 +1146,7 @@ extension MealEntryIsarQueryFilter
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
-  photoPathStartsWith(String value, {bool caseSensitive = true}) {
+      photoPathStartsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.startsWith(
@@ -1159,7 +1159,7 @@ extension MealEntryIsarQueryFilter
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
-  photoPathEndsWith(String value, {bool caseSensitive = true}) {
+      photoPathEndsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.endsWith(
@@ -1172,7 +1172,7 @@ extension MealEntryIsarQueryFilter
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
-  photoPathContains(String value, {bool caseSensitive = true}) {
+      photoPathContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.contains(
@@ -1185,7 +1185,7 @@ extension MealEntryIsarQueryFilter
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
-  photoPathMatches(String pattern, {bool caseSensitive = true}) {
+      photoPathMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.matches(
@@ -1198,7 +1198,7 @@ extension MealEntryIsarQueryFilter
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
-  photoPathIsEmpty() {
+      photoPathIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'photoPath', value: ''),
@@ -1207,7 +1207,7 @@ extension MealEntryIsarQueryFilter
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
-  photoPathIsNotEmpty() {
+      photoPathIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(property: r'photoPath', value: ''),
@@ -1216,7 +1216,7 @@ extension MealEntryIsarQueryFilter
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
-  profileIdEqualTo(int value) {
+      profileIdEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'profileId', value: value),
@@ -1225,7 +1225,7 @@ extension MealEntryIsarQueryFilter
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
-  profileIdGreaterThan(int value, {bool include = false}) {
+      profileIdGreaterThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -1238,7 +1238,7 @@ extension MealEntryIsarQueryFilter
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
-  profileIdLessThan(int value, {bool include = false}) {
+      profileIdLessThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -1251,7 +1251,7 @@ extension MealEntryIsarQueryFilter
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
-  profileIdBetween(
+      profileIdBetween(
     int lower,
     int upper, {
     bool includeLower = true,
@@ -1271,7 +1271,7 @@ extension MealEntryIsarQueryFilter
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
-  updatedAtIsNull() {
+      updatedAtIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNull(property: r'updatedAt'),
@@ -1280,7 +1280,7 @@ extension MealEntryIsarQueryFilter
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
-  updatedAtIsNotNull() {
+      updatedAtIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNotNull(property: r'updatedAt'),
@@ -1289,7 +1289,7 @@ extension MealEntryIsarQueryFilter
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
-  updatedAtEqualTo(DateTime? value) {
+      updatedAtEqualTo(DateTime? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'updatedAt', value: value),
@@ -1298,7 +1298,7 @@ extension MealEntryIsarQueryFilter
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
-  updatedAtGreaterThan(DateTime? value, {bool include = false}) {
+      updatedAtGreaterThan(DateTime? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -1311,7 +1311,7 @@ extension MealEntryIsarQueryFilter
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
-  updatedAtLessThan(DateTime? value, {bool include = false}) {
+      updatedAtLessThan(DateTime? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -1324,7 +1324,7 @@ extension MealEntryIsarQueryFilter
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
-  updatedAtBetween(
+      updatedAtBetween(
     DateTime? lower,
     DateTime? upper, {
     bool includeLower = true,
@@ -1359,7 +1359,7 @@ extension MealEntryIsarQuerySortBy
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterSortBy>
-  sortByCreatedAtDesc() {
+      sortByCreatedAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'createdAt', Sort.desc);
     });
@@ -1372,7 +1372,7 @@ extension MealEntryIsarQuerySortBy
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterSortBy>
-  sortByDescriptionDesc() {
+      sortByDescriptionDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'description', Sort.desc);
     });
@@ -1385,7 +1385,7 @@ extension MealEntryIsarQuerySortBy
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterSortBy>
-  sortByFlareIsarIdDesc() {
+      sortByFlareIsarIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'flareIsarId', Sort.desc);
     });
@@ -1398,7 +1398,7 @@ extension MealEntryIsarQuerySortBy
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterSortBy>
-  sortByHasReactionDesc() {
+      sortByHasReactionDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'hasReaction', Sort.desc);
     });
@@ -1411,7 +1411,7 @@ extension MealEntryIsarQuerySortBy
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterSortBy>
-  sortByLoggedAtDesc() {
+      sortByLoggedAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'loggedAt', Sort.desc);
     });
@@ -1436,7 +1436,7 @@ extension MealEntryIsarQuerySortBy
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterSortBy>
-  sortByPhotoPathDesc() {
+      sortByPhotoPathDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'photoPath', Sort.desc);
     });
@@ -1449,7 +1449,7 @@ extension MealEntryIsarQuerySortBy
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterSortBy>
-  sortByProfileIdDesc() {
+      sortByProfileIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'profileId', Sort.desc);
     });
@@ -1462,7 +1462,7 @@ extension MealEntryIsarQuerySortBy
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterSortBy>
-  sortByUpdatedAtDesc() {
+      sortByUpdatedAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'updatedAt', Sort.desc);
     });
@@ -1478,7 +1478,7 @@ extension MealEntryIsarQuerySortThenBy
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterSortBy>
-  thenByCreatedAtDesc() {
+      thenByCreatedAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'createdAt', Sort.desc);
     });
@@ -1491,7 +1491,7 @@ extension MealEntryIsarQuerySortThenBy
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterSortBy>
-  thenByDescriptionDesc() {
+      thenByDescriptionDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'description', Sort.desc);
     });
@@ -1504,7 +1504,7 @@ extension MealEntryIsarQuerySortThenBy
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterSortBy>
-  thenByFlareIsarIdDesc() {
+      thenByFlareIsarIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'flareIsarId', Sort.desc);
     });
@@ -1517,7 +1517,7 @@ extension MealEntryIsarQuerySortThenBy
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterSortBy>
-  thenByHasReactionDesc() {
+      thenByHasReactionDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'hasReaction', Sort.desc);
     });
@@ -1542,7 +1542,7 @@ extension MealEntryIsarQuerySortThenBy
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterSortBy>
-  thenByLoggedAtDesc() {
+      thenByLoggedAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'loggedAt', Sort.desc);
     });
@@ -1567,7 +1567,7 @@ extension MealEntryIsarQuerySortThenBy
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterSortBy>
-  thenByPhotoPathDesc() {
+      thenByPhotoPathDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'photoPath', Sort.desc);
     });
@@ -1580,7 +1580,7 @@ extension MealEntryIsarQuerySortThenBy
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterSortBy>
-  thenByProfileIdDesc() {
+      thenByProfileIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'profileId', Sort.desc);
     });
@@ -1593,7 +1593,7 @@ extension MealEntryIsarQuerySortThenBy
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterSortBy>
-  thenByUpdatedAtDesc() {
+      thenByUpdatedAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'updatedAt', Sort.desc);
     });
@@ -1617,14 +1617,14 @@ extension MealEntryIsarQueryWhereDistinct
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QDistinct>
-  distinctByFlareIsarId() {
+      distinctByFlareIsarId() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'flareIsarId');
     });
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QDistinct>
-  distinctByHasReaction() {
+      distinctByHasReaction() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'hasReaction');
     });

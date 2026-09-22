@@ -218,7 +218,7 @@ extension DailyCheckinIsarQueryWhereSort
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterWhere>
-  anyCheckinDate() {
+      anyCheckinDate() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         const IndexWhereClause.any(indexName: r'checkinDate'),
@@ -238,7 +238,7 @@ extension DailyCheckinIsarQueryWhere
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterWhereClause>
-  idNotEqualTo(Id id) {
+      idNotEqualTo(Id id) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -261,7 +261,7 @@ extension DailyCheckinIsarQueryWhere
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterWhereClause>
-  idGreaterThan(Id id, {bool include = false}) {
+      idGreaterThan(Id id, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.greaterThan(lower: id, includeLower: include),
@@ -270,7 +270,7 @@ extension DailyCheckinIsarQueryWhere
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterWhereClause>
-  idLessThan(Id id, {bool include = false}) {
+      idLessThan(Id id, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.lessThan(upper: id, includeUpper: include),
@@ -297,7 +297,7 @@ extension DailyCheckinIsarQueryWhere
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterWhereClause>
-  profileIdEqualTo(int profileId) {
+      profileIdEqualTo(int profileId) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IndexWhereClause.equalTo(indexName: r'profileId', value: [profileId]),
@@ -306,7 +306,7 @@ extension DailyCheckinIsarQueryWhere
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterWhereClause>
-  profileIdNotEqualTo(int profileId) {
+      profileIdNotEqualTo(int profileId) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -349,7 +349,7 @@ extension DailyCheckinIsarQueryWhere
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterWhereClause>
-  profileIdGreaterThan(int profileId, {bool include = false}) {
+      profileIdGreaterThan(int profileId, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IndexWhereClause.between(
@@ -363,7 +363,7 @@ extension DailyCheckinIsarQueryWhere
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterWhereClause>
-  profileIdLessThan(int profileId, {bool include = false}) {
+      profileIdLessThan(int profileId, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IndexWhereClause.between(
@@ -377,7 +377,7 @@ extension DailyCheckinIsarQueryWhere
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterWhereClause>
-  profileIdBetween(
+      profileIdBetween(
     int lowerProfileId,
     int upperProfileId, {
     bool includeLower = true,
@@ -397,7 +397,7 @@ extension DailyCheckinIsarQueryWhere
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterWhereClause>
-  checkinDateEqualTo(DateTime checkinDate) {
+      checkinDateEqualTo(DateTime checkinDate) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IndexWhereClause.equalTo(
@@ -409,7 +409,7 @@ extension DailyCheckinIsarQueryWhere
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterWhereClause>
-  checkinDateNotEqualTo(DateTime checkinDate) {
+      checkinDateNotEqualTo(DateTime checkinDate) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -452,7 +452,7 @@ extension DailyCheckinIsarQueryWhere
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterWhereClause>
-  checkinDateGreaterThan(DateTime checkinDate, {bool include = false}) {
+      checkinDateGreaterThan(DateTime checkinDate, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IndexWhereClause.between(
@@ -466,7 +466,7 @@ extension DailyCheckinIsarQueryWhere
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterWhereClause>
-  checkinDateLessThan(DateTime checkinDate, {bool include = false}) {
+      checkinDateLessThan(DateTime checkinDate, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IndexWhereClause.between(
@@ -480,7 +480,7 @@ extension DailyCheckinIsarQueryWhere
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterWhereClause>
-  checkinDateBetween(
+      checkinDateBetween(
     DateTime lowerCheckinDate,
     DateTime upperCheckinDate, {
     bool includeLower = true,
@@ -503,7 +503,7 @@ extension DailyCheckinIsarQueryWhere
 extension DailyCheckinIsarQueryFilter
     on QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QFilterCondition> {
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  checkinDateEqualTo(DateTime value) {
+      checkinDateEqualTo(DateTime value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'checkinDate', value: value),
@@ -512,7 +512,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  checkinDateGreaterThan(DateTime value, {bool include = false}) {
+      checkinDateGreaterThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -525,7 +525,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  checkinDateLessThan(DateTime value, {bool include = false}) {
+      checkinDateLessThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -538,7 +538,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  checkinDateBetween(
+      checkinDateBetween(
     DateTime lower,
     DateTime upper, {
     bool includeLower = true,
@@ -558,7 +558,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  createdAtEqualTo(DateTime value) {
+      createdAtEqualTo(DateTime value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'createdAt', value: value),
@@ -567,7 +567,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  createdAtGreaterThan(DateTime value, {bool include = false}) {
+      createdAtGreaterThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -580,7 +580,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  createdAtLessThan(DateTime value, {bool include = false}) {
+      createdAtLessThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -593,7 +593,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  createdAtBetween(
+      createdAtBetween(
     DateTime lower,
     DateTime upper, {
     bool includeLower = true,
@@ -613,7 +613,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  cyclePhaseIsNull() {
+      cyclePhaseIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNull(property: r'cyclePhase'),
@@ -622,7 +622,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  cyclePhaseIsNotNull() {
+      cyclePhaseIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNotNull(property: r'cyclePhase'),
@@ -631,7 +631,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  cyclePhaseEqualTo(String? value, {bool caseSensitive = true}) {
+      cyclePhaseEqualTo(String? value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(
@@ -644,7 +644,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  cyclePhaseGreaterThan(
+      cyclePhaseGreaterThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -662,7 +662,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  cyclePhaseLessThan(
+      cyclePhaseLessThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -680,7 +680,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  cyclePhaseBetween(
+      cyclePhaseBetween(
     String? lower,
     String? upper, {
     bool includeLower = true,
@@ -702,7 +702,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  cyclePhaseStartsWith(String value, {bool caseSensitive = true}) {
+      cyclePhaseStartsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.startsWith(
@@ -715,7 +715,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  cyclePhaseEndsWith(String value, {bool caseSensitive = true}) {
+      cyclePhaseEndsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.endsWith(
@@ -728,7 +728,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  cyclePhaseContains(String value, {bool caseSensitive = true}) {
+      cyclePhaseContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.contains(
@@ -741,7 +741,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  cyclePhaseMatches(String pattern, {bool caseSensitive = true}) {
+      cyclePhaseMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.matches(
@@ -754,7 +754,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  cyclePhaseIsEmpty() {
+      cyclePhaseIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'cyclePhase', value: ''),
@@ -763,7 +763,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  cyclePhaseIsNotEmpty() {
+      cyclePhaseIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(property: r'cyclePhase', value: ''),
@@ -772,7 +772,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  idEqualTo(Id value) {
+      idEqualTo(Id value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'id', value: value),
@@ -781,7 +781,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  idGreaterThan(Id value, {bool include = false}) {
+      idGreaterThan(Id value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -794,7 +794,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  idLessThan(Id value, {bool include = false}) {
+      idLessThan(Id value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -807,7 +807,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  idBetween(
+      idBetween(
     Id lower,
     Id upper, {
     bool includeLower = true,
@@ -827,7 +827,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  notesIsNull() {
+      notesIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNull(property: r'notes'),
@@ -836,7 +836,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  notesIsNotNull() {
+      notesIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNotNull(property: r'notes'),
@@ -845,7 +845,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  notesEqualTo(String? value, {bool caseSensitive = true}) {
+      notesEqualTo(String? value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(
@@ -858,7 +858,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  notesGreaterThan(
+      notesGreaterThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -876,7 +876,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  notesLessThan(
+      notesLessThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -894,7 +894,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  notesBetween(
+      notesBetween(
     String? lower,
     String? upper, {
     bool includeLower = true,
@@ -916,7 +916,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  notesStartsWith(String value, {bool caseSensitive = true}) {
+      notesStartsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.startsWith(
@@ -929,7 +929,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  notesEndsWith(String value, {bool caseSensitive = true}) {
+      notesEndsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.endsWith(
@@ -942,7 +942,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  notesContains(String value, {bool caseSensitive = true}) {
+      notesContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.contains(
@@ -955,7 +955,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  notesMatches(String pattern, {bool caseSensitive = true}) {
+      notesMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.matches(
@@ -968,7 +968,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  notesIsEmpty() {
+      notesIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'notes', value: ''),
@@ -977,7 +977,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  notesIsNotEmpty() {
+      notesIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(property: r'notes', value: ''),
@@ -986,7 +986,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  profileIdEqualTo(int value) {
+      profileIdEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'profileId', value: value),
@@ -995,7 +995,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  profileIdGreaterThan(int value, {bool include = false}) {
+      profileIdGreaterThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -1008,7 +1008,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  profileIdLessThan(int value, {bool include = false}) {
+      profileIdLessThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -1021,7 +1021,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  profileIdBetween(
+      profileIdBetween(
     int lower,
     int upper, {
     bool includeLower = true,
@@ -1041,7 +1041,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  stressLevelIsNull() {
+      stressLevelIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNull(property: r'stressLevel'),
@@ -1050,7 +1050,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  stressLevelIsNotNull() {
+      stressLevelIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNotNull(property: r'stressLevel'),
@@ -1059,7 +1059,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  stressLevelEqualTo(String? value, {bool caseSensitive = true}) {
+      stressLevelEqualTo(String? value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(
@@ -1072,7 +1072,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  stressLevelGreaterThan(
+      stressLevelGreaterThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -1090,7 +1090,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  stressLevelLessThan(
+      stressLevelLessThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -1108,7 +1108,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  stressLevelBetween(
+      stressLevelBetween(
     String? lower,
     String? upper, {
     bool includeLower = true,
@@ -1130,7 +1130,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  stressLevelStartsWith(String value, {bool caseSensitive = true}) {
+      stressLevelStartsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.startsWith(
@@ -1143,7 +1143,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  stressLevelEndsWith(String value, {bool caseSensitive = true}) {
+      stressLevelEndsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.endsWith(
@@ -1156,7 +1156,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  stressLevelContains(String value, {bool caseSensitive = true}) {
+      stressLevelContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.contains(
@@ -1169,7 +1169,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  stressLevelMatches(String pattern, {bool caseSensitive = true}) {
+      stressLevelMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.matches(
@@ -1182,7 +1182,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  stressLevelIsEmpty() {
+      stressLevelIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'stressLevel', value: ''),
@@ -1191,7 +1191,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  stressLevelIsNotEmpty() {
+      stressLevelIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(property: r'stressLevel', value: ''),
@@ -1200,7 +1200,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  updatedAtIsNull() {
+      updatedAtIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNull(property: r'updatedAt'),
@@ -1209,7 +1209,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  updatedAtIsNotNull() {
+      updatedAtIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNotNull(property: r'updatedAt'),
@@ -1218,7 +1218,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  updatedAtEqualTo(DateTime? value) {
+      updatedAtEqualTo(DateTime? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'updatedAt', value: value),
@@ -1227,7 +1227,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  updatedAtGreaterThan(DateTime? value, {bool include = false}) {
+      updatedAtGreaterThan(DateTime? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -1240,7 +1240,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  updatedAtLessThan(DateTime? value, {bool include = false}) {
+      updatedAtLessThan(DateTime? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -1253,7 +1253,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  updatedAtBetween(
+      updatedAtBetween(
     DateTime? lower,
     DateTime? upper, {
     bool includeLower = true,
@@ -1273,7 +1273,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  wellbeingEqualTo(int value) {
+      wellbeingEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'wellbeing', value: value),
@@ -1282,7 +1282,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  wellbeingGreaterThan(int value, {bool include = false}) {
+      wellbeingGreaterThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -1295,7 +1295,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  wellbeingLessThan(int value, {bool include = false}) {
+      wellbeingLessThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -1308,7 +1308,7 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-  wellbeingBetween(
+      wellbeingBetween(
     int lower,
     int upper, {
     bool includeLower = true,
@@ -1337,42 +1337,42 @@ extension DailyCheckinIsarQueryLinks
 extension DailyCheckinIsarQuerySortBy
     on QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QSortBy> {
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterSortBy>
-  sortByCheckinDate() {
+      sortByCheckinDate() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'checkinDate', Sort.asc);
     });
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterSortBy>
-  sortByCheckinDateDesc() {
+      sortByCheckinDateDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'checkinDate', Sort.desc);
     });
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterSortBy>
-  sortByCreatedAt() {
+      sortByCreatedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'createdAt', Sort.asc);
     });
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterSortBy>
-  sortByCreatedAtDesc() {
+      sortByCreatedAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'createdAt', Sort.desc);
     });
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterSortBy>
-  sortByCyclePhase() {
+      sortByCyclePhase() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'cyclePhase', Sort.asc);
     });
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterSortBy>
-  sortByCyclePhaseDesc() {
+      sortByCyclePhaseDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'cyclePhase', Sort.desc);
     });
@@ -1385,63 +1385,63 @@ extension DailyCheckinIsarQuerySortBy
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterSortBy>
-  sortByNotesDesc() {
+      sortByNotesDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'notes', Sort.desc);
     });
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterSortBy>
-  sortByProfileId() {
+      sortByProfileId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'profileId', Sort.asc);
     });
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterSortBy>
-  sortByProfileIdDesc() {
+      sortByProfileIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'profileId', Sort.desc);
     });
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterSortBy>
-  sortByStressLevel() {
+      sortByStressLevel() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'stressLevel', Sort.asc);
     });
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterSortBy>
-  sortByStressLevelDesc() {
+      sortByStressLevelDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'stressLevel', Sort.desc);
     });
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterSortBy>
-  sortByUpdatedAt() {
+      sortByUpdatedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'updatedAt', Sort.asc);
     });
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterSortBy>
-  sortByUpdatedAtDesc() {
+      sortByUpdatedAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'updatedAt', Sort.desc);
     });
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterSortBy>
-  sortByWellbeing() {
+      sortByWellbeing() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'wellbeing', Sort.asc);
     });
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterSortBy>
-  sortByWellbeingDesc() {
+      sortByWellbeingDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'wellbeing', Sort.desc);
     });
@@ -1451,42 +1451,42 @@ extension DailyCheckinIsarQuerySortBy
 extension DailyCheckinIsarQuerySortThenBy
     on QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QSortThenBy> {
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterSortBy>
-  thenByCheckinDate() {
+      thenByCheckinDate() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'checkinDate', Sort.asc);
     });
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterSortBy>
-  thenByCheckinDateDesc() {
+      thenByCheckinDateDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'checkinDate', Sort.desc);
     });
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterSortBy>
-  thenByCreatedAt() {
+      thenByCreatedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'createdAt', Sort.asc);
     });
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterSortBy>
-  thenByCreatedAtDesc() {
+      thenByCreatedAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'createdAt', Sort.desc);
     });
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterSortBy>
-  thenByCyclePhase() {
+      thenByCyclePhase() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'cyclePhase', Sort.asc);
     });
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterSortBy>
-  thenByCyclePhaseDesc() {
+      thenByCyclePhaseDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'cyclePhase', Sort.desc);
     });
@@ -1499,7 +1499,7 @@ extension DailyCheckinIsarQuerySortThenBy
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterSortBy>
-  thenByIdDesc() {
+      thenByIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.desc);
     });
@@ -1512,63 +1512,63 @@ extension DailyCheckinIsarQuerySortThenBy
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterSortBy>
-  thenByNotesDesc() {
+      thenByNotesDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'notes', Sort.desc);
     });
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterSortBy>
-  thenByProfileId() {
+      thenByProfileId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'profileId', Sort.asc);
     });
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterSortBy>
-  thenByProfileIdDesc() {
+      thenByProfileIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'profileId', Sort.desc);
     });
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterSortBy>
-  thenByStressLevel() {
+      thenByStressLevel() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'stressLevel', Sort.asc);
     });
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterSortBy>
-  thenByStressLevelDesc() {
+      thenByStressLevelDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'stressLevel', Sort.desc);
     });
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterSortBy>
-  thenByUpdatedAt() {
+      thenByUpdatedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'updatedAt', Sort.asc);
     });
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterSortBy>
-  thenByUpdatedAtDesc() {
+      thenByUpdatedAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'updatedAt', Sort.desc);
     });
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterSortBy>
-  thenByWellbeing() {
+      thenByWellbeing() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'wellbeing', Sort.asc);
     });
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterSortBy>
-  thenByWellbeingDesc() {
+      thenByWellbeingDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'wellbeing', Sort.desc);
     });
@@ -1578,21 +1578,21 @@ extension DailyCheckinIsarQuerySortThenBy
 extension DailyCheckinIsarQueryWhereDistinct
     on QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QDistinct> {
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QDistinct>
-  distinctByCheckinDate() {
+      distinctByCheckinDate() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'checkinDate');
     });
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QDistinct>
-  distinctByCreatedAt() {
+      distinctByCreatedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'createdAt');
     });
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QDistinct>
-  distinctByCyclePhase({bool caseSensitive = true}) {
+      distinctByCyclePhase({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'cyclePhase', caseSensitive: caseSensitive);
     });
@@ -1607,28 +1607,28 @@ extension DailyCheckinIsarQueryWhereDistinct
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QDistinct>
-  distinctByProfileId() {
+      distinctByProfileId() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'profileId');
     });
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QDistinct>
-  distinctByStressLevel({bool caseSensitive = true}) {
+      distinctByStressLevel({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'stressLevel', caseSensitive: caseSensitive);
     });
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QDistinct>
-  distinctByUpdatedAt() {
+      distinctByUpdatedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'updatedAt');
     });
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QDistinct>
-  distinctByWellbeing() {
+      distinctByWellbeing() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'wellbeing');
     });
@@ -1644,21 +1644,21 @@ extension DailyCheckinIsarQueryProperty
   }
 
   QueryBuilder<DailyCheckinIsar, DateTime, QQueryOperations>
-  checkinDateProperty() {
+      checkinDateProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'checkinDate');
     });
   }
 
   QueryBuilder<DailyCheckinIsar, DateTime, QQueryOperations>
-  createdAtProperty() {
+      createdAtProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'createdAt');
     });
   }
 
   QueryBuilder<DailyCheckinIsar, String?, QQueryOperations>
-  cyclePhaseProperty() {
+      cyclePhaseProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'cyclePhase');
     });
@@ -1677,14 +1677,14 @@ extension DailyCheckinIsarQueryProperty
   }
 
   QueryBuilder<DailyCheckinIsar, String?, QQueryOperations>
-  stressLevelProperty() {
+      stressLevelProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'stressLevel');
     });
   }
 
   QueryBuilder<DailyCheckinIsar, DateTime?, QQueryOperations>
-  updatedAtProperty() {
+      updatedAtProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'updatedAt');
     });

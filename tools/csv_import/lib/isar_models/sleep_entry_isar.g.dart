@@ -276,7 +276,7 @@ extension SleepEntryIsarQueryWhere
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterWhereClause>
-  profileIdEqualTo(int profileId) {
+      profileIdEqualTo(int profileId) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IndexWhereClause.equalTo(indexName: r'profileId', value: [profileId]),
@@ -285,7 +285,7 @@ extension SleepEntryIsarQueryWhere
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterWhereClause>
-  profileIdNotEqualTo(int profileId) {
+      profileIdNotEqualTo(int profileId) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -328,7 +328,7 @@ extension SleepEntryIsarQueryWhere
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterWhereClause>
-  profileIdGreaterThan(int profileId, {bool include = false}) {
+      profileIdGreaterThan(int profileId, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IndexWhereClause.between(
@@ -342,7 +342,7 @@ extension SleepEntryIsarQueryWhere
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterWhereClause>
-  profileIdLessThan(int profileId, {bool include = false}) {
+      profileIdLessThan(int profileId, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IndexWhereClause.between(
@@ -356,7 +356,7 @@ extension SleepEntryIsarQueryWhere
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterWhereClause>
-  profileIdBetween(
+      profileIdBetween(
     int lowerProfileId,
     int upperProfileId, {
     bool includeLower = true,
@@ -376,7 +376,7 @@ extension SleepEntryIsarQueryWhere
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterWhereClause>
-  wakeTimeEqualTo(DateTime wakeTime) {
+      wakeTimeEqualTo(DateTime wakeTime) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IndexWhereClause.equalTo(indexName: r'wakeTime', value: [wakeTime]),
@@ -385,7 +385,7 @@ extension SleepEntryIsarQueryWhere
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterWhereClause>
-  wakeTimeNotEqualTo(DateTime wakeTime) {
+      wakeTimeNotEqualTo(DateTime wakeTime) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -428,7 +428,7 @@ extension SleepEntryIsarQueryWhere
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterWhereClause>
-  wakeTimeGreaterThan(DateTime wakeTime, {bool include = false}) {
+      wakeTimeGreaterThan(DateTime wakeTime, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IndexWhereClause.between(
@@ -442,7 +442,7 @@ extension SleepEntryIsarQueryWhere
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterWhereClause>
-  wakeTimeLessThan(DateTime wakeTime, {bool include = false}) {
+      wakeTimeLessThan(DateTime wakeTime, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IndexWhereClause.between(
@@ -456,7 +456,7 @@ extension SleepEntryIsarQueryWhere
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterWhereClause>
-  wakeTimeBetween(
+      wakeTimeBetween(
     DateTime lowerWakeTime,
     DateTime upperWakeTime, {
     bool includeLower = true,
@@ -479,7 +479,7 @@ extension SleepEntryIsarQueryWhere
 extension SleepEntryIsarQueryFilter
     on QueryBuilder<SleepEntryIsar, SleepEntryIsar, QFilterCondition> {
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterFilterCondition>
-  bedtimeEqualTo(DateTime value) {
+      bedtimeEqualTo(DateTime value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'bedtime', value: value),
@@ -488,7 +488,7 @@ extension SleepEntryIsarQueryFilter
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterFilterCondition>
-  bedtimeGreaterThan(DateTime value, {bool include = false}) {
+      bedtimeGreaterThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -501,7 +501,7 @@ extension SleepEntryIsarQueryFilter
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterFilterCondition>
-  bedtimeLessThan(DateTime value, {bool include = false}) {
+      bedtimeLessThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -514,7 +514,7 @@ extension SleepEntryIsarQueryFilter
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterFilterCondition>
-  bedtimeBetween(
+      bedtimeBetween(
     DateTime lower,
     DateTime upper, {
     bool includeLower = true,
@@ -534,7 +534,7 @@ extension SleepEntryIsarQueryFilter
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterFilterCondition>
-  createdAtEqualTo(DateTime value) {
+      createdAtEqualTo(DateTime value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'createdAt', value: value),
@@ -543,7 +543,7 @@ extension SleepEntryIsarQueryFilter
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterFilterCondition>
-  createdAtGreaterThan(DateTime value, {bool include = false}) {
+      createdAtGreaterThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -556,7 +556,7 @@ extension SleepEntryIsarQueryFilter
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterFilterCondition>
-  createdAtLessThan(DateTime value, {bool include = false}) {
+      createdAtLessThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -569,7 +569,7 @@ extension SleepEntryIsarQueryFilter
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterFilterCondition>
-  createdAtBetween(
+      createdAtBetween(
     DateTime lower,
     DateTime upper, {
     bool includeLower = true,
@@ -599,7 +599,7 @@ extension SleepEntryIsarQueryFilter
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterFilterCondition>
-  idGreaterThan(Id value, {bool include = false}) {
+      idGreaterThan(Id value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -612,7 +612,7 @@ extension SleepEntryIsarQueryFilter
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterFilterCondition>
-  idLessThan(Id value, {bool include = false}) {
+      idLessThan(Id value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -644,7 +644,7 @@ extension SleepEntryIsarQueryFilter
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterFilterCondition>
-  isNapEqualTo(bool value) {
+      isNapEqualTo(bool value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'isNap', value: value),
@@ -653,7 +653,7 @@ extension SleepEntryIsarQueryFilter
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterFilterCondition>
-  notesIsNull() {
+      notesIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNull(property: r'notes'),
@@ -662,7 +662,7 @@ extension SleepEntryIsarQueryFilter
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterFilterCondition>
-  notesIsNotNull() {
+      notesIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNotNull(property: r'notes'),
@@ -671,7 +671,7 @@ extension SleepEntryIsarQueryFilter
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterFilterCondition>
-  notesEqualTo(String? value, {bool caseSensitive = true}) {
+      notesEqualTo(String? value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(
@@ -684,7 +684,7 @@ extension SleepEntryIsarQueryFilter
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterFilterCondition>
-  notesGreaterThan(
+      notesGreaterThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -702,7 +702,7 @@ extension SleepEntryIsarQueryFilter
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterFilterCondition>
-  notesLessThan(
+      notesLessThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -720,7 +720,7 @@ extension SleepEntryIsarQueryFilter
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterFilterCondition>
-  notesBetween(
+      notesBetween(
     String? lower,
     String? upper, {
     bool includeLower = true,
@@ -742,7 +742,7 @@ extension SleepEntryIsarQueryFilter
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterFilterCondition>
-  notesStartsWith(String value, {bool caseSensitive = true}) {
+      notesStartsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.startsWith(
@@ -755,7 +755,7 @@ extension SleepEntryIsarQueryFilter
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterFilterCondition>
-  notesEndsWith(String value, {bool caseSensitive = true}) {
+      notesEndsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.endsWith(
@@ -768,7 +768,7 @@ extension SleepEntryIsarQueryFilter
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterFilterCondition>
-  notesContains(String value, {bool caseSensitive = true}) {
+      notesContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.contains(
@@ -781,7 +781,7 @@ extension SleepEntryIsarQueryFilter
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterFilterCondition>
-  notesMatches(String pattern, {bool caseSensitive = true}) {
+      notesMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.matches(
@@ -794,7 +794,7 @@ extension SleepEntryIsarQueryFilter
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterFilterCondition>
-  notesIsEmpty() {
+      notesIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'notes', value: ''),
@@ -803,7 +803,7 @@ extension SleepEntryIsarQueryFilter
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterFilterCondition>
-  notesIsNotEmpty() {
+      notesIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(property: r'notes', value: ''),
@@ -812,7 +812,7 @@ extension SleepEntryIsarQueryFilter
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterFilterCondition>
-  profileIdEqualTo(int value) {
+      profileIdEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'profileId', value: value),
@@ -821,7 +821,7 @@ extension SleepEntryIsarQueryFilter
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterFilterCondition>
-  profileIdGreaterThan(int value, {bool include = false}) {
+      profileIdGreaterThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -834,7 +834,7 @@ extension SleepEntryIsarQueryFilter
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterFilterCondition>
-  profileIdLessThan(int value, {bool include = false}) {
+      profileIdLessThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -847,7 +847,7 @@ extension SleepEntryIsarQueryFilter
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterFilterCondition>
-  profileIdBetween(
+      profileIdBetween(
     int lower,
     int upper, {
     bool includeLower = true,
@@ -867,7 +867,7 @@ extension SleepEntryIsarQueryFilter
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterFilterCondition>
-  qualityRatingIsNull() {
+      qualityRatingIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNull(property: r'qualityRating'),
@@ -876,7 +876,7 @@ extension SleepEntryIsarQueryFilter
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterFilterCondition>
-  qualityRatingIsNotNull() {
+      qualityRatingIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNotNull(property: r'qualityRating'),
@@ -885,7 +885,7 @@ extension SleepEntryIsarQueryFilter
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterFilterCondition>
-  qualityRatingEqualTo(int? value) {
+      qualityRatingEqualTo(int? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'qualityRating', value: value),
@@ -894,7 +894,7 @@ extension SleepEntryIsarQueryFilter
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterFilterCondition>
-  qualityRatingGreaterThan(int? value, {bool include = false}) {
+      qualityRatingGreaterThan(int? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -907,7 +907,7 @@ extension SleepEntryIsarQueryFilter
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterFilterCondition>
-  qualityRatingLessThan(int? value, {bool include = false}) {
+      qualityRatingLessThan(int? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -920,7 +920,7 @@ extension SleepEntryIsarQueryFilter
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterFilterCondition>
-  qualityRatingBetween(
+      qualityRatingBetween(
     int? lower,
     int? upper, {
     bool includeLower = true,
@@ -940,7 +940,7 @@ extension SleepEntryIsarQueryFilter
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterFilterCondition>
-  wakeTimeEqualTo(DateTime value) {
+      wakeTimeEqualTo(DateTime value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'wakeTime', value: value),
@@ -949,7 +949,7 @@ extension SleepEntryIsarQueryFilter
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterFilterCondition>
-  wakeTimeGreaterThan(DateTime value, {bool include = false}) {
+      wakeTimeGreaterThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -962,7 +962,7 @@ extension SleepEntryIsarQueryFilter
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterFilterCondition>
-  wakeTimeLessThan(DateTime value, {bool include = false}) {
+      wakeTimeLessThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -975,7 +975,7 @@ extension SleepEntryIsarQueryFilter
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterFilterCondition>
-  wakeTimeBetween(
+      wakeTimeBetween(
     DateTime lower,
     DateTime upper, {
     bool includeLower = true,
@@ -1010,7 +1010,7 @@ extension SleepEntryIsarQuerySortBy
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterSortBy>
-  sortByBedtimeDesc() {
+      sortByBedtimeDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'bedtime', Sort.desc);
     });
@@ -1023,7 +1023,7 @@ extension SleepEntryIsarQuerySortBy
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterSortBy>
-  sortByCreatedAtDesc() {
+      sortByCreatedAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'createdAt', Sort.desc);
     });
@@ -1060,21 +1060,21 @@ extension SleepEntryIsarQuerySortBy
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterSortBy>
-  sortByProfileIdDesc() {
+      sortByProfileIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'profileId', Sort.desc);
     });
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterSortBy>
-  sortByQualityRating() {
+      sortByQualityRating() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'qualityRating', Sort.asc);
     });
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterSortBy>
-  sortByQualityRatingDesc() {
+      sortByQualityRatingDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'qualityRating', Sort.desc);
     });
@@ -1087,7 +1087,7 @@ extension SleepEntryIsarQuerySortBy
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterSortBy>
-  sortByWakeTimeDesc() {
+      sortByWakeTimeDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'wakeTime', Sort.desc);
     });
@@ -1103,7 +1103,7 @@ extension SleepEntryIsarQuerySortThenBy
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterSortBy>
-  thenByBedtimeDesc() {
+      thenByBedtimeDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'bedtime', Sort.desc);
     });
@@ -1116,7 +1116,7 @@ extension SleepEntryIsarQuerySortThenBy
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterSortBy>
-  thenByCreatedAtDesc() {
+      thenByCreatedAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'createdAt', Sort.desc);
     });
@@ -1165,21 +1165,21 @@ extension SleepEntryIsarQuerySortThenBy
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterSortBy>
-  thenByProfileIdDesc() {
+      thenByProfileIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'profileId', Sort.desc);
     });
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterSortBy>
-  thenByQualityRating() {
+      thenByQualityRating() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'qualityRating', Sort.asc);
     });
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterSortBy>
-  thenByQualityRatingDesc() {
+      thenByQualityRatingDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'qualityRating', Sort.desc);
     });
@@ -1192,7 +1192,7 @@ extension SleepEntryIsarQuerySortThenBy
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterSortBy>
-  thenByWakeTimeDesc() {
+      thenByWakeTimeDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'wakeTime', Sort.desc);
     });
@@ -1208,7 +1208,7 @@ extension SleepEntryIsarQueryWhereDistinct
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QDistinct>
-  distinctByCreatedAt() {
+      distinctByCreatedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'createdAt');
     });
@@ -1229,14 +1229,14 @@ extension SleepEntryIsarQueryWhereDistinct
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QDistinct>
-  distinctByProfileId() {
+      distinctByProfileId() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'profileId');
     });
   }
 
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QDistinct>
-  distinctByQualityRating() {
+      distinctByQualityRating() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'qualityRating');
     });

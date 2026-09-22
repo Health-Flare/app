@@ -18,6 +18,7 @@ import 'package:health_flare/core/router/app_router.dart';
 import 'package:health_flare/features/illness/screens/illness_screen.dart';
 import 'package:health_flare/features/quick_log/quick_log_classifier.dart';
 import 'package:health_flare/features/quick_log/quick_log_parser.dart';
+import 'package:health_flare/features/sleep/screens/sleep_entry_screen.dart';
 import 'package:health_flare/models/journal_entry.dart';
 import 'package:health_flare/models/user_condition.dart';
 
@@ -176,6 +177,18 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
               notes: _text,
             );
       case QuickLogEntryType.sleep:
+        final range = QuickLogParser.parseSleepTimeRange(_text, _timestamp);
+        if (range != null) {
+          await ref
+              .read(sleepEntryListProvider.notifier)
+              .add(
+                profileId: profileId,
+                bedtime: range.$1,
+                wakeTime: range.$2,
+                notes: _text,
+              );
+          return;
+        }
         final duration = QuickLogParser.parseSleepDuration(_text);
         if (duration == null) {
           await _saveJournal(profileId);
@@ -276,7 +289,15 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
       case QuickLogEntryType.vital:
         context.push(AppRoutes.vitalsNew, extra: _text);
       case QuickLogEntryType.sleep:
-        context.push(AppRoutes.sleepNew, extra: _text);
+        final range = QuickLogParser.parseSleepTimeRange(_text, _timestamp);
+        context.push(
+          AppRoutes.sleepNew,
+          extra: SleepEntryPrefill(
+            notes: _text,
+            bedtime: range?.$1,
+            wakeTime: range?.$2,
+          ),
+        );
       case QuickLogEntryType.medication:
         context.push(AppRoutes.medicationsNew);
       case QuickLogEntryType.condition:

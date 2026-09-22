@@ -387,7 +387,7 @@ extension DoseLogIsarQueryWhere
   }
 
   QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterWhereClause>
-  profileIdGreaterThan(int profileId, {bool include = false}) {
+      profileIdGreaterThan(int profileId, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IndexWhereClause.between(
@@ -436,7 +436,7 @@ extension DoseLogIsarQueryWhere
   }
 
   QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterWhereClause>
-  medicationIsarIdEqualTo(int medicationIsarId) {
+      medicationIsarIdEqualTo(int medicationIsarId) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IndexWhereClause.equalTo(
@@ -448,7 +448,7 @@ extension DoseLogIsarQueryWhere
   }
 
   QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterWhereClause>
-  medicationIsarIdNotEqualTo(int medicationIsarId) {
+      medicationIsarIdNotEqualTo(int medicationIsarId) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -491,7 +491,8 @@ extension DoseLogIsarQueryWhere
   }
 
   QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterWhereClause>
-  medicationIsarIdGreaterThan(int medicationIsarId, {bool include = false}) {
+      medicationIsarIdGreaterThan(int medicationIsarId,
+          {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IndexWhereClause.between(
@@ -505,7 +506,7 @@ extension DoseLogIsarQueryWhere
   }
 
   QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterWhereClause>
-  medicationIsarIdLessThan(int medicationIsarId, {bool include = false}) {
+      medicationIsarIdLessThan(int medicationIsarId, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IndexWhereClause.between(
@@ -519,7 +520,7 @@ extension DoseLogIsarQueryWhere
   }
 
   QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterWhereClause>
-  medicationIsarIdBetween(
+      medicationIsarIdBetween(
     int lowerMedicationIsarId,
     int upperMedicationIsarId, {
     bool includeLower = true,
@@ -662,7 +663,7 @@ extension DoseLogIsarQueryFilter
   }
 
   QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterFilterCondition>
-  amountGreaterThan(
+      amountGreaterThan(
     double value, {
     bool include = false,
     double epsilon = Query.epsilon,
@@ -718,7 +719,7 @@ extension DoseLogIsarQueryFilter
   }
 
   QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterFilterCondition>
-  createdAtEqualTo(DateTime value) {
+      createdAtEqualTo(DateTime value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'createdAt', value: value),
@@ -727,7 +728,7 @@ extension DoseLogIsarQueryFilter
   }
 
   QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterFilterCondition>
-  createdAtGreaterThan(DateTime value, {bool include = false}) {
+      createdAtGreaterThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -740,7 +741,7 @@ extension DoseLogIsarQueryFilter
   }
 
   QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterFilterCondition>
-  createdAtLessThan(DateTime value, {bool include = false}) {
+      createdAtLessThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -753,7 +754,7 @@ extension DoseLogIsarQueryFilter
   }
 
   QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterFilterCondition>
-  createdAtBetween(
+      createdAtBetween(
     DateTime lower,
     DateTime upper, {
     bool includeLower = true,
@@ -773,7 +774,7 @@ extension DoseLogIsarQueryFilter
   }
 
   QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterFilterCondition>
-  effectivenessIsNull() {
+      effectivenessIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNull(property: r'effectiveness'),
@@ -782,7 +783,7 @@ extension DoseLogIsarQueryFilter
   }
 
   QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterFilterCondition>
-  effectivenessIsNotNull() {
+      effectivenessIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNotNull(property: r'effectiveness'),
@@ -791,7 +792,7 @@ extension DoseLogIsarQueryFilter
   }
 
   QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterFilterCondition>
-  effectivenessEqualTo(String? value, {bool caseSensitive = true}) {
+      effectivenessEqualTo(String? value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(
@@ -804,7 +805,7 @@ extension DoseLogIsarQueryFilter
   }
 
   QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterFilterCondition>
-  effectivenessGreaterThan(
+      effectivenessGreaterThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -822,7 +823,7 @@ extension DoseLogIsarQueryFilter
   }
 
   QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterFilterCondition>
-  effectivenessLessThan(
+      effectivenessLessThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -840,7 +841,7 @@ extension DoseLogIsarQueryFilter
   }
 
   QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterFilterCondition>
-  effectivenessBetween(
+      effectivenessBetween(
     String? lower,
     String? upper, {
     bool includeLower = true,
@@ -862,7 +863,7 @@ extension DoseLogIsarQueryFilter
   }
 
   QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterFilterCondition>
-  effectivenessStartsWith(String value, {bool caseSensitive = true}) {
+      effectivenessStartsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.startsWith(
@@ -875,7 +876,7 @@ extension DoseLogIsarQueryFilter
   }
 
   QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterFilterCondition>
-  effectivenessEndsWith(String value, {bool caseSensitive = true}) {
+      effectivenessEndsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.endsWith(
@@ -888,7 +889,7 @@ extension DoseLogIsarQueryFilter
   }
 
   QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterFilterCondition>
-  effectivenessContains(String value, {bool caseSensitive = true}) {
+      effectivenessContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.contains(
@@ -901,7 +902,7 @@ extension DoseLogIsarQueryFilter
   }
 
   QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterFilterCondition>
-  effectivenessMatches(String pattern, {bool caseSensitive = true}) {
+      effectivenessMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.matches(
@@ -914,7 +915,7 @@ extension DoseLogIsarQueryFilter
   }
 
   QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterFilterCondition>
-  effectivenessIsEmpty() {
+      effectivenessIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'effectiveness', value: ''),
@@ -923,7 +924,7 @@ extension DoseLogIsarQueryFilter
   }
 
   QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterFilterCondition>
-  effectivenessIsNotEmpty() {
+      effectivenessIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(property: r'effectiveness', value: ''),
@@ -932,7 +933,7 @@ extension DoseLogIsarQueryFilter
   }
 
   QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterFilterCondition>
-  flareIsarIdIsNull() {
+      flareIsarIdIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNull(property: r'flareIsarId'),
@@ -941,7 +942,7 @@ extension DoseLogIsarQueryFilter
   }
 
   QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterFilterCondition>
-  flareIsarIdIsNotNull() {
+      flareIsarIdIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNotNull(property: r'flareIsarId'),
@@ -950,7 +951,7 @@ extension DoseLogIsarQueryFilter
   }
 
   QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterFilterCondition>
-  flareIsarIdEqualTo(int? value) {
+      flareIsarIdEqualTo(int? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'flareIsarId', value: value),
@@ -959,7 +960,7 @@ extension DoseLogIsarQueryFilter
   }
 
   QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterFilterCondition>
-  flareIsarIdGreaterThan(int? value, {bool include = false}) {
+      flareIsarIdGreaterThan(int? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -972,7 +973,7 @@ extension DoseLogIsarQueryFilter
   }
 
   QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterFilterCondition>
-  flareIsarIdLessThan(int? value, {bool include = false}) {
+      flareIsarIdLessThan(int? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -985,7 +986,7 @@ extension DoseLogIsarQueryFilter
   }
 
   QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterFilterCondition>
-  flareIsarIdBetween(
+      flareIsarIdBetween(
     int? lower,
     int? upper, {
     bool includeLower = true,
@@ -1074,7 +1075,7 @@ extension DoseLogIsarQueryFilter
   }
 
   QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterFilterCondition>
-  loggedAtGreaterThan(DateTime value, {bool include = false}) {
+      loggedAtGreaterThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -1087,7 +1088,7 @@ extension DoseLogIsarQueryFilter
   }
 
   QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterFilterCondition>
-  loggedAtLessThan(DateTime value, {bool include = false}) {
+      loggedAtLessThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -1119,7 +1120,7 @@ extension DoseLogIsarQueryFilter
   }
 
   QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterFilterCondition>
-  medicationIsarIdEqualTo(int value) {
+      medicationIsarIdEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'medicationIsarId', value: value),
@@ -1128,7 +1129,7 @@ extension DoseLogIsarQueryFilter
   }
 
   QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterFilterCondition>
-  medicationIsarIdGreaterThan(int value, {bool include = false}) {
+      medicationIsarIdGreaterThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -1141,7 +1142,7 @@ extension DoseLogIsarQueryFilter
   }
 
   QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterFilterCondition>
-  medicationIsarIdLessThan(int value, {bool include = false}) {
+      medicationIsarIdLessThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -1154,7 +1155,7 @@ extension DoseLogIsarQueryFilter
   }
 
   QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterFilterCondition>
-  medicationIsarIdBetween(
+      medicationIsarIdBetween(
     int lower,
     int upper, {
     bool includeLower = true,
@@ -1182,7 +1183,7 @@ extension DoseLogIsarQueryFilter
   }
 
   QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterFilterCondition>
-  notesIsNotNull() {
+      notesIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNotNull(property: r'notes'),
@@ -1206,7 +1207,7 @@ extension DoseLogIsarQueryFilter
   }
 
   QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterFilterCondition>
-  notesGreaterThan(
+      notesGreaterThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -1330,7 +1331,7 @@ extension DoseLogIsarQueryFilter
   }
 
   QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterFilterCondition>
-  notesIsNotEmpty() {
+      notesIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(property: r'notes', value: ''),
@@ -1339,7 +1340,7 @@ extension DoseLogIsarQueryFilter
   }
 
   QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterFilterCondition>
-  profileIdEqualTo(int value) {
+      profileIdEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'profileId', value: value),
@@ -1348,7 +1349,7 @@ extension DoseLogIsarQueryFilter
   }
 
   QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterFilterCondition>
-  profileIdGreaterThan(int value, {bool include = false}) {
+      profileIdGreaterThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -1361,7 +1362,7 @@ extension DoseLogIsarQueryFilter
   }
 
   QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterFilterCondition>
-  profileIdLessThan(int value, {bool include = false}) {
+      profileIdLessThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -1374,7 +1375,7 @@ extension DoseLogIsarQueryFilter
   }
 
   QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterFilterCondition>
-  profileIdBetween(
+      profileIdBetween(
     int lower,
     int upper, {
     bool includeLower = true,
@@ -1402,7 +1403,7 @@ extension DoseLogIsarQueryFilter
   }
 
   QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterFilterCondition>
-  reasonIsNotNull() {
+      reasonIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNotNull(property: r'reason'),
@@ -1426,7 +1427,7 @@ extension DoseLogIsarQueryFilter
   }
 
   QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterFilterCondition>
-  reasonGreaterThan(
+      reasonGreaterThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -1482,7 +1483,7 @@ extension DoseLogIsarQueryFilter
   }
 
   QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterFilterCondition>
-  reasonStartsWith(String value, {bool caseSensitive = true}) {
+      reasonStartsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.startsWith(
@@ -1540,7 +1541,7 @@ extension DoseLogIsarQueryFilter
   }
 
   QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterFilterCondition>
-  reasonIsEmpty() {
+      reasonIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'reason', value: ''),
@@ -1549,7 +1550,7 @@ extension DoseLogIsarQueryFilter
   }
 
   QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterFilterCondition>
-  reasonIsNotEmpty() {
+      reasonIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(property: r'reason', value: ''),
@@ -1573,7 +1574,7 @@ extension DoseLogIsarQueryFilter
   }
 
   QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterFilterCondition>
-  statusGreaterThan(
+      statusGreaterThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -1629,7 +1630,7 @@ extension DoseLogIsarQueryFilter
   }
 
   QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterFilterCondition>
-  statusStartsWith(String value, {bool caseSensitive = true}) {
+      statusStartsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.startsWith(
@@ -1687,7 +1688,7 @@ extension DoseLogIsarQueryFilter
   }
 
   QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterFilterCondition>
-  statusIsEmpty() {
+      statusIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'status', value: ''),
@@ -1696,7 +1697,7 @@ extension DoseLogIsarQueryFilter
   }
 
   QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterFilterCondition>
-  statusIsNotEmpty() {
+      statusIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(property: r'status', value: ''),
@@ -1843,7 +1844,7 @@ extension DoseLogIsarQueryFilter
   }
 
   QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterFilterCondition>
-  unitIsNotEmpty() {
+      unitIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(property: r'unit', value: ''),
@@ -1891,7 +1892,7 @@ extension DoseLogIsarQuerySortBy
   }
 
   QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterSortBy>
-  sortByEffectivenessDesc() {
+      sortByEffectivenessDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'effectiveness', Sort.desc);
     });
@@ -1922,14 +1923,14 @@ extension DoseLogIsarQuerySortBy
   }
 
   QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterSortBy>
-  sortByMedicationIsarId() {
+      sortByMedicationIsarId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'medicationIsarId', Sort.asc);
     });
   }
 
   QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterSortBy>
-  sortByMedicationIsarIdDesc() {
+      sortByMedicationIsarIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'medicationIsarId', Sort.desc);
     });
@@ -2029,7 +2030,7 @@ extension DoseLogIsarQuerySortThenBy
   }
 
   QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterSortBy>
-  thenByEffectivenessDesc() {
+      thenByEffectivenessDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'effectiveness', Sort.desc);
     });
@@ -2072,14 +2073,14 @@ extension DoseLogIsarQuerySortThenBy
   }
 
   QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterSortBy>
-  thenByMedicationIsarId() {
+      thenByMedicationIsarId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'medicationIsarId', Sort.asc);
     });
   }
 
   QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterSortBy>
-  thenByMedicationIsarIdDesc() {
+      thenByMedicationIsarIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'medicationIsarId', Sort.desc);
     });
@@ -2184,7 +2185,7 @@ extension DoseLogIsarQueryWhereDistinct
   }
 
   QueryBuilder<DoseLogIsar, DoseLogIsar, QDistinct>
-  distinctByMedicationIsarId() {
+      distinctByMedicationIsarId() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'medicationIsarId');
     });

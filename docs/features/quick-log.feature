@@ -389,6 +389,15 @@ Feature: Quick Log
     And the notes field is pre-filled with "Slept about 7 hours, felt groggy"
     And bedtime, wake time, and quality fields are available
 
+  Scenario: Tapping "Add details" on Sleep text with a clock-time range pre-fills bedtime and wake time
+    When I tap the + button
+    And I type "slept 8pm to 4am"
+    And the app suggests "Sleep"
+    And I tap "Add details"
+    Then the full sleep entry form opens
+    And bedtime is pre-filled with "20:00" and wake time with "04:00"
+    And the notes field is pre-filled with "slept 8pm to 4am"
+
   Scenario: Tapping "Add details" on a Condition entry opens the illness entry screen
     When I tap the + button
     And I type "Just found out I have fibromyalgia"
@@ -748,6 +757,12 @@ Feature: Quick Log
     When I save the quick log entry "Slept for 6 hours last night, woke up twice"
     Then a sleep entry appears in the sleep log alongside fully-formed sleep entries
     And its duration is 6 hours, ending at the entry's timestamp
+    And the original text is preserved in the entry's notes
+
+  Scenario: A Sleep-typed entry with a stated clock-time range is visible in the sleep log
+    When I save the quick log entry "slept 8pm to 4am"
+    Then a sleep entry appears in the sleep log alongside fully-formed sleep entries
+    And its bedtime is 20:00 and its wake time is 04:00
     And the original text is preserved in the entry's notes
 
   Scenario: Sleep text without a stated duration saves as a general note

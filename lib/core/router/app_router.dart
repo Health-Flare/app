@@ -412,8 +412,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: 'new',
                 name: 'sleep-new',
-                builder: (context, state) =>
-                    SleepEntryScreen(initialNotes: state.extra as String?),
+                builder: (context, state) => SleepEntryScreen(
+                  prefill: state.extra as SleepEntryPrefill?,
+                ),
               ),
               GoRoute(
                 path: ':id/edit',

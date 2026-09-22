@@ -48,7 +48,7 @@ class _FakeProfileList extends ProfileListNotifier {
 // Helpers
 // ---------------------------------------------------------------------------
 
-Widget _buildScreen({SleepEntry? entry}) {
+Widget _buildScreen({SleepEntry? entry, SleepEntryPrefill? prefill}) {
   return ProviderScope(
     overrides: [
       sleepEntryListProvider.overrideWith(_FakeSleepList.new),
@@ -59,7 +59,9 @@ Widget _buildScreen({SleepEntry? entry}) {
         (ref) => Profile(id: 1, name: 'Sarah'),
       ),
     ],
-    child: MaterialApp(home: SleepEntryScreen(entry: entry)),
+    child: MaterialApp(
+      home: SleepEntryScreen(entry: entry, prefill: prefill),
+    ),
   );
 }
 
@@ -180,6 +182,43 @@ void main() {
       expect(find.textContaining('8h 15m'), findsOneWidget);
       expect(find.text('Restless night'), findsOneWidget);
     });
+
+    testWidgets(
+      'Quick Log prefill with only notes leaves default bedtime/wake time',
+      (tester) async {
+        await tester.pumpWidget(
+          _buildScreen(
+            prefill: const SleepEntryPrefill(notes: 'Terrible night'),
+          ),
+        );
+        await tester.pump();
+
+        // Defaults: bedtime yesterday 23:00, wake today 07:00 → 8h
+        expect(find.textContaining('8h'), findsOneWidget);
+        expect(find.text('Terrible night'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'Quick Log prefill with a parsed time range pre-fills bedtime and wake time',
+      (tester) async {
+        await tester.pumpWidget(
+          _buildScreen(
+            prefill: SleepEntryPrefill(
+              notes: 'slept 8pm to 4am',
+              bedtime: DateTime(2026, 3, 14, 20),
+              wakeTime: DateTime(2026, 3, 15, 4),
+            ),
+          ),
+        );
+        await tester.pump();
+
+        expect(find.textContaining('8h'), findsOneWidget);
+        expect(find.textContaining('20:00'), findsOneWidget);
+        expect(find.textContaining('04:00'), findsOneWidget);
+        expect(find.text('slept 8pm to 4am'), findsOneWidget);
+      },
+    );
 
     testWidgets('negative duration shows validation error', (tester) async {
       // An entry where wake < bed same calendar day is invalid

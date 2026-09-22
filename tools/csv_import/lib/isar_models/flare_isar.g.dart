@@ -504,7 +504,7 @@ extension FlareIsarQueryWhere
 extension FlareIsarQueryFilter
     on QueryBuilder<FlareIsar, FlareIsar, QFilterCondition> {
   QueryBuilder<FlareIsar, FlareIsar, QAfterFilterCondition>
-  conditionIsarIdsElementEqualTo(int value) {
+      conditionIsarIdsElementEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'conditionIsarIds', value: value),
@@ -513,7 +513,7 @@ extension FlareIsarQueryFilter
   }
 
   QueryBuilder<FlareIsar, FlareIsar, QAfterFilterCondition>
-  conditionIsarIdsElementGreaterThan(int value, {bool include = false}) {
+      conditionIsarIdsElementGreaterThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -526,7 +526,7 @@ extension FlareIsarQueryFilter
   }
 
   QueryBuilder<FlareIsar, FlareIsar, QAfterFilterCondition>
-  conditionIsarIdsElementLessThan(int value, {bool include = false}) {
+      conditionIsarIdsElementLessThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -539,7 +539,7 @@ extension FlareIsarQueryFilter
   }
 
   QueryBuilder<FlareIsar, FlareIsar, QAfterFilterCondition>
-  conditionIsarIdsElementBetween(
+      conditionIsarIdsElementBetween(
     int lower,
     int upper, {
     bool includeLower = true,
@@ -559,35 +559,35 @@ extension FlareIsarQueryFilter
   }
 
   QueryBuilder<FlareIsar, FlareIsar, QAfterFilterCondition>
-  conditionIsarIdsLengthEqualTo(int length) {
+      conditionIsarIdsLengthEqualTo(int length) {
     return QueryBuilder.apply(this, (query) {
       return query.listLength(r'conditionIsarIds', length, true, length, true);
     });
   }
 
   QueryBuilder<FlareIsar, FlareIsar, QAfterFilterCondition>
-  conditionIsarIdsIsEmpty() {
+      conditionIsarIdsIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.listLength(r'conditionIsarIds', 0, true, 0, true);
     });
   }
 
   QueryBuilder<FlareIsar, FlareIsar, QAfterFilterCondition>
-  conditionIsarIdsIsNotEmpty() {
+      conditionIsarIdsIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.listLength(r'conditionIsarIds', 0, false, 999999, true);
     });
   }
 
   QueryBuilder<FlareIsar, FlareIsar, QAfterFilterCondition>
-  conditionIsarIdsLengthLessThan(int length, {bool include = false}) {
+      conditionIsarIdsLengthLessThan(int length, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.listLength(r'conditionIsarIds', 0, true, length, include);
     });
   }
 
   QueryBuilder<FlareIsar, FlareIsar, QAfterFilterCondition>
-  conditionIsarIdsLengthGreaterThan(int length, {bool include = false}) {
+      conditionIsarIdsLengthGreaterThan(int length, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.listLength(
         r'conditionIsarIds',
@@ -600,7 +600,7 @@ extension FlareIsarQueryFilter
   }
 
   QueryBuilder<FlareIsar, FlareIsar, QAfterFilterCondition>
-  conditionIsarIdsLengthBetween(
+      conditionIsarIdsLengthBetween(
     int lower,
     int upper, {
     bool includeLower = true,
@@ -628,7 +628,7 @@ extension FlareIsarQueryFilter
   }
 
   QueryBuilder<FlareIsar, FlareIsar, QAfterFilterCondition>
-  createdAtGreaterThan(DateTime value, {bool include = false}) {
+      createdAtGreaterThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -809,7 +809,7 @@ extension FlareIsarQueryFilter
   }
 
   QueryBuilder<FlareIsar, FlareIsar, QAfterFilterCondition>
-  initialSeverityIsNull() {
+      initialSeverityIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNull(property: r'initialSeverity'),
@@ -818,7 +818,7 @@ extension FlareIsarQueryFilter
   }
 
   QueryBuilder<FlareIsar, FlareIsar, QAfterFilterCondition>
-  initialSeverityIsNotNull() {
+      initialSeverityIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNotNull(property: r'initialSeverity'),
@@ -827,7 +827,7 @@ extension FlareIsarQueryFilter
   }
 
   QueryBuilder<FlareIsar, FlareIsar, QAfterFilterCondition>
-  initialSeverityEqualTo(int? value) {
+      initialSeverityEqualTo(int? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'initialSeverity', value: value),
@@ -836,7 +836,7 @@ extension FlareIsarQueryFilter
   }
 
   QueryBuilder<FlareIsar, FlareIsar, QAfterFilterCondition>
-  initialSeverityGreaterThan(int? value, {bool include = false}) {
+      initialSeverityGreaterThan(int? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -849,7 +849,7 @@ extension FlareIsarQueryFilter
   }
 
   QueryBuilder<FlareIsar, FlareIsar, QAfterFilterCondition>
-  initialSeverityLessThan(int? value, {bool include = false}) {
+      initialSeverityLessThan(int? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -862,7 +862,7 @@ extension FlareIsarQueryFilter
   }
 
   QueryBuilder<FlareIsar, FlareIsar, QAfterFilterCondition>
-  initialSeverityBetween(
+      initialSeverityBetween(
     int? lower,
     int? upper, {
     bool includeLower = true,
@@ -1044,7 +1044,7 @@ extension FlareIsarQueryFilter
   }
 
   QueryBuilder<FlareIsar, FlareIsar, QAfterFilterCondition>
-  peakSeverityIsNull() {
+      peakSeverityIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNull(property: r'peakSeverity'),
@@ -1053,7 +1053,7 @@ extension FlareIsarQueryFilter
   }
 
   QueryBuilder<FlareIsar, FlareIsar, QAfterFilterCondition>
-  peakSeverityIsNotNull() {
+      peakSeverityIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNotNull(property: r'peakSeverity'),
@@ -1072,7 +1072,7 @@ extension FlareIsarQueryFilter
   }
 
   QueryBuilder<FlareIsar, FlareIsar, QAfterFilterCondition>
-  peakSeverityGreaterThan(int? value, {bool include = false}) {
+      peakSeverityGreaterThan(int? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -1085,7 +1085,7 @@ extension FlareIsarQueryFilter
   }
 
   QueryBuilder<FlareIsar, FlareIsar, QAfterFilterCondition>
-  peakSeverityLessThan(int? value, {bool include = false}) {
+      peakSeverityLessThan(int? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -1127,7 +1127,7 @@ extension FlareIsarQueryFilter
   }
 
   QueryBuilder<FlareIsar, FlareIsar, QAfterFilterCondition>
-  profileIdGreaterThan(int value, {bool include = false}) {
+      profileIdGreaterThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -1184,7 +1184,7 @@ extension FlareIsarQueryFilter
   }
 
   QueryBuilder<FlareIsar, FlareIsar, QAfterFilterCondition>
-  startedAtGreaterThan(DateTime value, {bool include = false}) {
+      startedAtGreaterThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -1239,7 +1239,7 @@ extension FlareIsarQueryFilter
   }
 
   QueryBuilder<FlareIsar, FlareIsar, QAfterFilterCondition>
-  updatedAtIsNotNull() {
+      updatedAtIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNotNull(property: r'updatedAt'),
@@ -1258,7 +1258,7 @@ extension FlareIsarQueryFilter
   }
 
   QueryBuilder<FlareIsar, FlareIsar, QAfterFilterCondition>
-  updatedAtGreaterThan(DateTime? value, {bool include = false}) {
+      updatedAtGreaterThan(DateTime? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -1588,7 +1588,7 @@ extension FlareIsarQueryProperty
   }
 
   QueryBuilder<FlareIsar, List<int>, QQueryOperations>
-  conditionIsarIdsProperty() {
+      conditionIsarIdsProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'conditionIsarIds');
     });

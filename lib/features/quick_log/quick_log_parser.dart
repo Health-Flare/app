@@ -227,6 +227,83 @@ abstract final class QuickLogParser {
     return Duration(minutes: (hours * 60).round());
   }
 
+  /// Extracts a bedtime/wake-time range ("8pm to 4am", "20:00 to 4:00",
+  /// "8pm-4am"), anchored to [referenceTime]'s calendar date, or null when
+  /// no range is found.
+  ///
+  /// Wake time is placed on [referenceTime]'s date — Quick Log's timestamp
+  /// is assumed to be close to when the entry was logged, i.e. shortly after
+  /// waking, mirroring how [parseSleepDuration]'s callers treat the entry
+  /// timestamp as wake time. Bedtime is placed on the same date unless its
+  /// clock time isn't strictly before wake's clock time, in which case it
+  /// rolls back one day (so "8pm to 4am" always crosses midnight, while a
+  /// same-day nap like "1am to 3am" does not).
+  ///
+  /// Each side of the range must be an unambiguous clock time: 12-hour form
+  /// requires an "am"/"pm" marker ("8pm", "8:30pm"), 24-hour form requires a
+  /// colon and no marker ("20:00", "4:00") — the colon is what keeps this
+  /// from colliding with a bare duration number like the "6" in "slept 6
+  /// hours", so this and [parseSleepDuration] never both match the same
+  /// text.
+  static (DateTime bedtime, DateTime wakeTime)? parseSleepTimeRange(
+    String text,
+    DateTime referenceTime,
+  ) {
+    final match = RegExp(
+      r'(\d{1,2}(?::\d{2})?\s*(?:am|pm)?\b)\s*(?:to|-|–|—)\s*'
+      r'(\d{1,2}(?::\d{2})?\s*(?:am|pm)?\b)',
+      caseSensitive: false,
+    ).firstMatch(text);
+    if (match == null) return null;
+
+    final bed = _parseClockTime(match.group(1)!);
+    final wake = _parseClockTime(match.group(2)!);
+    if (bed == null || wake == null) return null;
+
+    final wakeDate = DateTime(
+      referenceTime.year,
+      referenceTime.month,
+      referenceTime.day,
+    );
+    final wakeTime = wakeDate.add(Duration(hours: wake.$1, minutes: wake.$2));
+    var bedtime = wakeDate.add(Duration(hours: bed.$1, minutes: bed.$2));
+    if (!bedtime.isBefore(wakeTime)) {
+      bedtime = bedtime.subtract(const Duration(days: 1));
+    }
+    return (bedtime, wakeTime);
+  }
+
+  /// Parses a single clock-time token as (hour, minute) in 24-hour form, or
+  /// null when it matches neither the 12-hour ("8pm", "8:30pm") nor 24-hour
+  /// ("20:00", "4:00") shape.
+  static (int, int)? _parseClockTime(String token) {
+    final trimmed = token.trim();
+
+    final ampm = RegExp(
+      r'^(\d{1,2})(?::(\d{2}))?\s*(am|pm)$',
+      caseSensitive: false,
+    ).firstMatch(trimmed);
+    if (ampm != null) {
+      var hour = int.parse(ampm.group(1)!);
+      final minute = ampm.group(2) != null ? int.parse(ampm.group(2)!) : 0;
+      if (hour < 1 || hour > 12 || minute > 59) return null;
+      final isPm = ampm.group(3)!.toLowerCase() == 'pm';
+      hour %= 12;
+      if (isPm) hour += 12;
+      return (hour, minute);
+    }
+
+    final h24 = RegExp(r'^(\d{1,2}):(\d{2})$').firstMatch(trimmed);
+    if (h24 != null) {
+      final hour = int.parse(h24.group(1)!);
+      final minute = int.parse(h24.group(2)!);
+      if (hour > 23 || minute > 59) return null;
+      return (hour, minute);
+    }
+
+    return null;
+  }
+
   /// Finds the medication whose name appears in [text], preferring the
   /// longest name so "methotrexate injection" beats "methotrexate".
   /// Returns null when no known medication is mentioned.

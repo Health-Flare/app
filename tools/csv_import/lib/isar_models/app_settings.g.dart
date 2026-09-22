@@ -191,7 +191,7 @@ extension AppSettingsQueryWhere
 extension AppSettingsQueryFilter
     on QueryBuilder<AppSettings, AppSettings, QFilterCondition> {
   QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
-  activeProfileIdIsNull() {
+      activeProfileIdIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNull(property: r'activeProfileId'),
@@ -200,7 +200,7 @@ extension AppSettingsQueryFilter
   }
 
   QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
-  activeProfileIdIsNotNull() {
+      activeProfileIdIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNotNull(property: r'activeProfileId'),
@@ -209,7 +209,7 @@ extension AppSettingsQueryFilter
   }
 
   QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
-  activeProfileIdEqualTo(int? value) {
+      activeProfileIdEqualTo(int? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'activeProfileId', value: value),
@@ -218,7 +218,7 @@ extension AppSettingsQueryFilter
   }
 
   QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
-  activeProfileIdGreaterThan(int? value, {bool include = false}) {
+      activeProfileIdGreaterThan(int? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -231,7 +231,7 @@ extension AppSettingsQueryFilter
   }
 
   QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
-  activeProfileIdLessThan(int? value, {bool include = false}) {
+      activeProfileIdLessThan(int? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -244,7 +244,7 @@ extension AppSettingsQueryFilter
   }
 
   QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
-  activeProfileIdBetween(
+      activeProfileIdBetween(
     int? lower,
     int? upper, {
     bool includeLower = true,
@@ -323,7 +323,7 @@ extension AppSettingsQueryFilter
   }
 
   QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
-  schemaVersionEqualTo(int value) {
+      schemaVersionEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'schemaVersion', value: value),
@@ -332,7 +332,7 @@ extension AppSettingsQueryFilter
   }
 
   QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
-  schemaVersionGreaterThan(int value, {bool include = false}) {
+      schemaVersionGreaterThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -345,7 +345,7 @@ extension AppSettingsQueryFilter
   }
 
   QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
-  schemaVersionLessThan(int value, {bool include = false}) {
+      schemaVersionLessThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -358,7 +358,7 @@ extension AppSettingsQueryFilter
   }
 
   QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
-  schemaVersionBetween(
+      schemaVersionBetween(
     int lower,
     int upper, {
     bool includeLower = true,
@@ -393,7 +393,7 @@ extension AppSettingsQuerySortBy
   }
 
   QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
-  sortByActiveProfileIdDesc() {
+      sortByActiveProfileIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'activeProfileId', Sort.desc);
     });
@@ -406,7 +406,7 @@ extension AppSettingsQuerySortBy
   }
 
   QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
-  sortBySchemaVersionDesc() {
+      sortBySchemaVersionDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'schemaVersion', Sort.desc);
     });
@@ -422,7 +422,7 @@ extension AppSettingsQuerySortThenBy
   }
 
   QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
-  thenByActiveProfileIdDesc() {
+      thenByActiveProfileIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'activeProfileId', Sort.desc);
     });
@@ -447,7 +447,7 @@ extension AppSettingsQuerySortThenBy
   }
 
   QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
-  thenBySchemaVersionDesc() {
+      thenBySchemaVersionDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'schemaVersion', Sort.desc);
     });
@@ -457,7 +457,7 @@ extension AppSettingsQuerySortThenBy
 extension AppSettingsQueryWhereDistinct
     on QueryBuilder<AppSettings, AppSettings, QDistinct> {
   QueryBuilder<AppSettings, AppSettings, QDistinct>
-  distinctByActiveProfileId() {
+      distinctByActiveProfileId() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'activeProfileId');
     });

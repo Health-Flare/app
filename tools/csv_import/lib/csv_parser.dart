@@ -46,9 +46,8 @@ List<CsvRow> parseCsv(String filePath) {
   }
 
   // Parse header row (case-insensitive).
-  final header = rows.first
-      .map((h) => h.toString().trim().toLowerCase())
-      .toList();
+  final header =
+      rows.first.map((h) => h.toString().trim().toLowerCase()).toList();
   final colType = header.indexOf('type');
   final colDate = header.indexOf('date');
   final colTitle = header.indexOf('title');

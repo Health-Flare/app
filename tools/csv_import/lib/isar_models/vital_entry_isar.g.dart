@@ -288,7 +288,7 @@ extension VitalEntryIsarQueryWhere
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterWhereClause>
-  profileIdEqualTo(int profileId) {
+      profileIdEqualTo(int profileId) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IndexWhereClause.equalTo(indexName: r'profileId', value: [profileId]),
@@ -297,7 +297,7 @@ extension VitalEntryIsarQueryWhere
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterWhereClause>
-  profileIdNotEqualTo(int profileId) {
+      profileIdNotEqualTo(int profileId) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -340,7 +340,7 @@ extension VitalEntryIsarQueryWhere
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterWhereClause>
-  profileIdGreaterThan(int profileId, {bool include = false}) {
+      profileIdGreaterThan(int profileId, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IndexWhereClause.between(
@@ -354,7 +354,7 @@ extension VitalEntryIsarQueryWhere
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterWhereClause>
-  profileIdLessThan(int profileId, {bool include = false}) {
+      profileIdLessThan(int profileId, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IndexWhereClause.between(
@@ -368,7 +368,7 @@ extension VitalEntryIsarQueryWhere
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterWhereClause>
-  profileIdBetween(
+      profileIdBetween(
     int lowerProfileId,
     int upperProfileId, {
     bool includeLower = true,
@@ -388,7 +388,7 @@ extension VitalEntryIsarQueryWhere
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterWhereClause>
-  loggedAtEqualTo(DateTime loggedAt) {
+      loggedAtEqualTo(DateTime loggedAt) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IndexWhereClause.equalTo(indexName: r'loggedAt', value: [loggedAt]),
@@ -397,7 +397,7 @@ extension VitalEntryIsarQueryWhere
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterWhereClause>
-  loggedAtNotEqualTo(DateTime loggedAt) {
+      loggedAtNotEqualTo(DateTime loggedAt) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -440,7 +440,7 @@ extension VitalEntryIsarQueryWhere
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterWhereClause>
-  loggedAtGreaterThan(DateTime loggedAt, {bool include = false}) {
+      loggedAtGreaterThan(DateTime loggedAt, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IndexWhereClause.between(
@@ -454,7 +454,7 @@ extension VitalEntryIsarQueryWhere
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterWhereClause>
-  loggedAtLessThan(DateTime loggedAt, {bool include = false}) {
+      loggedAtLessThan(DateTime loggedAt, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IndexWhereClause.between(
@@ -468,7 +468,7 @@ extension VitalEntryIsarQueryWhere
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterWhereClause>
-  loggedAtBetween(
+      loggedAtBetween(
     DateTime lowerLoggedAt,
     DateTime upperLoggedAt, {
     bool includeLower = true,
@@ -491,7 +491,7 @@ extension VitalEntryIsarQueryWhere
 extension VitalEntryIsarQueryFilter
     on QueryBuilder<VitalEntryIsar, VitalEntryIsar, QFilterCondition> {
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  createdAtEqualTo(DateTime value) {
+      createdAtEqualTo(DateTime value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'createdAt', value: value),
@@ -500,7 +500,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  createdAtGreaterThan(DateTime value, {bool include = false}) {
+      createdAtGreaterThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -513,7 +513,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  createdAtLessThan(DateTime value, {bool include = false}) {
+      createdAtLessThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -526,7 +526,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  createdAtBetween(
+      createdAtBetween(
     DateTime lower,
     DateTime upper, {
     bool includeLower = true,
@@ -546,7 +546,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  flareIsarIdIsNull() {
+      flareIsarIdIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNull(property: r'flareIsarId'),
@@ -555,7 +555,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  flareIsarIdIsNotNull() {
+      flareIsarIdIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNotNull(property: r'flareIsarId'),
@@ -564,7 +564,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  flareIsarIdEqualTo(int? value) {
+      flareIsarIdEqualTo(int? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'flareIsarId', value: value),
@@ -573,7 +573,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  flareIsarIdGreaterThan(int? value, {bool include = false}) {
+      flareIsarIdGreaterThan(int? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -586,7 +586,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  flareIsarIdLessThan(int? value, {bool include = false}) {
+      flareIsarIdLessThan(int? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -599,7 +599,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  flareIsarIdBetween(
+      flareIsarIdBetween(
     int? lower,
     int? upper, {
     bool includeLower = true,
@@ -629,7 +629,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  idGreaterThan(Id value, {bool include = false}) {
+      idGreaterThan(Id value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -642,7 +642,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  idLessThan(Id value, {bool include = false}) {
+      idLessThan(Id value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -674,7 +674,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  loggedAtEqualTo(DateTime value) {
+      loggedAtEqualTo(DateTime value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'loggedAt', value: value),
@@ -683,7 +683,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  loggedAtGreaterThan(DateTime value, {bool include = false}) {
+      loggedAtGreaterThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -696,7 +696,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  loggedAtLessThan(DateTime value, {bool include = false}) {
+      loggedAtLessThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -709,7 +709,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  loggedAtBetween(
+      loggedAtBetween(
     DateTime lower,
     DateTime upper, {
     bool includeLower = true,
@@ -729,7 +729,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  notesIsNull() {
+      notesIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNull(property: r'notes'),
@@ -738,7 +738,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  notesIsNotNull() {
+      notesIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNotNull(property: r'notes'),
@@ -747,7 +747,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  notesEqualTo(String? value, {bool caseSensitive = true}) {
+      notesEqualTo(String? value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(
@@ -760,7 +760,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  notesGreaterThan(
+      notesGreaterThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -778,7 +778,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  notesLessThan(
+      notesLessThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -796,7 +796,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  notesBetween(
+      notesBetween(
     String? lower,
     String? upper, {
     bool includeLower = true,
@@ -818,7 +818,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  notesStartsWith(String value, {bool caseSensitive = true}) {
+      notesStartsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.startsWith(
@@ -831,7 +831,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  notesEndsWith(String value, {bool caseSensitive = true}) {
+      notesEndsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.endsWith(
@@ -844,7 +844,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  notesContains(String value, {bool caseSensitive = true}) {
+      notesContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.contains(
@@ -857,7 +857,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  notesMatches(String pattern, {bool caseSensitive = true}) {
+      notesMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.matches(
@@ -870,7 +870,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  notesIsEmpty() {
+      notesIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'notes', value: ''),
@@ -879,7 +879,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  notesIsNotEmpty() {
+      notesIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(property: r'notes', value: ''),
@@ -888,7 +888,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  profileIdEqualTo(int value) {
+      profileIdEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'profileId', value: value),
@@ -897,7 +897,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  profileIdGreaterThan(int value, {bool include = false}) {
+      profileIdGreaterThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -910,7 +910,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  profileIdLessThan(int value, {bool include = false}) {
+      profileIdLessThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -923,7 +923,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  profileIdBetween(
+      profileIdBetween(
     int lower,
     int upper, {
     bool includeLower = true,
@@ -943,7 +943,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  unitEqualTo(String value, {bool caseSensitive = true}) {
+      unitEqualTo(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(
@@ -956,7 +956,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  unitGreaterThan(
+      unitGreaterThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -974,7 +974,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  unitLessThan(
+      unitLessThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -992,7 +992,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  unitBetween(
+      unitBetween(
     String lower,
     String upper, {
     bool includeLower = true,
@@ -1014,7 +1014,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  unitStartsWith(String value, {bool caseSensitive = true}) {
+      unitStartsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.startsWith(
@@ -1027,7 +1027,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  unitEndsWith(String value, {bool caseSensitive = true}) {
+      unitEndsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.endsWith(
@@ -1040,7 +1040,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  unitContains(String value, {bool caseSensitive = true}) {
+      unitContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.contains(
@@ -1053,7 +1053,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  unitMatches(String pattern, {bool caseSensitive = true}) {
+      unitMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.matches(
@@ -1066,7 +1066,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  unitIsEmpty() {
+      unitIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'unit', value: ''),
@@ -1075,7 +1075,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  unitIsNotEmpty() {
+      unitIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(property: r'unit', value: ''),
@@ -1084,7 +1084,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  valueEqualTo(double value, {double epsilon = Query.epsilon}) {
+      valueEqualTo(double value, {double epsilon = Query.epsilon}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(
@@ -1097,7 +1097,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  valueGreaterThan(
+      valueGreaterThan(
     double value, {
     bool include = false,
     double epsilon = Query.epsilon,
@@ -1115,7 +1115,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  valueLessThan(
+      valueLessThan(
     double value, {
     bool include = false,
     double epsilon = Query.epsilon,
@@ -1133,7 +1133,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  valueBetween(
+      valueBetween(
     double lower,
     double upper, {
     bool includeLower = true,
@@ -1155,7 +1155,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  value2IsNull() {
+      value2IsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNull(property: r'value2'),
@@ -1164,7 +1164,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  value2IsNotNull() {
+      value2IsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNotNull(property: r'value2'),
@@ -1173,7 +1173,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  value2EqualTo(double? value, {double epsilon = Query.epsilon}) {
+      value2EqualTo(double? value, {double epsilon = Query.epsilon}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(
@@ -1186,7 +1186,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  value2GreaterThan(
+      value2GreaterThan(
     double? value, {
     bool include = false,
     double epsilon = Query.epsilon,
@@ -1204,7 +1204,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  value2LessThan(
+      value2LessThan(
     double? value, {
     bool include = false,
     double epsilon = Query.epsilon,
@@ -1222,7 +1222,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  value2Between(
+      value2Between(
     double? lower,
     double? upper, {
     bool includeLower = true,
@@ -1244,7 +1244,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  vitalTypeEqualTo(String value, {bool caseSensitive = true}) {
+      vitalTypeEqualTo(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(
@@ -1257,7 +1257,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  vitalTypeGreaterThan(
+      vitalTypeGreaterThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -1275,7 +1275,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  vitalTypeLessThan(
+      vitalTypeLessThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -1293,7 +1293,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  vitalTypeBetween(
+      vitalTypeBetween(
     String lower,
     String upper, {
     bool includeLower = true,
@@ -1315,7 +1315,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  vitalTypeStartsWith(String value, {bool caseSensitive = true}) {
+      vitalTypeStartsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.startsWith(
@@ -1328,7 +1328,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  vitalTypeEndsWith(String value, {bool caseSensitive = true}) {
+      vitalTypeEndsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.endsWith(
@@ -1341,7 +1341,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  vitalTypeContains(String value, {bool caseSensitive = true}) {
+      vitalTypeContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.contains(
@@ -1354,7 +1354,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  vitalTypeMatches(String pattern, {bool caseSensitive = true}) {
+      vitalTypeMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.matches(
@@ -1367,7 +1367,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  vitalTypeIsEmpty() {
+      vitalTypeIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'vitalType', value: ''),
@@ -1376,7 +1376,7 @@ extension VitalEntryIsarQueryFilter
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
-  vitalTypeIsNotEmpty() {
+      vitalTypeIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(property: r'vitalType', value: ''),
@@ -1400,21 +1400,21 @@ extension VitalEntryIsarQuerySortBy
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterSortBy>
-  sortByCreatedAtDesc() {
+      sortByCreatedAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'createdAt', Sort.desc);
     });
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterSortBy>
-  sortByFlareIsarId() {
+      sortByFlareIsarId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'flareIsarId', Sort.asc);
     });
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterSortBy>
-  sortByFlareIsarIdDesc() {
+      sortByFlareIsarIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'flareIsarId', Sort.desc);
     });
@@ -1427,7 +1427,7 @@ extension VitalEntryIsarQuerySortBy
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterSortBy>
-  sortByLoggedAtDesc() {
+      sortByLoggedAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'loggedAt', Sort.desc);
     });
@@ -1452,7 +1452,7 @@ extension VitalEntryIsarQuerySortBy
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterSortBy>
-  sortByProfileIdDesc() {
+      sortByProfileIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'profileId', Sort.desc);
     });
@@ -1489,7 +1489,7 @@ extension VitalEntryIsarQuerySortBy
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterSortBy>
-  sortByValue2Desc() {
+      sortByValue2Desc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'value2', Sort.desc);
     });
@@ -1502,7 +1502,7 @@ extension VitalEntryIsarQuerySortBy
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterSortBy>
-  sortByVitalTypeDesc() {
+      sortByVitalTypeDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'vitalType', Sort.desc);
     });
@@ -1518,21 +1518,21 @@ extension VitalEntryIsarQuerySortThenBy
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterSortBy>
-  thenByCreatedAtDesc() {
+      thenByCreatedAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'createdAt', Sort.desc);
     });
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterSortBy>
-  thenByFlareIsarId() {
+      thenByFlareIsarId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'flareIsarId', Sort.asc);
     });
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterSortBy>
-  thenByFlareIsarIdDesc() {
+      thenByFlareIsarIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'flareIsarId', Sort.desc);
     });
@@ -1557,7 +1557,7 @@ extension VitalEntryIsarQuerySortThenBy
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterSortBy>
-  thenByLoggedAtDesc() {
+      thenByLoggedAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'loggedAt', Sort.desc);
     });
@@ -1582,7 +1582,7 @@ extension VitalEntryIsarQuerySortThenBy
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterSortBy>
-  thenByProfileIdDesc() {
+      thenByProfileIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'profileId', Sort.desc);
     });
@@ -1619,7 +1619,7 @@ extension VitalEntryIsarQuerySortThenBy
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterSortBy>
-  thenByValue2Desc() {
+      thenByValue2Desc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'value2', Sort.desc);
     });
@@ -1632,7 +1632,7 @@ extension VitalEntryIsarQuerySortThenBy
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterSortBy>
-  thenByVitalTypeDesc() {
+      thenByVitalTypeDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'vitalType', Sort.desc);
     });
@@ -1642,14 +1642,14 @@ extension VitalEntryIsarQuerySortThenBy
 extension VitalEntryIsarQueryWhereDistinct
     on QueryBuilder<VitalEntryIsar, VitalEntryIsar, QDistinct> {
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QDistinct>
-  distinctByCreatedAt() {
+      distinctByCreatedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'createdAt');
     });
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QDistinct>
-  distinctByFlareIsarId() {
+      distinctByFlareIsarId() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'flareIsarId');
     });
@@ -1670,7 +1670,7 @@ extension VitalEntryIsarQueryWhereDistinct
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QDistinct>
-  distinctByProfileId() {
+      distinctByProfileId() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'profileId');
     });
