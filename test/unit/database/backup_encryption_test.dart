@@ -159,29 +159,30 @@ void main() {
       if (tmp.existsSync()) tmp.deleteSync(recursive: true);
     });
 
-    test('round trip: the correct password recovers the exact original bytes', () async {
-      final plainPath = '${tmp.path}/plain.isar';
-      final original = Uint8List.fromList(
-        List.generate(512, (i) => i % 256),
-      );
-      await File(plainPath).writeAsBytes(original);
+    test(
+      'round trip: the correct password recovers the exact original bytes',
+      () async {
+        final plainPath = '${tmp.path}/plain.isar';
+        final original = Uint8List.fromList(List.generate(512, (i) => i % 256));
+        await File(plainPath).writeAsBytes(original);
 
-      final encPath = '${tmp.path}/out${EncryptedBackupFormat.extension}';
-      await EncryptedBackupCodec.encryptFile(
-        plainPath: plainPath,
-        outPath: encPath,
-        password: _password,
-      );
+        final encPath = '${tmp.path}/out${EncryptedBackupFormat.extension}';
+        await EncryptedBackupCodec.encryptFile(
+          plainPath: plainPath,
+          outPath: encPath,
+          password: _password,
+        );
 
-      final decPath = '${tmp.path}/decrypted.isar';
-      await EncryptedBackupCodec.decryptFile(
-        encryptedPath: encPath,
-        outPath: decPath,
-        password: _password,
-      );
+        final decPath = '${tmp.path}/decrypted.isar';
+        await EncryptedBackupCodec.decryptFile(
+          encryptedPath: encPath,
+          outPath: decPath,
+          password: _password,
+        );
 
-      expect(await File(decPath).readAsBytes(), equals(original));
-    });
+        expect(await File(decPath).readAsBytes(), equals(original));
+      },
+    );
 
     test('the ciphertext does not contain the plaintext content', () async {
       const marker = 'HEALTHFLARE_PLAINTEXT_MARKER_0123456789';
@@ -220,32 +221,29 @@ void main() {
       expect(cipherAsText, isNot(contains(_password)));
     });
 
-    test(
-      'encrypting identical content twice produces different ciphertext '
-      '(fresh salt/nonce per export)',
-      () async {
-        final plainPath = '${tmp.path}/plain.isar';
-        await File(plainPath).writeAsString('identical content, twice');
+    test('encrypting identical content twice produces different ciphertext '
+        '(fresh salt/nonce per export)', () async {
+      final plainPath = '${tmp.path}/plain.isar';
+      await File(plainPath).writeAsString('identical content, twice');
 
-        final encPath1 = '${tmp.path}/out1${EncryptedBackupFormat.extension}';
-        final encPath2 = '${tmp.path}/out2${EncryptedBackupFormat.extension}';
-        await EncryptedBackupCodec.encryptFile(
-          plainPath: plainPath,
-          outPath: encPath1,
-          password: _password,
-        );
-        await EncryptedBackupCodec.encryptFile(
-          plainPath: plainPath,
-          outPath: encPath2,
-          password: _password,
-        );
+      final encPath1 = '${tmp.path}/out1${EncryptedBackupFormat.extension}';
+      final encPath2 = '${tmp.path}/out2${EncryptedBackupFormat.extension}';
+      await EncryptedBackupCodec.encryptFile(
+        plainPath: plainPath,
+        outPath: encPath1,
+        password: _password,
+      );
+      await EncryptedBackupCodec.encryptFile(
+        plainPath: plainPath,
+        outPath: encPath2,
+        password: _password,
+      );
 
-        expect(
-          await File(encPath1).readAsBytes(),
-          isNot(equals(await File(encPath2).readAsBytes())),
-        );
-      },
-    );
+      expect(
+        await File(encPath1).readAsBytes(),
+        isNot(equals(await File(encPath2).readAsBytes())),
+      );
+    });
 
     test(
       'decrypting with the wrong password fails and leaves no output file',
@@ -355,16 +353,19 @@ void main() {
       expect(File(path).existsSync(), isTrue);
     });
 
-    test('the exported file is not readable as a plain Isar database', () async {
-      final isar = await _openIsar('export_enc_not_plain');
-      await isar.writeTxn(
-        () => isar.profileIsars.put(ProfileIsar()..name = 'Sarah'),
-      );
+    test(
+      'the exported file is not readable as a plain Isar database',
+      () async {
+        final isar = await _openIsar('export_enc_not_plain');
+        await isar.writeTxn(
+          () => isar.profileIsars.put(ProfileIsar()..name = 'Sarah'),
+        );
 
-      final path = await BackupService.exportEncrypted(isar, _password);
+        final path = await BackupService.exportEncrypted(isar, _password);
 
-      expect(await EncryptedBackupCodec.isEncrypted(path), isTrue);
-    });
+        expect(await EncryptedBackupCodec.isEncrypted(path), isTrue);
+      },
+    );
 
     test(
       'no unencrypted intermediate copy of the backup survives on disk',

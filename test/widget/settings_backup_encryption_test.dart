@@ -77,7 +77,9 @@ Future<void> _openExportSheet(WidgetTester tester) async {
 }
 
 Future<void> _turnOnEncryption(WidgetTester tester) async {
-  await tester.tap(find.widgetWithText(SwitchListTile, 'Encrypt with a password'));
+  await tester.tap(
+    find.widgetWithText(SwitchListTile, 'Encrypt with a password'),
+  );
   await tester.pumpAndSettle();
 }
 
@@ -190,34 +192,33 @@ void main() {
       },
     );
 
-    testWidgets(
-      'a valid, matching, acknowledged password enables Export',
-      (tester) async {
-        final isar = await _openIsar('settings_valid_password');
-        await tester.pumpWidget(_buildSettings(isar));
-        await tester.pump();
+    testWidgets('a valid, matching, acknowledged password enables Export', (
+      tester,
+    ) async {
+      final isar = await _openIsar('settings_valid_password');
+      await tester.pumpWidget(_buildSettings(isar));
+      await tester.pump();
 
-        await _openExportSheet(tester);
-        await _turnOnEncryption(tester);
-        await _enterPasswords(
-          tester,
-          password: 'correcthorsebattery',
-          confirm: 'correcthorsebattery',
-        );
-        await tester.tap(
-          find.widgetWithText(
-            CheckboxListTile,
-            "I understand this password can't be recovered",
-          ),
-        );
-        await tester.pump();
+      await _openExportSheet(tester);
+      await _turnOnEncryption(tester);
+      await _enterPasswords(
+        tester,
+        password: 'correcthorsebattery',
+        confirm: 'correcthorsebattery',
+      );
+      await tester.tap(
+        find.widgetWithText(
+          CheckboxListTile,
+          "I understand this password can't be recovered",
+        ),
+      );
+      await tester.pump();
 
-        final button = tester.widget<FilledButton>(
-          find.widgetWithText(FilledButton, 'Export'),
-        );
-        expect(button.onPressed, isNotNull);
-      },
-    );
+      final button = tester.widget<FilledButton>(
+        find.widgetWithText(FilledButton, 'Export'),
+      );
+      expect(button.onPressed, isNotNull);
+    });
 
     testWidgets(
       'a valid, matching but unacknowledged password keeps Export disabled',
