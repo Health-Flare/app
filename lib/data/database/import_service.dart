@@ -105,14 +105,37 @@ class ImportService {
 
   // ── Isar lifecycle ────────────────────────────────────────────────────────
 
+  /// libmdbx meta signature written at byte 20 of every database this Isar
+  /// core creates (isar_community 3.3.2, libmdbx 0.13.8). A PDF, CSV, or
+  /// empty file does not have it.
+  static const _isarMagicOffset = 20;
+  static const _isarMagic = <int>[
+    0x03,
+    0x11,
+    0x4C,
+    0xEF,
+    0xBD,
+    0x9D,
+    0x65,
+    0x59,
+  ];
+
   /// Opens a working copy of [backupFilePath] and checks it really is a
   /// Health Flare database, throwing [InvalidBackupException] if not.
   ///
   /// Isar does not reject a file that isn't an Isar database: it silently
-  /// reinitialises it as a fresh, empty one. So "it opened" proves nothing.
-  /// Every real app database has the [AppSettings] singleton (id 1), written
-  /// by [MigrationRunner] on first launch, so its absence is the tell.
+  /// reinitialises it as a fresh, empty one and maps that file. Opening a
+  /// PDF or an empty file that way, then deleting it, faults the process
+  /// with SIGBUS when the mapping is torn down. The on-disk signature is
+  /// checked first so those files never reach [Isar.open].
+  ///
+  /// A real Isar file from something other than this app still opens. Every
+  /// real app database has the [AppSettings] singleton (id 1), written by
+  /// [MigrationRunner] on first launch, so its absence is the tell.
   static Future<Isar> _openBackup(String backupFilePath) async {
+    if (!await _hasIsarHeader(backupFilePath)) {
+      throw const InvalidBackupException();
+    }
     final tmp = await getTemporaryDirectory();
     final importPath = '${tmp.path}/$_importDbName.isar';
     // Always start from a fresh copy so we never corrupt the user's backup.
@@ -130,6 +153,26 @@ class ImportService {
       throw const InvalidBackupException();
     }
     return backup;
+  }
+
+  static Future<bool> _hasIsarHeader(String path) async {
+    final file = File(path);
+    if (!file.existsSync()) return false;
+    final raf = await file.open();
+    try {
+      if (await raf.length() < _isarMagicOffset + _isarMagic.length) {
+        return false;
+      }
+      await raf.setPosition(_isarMagicOffset);
+      final bytes = await raf.read(_isarMagic.length);
+      if (bytes.length < _isarMagic.length) return false;
+      for (var i = 0; i < _isarMagic.length; i++) {
+        if (bytes[i] != _isarMagic[i]) return false;
+      }
+      return true;
+    } finally {
+      await raf.close();
+    }
   }
 
   static Future<Isar> _openImportCopy(String directory) {

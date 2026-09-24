@@ -117,9 +117,26 @@ String _uid() => '${DateTime.now().microsecondsSinceEpoch}';
 /// Opens a database shaped like a real app database: with the AppSettings
 /// singleton MigrationRunner writes on first launch, which import/restore
 /// validation requires.
-Future<Isar> _openAppDb(String directory, String name) async {
-  final isar = await Isar.open(_schemas, directory: directory, name: name);
-  await isar.writeTxn(() => isar.appSettings.put(AppSettings()));
+/// One test process opens several databases. The 1 GiB default map is what
+/// libmdbx faults on (SIGBUS, process exit -7) when CI is already holding
+/// other Isar mappings. Tests only store a profile or two.
+const _testMaxSizeMiB = 64;
+
+Future<Isar> _openAppDb(
+  String directory,
+  String name, {
+  bool withSettings = true,
+}) async {
+  final isar = await Isar.open(
+    _schemas,
+    directory: directory,
+    name: name,
+    inspector: false,
+    maxSizeMiB: _testMaxSizeMiB,
+  );
+  if (withSettings) {
+    await isar.writeTxn(() => isar.appSettings.put(AppSettings()));
+  }
   return isar;
 }
 
@@ -160,9 +177,13 @@ void main() {
 
   tearDown(() async {
     container.dispose();
-    for (final name in Isar.instanceNames) {
-      final isar = Isar.getInstance(name);
-      if (isar != null && isar.isOpen) await isar.close();
+    // Snapshot first: close() removes the name from the live set.
+    final open = [
+      for (final name in Isar.instanceNames)
+        if (Isar.getInstance(name) case final Isar isar) isar,
+    ];
+    for (final isar in open) {
+      if (isar.isOpen) await isar.close(deleteFromDisk: true);
     }
     if (tempRoot.existsSync()) tempRoot.deleteSync(recursive: true);
   });
@@ -460,10 +481,10 @@ void main() {
     /// A genuine Isar database from something other than the app: it has
     /// no AppSettings singleton.
     Future<String> foreignIsarFile() async {
-      final other = await Isar.open(
-        _schemas,
-        directory: docsDir.path,
-        name: 'foreign_${_uid()}',
+      final other = await _openAppDb(
+        docsDir.path,
+        'foreign_${_uid()}',
+        withSettings: false,
       );
       await other.writeTxn(
         () => other.profileIsars.put(ProfileIsar()..name = 'Foreign'),
@@ -532,15 +553,16 @@ void main() {
       await BackupService.applyPendingRestoreIfNeeded(liveDir.path);
 
       expect(pending.existsSync(), isFalse);
-      final reopened = await Isar.open(
-        _schemas,
-        directory: liveDir.path,
-        name: 'healthflare',
+      final reopened = await _openAppDb(
+        liveDir.path,
+        'healthflare',
+        withSettings: false,
       );
-      final names = (await reopened.profileIsars.where().findAll()).map(
-        (p) => p.name,
-      );
+      final names = (await reopened.profileIsars.where().findAll())
+          .map((p) => p.name)
+          .toList();
       expect(names, ['LiveData']);
+      await reopened.close();
     });
   });
 }

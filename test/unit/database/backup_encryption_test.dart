@@ -132,11 +132,29 @@ const _schemas = [
 /// singleton [MigrationRunner] writes on first launch, which import/restore
 /// validation requires.
 Future<Isar> _openIsar(String name, {String directory = ''}) async {
-  final isar = await Isar.open(_schemas, directory: directory, name: name);
+  final isar = await Isar.open(
+    _schemas,
+    directory: directory,
+    name: name,
+    inspector: false,
+    maxSizeMiB: 64,
+  );
   if (await isar.appSettings.get(1) == null) {
     await isar.writeTxn(() => isar.appSettings.put(AppSettings()));
   }
   return isar;
+}
+
+/// Unmap every database still open in this isolate before a temp directory
+/// is deleted. Deleting a mapped Isar file faults the process with SIGBUS.
+Future<void> _closeOpenIsars() async {
+  final open = [
+    for (final name in Isar.instanceNames)
+      if (Isar.getInstance(name) case final Isar isar) isar,
+  ];
+  for (final isar in open) {
+    if (isar.isOpen) await isar.close();
+  }
 }
 
 /// A fresh suffix per call so instance names never collide with a
@@ -154,10 +172,7 @@ void main() {
   });
 
   tearDown(() async {
-    for (final isar
-        in Isar.instanceNames.map(Isar.getInstance).whereType<Isar>()) {
-      if (isar.isOpen) await isar.close();
-    }
+    await _closeOpenIsars();
   });
 
   // ---------------------------------------------------------------------
@@ -441,7 +456,8 @@ void main() {
       );
     });
 
-    tearDown(() {
+    tearDown(() async {
+      await _closeOpenIsars();
       if (tempRoot.existsSync()) tempRoot.deleteSync(recursive: true);
     });
 
@@ -521,7 +537,8 @@ void main() {
       );
     });
 
-    tearDown(() {
+    tearDown(() async {
+      await _closeOpenIsars();
       if (tempRoot.existsSync()) tempRoot.deleteSync(recursive: true);
     });
 

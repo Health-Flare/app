@@ -64,6 +64,7 @@ Subsection meanings (from Keep a Changelog):
 
 ### Fixed
 - A peak-flow reading such as "420 L/min" is no longer also read as hundreds of litres of fluid.
+- A file that isn't a database is rejected before restore or import tries to open it.
 
 ### Security
 - _Nothing yet._
