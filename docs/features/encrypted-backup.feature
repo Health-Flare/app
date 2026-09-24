@@ -10,19 +10,19 @@ Feature: Encrypted backups
   #
   # This feature covers the confidentiality of *portable backup files* produced
   # by export and consumed by import/restore. It does not change how the live
-  # on-device database is stored — the Isar database file on disk remains
+  # on-device database is stored. The Isar database file on disk remains
   # unencrypted at rest, protected only by the OS's app-sandbox permissions
   # (see datastore.feature, "Database file is not accessible to other apps").
   # Encryption is applied only at the boundary where data leaves the device as
   # a file (export) and where a file re-enters the device (import).
   #
   # All encryption and decryption happens entirely on-device. No password, key,
-  # salt, or backup content is ever sent over the network — this stays true to
+  # salt, or backup content is ever sent over the network. This stays true to
   # the app's offline-first design (the only network call the app ever makes is
   # the opt-in Open-Meteo weather lookup, which this feature does not touch).
 
   # ---------------------------------------------------------------------------
-  # Future direction — not in scope here
+  # Future direction: not in scope here
   # ---------------------------------------------------------------------------
   #
   # This feature is the "safe copy, full user control" half of a broader
@@ -30,14 +30,14 @@ Feature: Encrypted backups
   # decide what's best to do with it. A direction under discussion, not
   # committed to and not part of this feature, is letting a user take an
   # *anonymized* export and hand it to patient-owned-data tooling outside this
-  # app — e.g. informed-patient.ai (github.com/DrCatHicks/informed-patient,
+  # app, e.g. informed-patient.ai (github.com/DrCatHicks/informed-patient,
   # CC-BY-4.0), a patient-advocacy project by Cat Hicks, PhD that helps people
   # build structured evidence reviews from their own health data, or similar
   # tools.
   #
   # This note exists so contributors extending backup/export later keep that
-  # direction in mind — e.g. don't design the encrypted backup format in a way
-  # that would foreclose an anonymized-export variant down the line — not so
+  # direction in mind (e.g. don't design the encrypted backup format in a way
+  # that would foreclose an anonymized-export variant down the line), not so
   # this feature builds anonymization or third-party interop now. The
   # password-locked, full-fidelity backup specified below stays scoped to
   # personal backup/restore and transfer between the user's own devices.
@@ -58,7 +58,7 @@ Feature: Encrypted backups
   # Per CLAUDE.md's existing "Privacy-Centric" principle ("no vague 'we value
   # privacy'"), the export screen owes the user a specific, checkable
   # explanation rather than a reassuring platitude. This applies to the export
-  # flow generally — both the plain and encrypted paths — not just the
+  # flow generally (both the plain and encrypted paths), not just the
   # encryption-specific scenarios below. Exact copy is still to be written;
   # this scenario specifies what it has to convey.
 
@@ -68,9 +68,10 @@ Feature: Encrypted backups
     And it states specifically what happens on export: the data is written to a
       file the user controls, and Health Flare has no server or account that
       receives a copy of it
-    And it states who can access the file afterward: only whoever the user
-      chooses to share it with — Health Flare never sees, stores, or has access
-      to it
+    And it states who can access the file afterward: Health Flare never sees,
+      stores, or has access to it, and anyone who has an unencrypted copy of
+      the file can read it
+    And it points to password encryption as the way to limit that
     And the language is specific and checkable, not a vague reassurance
       ("we value your privacy")
 
@@ -140,7 +141,11 @@ Feature: Encrypted backups
     When the export completes
     Then the password does not appear anywhere in the exported ".hfbackup" file
     And the password is not written to any log, cache, or settings entry
-    And the password is cleared from memory once the export finishes
+    And the export screen's password fields are cleared as soon as the export
+      starts, and the app keeps no reference to the password afterward
+    # Note: Dart strings are immutable and garbage-collected, so the app
+    # can't overwrite the password's bytes in memory; "no reference kept" is
+    # the strongest guarantee available without native code.
 
   Scenario: No unencrypted intermediate file is left behind
     Given "Encrypt with a password" is switched on with a valid, confirmed password
@@ -242,4 +247,10 @@ Feature: Encrypted backups
     Given a ".hfbackup" file produced by a version of the app that supports encryption
     When that file is opened with a version of the app that predates this feature
     Then the older version does not recognize the file as a valid backup
-    And no data is lost or corrupted as a result — the attempt simply fails cleanly
+    And no data is lost or corrupted as a result: the attempt simply fails cleanly
+    # Known limitation: versions up to and including 1.8.0 do NOT meet this
+    # for "Replace everything". They stage any picked file without checking
+    # it is an Isar database, and on the next launch the live database is
+    # replaced by the unreadable file, which Isar opens as empty. "Add missing
+    # data" and "Choose what to import" just find nothing to import. Older
+    # releases can't be changed; staging validation is tracked separately.

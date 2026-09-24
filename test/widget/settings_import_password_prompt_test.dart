@@ -11,14 +11,14 @@ import 'package:health_flare/features/settings/screens/settings_screen.dart';
 
 // ---------------------------------------------------------------------------
 // Widget-level tests for issue #30 / docs/features/encrypted-backup.feature
-// — the password prompt shown when a picked backup file is encrypted.
+// the password prompt shown when a picked backup file is encrypted.
 //
 // Split out from settings_backup_encryption_test.dart because a *second*
 // real, Isar-backed SettingsScreen pump in the same test file reliably
-// hangs in this environment — see that file's header comment for the
+// hangs in this environment; see that file's header comment for the
 // repro details. Driven through a fixed-state/spy fake notifier rather
 // than a real file pick, since BackupNotifier calls FilePicker directly
-// and there's no picker abstraction in the codebase to fake yet — that
+// and there's no picker abstraction in the codebase to fake yet; that
 // stays covered at the service level in
 // test/unit/database/backup_encryption_test.dart instead.
 // ---------------------------------------------------------------------------

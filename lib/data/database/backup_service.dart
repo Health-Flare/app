@@ -11,7 +11,7 @@ import 'package:health_flare/data/database/backup_encryption.dart';
 /// [export] calls [Isar.copyToFile] on the live instance, producing a clean
 /// snapshot in the system temp directory. The caller is responsible for sharing
 /// or saving the file. [exportEncrypted] does the same but password-locks the
-/// result (see [EncryptedBackupCodec]) — the plaintext snapshot never leaves
+/// result (see [EncryptedBackupCodec]). The plaintext snapshot never leaves
 /// the temp directory and is deleted once encryption completes.
 ///
 /// ## Restore
@@ -66,7 +66,7 @@ class BackupService {
   ///
   /// Internally calls [export] to build the plaintext snapshot, encrypts it
   /// with [EncryptedBackupCodec.encryptFile], then deletes the plaintext
-  /// copy — only the encrypted file is left on disk.
+  /// copy, so only the encrypted file is left on disk.
   static Future<String> exportEncrypted(Isar isar, String password) async {
     final plainPath = await export(isar);
     try {

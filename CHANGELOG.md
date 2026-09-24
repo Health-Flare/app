@@ -46,7 +46,8 @@ Subsection meanings (from Keep a Changelog):
 ## [Unreleased]
 
 ### Added
-- _Nothing yet._
+- Backups can now be locked with a password. Turn on "Encrypt with a password" when exporting to get an encrypted `.hfbackup` file that only opens with that password. Importing asks for the password automatically, in all three restore modes. Plain backups work exactly as before.
+- The export screen now says plainly who can read an exported file and what Health Flare does (and doesn't) do with it.
 
 ### Changed
 - _Nothing yet._

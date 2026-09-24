@@ -31,10 +31,8 @@ import 'package:health_flare/data/models/vital_entry_isar.dart';
 // ---------------------------------------------------------------------------
 // Tests for issue #30 / docs/features/encrypted-backup.feature
 //
-// Nothing under test here exists yet in lib/ — these are the failing
-// ("red") tests the project's BDD workflow calls for ahead of
-// implementation. They pin the contract for a new file,
-// lib/data/database/backup_encryption.dart, expected to expose:
+// Written ahead of the implementation (BDD red step); they pin the
+// contract of lib/data/database/backup_encryption.dart:
 //
 //   abstract final class EncryptedBackupFormat {
 //     static const extension = '.hfbackup';
@@ -60,13 +58,13 @@ import 'package:health_flare/data/models/vital_entry_isar.dart';
 //
 //   static Future<String> exportEncrypted(Isar isar, String password);
 //
-// ImportService itself needs no new API — it already takes a raw file path,
+// ImportService itself needs no new API: it already takes a raw file path,
 // so an encrypted backup is decrypted to a temp path first and fed into the
 // existing mergeAll/preview/mergeSelected exactly like a plain backup.
 // ---------------------------------------------------------------------------
 
 // ---------------------------------------------------------------------------
-// Fake path_provider — resolves to real, writable directories under a
+// Fake path_provider: resolves to real, writable directories under a
 // per-test temp root, so BackupService/ImportService's real file I/O
 // (getTemporaryDirectory, getApplicationDocumentsDirectory) works under
 // `flutter test`, which has no platform plugin registered.
@@ -103,7 +101,7 @@ class _FakePathProvider
 }
 
 // ---------------------------------------------------------------------------
-// Helper — open a fresh Isar instance with the full production schema list.
+// Helper: open a fresh Isar instance with the full production schema list.
 // ---------------------------------------------------------------------------
 
 const _schemas = [
@@ -131,7 +129,7 @@ Future<Isar> _openIsar(String name, {String directory = ''}) {
 }
 
 /// A fresh suffix per call so instance names never collide with a
-/// leftover `.isar` file from a previous local test run — `directory: ''`
+/// leftover `.isar` file from a previous local test run: `directory: ''`
 /// resolves to the working directory, which isn't cleaned between runs the
 /// way a real CI checkout would be. Matches the pattern already used by
 /// migration_test.dart/move_to_profile_test.dart.
@@ -152,7 +150,7 @@ void main() {
   });
 
   // ---------------------------------------------------------------------
-  // EncryptedBackupCodec — pure file-to-file encryption, no Isar involved.
+  // EncryptedBackupCodec: pure file-to-file encryption, no Isar involved.
   // Covers: "Encryption uses vetted, authenticated cryptography",
   // "The password is never written to disk", "The app detects file type
   // automatically", "An incorrect password is rejected...", "A corrupted
@@ -294,7 +292,7 @@ void main() {
         bytes[bytes.length ~/ 2] ^= 0xFF;
         await File(encPath).writeAsBytes(bytes);
 
-        // Same password that produced the file — only the file changed.
+        // Same password that produced the file: only the file changed.
         await expectLater(
           EncryptedBackupCodec.decryptFile(
             encryptedPath: encPath,
@@ -305,6 +303,94 @@ void main() {
         );
       },
     );
+
+    test('wrong password and tampering produce the identical error, so the '
+        'UI cannot (and does not) distinguish them', () async {
+      final plainPath = '${tmp.path}/plain.isar';
+      await File(plainPath).writeAsString('secret health data');
+      final encPath = '${tmp.path}/out${EncryptedBackupFormat.extension}';
+      await EncryptedBackupCodec.encryptFile(
+        plainPath: plainPath,
+        outPath: encPath,
+        password: _password,
+      );
+
+      Future<String> failureMessage(String path, String password) async {
+        try {
+          await EncryptedBackupCodec.decryptFile(
+            encryptedPath: path,
+            outPath: '${tmp.path}/decrypted.isar',
+            password: password,
+          );
+        } on BackupEncryptionException catch (e) {
+          return e.message;
+        }
+        fail('decryption unexpectedly succeeded');
+      }
+
+      final wrongPassword = await failureMessage(encPath, 'not the password');
+
+      final bytes = Uint8List.fromList(await File(encPath).readAsBytes());
+      bytes[bytes.length - 1] ^= 0x01;
+      final tamperedPath = '${tmp.path}/tampered.hfbackup';
+      await File(tamperedPath).writeAsBytes(bytes);
+      final tampered = await failureMessage(tamperedPath, _password);
+
+      expect(tampered, wrongPassword);
+    });
+
+    test('altering the unencrypted header (salt) is detected too', () async {
+      final plainPath = '${tmp.path}/plain.isar';
+      await File(plainPath).writeAsString('secret health data');
+      final encPath = '${tmp.path}/out${EncryptedBackupFormat.extension}';
+      await EncryptedBackupCodec.encryptFile(
+        plainPath: plainPath,
+        outPath: encPath,
+        password: _password,
+      );
+
+      // Byte 8 is the first salt byte, right after the 8-byte magic.
+      final bytes = Uint8List.fromList(await File(encPath).readAsBytes());
+      bytes[8] ^= 0xFF;
+      await File(encPath).writeAsBytes(bytes);
+
+      final decPath = '${tmp.path}/decrypted.isar';
+      await expectLater(
+        EncryptedBackupCodec.decryptFile(
+          encryptedPath: encPath,
+          outPath: decPath,
+          password: _password,
+        ),
+        throwsA(isA<BackupEncryptionException>()),
+      );
+      expect(File(decPath).existsSync(), isFalse);
+    });
+
+    test('a truncated file fails cleanly with the same exception', () async {
+      final plainPath = '${tmp.path}/plain.isar';
+      await File(plainPath).writeAsString('secret health data');
+      final encPath = '${tmp.path}/out${EncryptedBackupFormat.extension}';
+      await EncryptedBackupCodec.encryptFile(
+        plainPath: plainPath,
+        outPath: encPath,
+        password: _password,
+      );
+
+      // Keep the header (so it's still detected as encrypted) but cut off
+      // the nonce/MAC/ciphertext, e.g. an interrupted download.
+      final bytes = await File(encPath).readAsBytes();
+      await File(encPath).writeAsBytes(bytes.sublist(0, 30));
+
+      expect(await EncryptedBackupCodec.isEncrypted(encPath), isTrue);
+      await expectLater(
+        EncryptedBackupCodec.decryptFile(
+          encryptedPath: encPath,
+          outPath: '${tmp.path}/decrypted.isar',
+          password: _password,
+        ),
+        throwsA(isA<BackupEncryptionException>()),
+      );
+    });
 
     test('isEncrypted is true for an encrypted file', () async {
       final plainPath = '${tmp.path}/plain.isar';
@@ -328,7 +414,7 @@ void main() {
   });
 
   // ---------------------------------------------------------------------
-  // BackupService.exportEncrypted — real Isar + real (faked-path) file I/O.
+  // BackupService.exportEncrypted: real Isar + real (faked-path) file I/O.
   // Covers: "An encrypted export produces a distinct, locked file",
   // "No unencrypted intermediate file is left behind".
   // ---------------------------------------------------------------------
@@ -404,7 +490,7 @@ void main() {
   });
 
   // ---------------------------------------------------------------------
-  // Importing an encrypted backup — decrypt once, then reuse the existing,
+  // Importing an encrypted backup: decrypt once, then reuse the existing,
   // unmodified ImportService/BackupService API exactly as with a plain
   // backup. Covers: "The correct password unlocks the backup for import",
   // and all three restore-mode scenarios ("Replace everything", "Add
@@ -464,7 +550,7 @@ void main() {
         final encPath = await BackupService.exportEncrypted(source, _password);
         await source.close();
 
-        // Decrypt exactly once — both calls below reuse this same path,
+        // Decrypt exactly once: both calls below reuse this same path,
         // mirroring "the user is not asked for the password again when
         // confirming which categories to import".
         final decPath = '${tempRoot.path}/decrypted_for_selective.isar';

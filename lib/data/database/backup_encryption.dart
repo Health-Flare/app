@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:isolate';
 import 'dart:math';
 import 'dart:typed_data';
 
@@ -7,17 +8,17 @@ import 'package:cryptography/cryptography.dart';
 
 /// File extension for password-encrypted Health Flare backups (see
 /// docs/features/encrypted-backup.feature). Distinct from the plain ".isar"
-/// backups [BackupService.export] produces, so file pickers and
-/// [EncryptedBackupCodec.isEncrypted] can tell the two apart without the
-/// password.
+/// backups [BackupService.export] produces, so a person looking at their
+/// files can tell the two apart. The app itself never relies on the
+/// extension: [EncryptedBackupCodec.isEncrypted] checks the file's content.
 abstract final class EncryptedBackupFormat {
   static const extension = '.hfbackup';
 }
 
 /// Thrown by [EncryptedBackupCodec.decryptFile] when a `.hfbackup` file
-/// can't be decrypted — either the password was wrong, or the file is
-/// corrupted/tampered with. Authenticated encryption can't tell those two
-/// cases apart by design, so callers should show one generic "incorrect
+/// can't be decrypted: either the password was wrong, or the file is
+/// corrupted or has been tampered with. Authenticated encryption can't tell
+/// those two cases apart by design, so callers show one generic "incorrect
 /// password" message for both (see "A corrupted or tampered backup cannot
 /// be distinguished from a wrong password" in
 /// docs/features/encrypted-backup.feature).
@@ -34,7 +35,7 @@ class BackupEncryptionException implements Exception {
 /// password. Used by [BackupService.exportEncrypted] on export, and by the
 /// import flow to unlock a `.hfbackup` file into a plain, decrypted temp
 /// copy before handing it to the existing [ImportService]/[BackupService]
-/// restore paths — those need no changes of their own to support encrypted
+/// restore paths, which need no changes of their own to support encrypted
 /// backups.
 ///
 /// ## File format
@@ -43,10 +44,16 @@ class BackupEncryptionException implements Exception {
 /// [8-byte magic "HFBKUP01"][16-byte salt][12-byte nonce][16-byte MAC][ciphertext]
 /// ```
 ///
-/// The salt and nonce aren't secret — only the password (never written
-/// anywhere) and the key derived from it are. A fresh salt and nonce are
-/// generated on every [encryptFile] call, so encrypting identical content
+/// The magic and salt (the header) are not secret, but they are passed to
+/// AES-GCM as associated data, so altering them fails authentication just
+/// like altering the ciphertext does. Only the password (never written
+/// anywhere) and the key derived from it are secret. A fresh salt and nonce
+/// are generated on every [encryptFile] call, so encrypting identical content
 /// with the same password twice produces different output.
+///
+/// The trailing `01` in the magic is the format version. A future variant
+/// (for example an anonymized export) gets its own magic rather than
+/// reinterpreting this one.
 ///
 /// ## Cryptography
 ///
@@ -54,11 +61,13 @@ class BackupEncryptionException implements Exception {
 ///   can't be cheaply parallelized on GPUs/ASICs. Parameters (19 MiB
 ///   memory, 2 iterations, 1 lane) follow OWASP's minimum recommendation
 ///   for Argon2id.
-/// - Encryption: AES-256-GCM — authenticated, so decryption fails loudly
-///   on any tampering instead of silently returning corrupted plaintext.
+/// - Encryption: AES-256-GCM, authenticated, so decryption fails loudly on
+///   any tampering instead of silently returning corrupted plaintext.
 ///
 /// Both come from `package:cryptography`, a vetted, actively maintained
 /// implementation; nothing here hand-rolls a cryptographic primitive.
+/// Key derivation and encryption run on a background isolate
+/// ([Isolate.run]) so the UI doesn't freeze while Argon2id works.
 class EncryptedBackupCodec {
   EncryptedBackupCodec._();
 
@@ -66,21 +75,28 @@ class EncryptedBackupCodec {
     utf8.encode('HFBKUP01'),
   );
   static const _saltLength = 16;
+  static const _nonceLength = 12;
   static const _macLength = 16;
   static const _headerLength = 8 /* magic */ + _saltLength;
+  static const _minFileLength = _headerLength + _nonceLength + _macLength;
 
-  static final _cipher = AesGcm.with256bits();
+  static const _notABackupMessage =
+      'This file is not a Health Flare encrypted backup.';
+  static const _wrongPasswordMessage =
+      'Incorrect password, or the file is damaged.';
 
-  static Argon2id _kdf(List<int> salt) => Argon2id(
+  static AesGcm _cipher() => AesGcm.with256bits(nonceLength: _nonceLength);
+
+  static Argon2id _kdf() => Argon2id(
     parallelism: 1,
-    memory: 19456, // ~19 MiB — OWASP-recommended Argon2id minimum.
+    memory: 19456, // ~19 MiB: OWASP-recommended Argon2id minimum.
     iterations: 2,
     hashLength: 32, // 256-bit key, matching AesGcm.with256bits().
   );
 
   /// Returns true if the file at [path] looks like an encrypted Health
   /// Flare backup, based on its header. Doesn't require the password and
-  /// doesn't verify the content — only [decryptFile] does that.
+  /// doesn't verify the content; only [decryptFile] does that.
   static Future<bool> isEncrypted(String path) async {
     final file = File(path);
     if (!await file.exists()) return false;
@@ -103,31 +119,20 @@ class EncryptedBackupCodec {
     required String password,
   }) async {
     final plainBytes = await File(plainPath).readAsBytes();
-    final salt = _randomBytes(_saltLength);
-
-    final secretKey = await _kdf(
-      salt,
-    ).deriveKeyFromPassword(password: password, nonce: salt);
-
-    final secretBox = await _cipher.encrypt(plainBytes, secretKey: secretKey);
-
-    final out = BytesBuilder(copy: false)
-      ..add(_magicBytes)
-      ..add(salt)
-      ..add(secretBox.nonce)
-      ..add(secretBox.mac.bytes)
-      ..add(secretBox.cipherText);
-
-    await File(outPath).writeAsBytes(out.toBytes(), flush: true);
+    final encrypted = await Isolate.run(
+      () => _encryptBytes(plainBytes, password),
+    );
+    await File(outPath).writeAsBytes(encrypted, flush: true);
     return outPath;
   }
 
   /// Decrypts [encryptedPath] with [password] into a new file at [outPath].
-  /// Returns [outPath].
+  /// Returns [outPath]. Nothing is written to [outPath] unless decryption
+  /// and authentication both succeed.
   ///
   /// Throws [BackupEncryptionException] if [encryptedPath] isn't a Health
   /// Flare encrypted backup, or if the password is wrong, or the file is
-  /// corrupted/tampered with — the latter two are indistinguishable by
+  /// corrupted/tampered with. The latter two are indistinguishable by
   /// design (see the class doc).
   static Future<String> decryptFile({
     required String encryptedPath,
@@ -137,37 +142,83 @@ class EncryptedBackupCodec {
     final bytes = await File(encryptedPath).readAsBytes();
     if (bytes.length < _headerLength ||
         !_bytesEqual(bytes.sublist(0, _magicBytes.length), _magicBytes)) {
-      throw const BackupEncryptionException(
-        'This file is not a Health Flare encrypted backup.',
-      );
+      throw const BackupEncryptionException(_notABackupMessage);
     }
 
-    var offset = _magicBytes.length;
-    final salt = bytes.sublist(offset, offset + _saltLength);
-    offset += _saltLength;
-    final nonce = bytes.sublist(offset, offset + _cipher.nonceLength);
-    offset += _cipher.nonceLength;
-    final mac = bytes.sublist(offset, offset + _macLength);
-    offset += _macLength;
-    final cipherText = bytes.sublist(offset);
-
-    final secretKey = await _kdf(
-      salt,
-    ).deriveKeyFromPassword(password: password, nonce: salt);
-
-    final secretBox = SecretBox(cipherText, nonce: nonce, mac: Mac(mac));
-
-    final List<int> plainBytes;
-    try {
-      plainBytes = await _cipher.decrypt(secretBox, secretKey: secretKey);
-    } on SecretBoxAuthenticationError {
-      throw const BackupEncryptionException(
-        'Incorrect password, or the file is corrupted.',
-      );
+    final plainBytes = await Isolate.run(() => _decryptBytes(bytes, password));
+    if (plainBytes == null) {
+      throw const BackupEncryptionException(_wrongPasswordMessage);
     }
 
     await File(outPath).writeAsBytes(plainBytes, flush: true);
     return outPath;
+  }
+
+  // ── Isolate bodies ────────────────────────────────────────────────────────
+  //
+  // Top-level-safe static functions: they capture only their arguments, so
+  // Isolate.run can send them to a background isolate.
+
+  static Future<Uint8List> _encryptBytes(
+    Uint8List plainBytes,
+    String password,
+  ) async {
+    final salt = _randomBytes(_saltLength);
+    final header = Uint8List.fromList([..._magicBytes, ...salt]);
+
+    final secretKey = await _kdf().deriveKeyFromPassword(
+      password: password,
+      nonce: salt,
+    );
+    final secretBox = await _cipher().encrypt(
+      plainBytes,
+      secretKey: secretKey,
+      aad: header,
+    );
+
+    return (BytesBuilder(copy: false)
+          ..add(header)
+          ..add(secretBox.nonce)
+          ..add(secretBox.mac.bytes)
+          ..add(secretBox.cipherText))
+        .toBytes();
+  }
+
+  /// Returns the plaintext, or null if authentication failed (wrong password
+  /// or a damaged/tampered file).
+  static Future<List<int>?> _decryptBytes(
+    Uint8List bytes,
+    String password,
+  ) async {
+    if (bytes.length < _minFileLength) return null;
+
+    final header = Uint8List.sublistView(bytes, 0, _headerLength);
+    final salt = Uint8List.sublistView(
+      bytes,
+      _magicBytes.length,
+      _headerLength,
+    );
+    var offset = _headerLength;
+    final nonce = Uint8List.sublistView(bytes, offset, offset + _nonceLength);
+    offset += _nonceLength;
+    final mac = Uint8List.sublistView(bytes, offset, offset + _macLength);
+    offset += _macLength;
+    final cipherText = Uint8List.sublistView(bytes, offset);
+
+    final secretKey = await _kdf().deriveKeyFromPassword(
+      password: password,
+      nonce: salt,
+    );
+
+    try {
+      return await _cipher().decrypt(
+        SecretBox(cipherText, nonce: nonce, mac: Mac(mac)),
+        secretKey: secretKey,
+        aad: header,
+      );
+    } on SecretBoxAuthenticationError {
+      return null;
+    }
   }
 
   static Uint8List _randomBytes(int length) {

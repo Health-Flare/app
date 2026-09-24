@@ -1,7 +1,7 @@
 # Privacy Policy
 
 **Health Flare**
-Last updated: 29 March 2026
+Last updated: 24 September 2026
 
 ---
 
@@ -44,6 +44,8 @@ This data is stored in a private, sandboxed database on your device. It is not a
 ## Backups
 
 Health Flare includes an optional backup feature that lets you export a copy of your data as a file. This export happens **only when you explicitly request it**, and the resulting file goes only where you choose to send it: for example, saving it to your Files app, sending it to yourself via AirDrop, or attaching it to an email.
+
+You can optionally lock a backup with a password. The file is then encrypted on your device (AES-256-GCM, with a key derived from your password using Argon2id) before it is shared, so only someone who knows the password can read it. Your password is never stored or sent anywhere, which also means a lost password cannot be recovered and the backup cannot be opened without it. A backup exported without a password is not encrypted, and anyone who has a copy of the file can read it.
 
 We never receive, process, or have access to any backup files you create.
 

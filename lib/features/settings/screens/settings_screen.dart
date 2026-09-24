@@ -85,7 +85,7 @@ class _BackupTilesState extends ConsumerState<_BackupTiles> {
   /// Tracks the currently-open password prompt so it's opened once and
   /// reused for retries (the same dialog watches state and shows the new
   /// error inline) rather than stacked. Driven from the *current* state on
-  /// every build — not `ref.listen` — because this can be the very first
+  /// every build, not `ref.listen`, because this can be the very first
   /// state the provider ever has (e.g. resuming with an already-picked
   /// encrypted file), and `ref.listen` only fires on later transitions.
   bool _passwordDialogOpen = false;
@@ -147,7 +147,12 @@ class _BackupTilesState extends ConsumerState<_BackupTiles> {
               notifier.reset();
             },
           ),
-        );
+        ).then((_) {
+          if (!mounted) return;
+          // Dismissed without Import or Cancel (swipe/barrier tap): drop the
+          // preview so a decrypted working copy doesn't linger on disk.
+          if (ref.read(backupProvider) is ImportPreviewReady) notifier.reset();
+        });
       } else if (next is ImportComplete) {
         notifier.reset();
         final msg = next.recordsAdded == 0
@@ -328,7 +333,7 @@ class _BackupTilesState extends ConsumerState<_BackupTiles> {
 }
 
 // ---------------------------------------------------------------------------
-// Export sheet — plain or password-encrypted
+// Export sheet: plain or password-encrypted
 // ---------------------------------------------------------------------------
 
 class _ExportSheet extends StatefulWidget {
@@ -382,9 +387,14 @@ class _ExportSheetState extends State<_ExportSheet> {
   }
 
   void _handleExport() {
+    final password = _passwordController.text;
+    // Drop the sheet's own copies of the password as soon as it's handed
+    // off; nothing in the app keeps a reference to it after the export.
+    _passwordController.clear();
+    _confirmController.clear();
     Navigator.of(context).pop();
     if (_encryptEnabled) {
-      widget.notifier.exportWithPassword(_passwordController.text);
+      widget.notifier.exportWithPassword(password);
     } else {
       widget.notifier.export();
     }
@@ -423,7 +433,7 @@ class _ExportSheetState extends State<_ExportSheet> {
               Text('Export backup', style: tt.titleMedium),
               const SizedBox(height: 12),
 
-              // Data ownership notice — see docs/features/encrypted-backup.feature,
+              // Data ownership notice: see docs/features/encrypted-backup.feature,
               // "The export screen explains data ownership before the user
               // shares anything". Specific and checkable, not a vague
               // reassurance.
@@ -445,11 +455,11 @@ class _ExportSheetState extends State<_ExportSheet> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Exporting writes it to a file you control — Health '
+                      'Exporting writes it to a file you control. Health '
                       'Flare has no server or account that receives a copy. '
-                      'Only whoever you choose to share this file with can '
-                      'open it; Health Flare never sees, stores, or has '
-                      'access to it.',
+                      'Health Flare never sees, stores, or has access to '
+                      'the file. Whoever has the file can read it, unless '
+                      'you lock it with a password below.',
                       style: tt.bodySmall?.copyWith(color: cs.onSurfaceVariant),
                     ),
                   ],
@@ -493,7 +503,7 @@ class _ExportSheetState extends State<_ExportSheet> {
                 const SizedBox(height: 8),
                 Text(
                   "If you lose this password, the backup can't be "
-                  'recovered — there is no account to reset it from.',
+                  'recovered. There is no account to reset it from.',
                   style: tt.bodySmall?.copyWith(color: cs.error),
                 ),
                 CheckboxListTile(
@@ -524,7 +534,7 @@ class _ExportSheetState extends State<_ExportSheet> {
 }
 
 // ---------------------------------------------------------------------------
-// Import password prompt — shown when a picked backup file is encrypted
+// Import password prompt: shown when a picked backup file is encrypted
 // ---------------------------------------------------------------------------
 
 class _ImportPasswordDialog extends ConsumerStatefulWidget {
@@ -538,24 +548,49 @@ class _ImportPasswordDialog extends ConsumerStatefulWidget {
 class _ImportPasswordDialogState extends ConsumerState<_ImportPasswordDialog> {
   final _controller = TextEditingController();
 
+  /// Set once this dialog has started closing, so it never tries to remove
+  /// itself twice.
+  bool _closed = false;
+
   @override
   void dispose() {
     _controller.dispose();
     super.dispose();
   }
 
+  /// Removes this dialog's own route, wherever it sits in the stack.
+  ///
+  /// Deliberately not `Navigator.pop`: when an unlock succeeds, the parent's
+  /// listener may already have pushed the next route (e.g. the selective
+  /// import category sheet) on top of this dialog, and popping would close
+  /// that route instead of this one.
+  void _close() {
+    if (_closed) return;
+    _closed = true;
+    final route = ModalRoute.of(context);
+    if (route != null && route.isActive) {
+      Navigator.of(context).removeRoute(route);
+    }
+  }
+
+  void _cancel() {
+    _controller.clear();
+    _close();
+    ref.read(backupProvider.notifier).reset();
+  }
+
   @override
   Widget build(BuildContext context) {
+    // The flow has moved past needing a password (unlocked, or failed for
+    // a reason other than the password): close this dialog.
+    ref.listen(backupProvider, (prev, next) {
+      if (next is ImportPasswordRequired || next is BackupInProgress) return;
+      _controller.clear();
+      _close();
+    });
+
     final state = ref.watch(backupProvider);
     final busy = state is BackupInProgress;
-
-    // The flow has moved past needing a password (unlocked, cancelled, or
-    // failed for an unrelated reason) — close this dialog.
-    if (state is! ImportPasswordRequired && !busy) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (Navigator.of(context).canPop()) Navigator.of(context).pop();
-      });
-    }
 
     final errorMessage = state is ImportPasswordRequired
         ? state.errorMessage
@@ -585,12 +620,7 @@ class _ImportPasswordDialogState extends ConsumerState<_ImportPasswordDialog> {
       ),
       actions: [
         TextButton(
-          onPressed: busy
-              ? null
-              : () {
-                  Navigator.of(context).pop();
-                  ref.read(backupProvider.notifier).reset();
-                },
+          onPressed: busy ? null : _cancel,
           child: const Text('Cancel'),
         ),
         FilledButton(

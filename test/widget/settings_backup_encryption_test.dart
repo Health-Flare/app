@@ -11,16 +11,16 @@ import 'package:health_flare/features/settings/screens/settings_screen.dart';
 
 // ---------------------------------------------------------------------------
 // Widget-level tests for issue #30 / docs/features/encrypted-backup.feature
-// — the export sheet's encryption toggle, its ownership notice, and its
+// the export sheet's encryption toggle, its ownership notice, and its
 // password validation.
 //
 // NOTE on test structure: each scenario group below is consolidated into a
 // single testWidgets pumping the tree once, then stepping through several
 // related assertions in sequence, rather than one testWidgets per Gherkin
-// scenario. This isn't just style — pumping a *second* real, Isar-backed
+// scenario. This isn't just style; pumping a *second* real, Isar-backed
 // SettingsScreen tree in the same test file reliably hangs in this
 // environment (reproduced with a minimal repro: bare Isar.open() plus a
-// widget pump, no health_flare UI code involved — the third such pump in
+// widget pump, no health_flare UI code involved; the third such pump in
 // one file hangs every time, regardless of whether earlier instances are
 // closed). Import-password-prompt coverage that needs its own separate
 // notifier override lives in settings_import_password_prompt_test.dart
@@ -92,7 +92,7 @@ void main() {
   // Scenario: "Encryption is off by default on export"
   // Scenario: "Turning on encryption reveals password fields"
   // Scenario: "The export screen explains data ownership before the user
-  // shares anything" (exact copy intentionally not pinned — the spec notes
+  // shares anything" (exact copy intentionally not pinned; the spec notes
   // it's still to be written; only that a dedicated, keyed notice exists
   // and it isn't the vague reassurance CLAUDE.md rules out).
   // ---------------------------------------------------------------------
@@ -103,7 +103,7 @@ void main() {
       await tester.pump();
       await _openExportSheet(tester);
 
-      // Ownership notice — always present, regardless of the toggle.
+      // Ownership notice; always present, regardless of the toggle.
       expect(find.byKey(const Key('export_ownership_notice')), findsOneWidget);
       expect(find.textContaining('we value your privacy'), findsNothing);
 
