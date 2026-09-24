@@ -124,8 +124,15 @@ const _schemas = [
   ActivityEntryIsarSchema,
 ];
 
-Future<Isar> _openIsar(String name, {String directory = ''}) {
-  return Isar.open(_schemas, directory: directory, name: name);
+/// Opens a database shaped like a real app database: with the AppSettings
+/// singleton [MigrationRunner] writes on first launch, which import/restore
+/// validation requires.
+Future<Isar> _openIsar(String name, {String directory = ''}) async {
+  final isar = await Isar.open(_schemas, directory: directory, name: name);
+  if (await isar.appSettings.get(1) == null) {
+    await isar.writeTxn(() => isar.appSettings.put(AppSettings()));
+  }
+  return isar;
 }
 
 /// A fresh suffix per call so instance names never collide with a
