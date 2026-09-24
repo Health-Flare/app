@@ -345,6 +345,247 @@ Feature: Quick Log
     And the entry saves as a general note
 
   # ---------------------------------------------------------------------------
+  # Classifier example coverage
+  # ---------------------------------------------------------------------------
+  #
+  # More phrasings per entry type, beyond the single canonical example each
+  # type has above. Every example here classifies correctly with the current
+  # keyword classifier; they exist so a keyword-list change (e.g. the
+  # word-boundary fix in #57) can't silently drop a phrasing users rely on.
+  # Keep these in sync with test/unit/quick_log_classifier_test.dart.
+
+  Scenario Outline: More ways of describing food suggest a Meal entry type
+    When I tap the + button
+    And I type "<text>"
+    Then a suggestion chip labelled "Meal" appears
+
+    Examples:
+      | text                               |
+      | Porridge with banana for breakfast |
+      | Tomato soup and bread for lunch    |
+      | Grilled chicken and salad for tea  |
+      | Snack of crackers mid-afternoon    |
+      | Brunch with friends at the cafe    |
+
+  Scenario Outline: More ways of describing symptoms suggest a Symptom entry type
+    When I tap the + button
+    And I type "<text>"
+    Then a suggestion chip labelled "Symptom" appears
+
+    Examples:
+      | text                              |
+      | Knees are stiff this morning      |
+      | Migraine started around noon      |
+      | Feeling dizzy and nauseous today  |
+      | Itchy rash on my arms             |
+      | Pain level 8 in my lower back     |
+      | Sore throat and fever tonight     |
+      | Fatigue really bad today          |
+      | Joints ache and feel swollen      |
+
+  Scenario Outline: More vital units and phrasings suggest a Vital entry type
+    When I tap the + button
+    And I type "<text>"
+    Then a suggestion chip labelled "Vital" appears
+
+    Examples:
+      | text                      |
+      | Temp 101°F this evening   |
+      | 37.8 degrees              |
+      | SpO2 94%                  |
+      | 5.6 mmol                  |
+      | 160 lbs                   |
+      | Weight 72.4kg this morning |
+
+  Scenario Outline: More ways of describing medication suggest a Medication entry type
+    When I tap the + button
+    And I type "<text>"
+    Then a suggestion chip labelled "Medication" appears
+
+    Examples:
+      | text                                      |
+      | Took my methotrexate this morning         |
+      | Swallowed two paracetamol tablets         |
+      | Took my 10mg prednisolone with breakfast  |
+      | Capsule of vitamin D with water           |
+      | Prescribed a new medicine today           |
+
+  Scenario Outline: More ways of describing a doctor visit suggest a Doctor Visit entry type
+    When I tap the + button
+    And I type "<text>"
+    Then a suggestion chip labelled "Doctor Visit" appears
+
+    Examples:
+      | text                                     |
+      | Rheumatology follow-up went fine         |
+      | Hospital visit for bloods                |
+      | Consultant said my bloods look fine      |
+      | Specialist appointment this afternoon    |
+      | Physiotherapy appointment at the clinic  |
+
+  Scenario Outline: More ways of describing activity suggest an Activity entry type
+    When I tap the + button
+    And I type "<text>"
+    Then a suggestion chip labelled "Activity" appears
+
+    Examples:
+      | text                                    |
+      | Walked 20 minutes around the block      |
+      | Did 15 minutes of yoga                  |
+      | Spent an hour gardening this afternoon  |
+      | Rest day, stayed on the sofa            |
+      | Cleaning the kitchen wore me out        |
+      | Tried a new stretching routine          |
+
+  Scenario Outline: More ways of describing sleep suggest a Sleep entry type
+    When I tap the + button
+    And I type "<text>"
+    Then a suggestion chip labelled "Sleep" appears
+
+    Examples:
+      | text                                   |
+      | Napped for 2 hours after lunch         |
+      | Bad insomnia again last night          |
+      | Slept 10pm to 6am                      |
+      | Woke up at 3am and could not settle    |
+      | Overslept and still exhausted          |
+
+  Scenario Outline: More diagnosis-status phrasings suggest a Condition entry type
+    When I tap the + button
+    And I type "<text>"
+    Then a suggestion chip labelled "Condition" appears
+
+    Examples:
+      | text                                  |
+      | Relapsed after a good month           |
+      | Told my mum about the new diagnosis   |
+
+  Scenario Outline: Everyday reflections with no health signal suggest a Journal entry type
+    When I tap the + button
+    And I type "<text>"
+    Then a suggestion chip labelled "Journal" appears
+
+    Examples:
+      | text                                   |
+      | Had a nice chat with mum               |
+      | Quiet day, read a book in the garden   |
+
+  # ---------------------------------------------------------------------------
+  # Misclassifications and wrong saves (tracked fixes)
+  # ---------------------------------------------------------------------------
+  #
+  # Target behaviour for known defects in the current classifier/parser.
+  # These scenarios FAIL against v1.9.0 by design: each block names the issue
+  # that fixes it. Umbrella: #56.
+
+  # #57: keywords must match whole words, not substrings inside other words.
+  Scenario Outline: A keyword inside an unrelated word does not suggest that entry type
+    When I tap the + button
+    And I type "<text>"
+    Then no suggestion chip labelled "<wrong type>" appears
+
+    Examples:
+      | text                                   | wrong type |
+      | Running late for work today            | Meal       |
+      | So grateful for my sister today        | Meal       |
+      | Feeling irritated and exhausted today  | Meal       |
+      | Updated my notes on the app            | Meal       |
+      | Water retention in my ankles again     | Meal       |
+      | Pilates class this morning             | Meal       |
+      | Had a date night with my partner       | Meal       |
+      | Heard a snap in my knee                | Sleep      |
+      | Spilled coffee all over my desk        | Medication |
+      | I was mistaken about the dosage times  | Medication |
+      | Not interested in going out tonight    | Activity   |
+      | Recently retired and adjusting well    | Symptom    |
+
+  # #57: the whole-word fix must keep plurals and inflections matching.
+  Scenario Outline: Inflected keywords still suggest their entry type
+    When I tap the + button
+    And I type "<text>"
+    Then a suggestion chip labelled "<type>" appears
+
+    Examples:
+      | text                                | type       |
+      | Headaches all week long             | Symptom    |
+      | Knees aches after the stairs        | Symptom    |
+      | Swallowed two paracetamol tablets   | Medication |
+
+  # #60: text with signals from two categories picks the primary one.
+  Scenario Outline: Text mentioning more than one category suggests the primary one
+    When I tap the + button
+    And I type "<text>"
+    Then a suggestion chip labelled "<type>" appears
+
+    Examples:
+      | text                                   | type         |
+      | Took a walk around the park            | Activity     |
+      | Did my physio exercises this morning   | Activity     |
+      | Headache after skipping breakfast      | Symptom      |
+      | Bad stomach cramp after eating         | Symptom      |
+      | Consultant said I'm in remission       | Condition    |
+      | Saw Dr Patel, upped my methotrexate    | Doctor Visit |
+
+  # #58: a missed or skipped dose must never be recorded as taken.
+  Scenario Outline: Missed or skipped dose language records the right dose status
+    Given the active profile has a medication named "Methotrexate"
+    When I save the quick log entry "<text>"
+    Then a dose log with status "<status>" is recorded against "Methotrexate"
+    And no dose log with status "Taken" is recorded
+
+    Examples:
+      | text                                  | status  |
+      | Missed my methotrexate this morning   | Missed  |
+      | Forgot to take my methotrexate        | Missed  |
+      | Skipped my methotrexate tonight       | Skipped |
+
+  # #58: a dose change is not a dose.
+  Scenario: Medication change language does not log a dose
+    Given the active profile has a medication named "Methotrexate"
+    When I save the quick log entry "Doctor increased my methotrexate dose"
+    Then no dose log is recorded against "Methotrexate"
+    And no text the user typed is lost
+
+  # #59: an absent symptom is not a symptom.
+  Scenario Outline: A negated symptom is not saved as a symptom entry
+    When I tap the + button
+    And I type "<text>"
+    Then no suggestion chip labelled "Symptom" appears
+    And saving creates no symptom entry
+
+    Examples:
+      | text                                     |
+      | No pain today at all                     |
+      | No headache today, first time in weeks   |
+      | Not feeling dizzy anymore                |
+
+  Scenario: A negated symptom alongside a real one still saves the real one
+    When I save the quick log entry "No headache but knees are sore"
+    Then a symptom entry is saved
+    And it is not named "headache"
+
+  # #61: the classifier and parser must agree on every height/weight shape.
+  Scenario: Height in feet and inches written out in words suggests a Vital entry type
+    When I tap the + button
+    And I type "5 ft 7 in"
+    Then a suggestion chip labelled "Vital" appears
+
+  Scenario: Weight in stone and pounds is saved as the full weight
+    When I save the quick log entry "Weight 11st 4lb"
+    Then a Weight vital entry is saved with value 158 lbs
+    And no Weight vital entry with value 4 lbs is saved
+
+  Scenario Outline: A weight change is not saved as a weight reading
+    When I save the quick log entry "<text>"
+    Then no Weight vital entry is saved
+    And no text the user typed is lost
+
+    Examples:
+      | text                         |
+      | Lost 2kg since last week     |
+      | Gained 3 lbs over the month  |
+
+  # ---------------------------------------------------------------------------
   # Expanding to a full entry form
   # ---------------------------------------------------------------------------
 
