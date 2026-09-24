@@ -1,14 +1,20 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:isar_community/isar.dart';
 import 'package:path_provider/path_provider.dart';
+
+import 'package:health_flare/data/database/backup_encryption.dart';
+import 'package:health_flare/data/database/import_service.dart';
 
 /// Handles hot-backup export and staged restore for the Isar database.
 ///
 /// ## Export
 /// [export] calls [Isar.copyToFile] on the live instance, producing a clean
 /// snapshot in the system temp directory. The caller is responsible for sharing
-/// or saving the file.
+/// or saving the file. [exportEncrypted] does the same but password-locks the
+/// result (see [EncryptedBackupCodec]). The plaintext snapshot never leaves
+/// the temp directory and is deleted once encryption completes.
 ///
 /// ## Restore
 /// [stagePendingRestore] copies a user-supplied file to a well-known
@@ -57,11 +63,39 @@ class BackupService {
     return path;
   }
 
+  /// Creates a password-encrypted hot backup of [isar] and returns the path
+  /// to the resulting `.hfbackup` file.
+  ///
+  /// Internally calls [export] to build the plaintext snapshot, encrypts it
+  /// with [EncryptedBackupCodec.encryptFile], then deletes the plaintext
+  /// copy, so only the encrypted file is left on disk.
+  static Future<String> exportEncrypted(Isar isar, String password) async {
+    final plainPath = await export(isar);
+    try {
+      final encPath =
+          '${plainPath.substring(0, plainPath.length - '.isar'.length)}'
+          '${EncryptedBackupFormat.extension}';
+      return await EncryptedBackupCodec.encryptFile(
+        plainPath: plainPath,
+        outPath: encPath,
+        password: password,
+      );
+    } finally {
+      final plainFile = File(plainPath);
+      if (plainFile.existsSync()) await plainFile.delete();
+    }
+  }
+
   /// Copies [sourceFilePath] to the pending restore slot.
+  ///
+  /// Throws [InvalidBackupException] (and stages nothing) if the file is not
+  /// a Health Flare database: Isar would otherwise open it on the next launch
+  /// as a fresh, empty database, silently wiping the user's data.
   ///
   /// The restore is applied the next time [IsarService.open] runs (i.e. after
   /// the user restarts the app). The caller should prompt the user to restart.
   static Future<void> stagePendingRestore(String sourceFilePath) async {
+    await ImportService.validate(sourceFilePath);
     final path = await pendingRestorePath();
     await File(sourceFilePath).copy(path);
   }
@@ -70,10 +104,23 @@ class BackupService {
   ///
   /// Must be called *before* Isar is opened. Called by [IsarService.open].
   /// No-op if no pending restore file exists.
+  ///
+  /// The staged file is validated again before the live database is touched.
+  /// If it isn't a Health Flare database (e.g. it was staged by an older app
+  /// version that didn't validate), it is discarded and the live database is
+  /// kept.
   static Future<void> applyPendingRestoreIfNeeded(String docsDir) async {
     final pendingPath = '$docsDir/$_pendingRestoreFileName';
     final pendingFile = File(pendingPath);
     if (!pendingFile.existsSync()) return;
+
+    try {
+      await ImportService.validate(pendingPath);
+    } on InvalidBackupException {
+      debugPrint('Discarding pending restore: not a Health Flare database.');
+      await pendingFile.delete();
+      return;
+    }
 
     // Replace the main database file with the backup.
     final mainFile = File('$docsDir/healthflare.isar');

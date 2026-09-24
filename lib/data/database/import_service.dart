@@ -51,6 +51,17 @@ class ImportCategoryInfo {
   );
 }
 
+/// Thrown when a file picked for import or restore is not a Health Flare
+/// database (e.g. a PDF, a CSV report, or a truncated download).
+class InvalidBackupException implements Exception {
+  const InvalidBackupException();
+
+  String get message => "This file isn't a Health Flare backup.";
+
+  @override
+  String toString() => message;
+}
+
 /// Category identifiers: stable strings used by [ImportService].
 abstract final class ImportCategoryId {
   static const profiles = 'profiles';
@@ -92,11 +103,34 @@ class ImportService {
 
   // ── Isar lifecycle ────────────────────────────────────────────────────────
 
+  /// Opens a working copy of [backupFilePath] and checks it really is a
+  /// Health Flare database, throwing [InvalidBackupException] if not.
+  ///
+  /// Isar does not reject a file that isn't an Isar database: it silently
+  /// reinitialises it as a fresh, empty one. So "it opened" proves nothing.
+  /// Every real app database has the [AppSettings] singleton (id 1), written
+  /// by [MigrationRunner] on first launch, so its absence is the tell.
   static Future<Isar> _openBackup(String backupFilePath) async {
     final tmp = await getTemporaryDirectory();
     final importPath = '${tmp.path}/$_importDbName.isar';
     // Always start from a fresh copy so we never corrupt the user's backup.
     await File(backupFilePath).copy(importPath);
+    final Isar backup;
+    try {
+      backup = await _openImportCopy(tmp.path);
+    } on IsarError {
+      await _deleteImportCopy();
+      throw const InvalidBackupException();
+    }
+    final settings = await backup.appSettings.get(1);
+    if (settings == null || settings.schemaVersion < 1) {
+      await _closeBackup(backup);
+      throw const InvalidBackupException();
+    }
+    return backup;
+  }
+
+  static Future<Isar> _openImportCopy(String directory) {
     return Isar.open(
       [
         ProfileIsarSchema,
@@ -117,13 +151,17 @@ class ImportService {
         AppointmentIsarSchema,
         ActivityEntryIsarSchema,
       ],
-      directory: tmp.path,
+      directory: directory,
       name: _importDbName,
     );
   }
 
   static Future<void> _closeBackup(Isar backup) async {
     await backup.close();
+    await _deleteImportCopy();
+  }
+
+  static Future<void> _deleteImportCopy() async {
     final tmp = await getTemporaryDirectory();
     final importPath = '${tmp.path}/$_importDbName.isar';
     final f = File(importPath);
@@ -133,6 +171,16 @@ class ImportService {
   }
 
   // ── Public API ────────────────────────────────────────────────────────────
+
+  /// Throws [InvalidBackupException] unless [backupPath] is a Health Flare
+  /// database. Works on a temporary copy, so [backupPath] is never modified.
+  ///
+  /// [preview], [mergeAll] and [mergeSelected] already do this check
+  /// themselves; call it directly before using a file any other way (e.g.
+  /// staging it to replace the live database).
+  static Future<void> validate(String backupPath) async {
+    await _closeBackup(await _openBackup(backupPath));
+  }
 
   /// Opens [backupPath] and returns categories with counts of records that
   /// would be added (not already in [main]).

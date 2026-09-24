@@ -46,16 +46,17 @@ Subsection meanings (from Keep a Changelog):
 ## [Unreleased]
 
 ### Added
-- _Nothing yet._
+- Backups can now be locked with a password. Turn on "Encrypt with a password" when exporting to get an encrypted `.hfbackup` file that only opens with that password. Importing asks for the password automatically, in all three restore modes. Plain backups work exactly as before.
+- The export screen now says plainly who can read an exported file and what Health Flare does (and doesn't) do with it.
 
 ### Changed
-- _Nothing yet._
+- The Settings button now appears in the top bar on every screen, just left of the profile icon, instead of only on the Dashboard.
 
 ### Deprecated
 - _Nothing yet._
 
 ### Removed
-- _Nothing yet._
+- The "Data & backup" shortcuts in the profile switcher. Export and import now live only in Settings, which offers password-locked backups and all three restore modes.
 
 ### Fixed
 - _Nothing yet._

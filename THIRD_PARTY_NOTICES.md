@@ -58,6 +58,7 @@ Bundled locally under `assets/fonts/`; full license text ships alongside each fa
 | `pdf` | Apache License 2.0 | pdf contributors |
 | `csv` | MIT | Christian Loitsch |
 | `fl_chart` | MIT | Flutter 4 Fun |
+| `cryptography` | Apache License 2.0 | Gohilla (encrypted backups: AES-256-GCM, Argon2id) |
 
 ## Build tooling (dev-only, not shipped in the app binary)
 

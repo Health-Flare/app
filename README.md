@@ -30,6 +30,9 @@ Reports can be exported as PDF or CSV to share with a doctor or specialist.
 - **No account or login required.** Ever.
 - **No cloud sync, no remote storage.** All data is written to the local device only.
 - **Data only leaves your device when you explicitly export or share it.**
+- **Backups can be locked with a password.** Encryption (AES-256-GCM, Argon2id key derivation)
+  happens on-device; the password is never stored, so a lost password can't be recovered.
+  Unencrypted backups are readable by anyone who has the file.
 - **No analytics, no telemetry, no third-party SDKs that make network calls.**
 - All fonts are bundled as local assets, so nothing is fetched over the network for UI or typography.
 - **The one exception:** if you enable weather capture, your coordinates are sent to the

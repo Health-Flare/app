@@ -164,6 +164,35 @@ Feature: Persistent local datastore
     And a user-visible error or recovery prompt is shown
 
   # ---------------------------------------------------------------------------
+  # Restoring from a backup file
+  # ---------------------------------------------------------------------------
+
+  # Isar does not reject a file that isn't an Isar database: it silently opens
+  # it as a fresh, empty one. So a file counts as a Health Flare backup only if
+  # it contains the app settings record every real app database has.
+  Scenario Outline: Selecting a file that isn't a backup fails without changing any data
+    Given the user has existing profiles and entries
+    When the user opens Settings > Import / restore and chooses "<mode>"
+    And selects a file that is not a Health Flare backup (e.g. a PDF, a CSV report, an empty or truncated file)
+    Then the error "This file isn't a Health Flare backup." is shown
+    And nothing is staged for restore and nothing is merged
+    And the selected file is not modified
+    And all existing data is intact, including after the app restarts
+
+    Examples:
+      | mode                  |
+      | Replace everything    |
+      | Add missing data      |
+      | Choose what to import |
+
+  Scenario: A non-backup file staged by an older app version is discarded on launch
+    Given an older app version (1.8.0 or earlier) staged a file that is not a Health Flare backup for "Replace everything"
+    And the app has since been updated to a version that validates restores
+    When the app starts up
+    Then the staged file is discarded
+    And the live database is kept unchanged
+
+  # ---------------------------------------------------------------------------
   # Data isolation between profiles
   # ---------------------------------------------------------------------------
 
