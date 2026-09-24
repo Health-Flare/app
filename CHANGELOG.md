@@ -56,7 +56,7 @@ Subsection meanings (from Keep a Changelog):
 - _Nothing yet._
 
 ### Removed
-- _Nothing yet._
+- The "Data & backup" shortcuts in the profile switcher. Export and import now live only in Settings, which offers password-locked backups and all three restore modes.
 
 ### Fixed
 - _Nothing yet._
