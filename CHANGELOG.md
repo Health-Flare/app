@@ -46,11 +46,32 @@ Subsection meanings (from Keep a Changelog):
 ## [Unreleased]
 
 ### Added
+- _Nothing yet._
+
+### Changed
+- _Nothing yet._
+
+### Deprecated
+- _Nothing yet._
+
+### Removed
+- _Nothing yet._
+
+### Fixed
+- _Nothing yet._
+
+### Security
+- _Nothing yet._
+
+## [1.9.0] - 2026-09-24
+
+### Added
 - Backups can now be locked with a password. Turn on "Encrypt with a password" when exporting to get an encrypted `.hfbackup` file that only opens with that password. Importing asks for the password automatically, in all three restore modes. Plain backups work exactly as before.
 - The export screen now says plainly who can read an exported file and what Health Flare does (and doesn't) do with it.
 
 ### Changed
 - The Settings button now appears in the top bar on every screen, just left of the profile icon, instead of only on the Dashboard.
+- Renamed "Illness(es)" to "Condition(s)" throughout the app (Tracking tab, illness screen, onboarding, first-log prompt) to match the terminology used everywhere else. Shortened the "Medications" nav label to "Meds" so it no longer wraps on narrow screens.
 
 ### Deprecated
 - _Nothing yet._
@@ -59,7 +80,10 @@ Subsection meanings (from Keep a Changelog):
 - The "Data & backup" shortcuts in the profile switcher. Export and import now live only in Settings, which offers password-locked backups and all three restore modes.
 
 ### Fixed
-- _Nothing yet._
+- Restoring from a backup file now checks that the file is actually a Health Flare backup before touching anything. Picking the wrong file (a PDF, a CSV, a corrupted download) used to be silently accepted: "Replace everything" would wipe all data on the next launch with no warning, and merge/selective import would just report "0 new records." All three restore modes now show a clear error instead.
+- Quick Log's smart detection is more reliable: respiratory rate readings no longer fail to save, mentioning a condition (new or already-tracked) is detected correctly, and symptom matching now considers the wording actually entered instead of only a static list.
+- Quick Log now resolves a symptom to its existing tracked/catalogue name (so "brain fog again" matches "Brain fog") instead of creating a new entry for every variation, matching how conditions and medications already work. Severity ("8/10", "mild", "excruciating") and a condition's diagnosis date are now inferred more carefully instead of guessing on every mention.
+- Quick Log sleep entries with a time range ("8pm to 4am", "20:00 to 4:00") now create a Sleep entry instead of a Journal entry.
 
 ### Security
 - _Nothing yet._
@@ -308,7 +332,8 @@ Subsection meanings (from Keep a Changelog):
 - Offline-first guarantee: zero outbound network requests at runtime, enforced
   by the `url-scan` CI check.
 
-[Unreleased]: https://github.com/Health-Flare/app/compare/v1.8.0...HEAD
+[Unreleased]: https://github.com/Health-Flare/app/compare/v1.9.0...HEAD
+[1.9.0]: https://github.com/Health-Flare/app/compare/v1.8.0...v1.9.0
 [1.8.0]: https://github.com/Health-Flare/app/compare/v1.7.1...v1.8.0
 [1.7.1]: https://github.com/Health-Flare/app/compare/v1.7.0...v1.7.1
 [1.7.0]: https://github.com/Health-Flare/app/compare/v1.6.0...v1.7.0
