@@ -904,8 +904,10 @@ abstract final class QuickLogParser {
         drinkType: _drinkType(lower),
       );
     }
+    // "l" must not be the start of "L/min" (peak flow). A word boundary
+    // sits between the letter and the slash, so reject a following slash.
     final litres = RegExp(
-      r'(\d+(?:\.\d+)?)\s*(?:l\b|litres?\b|liters?\b)',
+      r'(\d+(?:\.\d+)?)\s*(?:l|litres?|liters?)\b(?!\s*/)',
     ).firstMatch(lower);
     if (litres != null) {
       return ParsedFluid(

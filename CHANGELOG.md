@@ -63,7 +63,7 @@ Subsection meanings (from Keep a Changelog):
 - _Nothing yet._
 
 ### Fixed
-- _Nothing yet._
+- A peak-flow reading such as "420 L/min" is no longer also read as hundreds of litres of fluid.
 
 ### Security
 - _Nothing yet._

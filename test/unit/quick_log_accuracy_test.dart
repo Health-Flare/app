@@ -295,6 +295,16 @@ void main() {
         QuickLogClassifier.classify('Drank two litres of water today'),
         QuickLogEntryType.hydration,
       );
+      expect(
+        QuickLogParser.parseFluid('Peak flow was 420 L/min this morning'),
+        isNull,
+      );
+      expect(
+        QuickLogParser.parseVital(
+          'Peak flow was 420 L/min this morning',
+        )?.value,
+        420,
+      );
     });
 
     test('mood does not guess a score and cycle needs the opt-in', () {

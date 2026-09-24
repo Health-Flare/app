@@ -13,6 +13,12 @@
 // or via scripts/take_quick_log_screenshots.sh, which finds a booted/
 // available simulator for you. Output: screenshots/quick_log/NAME.png.
 //
+// Linux has no integration_test screenshot plugin. On that embedder the
+// same tests write the frame themselves when SCREENSHOT_DIR is set.
+// Those desktop frames are kept beside the iOS set, under
+// screenshots/quick_log/linux/, so a Linux run does not replace the
+// simulator PNGs.
+//
 // Each test opens the sheet and types one sample text, so both the type
 // chip and the primary button's "Quick Add: <Type>" / "Add to Journal"
 // label (see quick_log_sheet.dart) are visible in the resulting image:
@@ -20,7 +26,12 @@
 // the catalogue-matched, tracked-custom, and generic-keyword paths for
 // Condition and Symptom detection (see quick_log_classifier.dart).
 
+import 'dart:io';
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
@@ -64,7 +75,14 @@ import 'package:health_flare/models/vital_entry.dart';
 // each classification path to have something to match against.
 // ---------------------------------------------------------------------------
 
-final _sarah = Profile(id: 1, name: 'Sarah Chen');
+// Cycle and bowel tracking are opt-in. Turn both on so those chips can
+// appear in the proof shots; other types do not depend on the flags.
+final _sarah = Profile(
+  id: 1,
+  name: 'Sarah Chen',
+  cycleTrackingEnabled: true,
+  bowelTrackingEnabled: true,
+);
 
 final _medications = [
   Medication(
@@ -296,8 +314,39 @@ Future<void> _screenshot(
     _surfaceConverted = true;
   }
   await tester.pump();
-  await binding.takeScreenshot(name);
+  try {
+    await binding.takeScreenshot(name);
+  } on MissingPluginException {
+    // Linux has no integration_test captureScreenshot plugin. The iOS and
+    // Android driver path above is unchanged; this writes the same frame.
+    await _writeDesktopPng(tester, name);
+  }
   print('📸  $name');
+}
+
+/// Desktop fallback for [IntegrationTestWidgetsFlutterBinding.takeScreenshot].
+Future<void> _writeDesktopPng(WidgetTester tester, String name) async {
+  final element = tester.element(find.byType(HealthFlareApp));
+  var renderObject = element.renderObject!;
+  while (!renderObject.isRepaintBoundary) {
+    final parent = renderObject.parent;
+    if (parent == null) break;
+    renderObject = parent;
+  }
+  if (renderObject.debugNeedsPaint) {
+    await tester.pump();
+  }
+  final layer = renderObject.debugLayer! as OffsetLayer;
+  final image = await layer.toImage(renderObject.paintBounds);
+  final data = await image.toByteData(format: ui.ImageByteFormat.png);
+  final dirPath =
+      Platform.environment['SCREENSHOT_DIR'] ??
+      '/workspace/screenshots/quick_log';
+  final dir = Directory(dirPath);
+  if (!dir.existsSync()) dir.createSync(recursive: true);
+  final file = File('${dir.path}/$name.png');
+  file.writeAsBytesSync(data!.buffer.asUint8List());
+  print('saved ${file.path} (${file.lengthSync()} bytes)');
 }
 
 /// Boots the app, taps the dashboard's + button, optionally types [text],
@@ -446,6 +495,98 @@ void main() {
         tester,
         '12_symptom_tracked',
         text: 'Brain fog again, hard to focus',
+      );
+    });
+
+    testWidgets('13_activity', (tester) async {
+      await _shootQuickLog(
+        binding,
+        tester,
+        '13_activity',
+        text: 'Walked the dog for 30 minutes, felt really hard going',
+      );
+    });
+
+    testWidgets('14_flare', (tester) async {
+      await _shootQuickLog(
+        binding,
+        tester,
+        '14_flare',
+        text: 'Flare started today, pain 7/10',
+      );
+    });
+
+    testWidgets('15_mood', (tester) async {
+      await _shootQuickLog(
+        binding,
+        tester,
+        '15_mood',
+        text: 'Feeling really low and anxious today',
+      );
+    });
+
+    testWidgets('16_cycle', (tester) async {
+      await _shootQuickLog(
+        binding,
+        tester,
+        '16_cycle',
+        text: 'Period started, cramps 6/10',
+      );
+    });
+
+    testWidgets('17_fluids', (tester) async {
+      await _shootQuickLog(
+        binding,
+        tester,
+        '17_fluids',
+        text: 'Drank two litres of water this afternoon',
+      );
+    });
+
+    testWidgets('18_bowel', (tester) async {
+      await _shootQuickLog(
+        binding,
+        tester,
+        '18_bowel',
+        text: 'Bristol type 6 twice this morning',
+      );
+    });
+
+    testWidgets('19_nap', (tester) async {
+      await _shootQuickLog(
+        binding,
+        tester,
+        '19_nap',
+        text: 'Had a 20 minute nap after lunch',
+      );
+    });
+
+    testWidgets('20_peak_flow', (tester) async {
+      await _shootQuickLog(
+        binding,
+        tester,
+        '20_peak_flow',
+        text: 'Peak flow was 420 L/min this morning',
+      );
+    });
+
+    testWidgets('21_missed_dose', (tester) async {
+      await _shootQuickLog(
+        binding,
+        tester,
+        '21_missed_dose',
+        text: 'Forgot my tramadol this morning',
+      );
+    });
+
+    // Known drug with no matching medication on the profile: the chip can
+    // still say Medication, but the button must say Add to Journal.
+    testWidgets('22_journal_when_unmatched', (tester) async {
+      await _shootQuickLog(
+        binding,
+        tester,
+        '22_journal_when_unmatched',
+        text: 'Took 400mg ibuprofen for the pain',
       );
     });
   });
