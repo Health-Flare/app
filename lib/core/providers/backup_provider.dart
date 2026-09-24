@@ -1,8 +1,13 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 import 'package:health_flare/core/providers/database_provider.dart';
+import 'package:health_flare/data/database/backup_encryption.dart';
 import 'package:health_flare/data/database/backup_service.dart';
 import 'package:health_flare/data/database/import_service.dart';
 
@@ -42,6 +47,26 @@ class ImportPreviewReady extends BackupResult {
   final List<ImportCategoryInfo> categories;
 }
 
+/// Which restore flow to resume once [BackupNotifier.submitImportPassword]
+/// unlocks the file the user picked.
+enum PendingImportAction { overwrite, merge, selective }
+
+/// The file the user picked for import/restore is encrypted — a password is
+/// needed before the overwrite/merge/selective flow named by [action] can
+/// proceed. [errorMessage] is set when a previous password attempt for this
+/// same file failed, so the UI can show it inline and let the user retry
+/// without re-picking the file.
+class ImportPasswordRequired extends BackupResult {
+  const ImportPasswordRequired({
+    required this.filePath,
+    required this.action,
+    this.errorMessage,
+  });
+  final String filePath;
+  final PendingImportAction action;
+  final String? errorMessage;
+}
+
 /// The user cancelled the file picker.
 class BackupCancelled extends BackupResult {
   const BackupCancelled();
@@ -65,6 +90,13 @@ class BackupError extends BackupResult {
 /// **Selective**: same as merge but the user first previews which categories
 /// are available and picks what to import.
 class BackupNotifier extends Notifier<BackupResult> {
+  /// The decrypted temp copy currently backing an [ImportPreviewReady] that
+  /// started from an encrypted file — deleted by [reset]. Only the
+  /// selective-import flow needs this: merge/overwrite delete their
+  /// decrypted copy immediately in [submitImportPassword] since there's no
+  /// later step that still needs the file.
+  String? _pendingDecryptedPath;
+
   @override
   BackupResult build() => const BackupIdle();
 
@@ -76,6 +108,24 @@ class BackupNotifier extends Notifier<BackupResult> {
     try {
       final isar = ref.read(isarProvider);
       final backupPath = await BackupService.export(isar);
+      await SharePlus.instance.share(
+        ShareParams(files: [XFile(backupPath)], subject: 'Health Flare backup'),
+      );
+      state = const BackupExportDone();
+    } catch (e) {
+      state = BackupError('Export failed: $e');
+    }
+  }
+
+  /// Exports the current database encrypted with [password] and opens the
+  /// share sheet with the resulting `.hfbackup` file.
+  Future<void> exportWithPassword(String password) async {
+    if (state is BackupInProgress) return;
+    state = const BackupInProgress();
+
+    try {
+      final isar = ref.read(isarProvider);
+      final backupPath = await BackupService.exportEncrypted(isar, password);
       await SharePlus.instance.share(
         ShareParams(files: [XFile(backupPath)], subject: 'Health Flare backup'),
       );
@@ -104,6 +154,14 @@ class BackupNotifier extends Notifier<BackupResult> {
       final path = result.path;
       if (path == null) {
         state = const BackupError('Could not read the selected file.');
+        return false;
+      }
+
+      if (await EncryptedBackupCodec.isEncrypted(path)) {
+        state = ImportPasswordRequired(
+          filePath: path,
+          action: PendingImportAction.overwrite,
+        );
         return false;
       }
 
@@ -136,6 +194,14 @@ class BackupNotifier extends Notifier<BackupResult> {
         return;
       }
 
+      if (await EncryptedBackupCodec.isEncrypted(path)) {
+        state = ImportPasswordRequired(
+          filePath: path,
+          action: PendingImportAction.merge,
+        );
+        return;
+      }
+
       final isar = ref.read(isarProvider);
       final added = await ImportService.mergeAll(path, isar);
       state = ImportComplete(added);
@@ -161,6 +227,14 @@ class BackupNotifier extends Notifier<BackupResult> {
       final path = result.path;
       if (path == null) {
         state = const BackupError('Could not read the selected file.');
+        return;
+      }
+
+      if (await EncryptedBackupCodec.isEncrypted(path)) {
+        state = ImportPasswordRequired(
+          filePath: path,
+          action: PendingImportAction.selective,
+        );
         return;
       }
 
@@ -200,7 +274,83 @@ class BackupNotifier extends Notifier<BackupResult> {
     }
   }
 
-  void reset() => state = const BackupIdle();
+  /// Unlocks the encrypted file named by an [ImportPasswordRequired] state
+  /// with [password] and resumes whichever restore flow was pending.
+  ///
+  /// On a wrong password (or a corrupted/tampered file — the two are
+  /// indistinguishable, see [BackupEncryptionException]), returns to
+  /// [ImportPasswordRequired] with [ImportPasswordRequired.errorMessage]
+  /// set, so the user can retry without re-picking the file.
+  Future<void> submitImportPassword(String password) async {
+    final current = state;
+    if (current is! ImportPasswordRequired) return;
+    state = const BackupInProgress();
+
+    try {
+      final tempDir = await getTemporaryDirectory();
+      final decryptedPath =
+          '${tempDir.path}/healthflare_decrypted_'
+          '${DateTime.now().microsecondsSinceEpoch}.isar';
+      await EncryptedBackupCodec.decryptFile(
+        encryptedPath: current.filePath,
+        outPath: decryptedPath,
+        password: password,
+      );
+
+      switch (current.action) {
+        case PendingImportAction.overwrite:
+          await BackupService.stagePendingRestore(decryptedPath);
+          await _deleteIfExists(decryptedPath);
+          state = const BackupRestoreStaged();
+        case PendingImportAction.merge:
+          final isar = ref.read(isarProvider);
+          final added = await ImportService.mergeAll(decryptedPath, isar);
+          await _deleteIfExists(decryptedPath);
+          state = ImportComplete(added);
+        case PendingImportAction.selective:
+          final isar = ref.read(isarProvider);
+          final categories = await ImportService.preview(decryptedPath, isar);
+          if (categories.isEmpty) {
+            await _deleteIfExists(decryptedPath);
+            state = const ImportComplete(0);
+          } else {
+            // Kept on disk — commitSelectiveImport still needs it. reset()
+            // cleans it up once the selective flow finishes or is cancelled.
+            _pendingDecryptedPath = decryptedPath;
+            state = ImportPreviewReady(
+              filePath: decryptedPath,
+              categories: categories,
+            );
+          }
+      }
+    } on BackupEncryptionException catch (e) {
+      state = ImportPasswordRequired(
+        filePath: current.filePath,
+        action: current.action,
+        errorMessage: e.message,
+      );
+    } catch (e) {
+      state = ImportPasswordRequired(
+        filePath: current.filePath,
+        action: current.action,
+        errorMessage: 'Unlock failed: $e',
+      );
+    }
+  }
+
+  static Future<void> _deleteIfExists(String path) async {
+    final file = File(path);
+    if (await file.exists()) await file.delete();
+  }
+
+  void reset() {
+    final decryptedPath = _pendingDecryptedPath;
+    _pendingDecryptedPath = null;
+    if (decryptedPath != null) {
+      unawaited(_deleteIfExists(decryptedPath));
+    }
+    state = const BackupIdle();
+  }
 }
 
 final backupProvider = NotifierProvider<BackupNotifier, BackupResult>(

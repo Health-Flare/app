@@ -82,11 +82,33 @@ class _BackupTiles extends ConsumerStatefulWidget {
 }
 
 class _BackupTilesState extends ConsumerState<_BackupTiles> {
+  /// Tracks the currently-open password prompt so it's opened once and
+  /// reused for retries (the same dialog watches state and shows the new
+  /// error inline) rather than stacked. Driven from the *current* state on
+  /// every build — not `ref.listen` — because this can be the very first
+  /// state the provider ever has (e.g. resuming with an already-picked
+  /// encrypted file), and `ref.listen` only fires on later transitions.
+  bool _passwordDialogOpen = false;
+
   @override
   Widget build(BuildContext context) {
     final backupState = ref.watch(backupProvider);
     final notifier = ref.read(backupProvider.notifier);
     final isBusy = backupState is BackupInProgress;
+
+    if (backupState is ImportPasswordRequired && !_passwordDialogOpen) {
+      _passwordDialogOpen = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        showDialog<void>(
+          context: context,
+          barrierDismissible: false,
+          builder: (_) => const _ImportPasswordDialog(),
+        ).then((_) {
+          if (mounted) setState(() => _passwordDialogOpen = false);
+        });
+      });
+    }
 
     ref.listen(backupProvider, (prev, next) {
       if (!mounted) return;
@@ -158,7 +180,7 @@ class _BackupTilesState extends ConsumerState<_BackupTiles> {
               : const Icon(Icons.upload_rounded),
           title: const Text('Export backup'),
           subtitle: const Text('Save a copy of all data to Files or share'),
-          onTap: isBusy ? null : notifier.export,
+          onTap: isBusy ? null : () => _showExportSheet(context, notifier),
         ),
 
         // Import / restore
@@ -293,6 +315,293 @@ class _BackupTilesState extends ConsumerState<_BackupTiles> {
           ),
         ),
       ),
+    );
+  }
+
+  void _showExportSheet(BuildContext context, BackupNotifier notifier) {
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      builder: (ctx) => _ExportSheet(notifier: notifier),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Export sheet — plain or password-encrypted
+// ---------------------------------------------------------------------------
+
+class _ExportSheet extends StatefulWidget {
+  const _ExportSheet({required this.notifier});
+
+  final BackupNotifier notifier;
+
+  @override
+  State<_ExportSheet> createState() => _ExportSheetState();
+}
+
+class _ExportSheetState extends State<_ExportSheet> {
+  final _passwordController = TextEditingController();
+  final _confirmController = TextEditingController();
+
+  bool _encryptEnabled = false;
+  bool _acknowledged = false;
+
+  @override
+  void dispose() {
+    _passwordController.dispose();
+    _confirmController.dispose();
+    super.dispose();
+  }
+
+  String? get _passwordError {
+    final password = _passwordController.text;
+    if (password.isEmpty) return null;
+    if (password.length < 8) {
+      return 'Password must be at least 8 characters.';
+    }
+    return null;
+  }
+
+  String? get _confirmError {
+    final confirm = _confirmController.text;
+    if (confirm.isEmpty) return null;
+    if (confirm != _passwordController.text) return "Passwords don't match.";
+    return null;
+  }
+
+  bool get _canExport {
+    if (!_encryptEnabled) return true;
+    final password = _passwordController.text;
+    final confirm = _confirmController.text;
+    return password.isNotEmpty &&
+        confirm.isNotEmpty &&
+        _passwordError == null &&
+        _confirmError == null &&
+        _acknowledged;
+  }
+
+  void _handleExport() {
+    Navigator.of(context).pop();
+    if (_encryptEnabled) {
+      widget.notifier.exportWithPassword(_passwordController.text);
+    } else {
+      widget.notifier.export();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
+
+    return SafeArea(
+      child: Padding(
+        padding: EdgeInsets.only(
+          left: 16,
+          right: 16,
+          top: 12,
+          bottom: 16 + MediaQuery.of(context).viewInsets.bottom,
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Drag handle
+              Center(
+                child: Container(
+                  width: 32,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: cs.onSurfaceVariant.withAlpha(76),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Text('Export backup', style: tt.titleMedium),
+              const SizedBox(height: 12),
+
+              // Data ownership notice — see docs/features/encrypted-backup.feature,
+              // "The export screen explains data ownership before the user
+              // shares anything". Specific and checkable, not a vague
+              // reassurance.
+              Container(
+                key: const Key('export_ownership_notice'),
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: cs.surfaceContainerHighest,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'This data belongs to you.',
+                      style: tt.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Exporting writes it to a file you control — Health '
+                      'Flare has no server or account that receives a copy. '
+                      'Only whoever you choose to share this file with can '
+                      'open it; Health Flare never sees, stores, or has '
+                      'access to it.',
+                      style: tt.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 8),
+
+              // Encryption toggle
+              SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                title: const Text('Encrypt with a password'),
+                subtitle: const Text(
+                  'Locks the file so only someone with the password can '
+                  'read it.',
+                ),
+                value: _encryptEnabled,
+                onChanged: (v) => setState(() => _encryptEnabled = v),
+              ),
+
+              if (_encryptEnabled) ...[
+                const SizedBox(height: 4),
+                TextFormField(
+                  controller: _passwordController,
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    labelText: 'Password',
+                    errorText: _passwordError,
+                  ),
+                  onChanged: (_) => setState(() {}),
+                ),
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: _confirmController,
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    labelText: 'Confirm password',
+                    errorText: _confirmError,
+                  ),
+                  onChanged: (_) => setState(() {}),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  "If you lose this password, the backup can't be "
+                  'recovered — there is no account to reset it from.',
+                  style: tt.bodySmall?.copyWith(color: cs.error),
+                ),
+                CheckboxListTile(
+                  contentPadding: EdgeInsets.zero,
+                  controlAffinity: ListTileControlAffinity.leading,
+                  value: _acknowledged,
+                  onChanged: (v) => setState(() => _acknowledged = v ?? false),
+                  title: const Text(
+                    "I understand this password can't be recovered",
+                  ),
+                ),
+              ],
+
+              const SizedBox(height: 8),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton(
+                  onPressed: _canExport ? _handleExport : null,
+                  child: const Text('Export'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Import password prompt — shown when a picked backup file is encrypted
+// ---------------------------------------------------------------------------
+
+class _ImportPasswordDialog extends ConsumerStatefulWidget {
+  const _ImportPasswordDialog();
+
+  @override
+  ConsumerState<_ImportPasswordDialog> createState() =>
+      _ImportPasswordDialogState();
+}
+
+class _ImportPasswordDialogState extends ConsumerState<_ImportPasswordDialog> {
+  final _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final state = ref.watch(backupProvider);
+    final busy = state is BackupInProgress;
+
+    // The flow has moved past needing a password (unlocked, cancelled, or
+    // failed for an unrelated reason) — close this dialog.
+    if (state is! ImportPasswordRequired && !busy) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (Navigator.of(context).canPop()) Navigator.of(context).pop();
+      });
+    }
+
+    final errorMessage = state is ImportPasswordRequired
+        ? state.errorMessage
+        : null;
+
+    return AlertDialog(
+      title: const Text('Enter password'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'This backup is encrypted. Enter its password to continue.',
+          ),
+          const SizedBox(height: 12),
+          TextFormField(
+            controller: _controller,
+            obscureText: true,
+            enabled: !busy,
+            autofocus: true,
+            decoration: InputDecoration(
+              labelText: 'Password',
+              errorText: errorMessage,
+            ),
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: busy
+              ? null
+              : () {
+                  Navigator.of(context).pop();
+                  ref.read(backupProvider.notifier).reset();
+                },
+          child: const Text('Cancel'),
+        ),
+        FilledButton(
+          onPressed: busy
+              ? null
+              : () => ref
+                    .read(backupProvider.notifier)
+                    .submitImportPassword(_controller.text),
+          child: const Text('Unlock'),
+        ),
+      ],
     );
   }
 }
