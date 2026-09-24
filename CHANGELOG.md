@@ -46,10 +46,15 @@ Subsection meanings (from Keep a Changelog):
 ## [Unreleased]
 
 ### Added
-- _Nothing yet._
+- Quick Log can record a flare start or end, a mood or cycle note on today's check-in, fluid intake, and (only after you turn it on) bowel or bladder events.
+- Symptom entries can store body locations, and the symptom form has a location picker.
+- Profile edit can turn cycle tracking and bowel tracking on or off. Both stay off until you choose them.
+- Peak flow and step count can be saved as vitals.
 
 ### Changed
-- _Nothing yet._
+- The + button on Dashboard, Tracking, Meds, Meals, Journal, Sleep, and Reports opens the same Quick Log sheet.
+- The Quick Log button says "Add to Journal" when the detected type cannot actually be saved, so the button matches what is stored.
+- Daily check-in wellbeing can be left unset. A mood note never invents a score, and an existing score is not replaced by a guess.
 
 ### Deprecated
 - _Nothing yet._

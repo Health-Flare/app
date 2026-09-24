@@ -93,12 +93,11 @@ abstract final class QuickLogClassifier {
       }
     }
 
-    if (best == null) {
-      final words = trimmed.split(RegExp(r'\s+')).length;
-      if (words < _minWords) return null;
-      return QuickLogEntryType.journal;
-    }
-    return best;
+    final words = trimmed.split(RegExp(r'\s+')).length;
+    final shortReading =
+        best == QuickLogEntryType.vital || best == QuickLogEntryType.hydration;
+    if (words < _minWords && !shortReading) return null;
+    return best ?? QuickLogEntryType.journal;
   }
 
   static Map<QuickLogEntryType, int> _score(
@@ -206,7 +205,7 @@ abstract final class QuickLogClassifier {
           'prescribed',
         ]) ||
         RegExp(r'\d+\s*mg\b', caseSensitive: false).hasMatch(text)) {
-      score = 55;
+      score = 76;
     }
     if (QuickLogText.mentionsAny(text, const [
       'paracetamol',
@@ -216,11 +215,11 @@ abstract final class QuickLogClassifier {
       'methotrexate',
       'hydroxychloroquine',
     ])) {
-      score = 58;
+      score = 80;
     }
     for (final name in medicationNames) {
       if (QuickLogParser.textMentionsName(text, name)) {
-        score = 70;
+        score = 85;
         break;
       }
     }

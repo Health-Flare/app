@@ -75,6 +75,14 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
 
   void _onTextChanged() {
     if (!mounted) return;
+    if (_textController.text.trim().isEmpty) {
+      setState(() {
+        _classification = null;
+        _typeOverride = null;
+        if (!_timestampManual) _timestamp = _openedAt;
+      });
+      return;
+    }
     final next = _classify(_textController.text);
     setState(() {
       _classification = next;
