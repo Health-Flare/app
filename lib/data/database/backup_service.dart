@@ -1,9 +1,11 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:isar_community/isar.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'package:health_flare/data/database/backup_encryption.dart';
+import 'package:health_flare/data/database/import_service.dart';
 
 /// Handles hot-backup export and staged restore for the Isar database.
 ///
@@ -86,9 +88,14 @@ class BackupService {
 
   /// Copies [sourceFilePath] to the pending restore slot.
   ///
+  /// Throws [InvalidBackupException] (and stages nothing) if the file is not
+  /// a Health Flare database: Isar would otherwise open it on the next launch
+  /// as a fresh, empty database, silently wiping the user's data.
+  ///
   /// The restore is applied the next time [IsarService.open] runs (i.e. after
   /// the user restarts the app). The caller should prompt the user to restart.
   static Future<void> stagePendingRestore(String sourceFilePath) async {
+    await ImportService.validate(sourceFilePath);
     final path = await pendingRestorePath();
     await File(sourceFilePath).copy(path);
   }
@@ -97,10 +104,23 @@ class BackupService {
   ///
   /// Must be called *before* Isar is opened. Called by [IsarService.open].
   /// No-op if no pending restore file exists.
+  ///
+  /// The staged file is validated again before the live database is touched.
+  /// If it isn't a Health Flare database (e.g. it was staged by an older app
+  /// version that didn't validate), it is discarded and the live database is
+  /// kept.
   static Future<void> applyPendingRestoreIfNeeded(String docsDir) async {
     final pendingPath = '$docsDir/$_pendingRestoreFileName';
     final pendingFile = File(pendingPath);
     if (!pendingFile.existsSync()) return;
+
+    try {
+      await ImportService.validate(pendingPath);
+    } on InvalidBackupException {
+      debugPrint('Discarding pending restore: not a Health Flare database.');
+      await pendingFile.delete();
+      return;
+    }
 
     // Replace the main database file with the backup.
     final mainFile = File('$docsDir/healthflare.isar');

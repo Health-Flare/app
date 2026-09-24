@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -109,6 +110,15 @@ const _password = 'correcthorsebattery';
 
 String _uid() => '${DateTime.now().microsecondsSinceEpoch}';
 
+/// Opens a database shaped like a real app database: with the AppSettings
+/// singleton MigrationRunner writes on first launch, which import/restore
+/// validation requires.
+Future<Isar> _openAppDb(String directory, String name) async {
+  final isar = await Isar.open(_schemas, directory: directory, name: name);
+  await isar.writeTxn(() => isar.appSettings.put(AppSettings()));
+  return isar;
+}
+
 void main() {
   late Directory tempRoot;
   late Directory docsDir;
@@ -128,11 +138,7 @@ void main() {
       docsDir: docsDir,
     );
 
-    mainDb = await Isar.open(
-      _schemas,
-      directory: docsDir.path,
-      name: 'main_${_uid()}',
-    );
+    mainDb = await _openAppDb(docsDir.path, 'main_${_uid()}');
     await mainDb.writeTxn(
       () => mainDb.profileIsars.put(ProfileIsar()..name = 'Existing'),
     );
@@ -162,11 +168,7 @@ void main() {
   /// Writes an encrypted backup containing one profile named [name] into a
   /// separate "outside" directory, like a file the user picked from Files.
   Future<String> encryptedBackupWith(String name) async {
-    final source = await Isar.open(
-      _schemas,
-      directory: docsDir.path,
-      name: 'source_${_uid()}',
-    );
+    final source = await _openAppDb(docsDir.path, 'source_${_uid()}');
     await source.writeTxn(
       () => source.profileIsars.put(ProfileIsar()..name = name),
     );
@@ -179,11 +181,7 @@ void main() {
   }
 
   Future<String> plainBackupWith(String name) async {
-    final source = await Isar.open(
-      _schemas,
-      directory: docsDir.path,
-      name: 'source_${_uid()}',
-    );
+    final source = await _openAppDb(docsDir.path, 'source_${_uid()}');
     await source.writeTxn(
       () => source.profileIsars.put(ProfileIsar()..name = name),
     );
@@ -438,5 +436,107 @@ void main() {
     expect(state(), isA<BackupError>());
     expect((state() as BackupError).message, startsWith('Import failed'));
     expect(decryptedCopies(), isEmpty);
+  });
+
+  // -------------------------------------------------------------------------
+  // Scenario: Selecting a file that isn't a backup fails without changing
+  // any data (docs/features/datastore.feature)
+  //
+  // Isar opens a non-Isar file without complaint, as a fresh empty database,
+  // so without validation "Replace everything" would stage it and wipe the
+  // live data on the next launch.
+  // -------------------------------------------------------------------------
+  group('picking a file that is not a Health Flare backup', () {
+    Future<String> pickedFile(String name, List<int> bytes) async {
+      final picked = Directory('${tempRoot.path}/picked')
+        ..createSync(recursive: true);
+      return (File('${picked.path}/$name')..writeAsBytesSync(bytes)).path;
+    }
+
+    /// A genuine Isar database from something other than the app: it has
+    /// no AppSettings singleton.
+    Future<String> foreignIsarFile() async {
+      final other = await Isar.open(
+        _schemas,
+        directory: docsDir.path,
+        name: 'foreign_${_uid()}',
+      );
+      await other.writeTxn(
+        () => other.profileIsars.put(ProfileIsar()..name = 'Foreign'),
+      );
+      final path = await BackupService.export(other);
+      await other.close(deleteFromDisk: true);
+      return path;
+    }
+
+    final files = <(String, Future<String> Function())>[
+      (
+        'a PDF',
+        () => pickedFile(
+          'report.pdf',
+          utf8.encode('%PDF-1.7\n${'x' * 4096}\n%%EOF'),
+        ),
+      ),
+      (
+        'a CSV report',
+        () => pickedFile('report.csv', utf8.encode('date,symptom\n')),
+      ),
+      ('an empty file', () => pickedFile('empty.isar', const [])),
+      ('an Isar database from elsewhere', foreignIsarFile),
+    ];
+
+    for (final (fileLabel, makeFile) in files) {
+      for (final (modeLabel, start) in [
+        ('Replace everything', (BackupNotifier n) => n.stageRestore()),
+        ('Add missing data', (BackupNotifier n) => n.mergeRestore()),
+        (
+          'Choose what to import',
+          (BackupNotifier n) => n.startSelectiveImport(),
+        ),
+      ]) {
+        test('$modeLabel with $fileLabel: rejected, nothing changes', () async {
+          final path = await makeFile();
+          final originalBytes = File(path).readAsBytesSync();
+          notifier.pickedPath = path;
+
+          await start(notifier);
+
+          expect(state(), isA<BackupError>());
+          expect(
+            (state() as BackupError).message,
+            "This file isn't a Health Flare backup.",
+          );
+          expect(await BackupService.hasPendingRestore(), isFalse);
+          expect(await mainProfileNames(), ['Existing']);
+          // The picked file itself is left exactly as it was.
+          expect(File(path).readAsBytesSync(), originalBytes);
+        });
+      }
+    }
+
+    test('a garbage file staged by an older app version is discarded on '
+        'launch and the live database is kept', () async {
+      final liveDir = Directory('${tempRoot.path}/live')..createSync();
+      final live = await _openAppDb(liveDir.path, 'healthflare');
+      await live.writeTxn(
+        () => live.profileIsars.put(ProfileIsar()..name = 'LiveData'),
+      );
+      await live.close();
+      final pending = File('${liveDir.path}/healthflare_pending_restore.isar')
+        ..writeAsBytesSync(utf8.encode('%PDF-1.7 not a database'));
+
+      await BackupService.applyPendingRestoreIfNeeded(liveDir.path);
+
+      expect(pending.existsSync(), isFalse);
+      final reopened = await Isar.open(
+        _schemas,
+        directory: liveDir.path,
+        name: 'healthflare',
+      );
+      final names = (await reopened.profileIsars.where().findAll()).map(
+        (p) => p.name,
+      );
+      expect(names, ['LiveData']);
+    });
   });
 }

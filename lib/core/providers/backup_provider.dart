@@ -98,6 +98,10 @@ class BackupError extends BackupResult {
 /// else. [submitImportPassword] decrypts it to a temporary plain copy and
 /// resumes the same mode against that copy, which is deleted once the mode
 /// no longer needs it.
+///
+/// **Validation**: every mode rejects a file that isn't a Health Flare
+/// database with a [BackupError] before anything is staged or merged (see
+/// [InvalidBackupException]).
 class BackupNotifier extends Notifier<BackupResult> {
   @override
   BackupResult build() => const BackupIdle();
@@ -309,6 +313,9 @@ class BackupNotifier extends Notifier<BackupResult> {
             state = ImportPreviewReady(filePath: path, categories: categories);
           }
       }
+    } on InvalidBackupException catch (e) {
+      // Nothing was staged or merged: every mode validates before writing.
+      state = BackupError(e.message);
     } catch (e) {
       state = BackupError('${_failurePrefix(action)}$e');
     } finally {

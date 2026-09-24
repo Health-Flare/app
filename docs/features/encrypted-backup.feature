@@ -253,4 +253,8 @@ Feature: Encrypted backups
     # it is an Isar database, and on the next launch the live database is
     # replaced by the unreadable file, which Isar opens as empty. "Add missing
     # data" and "Choose what to import" just find nothing to import. Older
-    # releases can't be changed; staging validation is tracked separately.
+    # releases can't be changed. From this release on, every restore mode
+    # rejects any file that isn't a Health Flare database before staging or
+    # merging, and a bad file already staged by an older version is discarded
+    # on launch. See "Selecting a file that isn't a backup fails without
+    # changing any data" in datastore.feature.
