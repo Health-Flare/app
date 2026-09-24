@@ -51,6 +51,7 @@ Subsection meanings (from Keep a Changelog):
 
 ### Changed
 - The Settings button now appears in the top bar on every screen, just left of the profile icon, instead of only on the Dashboard.
+- Renamed "Illness(es)" to "Condition(s)" throughout the app (Tracking tab, illness screen, onboarding, first-log prompt) to match the terminology used everywhere else. Shortened the "Medications" nav label to "Meds" so it no longer wraps on narrow screens.
 
 ### Deprecated
 - _Nothing yet._
@@ -59,7 +60,10 @@ Subsection meanings (from Keep a Changelog):
 - The "Data & backup" shortcuts in the profile switcher. Export and import now live only in Settings, which offers password-locked backups and all three restore modes.
 
 ### Fixed
-- _Nothing yet._
+- Restoring from a backup file now checks that the file is actually a Health Flare backup before touching anything. Picking the wrong file (a PDF, a CSV, a corrupted download) used to be silently accepted: "Replace everything" would wipe all data on the next launch with no warning, and merge/selective import would just report "0 new records." All three restore modes now show a clear error instead.
+- Quick Log's smart detection is more reliable: respiratory rate readings no longer fail to save, mentioning a condition (new or already-tracked) is detected correctly, and symptom matching now considers the wording actually entered instead of only a static list.
+- Quick Log now resolves a symptom to its existing tracked/catalogue name (so "brain fog again" matches "Brain fog") instead of creating a new entry for every variation, matching how conditions and medications already work. Severity ("8/10", "mild", "excruciating") and a condition's diagnosis date are now inferred more carefully instead of guessing on every mention.
+- Quick Log sleep entries with a time range ("8pm to 4am", "20:00 to 4:00") now create a Sleep entry instead of a Journal entry.
 
 ### Security
 - _Nothing yet._
