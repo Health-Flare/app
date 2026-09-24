@@ -46,6 +46,26 @@ Subsection meanings (from Keep a Changelog):
 ## [Unreleased]
 
 ### Added
+- _Nothing yet._
+
+### Changed
+- _Nothing yet._
+
+### Deprecated
+- _Nothing yet._
+
+### Removed
+- _Nothing yet._
+
+### Fixed
+- _Nothing yet._
+
+### Security
+- _Nothing yet._
+
+## [1.9.0] - 2026-09-24
+
+### Added
 - Backups can now be locked with a password. Turn on "Encrypt with a password" when exporting to get an encrypted `.hfbackup` file that only opens with that password. Importing asks for the password automatically, in all three restore modes. Plain backups work exactly as before.
 - The export screen now says plainly who can read an exported file and what Health Flare does (and doesn't) do with it.
 
@@ -312,7 +332,8 @@ Subsection meanings (from Keep a Changelog):
 - Offline-first guarantee: zero outbound network requests at runtime, enforced
   by the `url-scan` CI check.
 
-[Unreleased]: https://github.com/Health-Flare/app/compare/v1.8.0...HEAD
+[Unreleased]: https://github.com/Health-Flare/app/compare/v1.9.0...HEAD
+[1.9.0]: https://github.com/Health-Flare/app/compare/v1.8.0...v1.9.0
 [1.8.0]: https://github.com/Health-Flare/app/compare/v1.7.1...v1.8.0
 [1.7.1]: https://github.com/Health-Flare/app/compare/v1.7.0...v1.7.1
 [1.7.0]: https://github.com/Health-Flare/app/compare/v1.6.0...v1.7.0
