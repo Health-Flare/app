@@ -9,6 +9,7 @@ import 'package:health_flare/core/providers/meal_entry_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/core/router/app_router.dart';
 import 'package:health_flare/models/meal_entry.dart';
+import 'package:health_flare/features/quick_log/widgets/quick_log_fab.dart';
 import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 
 /// Main screen showing the meal log for the active profile.
@@ -43,11 +44,7 @@ class MealsScreen extends ConsumerWidget {
               itemCount: entries.length,
               itemBuilder: (context, i) => _MealTile(entry: entries[i]),
             ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => context.push(AppRoutes.mealsNew),
-        tooltip: 'Log meal',
-        child: const Icon(Icons.add),
-      ),
+      floatingActionButton: const QuickLogFab(heroTag: 'fab_meals'),
     );
   }
 }

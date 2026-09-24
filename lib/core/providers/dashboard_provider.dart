@@ -4,6 +4,8 @@ import 'package:health_flare/core/providers/activity_entry_provider.dart';
 import 'package:health_flare/core/providers/appointment_provider.dart';
 import 'package:health_flare/core/providers/daily_checkin_provider.dart';
 import 'package:health_flare/core/providers/dose_log_provider.dart';
+import 'package:health_flare/core/providers/elimination_provider.dart';
+import 'package:health_flare/core/providers/fluid_intake_provider.dart';
 import 'package:health_flare/core/providers/flare_provider.dart';
 import 'package:health_flare/core/providers/journal_provider.dart';
 import 'package:health_flare/core/providers/meal_entry_provider.dart';
@@ -33,6 +35,8 @@ final dashboardActivityProvider = Provider<List<ActivityItem>>((ref) {
   final checkins = ref.watch(activeProfileCheckinsProvider);
   final appointments = ref.watch(activeProfileAppointmentsProvider);
   final activityEntries = ref.watch(activeProfileActivityEntriesProvider);
+  final fluids = ref.watch(activeProfileFluidIntakesProvider);
+  final elimination = ref.watch(activeProfileEliminationsProvider);
 
   final medById = {for (final m in medications) m.id: m};
 
@@ -68,6 +72,10 @@ final dashboardActivityProvider = Provider<List<ActivityItem>>((ref) {
     ),
     ...activityEntries.map(
       (e) => ActivityLogActivityItem(timestamp: e.loggedAt, entry: e),
+    ),
+    ...fluids.map((e) => FluidActivityItem(timestamp: e.loggedAt, entry: e)),
+    ...elimination.map(
+      (e) => EliminationActivityItem(timestamp: e.loggedAt, entry: e),
     ),
   ]..sort((a, b) => b.timestamp.compareTo(a.timestamp));
 

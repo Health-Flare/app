@@ -182,7 +182,7 @@ DailyCheckinIsar _dailyCheckinIsarDeserialize(
     WeatherSnapshotIsarSchema.deserialize,
     allOffsets,
   );
-  object.wellbeing = reader.readLong(offsets[8]);
+  object.wellbeing = reader.readLongOrNull(offsets[8]);
   return object;
 }
 
@@ -214,7 +214,7 @@ P _dailyCheckinIsarDeserializeProp<P>(
         allOffsets,
       )) as P;
     case 8:
-      return (reader.readLong(offset)) as P;
+      return (reader.readLongOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -1296,7 +1296,25 @@ extension DailyCheckinIsarQueryFilter
   }
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
-      wellbeingEqualTo(int value) {
+      wellbeingIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'wellbeing',
+      ));
+    });
+  }
+
+  QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
+      wellbeingIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'wellbeing',
+      ));
+    });
+  }
+
+  QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
+      wellbeingEqualTo(int? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'wellbeing',
@@ -1307,7 +1325,7 @@ extension DailyCheckinIsarQueryFilter
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
       wellbeingGreaterThan(
-    int value, {
+    int? value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -1321,7 +1339,7 @@ extension DailyCheckinIsarQueryFilter
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
       wellbeingLessThan(
-    int value, {
+    int? value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -1335,8 +1353,8 @@ extension DailyCheckinIsarQueryFilter
 
   QueryBuilder<DailyCheckinIsar, DailyCheckinIsar, QAfterFilterCondition>
       wellbeingBetween(
-    int lower,
-    int upper, {
+    int? lower,
+    int? upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
@@ -1727,7 +1745,7 @@ extension DailyCheckinIsarQueryProperty
     });
   }
 
-  QueryBuilder<DailyCheckinIsar, int, QQueryOperations> wellbeingProperty() {
+  QueryBuilder<DailyCheckinIsar, int?, QQueryOperations> wellbeingProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'wellbeing');
     });

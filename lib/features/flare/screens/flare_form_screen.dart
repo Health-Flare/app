@@ -13,9 +13,10 @@ import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 ///
 /// Pass [flare] to open in edit mode; leave null to start a new flare.
 class FlareFormScreen extends ConsumerStatefulWidget {
-  const FlareFormScreen({super.key, this.flare});
+  const FlareFormScreen({super.key, this.flare, this.initialNotes});
 
   final Flare? flare;
+  final String? initialNotes;
 
   @override
   ConsumerState<FlareFormScreen> createState() => _FlareFormScreenState();
@@ -40,7 +41,7 @@ class _FlareFormScreenState extends ConsumerState<FlareFormScreen> {
       _conditionIsarIds = List.of(f.conditionIsarIds);
       _initialSeverity = f.initialSeverity;
     } else {
-      _notesController = TextEditingController();
+      _notesController = TextEditingController(text: widget.initialNotes ?? '');
       _startedAt = DateTime.now();
       _conditionIsarIds = [];
     }

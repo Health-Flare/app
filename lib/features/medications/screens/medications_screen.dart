@@ -7,6 +7,7 @@ import 'package:health_flare/core/providers/medication_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/core/router/app_router.dart';
 import 'package:health_flare/models/medication.dart';
+import 'package:health_flare/features/quick_log/widgets/quick_log_fab.dart';
 import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 
 /// Main medications screen: lists active medications and supplements,
@@ -56,12 +57,7 @@ class MedicationsScreen extends ConsumerWidget {
               discontinuedSupps: discontinuedSupps,
             )
           : const _EmptyState(),
-      floatingActionButton: FloatingActionButton(
-        heroTag: 'fab_medications',
-        onPressed: () => context.push(AppRoutes.medicationsNew),
-        tooltip: 'Add medication',
-        child: const Icon(Icons.add),
-      ),
+      floatingActionButton: const QuickLogFab(heroTag: 'fab_medications'),
     );
   }
 }

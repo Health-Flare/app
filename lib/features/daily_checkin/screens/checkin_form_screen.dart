@@ -16,10 +16,16 @@ import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 /// Pass [checkin] to open in edit mode; leave null to create a new check-in
 /// for [date] (defaults to today).
 class CheckInFormScreen extends ConsumerStatefulWidget {
-  const CheckInFormScreen({super.key, this.checkin, this.date});
+  const CheckInFormScreen({
+    super.key,
+    this.checkin,
+    this.date,
+    this.initialNotes,
+  });
 
   final DailyCheckin? checkin;
   final DateTime? date;
+  final String? initialNotes;
 
   @override
   ConsumerState<CheckInFormScreen> createState() => _CheckInFormScreenState();
@@ -43,14 +49,14 @@ class _CheckInFormScreenState extends ConsumerState<CheckInFormScreen> {
     super.initState();
     final c = widget.checkin;
     if (c != null) {
-      _wellbeing = c.wellbeing;
+      _wellbeing = c.wellbeing ?? 0;
       _stressLevel = c.stressLevel;
       _cyclePhase = c.cyclePhase;
       _notesController = TextEditingController(text: c.notes ?? '');
       _date = c.checkinDate;
     } else {
       _wellbeing = 0; // 0 = not yet selected
-      _notesController = TextEditingController();
+      _notesController = TextEditingController(text: widget.initialNotes ?? '');
       _date = _dateOnly(widget.date ?? DateTime.now());
     }
   }

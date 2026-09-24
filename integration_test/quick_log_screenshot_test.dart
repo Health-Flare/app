@@ -312,7 +312,7 @@ Future<void> _shootQuickLog(
     ProviderScope(overrides: _overrides(), child: const HealthFlareApp()),
   );
   await _settle(tester);
-  await tester.tap(find.byTooltip('Log entry'));
+  await tester.tap(find.byTooltip('Open quick log'));
   await _settle(tester);
   if (text != null) {
     await tester.enterText(find.byType(TextField), text);

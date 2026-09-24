@@ -693,7 +693,7 @@ Feature: Quick Log
       | Had grilled salmon with rice        | Meal         | Quick Add: Meal          |
       | Saw Dr. Chen about my joints         | Doctor Visit | Quick Add: Doctor Visit  |
       | Bad flare today, knees swollen       | Symptom      | Quick Add: Symptom       |
-      | Took 400mg ibuprofen at noon         | Medication   | Quick Add: Medication    |
+      | Took 400mg ibuprofen at noon         | Medication   | Add to Journal           |
       | Blood pressure was 128 over 84       | Vital        | Quick Add: Vital         |
       | Slept for 6 hours last night         | Sleep        | Quick Add: Sleep         |
       | Just found out I have fibromyalgia   | Condition    | Quick Add: Condition     |
@@ -713,7 +713,37 @@ Feature: Quick Log
     And the app suggests "Meal"
     Then the primary button reads "Quick Add: Meal"
 
+  Scenario: A Medication chip saves a dose only when that medication is on the profile
+    Given Sarah's medications include Ibuprofen
+    When I tap the + button
+    And I type "Took 400mg ibuprofen at noon"
+    And the app suggests "Medication"
+    Then the primary button reads "Quick Add: Medication"
+    When I tap the primary button
+    Then a taken dose of Ibuprofen is saved
+    And the original text is kept in the dose notes
+
+  Scenario: Medication wording with no matching saved medication is journaled
+    Given Sarah's medications do not include ibuprofen
+    When I tap the + button
+    And I type "Took 400mg ibuprofen at noon"
+    And the app suggests "Medication"
+    Then the primary button reads "Add to Journal"
+    When I tap the primary button
+    Then the entry is saved as a journal entry
+    And no dose is logged
+
+  Scenario: Add details for a matched medication opens the dose form with the text
+    Given Sarah's medications include Ibuprofen
+    When I tap the + button
+    And I type "Missed my ibuprofen this morning"
+    And I tap "Add details"
+    Then the dose form opens for Ibuprofen
+    And the notes field contains the text I typed
+    And the status is Missed
+
   Scenario: The primary button reverts to "Add to Journal" when the user overrides the type to Journal
+    Given Sarah's medications include Ibuprofen
     When I tap the + button
     And I type "Took ibuprofen for the pain"
     And the app suggests "Medication"
@@ -1030,6 +1060,7 @@ Feature: Quick Log
   Scenario: A change in the primary button's label is announced to screen readers
     Given a screen reader is active
     When I tap the + button
+    And Sarah's medications include Ibuprofen
     And I type "Took 400mg ibuprofen"
     Then the screen reader announces that the primary button now reads "Quick Add: Medication"
 
@@ -1038,3 +1069,72 @@ Feature: Quick Log
     When I tap the + button
     Then the text field, type chip, timestamp, and primary button remain visible and usable
     And no elements overflow or overlap each other
+
+  # ---------------------------------------------------------------------------
+  # Honest save, relative time, and later entry types
+  # ---------------------------------------------------------------------------
+
+  Scenario: The timestamp row shows a relative date instead of hiding it
+    Given the current time is Wednesday 23 September 2026 at 18:00
+    When I type "Yesterday I felt awful"
+    Then the timestamp row shows 22 September 2026 at 18:00
+    When I pick a date and time myself
+    Then that manual timestamp is kept even if the text names another day
+
+  Scenario: A flare start is its own entry and a second start attaches to the active flare
+    When I quick-log "Lupus flare started today, pain 7/10"
+    And Lupus is one of Sarah's tracked conditions
+    Then a flare starts today with initial severity 7
+    And it is linked to Lupus
+    When I quick-log "Flare still going, knees are sore"
+    Then no second flare is created
+    And a symptom is saved against the active flare
+
+  Scenario: Ending language closes the active flare
+    Given Sarah has an active flare
+    When I quick-log "Flare finally settling down, feels over"
+    Then the active flare has an end time
+    And the chip reads "Flare"
+
+  Scenario: A bare flare mention stays a symptom
+    When I type "Fibromyalgia flare again today"
+    Then the chip reads "Symptom" or "Condition"
+    And no new flare is started
+
+  Scenario: Mood and cycle write today's check-in
+    Given cycle tracking is enabled for Sarah
+    When I quick-log "Period started, cramps 6/10"
+    Then today's check-in cycle phase is period
+    And a symptom named "Cramps" is saved with severity 6
+    And wellbeing stays unset unless the text states a number
+
+  Scenario: Activity, nap, meal reaction, peak flow, and steps fill structured fields
+    When I quick-log "Walked the dog 30 min, felt really hard going"
+    Then an activity is saved as Walking for 30 minutes with effort 4
+    When I quick-log "Had a 20 minute nap"
+    Then a nap of 20 minutes is saved
+    When I quick-log "Curry for lunch, stomach cramps after"
+    Then a meal is saved with a reaction
+    When I quick-log "Peak flow 420 L/min"
+    Then a peak-flow vital of 420 L/min is saved
+    When I quick-log "Walked 12,500 steps"
+    Then a steps vital of 12500 is saved
+
+  Scenario: Weather is attached only when the profile already opted in
+    Given weather tracking is enabled and a snapshot is available
+    When I quick-log "Had soup for lunch"
+    Then the meal stores that weather snapshot
+    And the sheet shows the weather chip
+    Given weather tracking is off
+    When I quick-log "Had soup for dinner"
+    Then no weather request is made
+    And the meal has no weather snapshot
+
+  Scenario: The type chip can be overridden until the text changes
+    When I type "Had grilled salmon with rice"
+    And the chip reads "Meal"
+    And I tap the chip and choose "Journal"
+    Then the chip reads "Journal"
+    And the primary button reads "Add to Journal"
+    When I change the text
+    Then the override is cleared and the text is classified again

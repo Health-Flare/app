@@ -30,4 +30,7 @@ class ProfileIsar {
   /// Whether menstrual cycle tracking is enabled for this profile.
   /// Defaults to false. When true, cycle phase field appears in daily check-in.
   bool cycleTrackingEnabled = false;
+
+  /// Whether bowel and bladder logging is enabled for this profile.
+  bool bowelTrackingEnabled = false;
 }

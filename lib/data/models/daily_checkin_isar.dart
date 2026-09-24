@@ -17,8 +17,9 @@ class DailyCheckinIsar {
   @Index()
   late DateTime checkinDate;
 
-  /// Overall wellbeing rating 1–10.
-  late int wellbeing;
+  /// Overall wellbeing rating 1–10. Null when a quick log recorded only
+  /// stress, cycle phase, or notes and did not guess a score.
+  int? wellbeing;
 
   /// "low" | "medium" | "high": optional.
   String? stressLevel;

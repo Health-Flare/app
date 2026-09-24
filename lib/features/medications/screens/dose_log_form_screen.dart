@@ -14,10 +14,20 @@ import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 /// Pass [doseLog] to open in edit mode; leave null for a new dose.
 /// [medication] is always required: used to pre-fill amount/unit.
 class DoseLogFormScreen extends ConsumerStatefulWidget {
-  const DoseLogFormScreen({super.key, required this.medication, this.doseLog});
+  const DoseLogFormScreen({
+    super.key,
+    required this.medication,
+    this.doseLog,
+    this.initialNotes,
+    this.initialStatus,
+  });
 
   final Medication medication;
   final DoseLog? doseLog;
+
+  /// Quick Log "Add details" prefill when creating a dose.
+  final String? initialNotes;
+  final String? initialStatus;
 
   @override
   ConsumerState<DoseLogFormScreen> createState() => _DoseLogFormScreenState();
@@ -70,8 +80,8 @@ class _DoseLogFormScreenState extends ConsumerState<DoseLogFormScreen> {
             : med.doseAmount.toString(),
       );
       _reasonController = TextEditingController();
-      _notesController = TextEditingController();
-      _status = 'taken';
+      _notesController = TextEditingController(text: widget.initialNotes ?? '');
+      _status = widget.initialStatus ?? 'taken';
       _effectiveness = null;
       _loggedAt = DateTime.now();
     }

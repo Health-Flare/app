@@ -13,9 +13,12 @@ import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 ///
 /// Pass [medication] to open in edit mode; leave null for a new entry.
 class MedicationFormScreen extends ConsumerStatefulWidget {
-  const MedicationFormScreen({super.key, this.medication});
+  const MedicationFormScreen({super.key, this.medication, this.initialNotes});
 
   final Medication? medication;
+
+  /// Quick Log text when no saved medication matched.
+  final String? initialNotes;
 
   @override
   ConsumerState<MedicationFormScreen> createState() =>
@@ -75,7 +78,7 @@ class _MedicationFormScreenState extends ConsumerState<MedicationFormScreen> {
       _doseAmountController = TextEditingController();
       _doseUnitController = TextEditingController(text: 'mg');
       _frequencyLabelController = TextEditingController();
-      _notesController = TextEditingController();
+      _notesController = TextEditingController(text: widget.initialNotes ?? '');
       _medicationType = 'medication';
       _frequency = 'once_daily';
     }

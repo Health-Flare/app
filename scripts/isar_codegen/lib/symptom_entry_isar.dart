@@ -19,6 +19,8 @@ class SymptomEntryIsar {
 
   late int severity;
 
+  List<String> locations = [];
+
   String? notes;
 
   @Index()

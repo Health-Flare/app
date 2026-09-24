@@ -16,6 +16,8 @@ import 'package:health_flare/data/models/appointment_isar.dart';
 import 'package:health_flare/data/models/condition_isar.dart';
 import 'package:health_flare/data/models/daily_checkin_isar.dart';
 import 'package:health_flare/data/models/dose_log_isar.dart';
+import 'package:health_flare/data/models/elimination_entry_isar.dart';
+import 'package:health_flare/data/models/fluid_intake_isar.dart';
 import 'package:health_flare/data/models/flare_isar.dart';
 import 'package:health_flare/data/models/journal_entry_isar.dart';
 import 'package:health_flare/data/models/meal_entry_isar.dart';
@@ -122,6 +124,8 @@ const _schemas = [
   DailyCheckinIsarSchema,
   AppointmentIsarSchema,
   ActivityEntryIsarSchema,
+  FluidIntakeIsarSchema,
+  EliminationEntryIsarSchema,
 ];
 
 /// Opens a database shaped like a real app database: with the AppSettings

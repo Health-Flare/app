@@ -276,3 +276,32 @@ Feature: Profile Management
     When the app loads
     Then I am shown an onboarding screen prompting me to create my first profile
     And I am not shown any empty data screens until at least one profile exists
+
+  # ---------------------------------------------------------------------------
+  # Opt-in tracking
+  # ---------------------------------------------------------------------------
+
+  Scenario: Cycle tracking is off until the profile turns it on
+    Given I am editing Sarah's profile
+    Then cycle tracking is off
+    And Quick Log does not offer a Cycle chip
+
+  Scenario: Turning on cycle tracking is stored on that profile only
+    Given I am editing Sarah's profile
+    When I turn on cycle tracking
+    And I save the profile
+    Then Sarah's profile has cycle tracking enabled
+    And other profiles are unchanged
+
+  Scenario: Bowel and bladder tracking is off until the profile turns it on
+    Given I am editing Sarah's profile
+    Then bowel and bladder tracking is off
+    And Quick Log does not offer a Bowel chip
+    And no bowel or bladder entry is created from ordinary text
+
+  Scenario: Turning on bowel tracking is stored on that profile only
+    Given I am editing Sarah's profile
+    When I turn on bowel and bladder tracking
+    And I save the profile
+    Then Sarah's profile has bowel tracking enabled
+    And Quick Log may suggest a Bowel chip when the text is about a bowel or bladder event

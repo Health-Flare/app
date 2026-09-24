@@ -123,7 +123,9 @@ class ProfileListNotifier extends Notifier<List<Profile>> {
         ..dateOfBirth = updated.dateOfBirth
         ..avatarPath = updated.avatarPath
         ..weatherTrackingEnabled = updated.weatherTrackingEnabled
-        ..colorSeed = updated.colorSeed ?? existing.colorSeed;
+        ..colorSeed = updated.colorSeed ?? existing.colorSeed
+        ..cycleTrackingEnabled = updated.cycleTrackingEnabled
+        ..bowelTrackingEnabled = updated.bowelTrackingEnabled;
       await isar.profileIsars.put(existing);
     });
   }

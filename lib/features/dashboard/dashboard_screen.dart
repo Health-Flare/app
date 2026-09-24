@@ -7,7 +7,7 @@ import 'package:health_flare/core/providers/onboarding_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/core/router/app_router.dart';
 import 'package:health_flare/features/dashboard/widgets/dashboard_activity_feed.dart';
-import 'package:health_flare/features/dashboard/widgets/dashboard_quick_entry_sheet.dart';
+import 'package:health_flare/features/quick_log/widgets/quick_log_fab.dart';
 import 'package:health_flare/features/onboarding/screens/post_setup_flow_screen.dart';
 import 'package:health_flare/features/flare/widgets/active_flare_banner.dart';
 import 'package:health_flare/features/daily_checkin/widgets/daily_checkin_card.dart';
@@ -102,11 +102,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         ],
       ),
       body: const _DashboardBody(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => showDashboardQuickEntrySheet(context),
-        tooltip: 'Log entry',
-        child: const Icon(Icons.add_rounded),
-      ),
+      floatingActionButton: const QuickLogFab(),
     );
   }
 }

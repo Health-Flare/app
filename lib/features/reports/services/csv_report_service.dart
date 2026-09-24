@@ -78,7 +78,9 @@ abstract final class CsvReportService {
       rows.add([
         _dateFmt.format(e.checkinDate),
         'Check-in',
-        'Wellbeing ${e.wellbeing}/10',
+        e.wellbeing == null
+            ? 'Wellbeing not recorded'
+            : 'Wellbeing ${e.wellbeing}/10',
         e.stressLevel ?? '',
         e.notes ?? '',
       ]);

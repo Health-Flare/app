@@ -4,15 +4,18 @@ import 'package:health_flare/models/weather_snapshot.dart';
 
 /// Immutable domain model for a single daily check-in.
 ///
-/// One check-in per profile per calendar day. The wellbeing field (1–10) is
-/// the only required value; stress, cycle phase and notes are optional.
+/// One check-in per profile per calendar day. Wellbeing (1–10) is optional
+/// so a mood, stress, or cycle quick log can create today's check-in without
+/// inventing a score. The full check-in form still asks for one. Stress,
+/// cycle phase and notes stay optional. An existing wellbeing is never
+/// replaced by a guess.
 @immutable
 class DailyCheckin {
   const DailyCheckin({
     required this.id,
     required this.profileId,
     required this.checkinDate,
-    required this.wellbeing,
+    this.wellbeing,
     this.stressLevel,
     this.cyclePhase,
     this.notes,
@@ -27,8 +30,9 @@ class DailyCheckin {
   /// Date-only anchor: only the year/month/day components are meaningful.
   final DateTime checkinDate;
 
-  /// Overall wellbeing 1–10.
-  final int wellbeing;
+  /// Overall wellbeing 1–10, or null when the check-in recorded only
+  /// stress, cycle phase, or notes.
+  final int? wellbeing;
 
   /// "low" | "medium" | "high"
   final String? stressLevel;

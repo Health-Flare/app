@@ -11,6 +11,7 @@ class SymptomEntry {
     this.userSymptomIsarId,
     this.userConditionIsarId,
     required this.severity,
+    this.locations = const [],
     this.notes,
     required this.loggedAt,
     required this.createdAt,
@@ -24,6 +25,10 @@ class SymptomEntry {
   final int? userSymptomIsarId;
   final int? userConditionIsarId;
   final int severity; // 1–10
+
+  /// Canonical body regions, optionally qualified by side ("left hip").
+  final List<String> locations;
+
   final String? notes;
   final DateTime loggedAt;
   final DateTime createdAt;
@@ -35,6 +40,7 @@ class SymptomEntry {
     int? userSymptomIsarId,
     int? userConditionIsarId,
     int? severity,
+    List<String>? locations,
     String? notes,
     DateTime? loggedAt,
     WeatherSnapshot? weatherSnapshot,
@@ -50,6 +56,7 @@ class SymptomEntry {
           : (userSymptomIsarId ?? this.userSymptomIsarId),
       userConditionIsarId: userConditionIsarId ?? this.userConditionIsarId,
       severity: severity ?? this.severity,
+      locations: locations ?? this.locations,
       notes: clearNotes ? null : (notes ?? this.notes),
       loggedAt: loggedAt ?? this.loggedAt,
       createdAt: createdAt,

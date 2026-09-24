@@ -139,7 +139,9 @@ class DashboardActivityFeed extends StatelessWidget {
         leading: Icon(Icons.check_circle_outline, color: cs.primary),
         title: const Text('Daily check-in'),
         subtitle: Text(
-          '${_formatDate(item.timestamp)} · wellbeing ${entry.wellbeing}/10',
+          entry.wellbeing == null
+              ? _formatDate(item.timestamp)
+              : '${_formatDate(item.timestamp)} · wellbeing ${entry.wellbeing}/10',
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
@@ -170,6 +172,26 @@ class DashboardActivityFeed extends StatelessWidget {
         ),
         onTap: () =>
             context.push(AppRoutes.activityEdit(entry.id), extra: entry),
+      ),
+      FluidActivityItem(:final entry) => ListTile(
+        leading: Icon(Icons.local_drink_outlined, color: cs.primary),
+        title: Text(
+          entry.drinkType == null
+              ? '${entry.volumeMl} ml'
+              : '${entry.volumeMl} ml ${entry.drinkType}',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        subtitle: Text(_formatDate(item.timestamp)),
+      ),
+      EliminationActivityItem(:final entry) => ListTile(
+        leading: Icon(Icons.health_and_safety_outlined, color: cs.primary),
+        title: Text(
+          entry.kind == 'bladder' ? 'Bladder' : 'Bowel',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        subtitle: Text(_formatDate(item.timestamp)),
       ),
     };
   }

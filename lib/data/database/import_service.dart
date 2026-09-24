@@ -8,7 +8,9 @@ import 'package:health_flare/data/models/appointment_isar.dart';
 import 'package:health_flare/data/models/condition_isar.dart';
 import 'package:health_flare/data/models/daily_checkin_isar.dart';
 import 'package:health_flare/data/models/dose_log_isar.dart';
+import 'package:health_flare/data/models/elimination_entry_isar.dart';
 import 'package:health_flare/data/models/flare_isar.dart';
+import 'package:health_flare/data/models/fluid_intake_isar.dart';
 import 'package:health_flare/data/models/journal_entry_isar.dart';
 import 'package:health_flare/data/models/meal_entry_isar.dart';
 import 'package:health_flare/data/models/medication_isar.dart';
@@ -150,6 +152,8 @@ class ImportService {
         DailyCheckinIsarSchema,
         AppointmentIsarSchema,
         ActivityEntryIsarSchema,
+        FluidIntakeIsarSchema,
+        EliminationEntryIsarSchema,
       ],
       directory: directory,
       name: _importDbName,
@@ -564,6 +568,10 @@ class _Ctx {
     }
     if (include(ImportCategoryId.symptomEntries)) {
       total += await _importSymptomEntries();
+      total += await _importElimination();
+    }
+    if (include(ImportCategoryId.meals)) {
+      total += await _importFluids();
     }
 
     return total;
@@ -588,7 +596,8 @@ class _Ctx {
         ..weatherTrackingEnabled = bp.weatherTrackingEnabled
         ..weatherOptInShown = bp.weatherOptInShown
         ..colorSeed = bp.colorSeed
-        ..cycleTrackingEnabled = bp.cycleTrackingEnabled;
+        ..cycleTrackingEnabled = bp.cycleTrackingEnabled
+        ..bowelTrackingEnabled = bp.bowelTrackingEnabled;
       await main.writeTxn(() async {
         final newId = await main.profileIsars.put(newProfile);
         profileMap[bp.id] = newId;
@@ -1082,6 +1091,7 @@ class _Ctx {
           ..profileId = pid
           ..name = be.name
           ..severity = be.severity
+          ..locations = be.locations
           ..notes = be.notes
           ..loggedAt = be.loggedAt
           ..createdAt = be.createdAt
@@ -1099,6 +1109,70 @@ class _Ctx {
 
     if (toInsert.isNotEmpty) {
       await main.writeTxn(() async => main.symptomEntryIsars.putAll(toInsert));
+    }
+    return toInsert.length;
+  }
+
+  Future<int> _importFluids() async {
+    final backupItems = await backup.fluidIntakeIsars.where().findAll();
+    final mainSet = (await main.fluidIntakeIsars.where().findAll())
+        .map((e) => '${e.profileId}_${e.loggedAt.millisecondsSinceEpoch}')
+        .toSet();
+    final toInsert = <FluidIntakeIsar>[];
+    for (final be in backupItems) {
+      final pid = profileMap[be.profileId];
+      if (pid == null) continue;
+      if (mainSet.contains('${pid}_${be.loggedAt.millisecondsSinceEpoch}')) {
+        continue;
+      }
+      toInsert.add(
+        FluidIntakeIsar()
+          ..profileId = pid
+          ..loggedAt = be.loggedAt
+          ..volumeMl = be.volumeMl
+          ..drinkType = be.drinkType
+          ..notes = be.notes
+          ..createdAt = be.createdAt,
+      );
+    }
+    if (toInsert.isNotEmpty) {
+      await main.writeTxn(() async => main.fluidIntakeIsars.putAll(toInsert));
+    }
+    return toInsert.length;
+  }
+
+  Future<int> _importElimination() async {
+    final backupItems = await backup.eliminationEntryIsars.where().findAll();
+    final mainSet = (await main.eliminationEntryIsars.where().findAll())
+        .map(
+          (e) =>
+              '${e.profileId}_${e.loggedAt.millisecondsSinceEpoch}_${e.kind}',
+        )
+        .toSet();
+    final toInsert = <EliminationEntryIsar>[];
+    for (final be in backupItems) {
+      final pid = profileMap[be.profileId];
+      if (pid == null) continue;
+      final fingerprint =
+          '${pid}_${be.loggedAt.millisecondsSinceEpoch}_${be.kind}';
+      if (mainSet.contains(fingerprint)) continue;
+      toInsert.add(
+        EliminationEntryIsar()
+          ..profileId = pid
+          ..loggedAt = be.loggedAt
+          ..kind = be.kind
+          ..bristolType = be.bristolType
+          ..count = be.count
+          ..blood = be.blood
+          ..urgency = be.urgency
+          ..notes = be.notes
+          ..createdAt = be.createdAt,
+      );
+    }
+    if (toInsert.isNotEmpty) {
+      await main.writeTxn(
+        () async => main.eliminationEntryIsars.putAll(toInsert),
+      );
     }
     return toInsert.length;
   }

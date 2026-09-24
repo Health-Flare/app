@@ -9,6 +9,7 @@ import 'package:health_flare/core/providers/vital_entry_provider.dart';
 import 'package:health_flare/core/router/app_router.dart';
 import 'package:health_flare/models/symptom_entry.dart';
 import 'package:health_flare/models/vital_entry.dart';
+import 'package:health_flare/features/quick_log/widgets/quick_log_fab.dart';
 import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 
 /// Tabbed screen showing the Symptoms and Vitals logs for the active profile.
@@ -43,8 +44,6 @@ class _SymptomsVitalsScreenState extends ConsumerState<SymptomsVitalsScreen>
     final symptoms = ref.watch(activeProfileSymptomEntriesProvider);
     final vitals = ref.watch(activeProfileVitalEntriesProvider);
 
-    final isSymptomTab = _tabController.index == 0;
-
     return Scaffold(
       appBar: HFAppBar(
         title: Column(
@@ -75,18 +74,7 @@ class _SymptomsVitalsScreenState extends ConsumerState<SymptomsVitalsScreen>
           _VitalList(entries: vitals),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        heroTag: isSymptomTab ? 'fab_symptom' : 'fab_vital',
-        onPressed: () {
-          if (isSymptomTab) {
-            context.push(AppRoutes.symptomsNew);
-          } else {
-            context.push(AppRoutes.vitalsNew);
-          }
-        },
-        tooltip: isSymptomTab ? 'Log symptom' : 'Log vital',
-        child: const Icon(Icons.add),
-      ),
+      floatingActionButton: const QuickLogFab(heroTag: 'fab_symptoms_vitals'),
     );
   }
 }

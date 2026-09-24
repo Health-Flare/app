@@ -42,5 +42,7 @@ cp "$CODEGEN_DIR/lib/daily_checkin_isar.g.dart"  "$REPO_ROOT/lib/data/models/dai
 cp "$CODEGEN_DIR/lib/appointment_isar.g.dart"    "$REPO_ROOT/lib/data/models/appointment_isar.g.dart"
 cp "$CODEGEN_DIR/lib/activity_entry_isar.g.dart" "$REPO_ROOT/lib/data/models/activity_entry_isar.g.dart"
 cp "$CODEGEN_DIR/lib/weather_snapshot_isar.g.dart" "$REPO_ROOT/lib/data/models/weather_snapshot_isar.g.dart"
+cp "$CODEGEN_DIR/lib/fluid_intake_isar.g.dart" "$REPO_ROOT/lib/data/models/fluid_intake_isar.g.dart"
+cp "$CODEGEN_DIR/lib/elimination_entry_isar.g.dart" "$REPO_ROOT/lib/data/models/elimination_entry_isar.g.dart"
 
 echo "✓ Done. Generated files written to lib/data/."

@@ -1,4 +1,6 @@
 import 'package:health_flare/models/activity_entry.dart';
+import 'package:health_flare/models/elimination_entry.dart';
+import 'package:health_flare/models/fluid_intake.dart';
 import 'package:health_flare/models/appointment.dart';
 import 'package:health_flare/models/daily_checkin.dart';
 import 'package:health_flare/models/dose_log.dart';
@@ -100,4 +102,21 @@ final class ActivityLogActivityItem extends ActivityItem {
   });
 
   final ActivityEntry entry;
+}
+
+/// A fluid intake record in the activity feed.
+final class FluidActivityItem extends ActivityItem {
+  const FluidActivityItem({required super.timestamp, required this.entry});
+
+  final FluidIntake entry;
+}
+
+/// A bowel or bladder record in the activity feed.
+final class EliminationActivityItem extends ActivityItem {
+  const EliminationActivityItem({
+    required super.timestamp,
+    required this.entry,
+  });
+
+  final EliminationEntry entry;
 }

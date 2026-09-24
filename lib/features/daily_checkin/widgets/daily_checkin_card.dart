@@ -99,9 +99,11 @@ class _CheckInSummaryCard extends StatelessWidget {
                 backgroundColor: _wellbeingColor(checkin.wellbeing, cs),
                 radius: 20,
                 child: Text(
-                  '${checkin.wellbeing}',
+                  checkin.wellbeing?.toString() ?? '–',
                   style: TextStyle(
-                    color: cs.onPrimary,
+                    color: checkin.wellbeing == null
+                        ? cs.onSurface
+                        : cs.onPrimary,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -133,7 +135,9 @@ class _CheckInSummaryCard extends StatelessWidget {
   }
 
   String _summary(DailyCheckin c) {
-    final parts = <String>['${c.wellbeing}/10'];
+    final parts = <String>[
+      c.wellbeing == null ? 'Not scored' : '${c.wellbeing}/10',
+    ];
     if (c.stressLevel != null) {
       parts.add('${_capitalize(c.stressLevel!)} stress');
     }
@@ -143,7 +147,8 @@ class _CheckInSummaryCard extends StatelessWidget {
   String _capitalize(String s) =>
       s.isEmpty ? s : '${s[0].toUpperCase()}${s.substring(1)}';
 
-  Color _wellbeingColor(int v, ColorScheme cs) {
+  Color _wellbeingColor(int? v, ColorScheme cs) {
+    if (v == null) return cs.surfaceContainerHighest;
     if (v >= 8) return Colors.green.shade600;
     if (v >= 5) return Colors.orange.shade600;
     return cs.error;

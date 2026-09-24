@@ -11,6 +11,7 @@ import 'package:health_flare/core/router/app_router.dart';
 import 'package:health_flare/models/symptom_entry.dart';
 import 'package:health_flare/models/user_condition.dart';
 import 'package:health_flare/models/vital_entry.dart';
+import 'package:health_flare/features/quick_log/widgets/quick_log_fab.dart';
 import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 
 class TrackingScreen extends ConsumerStatefulWidget {
@@ -44,8 +45,6 @@ class _TrackingScreenState extends ConsumerState<TrackingScreen>
     final vitals = ref.watch(activeProfileVitalEntriesProvider);
     final conditions = ref.watch(userConditionListProvider);
 
-    final tabIndex = _tabController.index;
-
     return Scaffold(
       appBar: HFAppBar(
         title: Column(
@@ -78,27 +77,7 @@ class _TrackingScreenState extends ConsumerState<TrackingScreen>
           _IllnessesList(conditions: conditions),
         ],
       ),
-      floatingActionButton: switch (tabIndex) {
-        0 => FloatingActionButton(
-          heroTag: 'fab_symptom',
-          onPressed: () => context.push(AppRoutes.symptomsNew),
-          tooltip: 'Log symptom',
-          child: const Icon(Icons.add),
-        ),
-        1 => FloatingActionButton(
-          heroTag: 'fab_vital',
-          onPressed: () => context.push(AppRoutes.vitalsNew),
-          tooltip: 'Log vital',
-          child: const Icon(Icons.add),
-        ),
-        2 => FloatingActionButton(
-          heroTag: 'fab_illness',
-          onPressed: () => context.push(AppRoutes.illness),
-          tooltip: 'Add condition',
-          child: const Icon(Icons.add),
-        ),
-        _ => null,
-      },
+      floatingActionButton: const QuickLogFab(heroTag: 'fab_tracking'),
     );
   }
 }

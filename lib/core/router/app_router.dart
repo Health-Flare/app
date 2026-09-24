@@ -225,7 +225,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: 'new',
                 name: 'medications-new',
-                builder: (context, state) => const MedicationFormScreen(),
+                builder: (context, state) => MedicationFormScreen(
+                  initialNotes: state.extra is String
+                      ? state.extra as String
+                      : null,
+                ),
               ),
               GoRoute(
                 path: ':mid/edit',
@@ -244,9 +248,18 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                   GoRoute(
                     path: 'dose/new',
                     name: 'medications-dose-new',
-                    builder: (context, state) => DoseLogFormScreen(
-                      medication: state.extra as Medication,
-                    ),
+                    builder: (context, state) {
+                      final extra = state.extra;
+                      if (extra is Medication) {
+                        return DoseLogFormScreen(medication: extra);
+                      }
+                      final map = extra as Map<String, dynamic>;
+                      return DoseLogFormScreen(
+                        medication: map['med'] as Medication,
+                        initialNotes: map['notes'] as String?,
+                        initialStatus: map['status'] as String?,
+                      );
+                    },
                   ),
                   GoRoute(
                     path: 'dose/:did/edit',
@@ -300,7 +313,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: 'new',
                 name: 'flare-new',
-                builder: (context, state) => const FlareFormScreen(),
+                builder: (context, state) => FlareFormScreen(
+                  initialNotes: state.extra is String
+                      ? state.extra as String
+                      : null,
+                ),
               ),
               GoRoute(
                 path: ':fid/edit',
@@ -325,7 +342,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: 'new',
                 name: 'checkin-new',
-                builder: (context, state) => const CheckInFormScreen(),
+                builder: (context, state) => CheckInFormScreen(
+                  initialNotes: state.extra is String
+                      ? state.extra as String
+                      : null,
+                ),
               ),
               GoRoute(
                 path: ':cid/edit',

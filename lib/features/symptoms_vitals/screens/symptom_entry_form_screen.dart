@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/core/providers/symptom_entry_provider.dart';
 import 'package:health_flare/core/providers/weather_provider.dart';
+import 'package:health_flare/features/quick_log/quick_log_parser.dart';
 import 'package:health_flare/features/shared/widgets/move_entry_action.dart';
 import 'package:health_flare/features/shared/widgets/weather_chip.dart';
 import 'package:health_flare/models/symptom_entry.dart';
@@ -33,6 +34,7 @@ class _SymptomEntryFormScreenState
   late TextEditingController _notesController;
   late FocusNode _nameFocusNode;
   int? _severity;
+  late List<String> _locations;
   late DateTime _loggedAt;
   bool _submitting = false;
   bool _nameError = false;
@@ -50,10 +52,12 @@ class _SymptomEntryFormScreenState
       _nameController = TextEditingController(text: e.name);
       _notesController = TextEditingController(text: e.notes ?? '');
       _severity = e.severity;
+      _locations = List.of(e.locations);
       _loggedAt = e.loggedAt;
     } else {
       _nameController = TextEditingController(text: widget.prefillText ?? '');
       _notesController = TextEditingController();
+      _locations = QuickLogParser.parseLocations(widget.prefillText ?? '');
       _loggedAt = DateTime.now();
     }
   }
@@ -110,6 +114,7 @@ class _SymptomEntryFormScreenState
             profileId: profileId,
             name: _nameController.text.trim(),
             severity: _severity!,
+            locations: _locations,
             loggedAt: _loggedAt,
             notes: notes,
             weatherSnapshot: _capturedWeather,
@@ -121,6 +126,7 @@ class _SymptomEntryFormScreenState
             widget.entry!.copyWith(
               name: _nameController.text.trim(),
               severity: _severity,
+              locations: _locations,
               loggedAt: _loggedAt,
               notes: notes,
               clearNotes: notes == null,
@@ -289,6 +295,32 @@ class _SymptomEntryFormScreenState
                   ),
                 );
               },
+            ),
+
+            const SizedBox(height: 24),
+
+            const _SectionLabel(label: 'Where'),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 4,
+              children: [
+                for (final label in QuickLogParser.bodyLocationLabels)
+                  FilterChip(
+                    label: Text(label),
+                    selected: _locations.contains(label),
+                    onSelected: (selected) => setState(() {
+                      if (selected) {
+                        _locations = [..._locations, label];
+                      } else {
+                        _locations = [
+                          for (final item in _locations)
+                            if (item != label) item,
+                        ];
+                      }
+                    }),
+                  ),
+              ],
             ),
 
             const SizedBox(height: 24),

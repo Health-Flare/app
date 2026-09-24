@@ -9,6 +9,7 @@ import 'package:health_flare/core/router/app_router.dart';
 import 'package:health_flare/models/journal_entry.dart';
 import 'package:health_flare/features/journal/widgets/journal_empty_state.dart';
 import 'package:health_flare/features/journal/widgets/journal_entry_card.dart';
+import 'package:health_flare/features/quick_log/widgets/quick_log_fab.dart';
 import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 
 /// The journal tab: shows all journal entries for the active profile,
@@ -105,11 +106,7 @@ class _JournalListScreenState extends ConsumerState<JournalListScreen> {
           : entries.isEmpty && searchQuery.isNotEmpty
           ? JournalEmptyState(isSearch: true, onClearSearch: _closeSearch)
           : _GroupedEntryList(entries: entries),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => context.push(AppRoutes.journalNew),
-        tooltip: 'New journal entry',
-        child: const Icon(Icons.edit_rounded),
-      ),
+      floatingActionButton: const QuickLogFab(heroTag: 'fab_journal'),
     );
   }
 }

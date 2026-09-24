@@ -6,7 +6,9 @@ enum VitalType {
   temperature,
   oxygenSaturation,
   respiratoryRate,
-  bloodGlucose;
+  bloodGlucose,
+  peakFlow,
+  steps;
 
   String get label => switch (this) {
     heartRate => 'Heart Rate',
@@ -17,6 +19,8 @@ enum VitalType {
     oxygenSaturation => 'Oxygen Saturation',
     respiratoryRate => 'Respiratory Rate',
     bloodGlucose => 'Blood Glucose',
+    peakFlow => 'Peak Flow',
+    steps => 'Steps',
   };
 
   String get defaultUnit => switch (this) {
@@ -28,6 +32,8 @@ enum VitalType {
     oxygenSaturation => '%',
     respiratoryRate => 'br/min',
     bloodGlucose => 'mmol/L',
+    peakFlow => 'L/min',
+    steps => 'steps',
   };
 
   bool get hasSecondaryValue => this == bloodPressure;
@@ -41,6 +47,8 @@ enum VitalType {
     oxygenSaturation => ['%'],
     respiratoryRate => ['br/min'],
     bloodGlucose => ['mmol/L', 'mg/dL'],
+    peakFlow => ['L/min'],
+    steps => ['steps'],
   };
 
   static VitalType fromString(String value) =>

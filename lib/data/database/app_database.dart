@@ -19,6 +19,8 @@ import 'package:health_flare/data/models/flare_isar.dart';
 import 'package:health_flare/data/models/daily_checkin_isar.dart';
 import 'package:health_flare/data/models/activity_entry_isar.dart';
 import 'package:health_flare/data/models/appointment_isar.dart';
+import 'package:health_flare/data/models/elimination_entry_isar.dart';
+import 'package:health_flare/data/models/fluid_intake_isar.dart';
 import 'package:health_flare/data/database/app_settings.dart';
 import 'package:health_flare/data/database/backup_service.dart';
 import 'package:health_flare/data/database/migration_runner.dart';
@@ -74,6 +76,8 @@ class IsarService {
         DailyCheckinIsarSchema,
         AppointmentIsarSchema,
         ActivityEntryIsarSchema,
+        FluidIntakeIsarSchema,
+        EliminationEntryIsarSchema,
       ],
       directory: directory ?? '',
       name: 'healthflare',

@@ -65,6 +65,7 @@ class _FakeSymptomList extends SymptomEntryListNotifier {
     required String name,
     required int severity,
     required DateTime loggedAt,
+    List<String> locations = const [],
     String? notes,
     int? userSymptomIsarId,
     int? userConditionIsarId,
@@ -937,14 +938,13 @@ void main() {
       expect(journalCalls, isEmpty);
     });
 
-    testWidgets('unknown medication text falls back to a journal entry', (
-      tester,
-    ) async {
+    testWidgets('pain without a named drug saves a symptom', (tester) async {
       await _openSheet(tester, medications: [_medication(7, 'Ibuprofen')]);
       await _typeAndSave(tester, 'Took something for the pain');
 
       expect(doseCalls, isEmpty);
-      expect(journalCalls, hasLength(1));
+      expect(journalCalls, isEmpty);
+      expect(symptomSaveCalls, hasLength(1));
     });
 
     testWidgets('sleep text with a duration saves a sleep entry', (

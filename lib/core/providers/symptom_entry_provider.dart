@@ -49,6 +49,7 @@ class SymptomEntryListNotifier extends Notifier<List<SymptomEntry>> {
     required String name,
     required int severity,
     required DateTime loggedAt,
+    List<String> locations = const [],
     String? notes,
     int? userSymptomIsarId,
     int? userConditionIsarId,
@@ -61,6 +62,7 @@ class SymptomEntryListNotifier extends Notifier<List<SymptomEntry>> {
       ..profileId = profileId
       ..name = name
       ..severity = severity
+      ..locations = locations
       ..loggedAt = loggedAt
       ..notes = notes
       ..userSymptomIsarId = userSymptomIsarId

@@ -1,3 +1,5 @@
+import 'package:health_flare/features/quick_log/quick_log_text.dart';
+import 'package:health_flare/models/activity_entry.dart';
 import 'package:health_flare/models/condition.dart';
 import 'package:health_flare/models/medication.dart';
 import 'package:health_flare/models/symptom.dart';
@@ -95,15 +97,14 @@ abstract final class QuickLogParser {
       );
     }
 
-    final weight = _number(lower, r'kg|lbs?\b');
-    if (weight != null) {
-      final pounds = RegExp(r'\d\s*lbs?\b').hasMatch(lower);
-      return ParsedVital(
-        vitalType: VitalType.weight,
-        value: weight,
-        unit: pounds ? 'lbs' : 'kg',
-      );
-    }
+    final peakFlow = _parsePeakFlow(lower);
+    if (peakFlow != null) return peakFlow;
+
+    final steps = _parseSteps(lower);
+    if (steps != null) return steps;
+
+    final weight = _parseWeight(lower);
+    if (weight != null) return weight;
 
     final heightImperial = _heightFeetInches(lower);
     if (heightImperial != null) return heightImperial;
@@ -215,17 +216,37 @@ abstract final class QuickLogParser {
     );
   }
 
-  /// Extracts a sleep duration ("slept 7 hours", "6.5 hrs"), or null.
+  /// Extracts a sleep duration ("slept 7 hours", "6.5 hrs", "20 minute nap"),
+  /// or null. When both an hours phrase and a minutes phrase are present,
+  /// the one that appears first in [text] wins.
   static Duration? parseSleepDuration(String text) {
-    final match = RegExp(
+    final lower = text.toLowerCase();
+    final hour = RegExp(
       r'(\d{1,2}(?:\.\d+)?)\s*(?:h\b|hrs?\b|hours?\b)',
-      caseSensitive: false,
-    ).firstMatch(text);
-    if (match == null) return null;
-    final hours = double.parse(match.group(1)!);
-    if (hours <= 0 || hours > 24) return null;
-    return Duration(minutes: (hours * 60).round());
+    ).firstMatch(lower);
+    final minute = RegExp(
+      r'(\d{1,3})\s*(?:mins?\b|minutes?\b)',
+    ).firstMatch(lower);
+    if (hour != null && (minute == null || hour.start <= minute.start)) {
+      final hours = double.parse(hour.group(1)!);
+      if (hours <= 0 || hours > 24) return null;
+      return Duration(minutes: (hours * 60).round());
+    }
+    if (minute != null) {
+      final mins = int.parse(minute.group(1)!);
+      if (mins <= 0 || mins > 24 * 60) return null;
+      return Duration(minutes: mins);
+    }
+    return null;
   }
+
+  /// True when the text is a daytime rest rather than a night's sleep.
+  static bool isNap(String text) => QuickLogText.mentionsAny(text, const [
+    'nap',
+    'napped',
+    'dozed',
+    'snooze',
+  ]);
 
   /// Extracts a bedtime/wake-time range ("8pm to 4am", "20:00 to 4:00",
   /// "8pm-4am"), anchored to [referenceTime]'s calendar date, or null when
@@ -349,6 +370,7 @@ abstract final class QuickLogParser {
     Condition? best;
     for (final c in candidates.values) {
       if (!textMentionsName(text, c.name)) continue;
+      if (QuickLogText.isNegated(text, c.name)) continue;
       if (best == null || c.name.trim().length > best.name.trim().length) {
         best = c;
       }
@@ -385,6 +407,7 @@ abstract final class QuickLogParser {
     Symptom? best;
     for (final s in candidates.values) {
       if (!textMentionsName(text, s.name)) continue;
+      if (QuickLogText.isNegated(text, s.name)) continue;
       if (best == null || s.name.trim().length > best.name.trim().length) {
         best = s;
       }
@@ -394,6 +417,7 @@ abstract final class QuickLogParser {
     // across distinct names with no real id of their own).
     for (final name in loggedNames) {
       if (!textMentionsName(text, name)) continue;
+      if (QuickLogText.isNegated(text, name)) continue;
       if (best == null || name.trim().length > best.name.trim().length) {
         best = Symptom(id: -1, name: name, global: false);
       }
@@ -438,7 +462,7 @@ abstract final class QuickLogParser {
       (['mild', 'slight', 'minor'], 3),
     ];
     for (final (keywords, value) in bands) {
-      if (keywords.any(lower.contains)) return value;
+      if (QuickLogText.mentionsAny(text, keywords)) return value;
     }
     return null;
   }
@@ -464,16 +488,16 @@ abstract final class QuickLogParser {
     return null;
   }
 
-  /// True if [text] mentions [name]: either as a whole-name substring, or
-  /// (for a multi-word [name]) via its capital-letter acronym written out
-  /// in full, e.g. "ME" for "Myalgic Encephalomyelitis". Names shorter than
-  /// 3 characters never match, to avoid common short words false-positiving.
-  /// The acronym check is case-sensitive against the original [text] (not
-  /// lower-cased) so a lowercase "me" never triggers it.
+  /// True if [text] mentions [name] as a whole word (with a short plural
+  /// suffix), or (for a multi-word [name]) via its capital-letter acronym
+  /// written out in full, e.g. "ME" for "Myalgic Encephalomyelitis". Names
+  /// shorter than 3 characters never match, to avoid common short words
+  /// false-positiving. The acronym check is case-sensitive against the
+  /// original [text] (not lower-cased) so a lowercase "me" never triggers it.
   static bool textMentionsName(String text, String name) {
     final trimmedName = name.trim();
     if (trimmedName.length < 3) return false;
-    if (text.toLowerCase().contains(trimmedName.toLowerCase())) return true;
+    if (QuickLogText.mentions(text, trimmedName)) return true;
     final acronym = _acronym(trimmedName);
     if (acronym.length < 2) return false;
     // RegExp.escape guards a name like "Lupus (SLE)": its acronym's first
@@ -508,4 +532,665 @@ abstract final class QuickLogParser {
     if (match == null) return null;
     return double.parse(match.group(1)!);
   }
+
+  static ParsedVital? _parseWeight(String lower) {
+    if (_isWeightChange(lower)) return null;
+
+    final stone = RegExp(
+      r'(\d{1,2})\s*(?:st|stone)\b(?:\s*(\d{1,2})(?:\s*(?:lb|lbs|pounds?))?)?',
+    ).firstMatch(lower);
+    if (stone != null) {
+      final stones = int.parse(stone.group(1)!);
+      final pounds = stone.group(2) != null ? int.parse(stone.group(2)!) : 0;
+      if (stones < 2 || stones > 40 || pounds < 0 || pounds > 13) return null;
+      return ParsedVital(
+        vitalType: VitalType.weight,
+        value: (stones * 14 + pounds).toDouble(),
+        unit: 'lbs',
+      );
+    }
+
+    final weight = _number(lower, r'kg|lbs?\b|pounds?\b');
+    if (weight == null) return null;
+    final pounds = RegExp(r'\d\s*(?:lbs?|pounds?)\b').hasMatch(lower);
+    return ParsedVital(
+      vitalType: VitalType.weight,
+      value: weight,
+      unit: pounds ? 'lbs' : 'kg',
+    );
+  }
+
+  /// A weight *change* ("lost 2kg", "gained 3 lbs", "put on 4kg") is not an
+  /// absolute reading.
+  static bool _isWeightChange(String lower) => RegExp(
+    r'\b(?:lost|lose|gained|gain|put\s+on|down|up)\b(?:\s+\w+){0,3}\s+\d',
+  ).hasMatch(lower);
+
+  static ParsedVital? _parsePeakFlow(String lower) {
+    final hasKeyword = RegExp(r'\b(?:peak\s*flow|pef|pefr)\b').hasMatch(lower);
+    final hasUnit = RegExp(r'\bl\s*/\s*min\b').hasMatch(lower);
+    if (!hasKeyword && !hasUnit) return null;
+    final match = RegExp(r'(\d{2,3})').firstMatch(lower);
+    if (match == null) return null;
+    final value = double.parse(match.group(1)!);
+    if (value < 50 || value > 900) return null;
+    return ParsedVital(
+      vitalType: VitalType.peakFlow,
+      value: value,
+      unit: 'L/min',
+    );
+  }
+
+  static ParsedVital? _parseSteps(String lower) {
+    final match = RegExp(
+      r'(\d{1,3}(?:,\d{3})+|\d{1,6})\s*steps?\b',
+    ).firstMatch(lower);
+    if (match == null) return null;
+    final value = double.parse(match.group(1)!.replaceAll(',', ''));
+    if (value < 0 || value > 100000) return null;
+    return ParsedVital(vitalType: VitalType.steps, value: value, unit: 'steps');
+  }
+
+  /// Dose status implied by the text, or null when it is an ordinary taken
+  /// dose (or not a dose at all).
+  ///
+  /// `missed` / `forgot` / `didn't take` / `ran out` → `missed`.
+  /// `skipped` / `skip` → `skipped`.
+  static String? parseDoseStatus(String text) {
+    final lower = text.toLowerCase();
+    if (QuickLogText.mentionsAny(text, const ['missed', 'forgot']) ||
+        RegExp(r"\b(?:did not|didn't)\s+take\b").hasMatch(lower) ||
+        RegExp(r'\bran out\b').hasMatch(lower)) {
+      return 'missed';
+    }
+    if (QuickLogText.mentionsAny(text, const ['skipped', 'skip'])) {
+      return 'skipped';
+    }
+    return null;
+  }
+
+  /// True when the text is about changing a prescription, not logging a dose.
+  static bool isDoseChange(String text) =>
+      QuickLogText.mentionsAny(text, const [
+        'upped',
+        'increased',
+        'reduced',
+        'lowered',
+        'stopped',
+        'started',
+        'switched',
+      ]);
+
+  static FlareIntent parseFlareIntent(String text) {
+    final hasFlare =
+        QuickLogText.mentions(text, 'flare') ||
+        QuickLogText.mentions(text, 'flaring');
+    if (!hasFlare) return FlareIntent.none;
+    final ending =
+        QuickLogText.mentionsAny(text, const [
+          'ended',
+          'settled',
+          'settling',
+        ]) ||
+        RegExp(
+          r"\b(?:coming out of|out of the flare|feels over|flare(?:'s)? over)\b",
+          caseSensitive: false,
+        ).hasMatch(text);
+    final starting =
+        QuickLogText.mentionsAny(text, const [
+          'started',
+          'starting',
+          'began',
+          'since',
+        ]) ||
+        RegExp(
+          r'\b(?:going into|kicking off)\b',
+          caseSensitive: false,
+        ).hasMatch(text);
+    if (ending && !starting) return FlareIntent.end;
+    if (starting) return FlareIntent.start;
+    return FlareIntent.none;
+  }
+
+  /// Activity type, duration and effort extracted from free text.
+  /// Fields stay null when the text doesn't say.
+  static ParsedActivity parseActivity(String text) {
+    return ParsedActivity(
+      type: _activityType(text),
+      durationMinutes: _activityDuration(text),
+      effortLevel: _effortLevel(text),
+    );
+  }
+
+  static ActivityType? _activityType(String text) {
+    if (QuickLogText.mentionsAny(text, const ['rest day', 'rested']) ||
+        RegExp(
+          r'\bstayed on the sofa\b',
+          caseSensitive: false,
+        ).hasMatch(text)) {
+      return ActivityType.rest;
+    }
+    if (QuickLogText.mentionsAny(text, const [
+          'walked',
+          'walking',
+          'went for a walk',
+        ]) ||
+        RegExp(r'\b(?:a|the)\s+walk\b', caseSensitive: false).hasMatch(text) ||
+        (QuickLogText.mentions(text, 'walk') &&
+            _activityDuration(text) != null)) {
+      return ActivityType.walking;
+    }
+    if (QuickLogText.mentionsAny(text, const ['met', 'visited']) &&
+        QuickLogText.mentionsAny(text, const ['friend', 'family'])) {
+      return ActivityType.social;
+    }
+    if (QuickLogText.mentionsAny(text, const ['work', 'shift']) &&
+        (RegExp(
+              r'\b(?:full day|on my feet|shift)\b',
+              caseSensitive: false,
+            ).hasMatch(text) ||
+            _activityDuration(text) != null)) {
+      return ActivityType.work;
+    }
+    if (QuickLogText.mentionsAny(text, const [
+      'housework',
+      'cleaning',
+      'gardening',
+      'hoovered',
+      'vacuumed',
+      'laundry',
+      'shopping',
+      'cooked',
+    ])) {
+      return ActivityType.household;
+    }
+    if (QuickLogText.mentionsAny(text, const [
+      'yoga',
+      'stretching',
+      'stretch',
+      'pilates',
+      'tai chi',
+      'swim',
+      'swimming',
+      'cycled',
+      'cycling',
+      'bike',
+      'ran',
+      'run',
+      'jog',
+      'jogged',
+      'exercise',
+      'exercised',
+      'gentle',
+    ])) {
+      return ActivityType.gentleExercise;
+    }
+    return null;
+  }
+
+  static int? _activityDuration(String text) {
+    final lower = text.toLowerCase();
+    if (RegExp(r'\bhalf an hour\b').hasMatch(lower)) return 30;
+    if (RegExp(r'\ban hour\b').hasMatch(lower)) return 60;
+    final duration = parseSleepDuration(text);
+    if (duration == null) return null;
+    return duration.inMinutes;
+  }
+
+  static int? _effortLevel(String text) {
+    if (QuickLogText.mentionsAny(text, const [
+      'exhausting',
+      'exhausted',
+      'wiped out',
+    ])) {
+      return 5;
+    }
+    if (QuickLogText.mentionsAny(text, const ['hard', 'tough']) ||
+        RegExp(r'\bhard going\b', caseSensitive: false).hasMatch(text)) {
+      return 4;
+    }
+    if (QuickLogText.mentionsAny(text, const ['moderate', 'ok'])) return 3;
+    if (QuickLogText.mentionsAny(text, const ['easy', 'light'])) return 2;
+    return null;
+  }
+
+  /// Reaction language on a meal, ignoring negated phrases ("no reaction").
+  static bool hasMealReaction(String text) {
+    const words = [
+      'reaction',
+      'reacted',
+      'bloated',
+      'bloating',
+      'gassy',
+      'cramp',
+      'cramps',
+      'hives',
+      'rash',
+      'itchy',
+      'swelling',
+      'diarrhoea',
+      'diarrhea',
+      'heartburn',
+      'reflux',
+    ];
+    if (QuickLogText.mentionsAnyAffirmative(text, words)) return true;
+    final lower = text.toLowerCase();
+    if (RegExp(r'\bsick after\b').hasMatch(lower) &&
+        !QuickLogText.isNegated(text, 'sick')) {
+      return true;
+    }
+    if (RegExp(r'\bupset stomach\b').hasMatch(lower) &&
+        !QuickLogText.isNegated(text, 'upset')) {
+      return true;
+    }
+    return false;
+  }
+
+  /// Explicit wellbeing number only. Qualitative words are never guessed.
+  static int? parseExplicitWellbeing(String text) {
+    final lower = text.toLowerCase();
+    final scale = RegExp(
+      r'(\d{1,2})\s*(?:/\s*10|out of 10)\b',
+    ).firstMatch(lower);
+    final labelled = RegExp(
+      r'\b(?:wellbeing|mood)\s*(?:about|is|was|of|at)?\s*:?\s*(\d{1,2})\b',
+    ).firstMatch(lower);
+    final match = scale ?? labelled;
+    if (match == null) return null;
+    final value = int.tryParse(match.group(1)!);
+    if (value == null || value < 1 || value > 10) return null;
+    return value;
+  }
+
+  /// "low" | "medium" | "high", or null when the text doesn't talk about stress.
+  static String? parseStress(String text) {
+    final lower = text.toLowerCase();
+    if (RegExp(r'\blow stress\b').hasMatch(lower) ||
+        QuickLogText.mentionsAny(text, const ['calm', 'relaxed'])) {
+      return 'low';
+    }
+    if (RegExp(r'\b(?:bit|some|a little|mildly)\s+stress').hasMatch(lower)) {
+      return 'medium';
+    }
+    if (RegExp(r'\bthrough the roof\b').hasMatch(lower) ||
+        RegExp(r'\b(?:really|very|so)\s+stress').hasMatch(lower)) {
+      return 'high';
+    }
+    if (QuickLogText.mentionsAny(text, const ['stressed', 'stress'])) {
+      return 'high';
+    }
+    return null;
+  }
+
+  /// Cycle phase, or null. "period" needs a second signal unless it opens
+  /// the sentence, so "a period of rest" does not match.
+  static String? parseCyclePhase(String text) {
+    if (QuickLogText.mentionsAny(text, const ['ovulation', 'ovulating'])) {
+      return 'ovulation';
+    }
+    if (QuickLogText.mentions(text, 'luteal')) return 'luteal';
+    if (QuickLogText.mentions(text, 'follicular')) return 'follicular';
+    if (_mentionsPeriod(text)) return 'period';
+    return null;
+  }
+
+  static bool _mentionsPeriod(String text) {
+    final lower = text.toLowerCase();
+    final period =
+        QuickLogText.mentions(text, 'period') ||
+        RegExp(r'\bmenstruat').hasMatch(lower);
+    if (!period) return false;
+    if (RegExp(r'^\s*period\b', caseSensitive: false).hasMatch(text)) {
+      return true;
+    }
+    return QuickLogText.mentionsAny(text, const [
+          'started',
+          'flow',
+          'cramp',
+          'cramps',
+          'heavy',
+          'light',
+          'spotting',
+        ]) ||
+        RegExp(r'\bday\s+\d+\b').hasMatch(lower);
+  }
+
+  /// Body locations, longest region first so "lower back" beats "back".
+  /// Side words immediately before a region are kept ("left hip").
+  static List<String> parseLocations(String text) {
+    final lower = text.toLowerCase();
+    final found = <String>[];
+    final consumed = <RegExpMatch>[];
+    for (final region in _bodyRegions) {
+      for (final synonym in region.synonyms) {
+        final match = RegExp(
+          '\\b(?:(left|right|both)\\s+)?${RegExp.escape(synonym)}\\b',
+        ).firstMatch(lower);
+        if (match == null) continue;
+        if (consumed.any(
+          (earlier) => match.start < earlier.end && earlier.start < match.end,
+        )) {
+          continue;
+        }
+        consumed.add(match);
+        final side = match.group(1);
+        if (side == null || side == 'both') {
+          found.add(region.label);
+        } else {
+          found.add('$side ${_singular(synonym)}');
+        }
+        break;
+      }
+    }
+    return found;
+  }
+
+  static String _singular(String synonym) {
+    if (synonym.endsWith('ies')) {
+      return '${synonym.substring(0, synonym.length - 3)}y';
+    }
+    if (synonym.endsWith('s') && !synonym.endsWith('ss')) {
+      return synonym.substring(0, synonym.length - 1);
+    }
+    return synonym;
+  }
+
+  static ParsedFluid? parseFluid(String text) {
+    final lower = text.toLowerCase();
+    final ml = RegExp(r'(\d+(?:\.\d+)?)\s*ml\b').firstMatch(lower);
+    if (ml != null) {
+      return ParsedFluid(
+        volumeMl: double.parse(ml.group(1)!).round(),
+        drinkType: _drinkType(lower),
+      );
+    }
+    final litres = RegExp(
+      r'(\d+(?:\.\d+)?)\s*(?:l\b|litres?\b|liters?\b)',
+    ).firstMatch(lower);
+    if (litres != null) {
+      return ParsedFluid(
+        volumeMl: (double.parse(litres.group(1)!) * 1000).round(),
+        drinkType: _drinkType(lower),
+      );
+    }
+    final wordLitres = RegExp(
+      '\\b($_numberWordPattern)\\s+(?:litres?|liters?)\\b',
+    ).firstMatch(lower);
+    if (wordLitres != null) {
+      final n = _numberWords[wordLitres.group(1)!]!;
+      return ParsedFluid(volumeMl: n * 1000, drinkType: _drinkType(lower));
+    }
+    final vessel = RegExp(
+      '\\b(?:(\\d+)|($_numberWordPattern))\\s+(glasses?|cups?|mugs?|bottles?)\\b',
+    ).firstMatch(lower);
+    if (vessel != null) {
+      final n = vessel.group(1) != null
+          ? int.parse(vessel.group(1)!)
+          : _numberWords[vessel.group(2)!]!;
+      final unit = vessel.group(3)!;
+      final each = unit.startsWith('glass')
+          ? 250
+          : unit.startsWith('cup')
+          ? 240
+          : unit.startsWith('mug')
+          ? 300
+          : 500;
+      return ParsedFluid(volumeMl: n * each, drinkType: _drinkType(lower));
+    }
+    return null;
+  }
+
+  static String? _drinkType(String lower) {
+    const types = ['electrolyte', 'water', 'coffee', 'tea', 'juice', 'milk'];
+    for (final type in types) {
+      if (lower.contains(type)) return type;
+    }
+    return null;
+  }
+
+  static ParsedElimination? parseElimination(String text) {
+    final bowel =
+        QuickLogText.mentionsAny(text, const [
+          'stool',
+          'stools',
+          'bowel',
+          'diarrhoea',
+          'diarrhea',
+          'constipated',
+          'constipation',
+          'bristol',
+          'poo',
+        ]) ||
+        RegExp(r'\bbm\b', caseSensitive: false).hasMatch(text) ||
+        RegExp(r'\bbowel movement\b', caseSensitive: false).hasMatch(text);
+    final bladder = QuickLogText.mentionsAny(text, const [
+      'urinating',
+      'peeing',
+      'bladder',
+      'wee',
+    ]);
+    if (!bowel && !bladder) return null;
+
+    final lower = text.toLowerCase();
+    final bristol = RegExp(
+      r'\bbristol(?:\s+type)?\s*([1-7])\b',
+    ).firstMatch(lower);
+    return ParsedElimination(
+      kind: bowel ? 'bowel' : 'bladder',
+      bristolType: bristol == null ? null : int.parse(bristol.group(1)!),
+      count: _eliminationCount(lower),
+      blood: RegExp(r'\bblood\b').hasMatch(lower),
+      urgency: QuickLogText.mentions(text, 'urgency'),
+    );
+  }
+
+  static int _eliminationCount(String lower) {
+    if (RegExp(r'\b(?:nothing|no movement)\b').hasMatch(lower)) return 0;
+    if (RegExp(r'\btwice\b').hasMatch(lower)) return 2;
+    if (RegExp(r'\bthrice\b').hasMatch(lower)) return 3;
+    final times =
+        RegExp(r'\bx\s*(\d+)\b').firstMatch(lower) ??
+        RegExp(r'\b(\d+)\s+times\b').firstMatch(lower);
+    if (times != null) return int.parse(times.group(1)!);
+    return 1;
+  }
+
+  /// Part-of-day defaults shared with relative-time parsing.
+  static const morningHour = 9;
+  static const afternoonHour = 15;
+  static const eveningHour = 18;
+
+  /// Shifts [now] when [text] names a relative day or clock time.
+  ///
+  /// Returns null when nothing was recognised. [preserveLastNight] keeps
+  /// the reference time for sleep entries: "last night" describes the
+  /// sleep itself, and the wake time stays at [now].
+  static DateTime? parseRelativeTimestamp(
+    String text,
+    DateTime now, {
+    bool preserveLastNight = false,
+  }) {
+    final lower = text.toLowerCase();
+    DateTime? day;
+    var hour = now.hour;
+    var minute = now.minute;
+    var touched = false;
+    var timeSet = false;
+
+    void setDay(DateTime value) {
+      day = DateTime(value.year, value.month, value.day);
+      touched = true;
+    }
+
+    void setClock(int h, int m) {
+      hour = h;
+      minute = m;
+      timeSet = true;
+      touched = true;
+    }
+
+    if (!preserveLastNight && RegExp(r'\blast night\b').hasMatch(lower)) {
+      setDay(now.subtract(const Duration(days: 1)));
+      if (!timeSet) setClock(21, 0);
+    }
+    if (RegExp(r'\byesterday\b').hasMatch(lower)) {
+      setDay(now.subtract(const Duration(days: 1)));
+    }
+    if (RegExp(r'\btomorrow\b').hasMatch(lower)) {
+      setDay(now.add(const Duration(days: 1)));
+    }
+    if (RegExp(r'\btoday\b').hasMatch(lower)) {
+      setDay(now);
+    }
+    if (RegExp(r'\bthis morning\b').hasMatch(lower)) {
+      setDay(now);
+      setClock(morningHour, 0);
+    } else if (RegExp(r'\bthis afternoon\b').hasMatch(lower)) {
+      setDay(now);
+      setClock(afternoonHour, 0);
+    } else if (RegExp(r'\bthis evening\b').hasMatch(lower)) {
+      setDay(now);
+      setClock(eveningHour, 0);
+    } else if (RegExp(r'\btonight\b').hasMatch(lower)) {
+      setDay(now);
+      setClock(21, 0);
+    }
+
+    final ago = RegExp(r'\b(\d+)\s+days?\s+ago\b').firstMatch(lower);
+    if (ago != null) {
+      setDay(now.subtract(Duration(days: int.parse(ago.group(1)!))));
+    }
+
+    final weekday = RegExp(
+      r'\b(next|last|on)\s+(monday|tuesday|wednesday|thursday|friday|saturday|sunday)\b',
+    ).firstMatch(lower);
+    if (weekday != null) {
+      final kind = weekday.group(1)!;
+      final target = _weekdays[weekday.group(2)!]!;
+      var delta = (target - now.weekday) % 7;
+      if (delta < 0) delta += 7;
+      if (kind == 'next') {
+        if (delta == 0) delta = 7;
+      } else if (kind == 'last') {
+        delta = delta == 0 ? -7 : delta - 7;
+      }
+      setDay(DateTime(now.year, now.month, now.day).add(Duration(days: delta)));
+      if (!timeSet) setClock(morningHour, 0);
+    }
+
+    final at = RegExp(
+      r'\bat\s+(\d{1,2}(?::\d{2})?\s*(?:am|pm)?)\b',
+    ).firstMatch(lower);
+    if (at != null) {
+      final clock = _parseLooseClock(at.group(1)!);
+      if (clock != null) setClock(clock.$1, clock.$2);
+    }
+
+    if (!touched) return null;
+    final date = day ?? DateTime(now.year, now.month, now.day);
+    return DateTime(date.year, date.month, date.day, hour, minute);
+  }
+
+  static (int, int)? _parseLooseClock(String token) {
+    final strict = _parseClockTime(token);
+    if (strict != null) return strict;
+    final bare = RegExp(r'^(\d{1,2})$').firstMatch(token.trim());
+    if (bare == null) return null;
+    final hour = int.parse(bare.group(1)!);
+    if (hour > 23) return null;
+    return (hour, 0);
+  }
+
+  static const _weekdays = {
+    'monday': DateTime.monday,
+    'tuesday': DateTime.tuesday,
+    'wednesday': DateTime.wednesday,
+    'thursday': DateTime.thursday,
+    'friday': DateTime.friday,
+    'saturday': DateTime.saturday,
+    'sunday': DateTime.sunday,
+  };
+
+  static const _numberWords = {
+    'a': 1,
+    'an': 1,
+    'one': 1,
+    'two': 2,
+    'three': 3,
+    'four': 4,
+    'five': 5,
+    'six': 6,
+    'seven': 7,
+    'eight': 8,
+    'nine': 9,
+    'ten': 10,
+  };
+
+  static String get _numberWordPattern => _numberWords.keys.join('|');
+
+  static const _bodyRegions = [
+    _BodyRegion('lower back', ['lower back', 'lumbar']),
+    _BodyRegion('upper back', ['upper back']),
+    _BodyRegion('hands', ['fingers', 'finger', 'hands', 'hand']),
+    _BodyRegion('feet', ['ankles', 'ankle', 'feet', 'foot']),
+    _BodyRegion('knees', ['knees', 'knee']),
+    _BodyRegion('wrists', ['wrists', 'wrist']),
+    _BodyRegion('hips', ['hips', 'hip']),
+    _BodyRegion('shoulders', ['shoulders', 'shoulder']),
+    _BodyRegion('elbows', ['elbows', 'elbow']),
+    _BodyRegion('neck', ['neck']),
+    _BodyRegion('head', ['forehead', 'temples', 'temple', 'head']),
+    _BodyRegion('chest', ['chest']),
+    _BodyRegion('abdomen', ['abdomen', 'stomach', 'belly']),
+    _BodyRegion('back', ['back']),
+    _BodyRegion('arms', ['arms', 'arm']),
+    _BodyRegion('legs', ['legs', 'leg']),
+    _BodyRegion('throat', ['throat']),
+  ];
+
+  /// Canonical body-region labels, for the symptom form picker.
+  static List<String> get bodyLocationLabels =>
+      _bodyRegions.map((region) => region.label).toList();
+}
+
+/// Whether flare language starts a flare, ends one, or is just a mention.
+enum FlareIntent { start, end, none }
+
+class ParsedActivity {
+  const ParsedActivity({this.type, this.durationMinutes, this.effortLevel});
+
+  final ActivityType? type;
+  final int? durationMinutes;
+  final int? effortLevel;
+}
+
+class ParsedFluid {
+  const ParsedFluid({required this.volumeMl, this.drinkType});
+
+  final int volumeMl;
+  final String? drinkType;
+}
+
+class ParsedElimination {
+  const ParsedElimination({
+    required this.kind,
+    required this.count,
+    required this.blood,
+    required this.urgency,
+    this.bristolType,
+  });
+
+  /// `bowel` or `bladder`.
+  final String kind;
+  final int? bristolType;
+  final int count;
+  final bool blood;
+  final bool urgency;
+}
+
+class _BodyRegion {
+  const _BodyRegion(this.label, this.synonyms);
+
+  final String label;
+  final List<String> synonyms;
 }

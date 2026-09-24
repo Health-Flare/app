@@ -1,4 +1,5 @@
 import 'package:health_flare/features/quick_log/quick_log_parser.dart';
+import 'package:health_flare/features/quick_log/quick_log_text.dart';
 import 'package:health_flare/models/condition.dart';
 import 'package:health_flare/models/symptom.dart';
 import 'package:health_flare/models/user_condition.dart';
@@ -15,38 +16,47 @@ enum QuickLogEntryType {
   sleep,
   condition,
   journal,
+  flare,
+  mood,
+  cycle,
+  hydration,
+  bowel,
 }
 
 /// Offline, keyword-based classifier for freeform quick-log text.
 ///
-/// Returns the best-guess [QuickLogEntryType], or null when the text is
-/// too short or too ambiguous to classify confidently.
+/// Scores each category and picks the highest. Ties break in
+/// [_tieBreak] order (the historical first-match order, with newer
+/// types inserted where their signals are more specific). Generic verbs
+/// such as "took" never win on their own.
 ///
-/// Priority order (first match wins):
-///   Vital > Sleep > Medication > Doctor > Meal > Activity > Condition >
-///   Symptom > Journal (fallback)
+/// Returns null when the text is too short or too ambiguous to classify,
+/// except for unambiguous vital and fluid readings, which skip the
+/// word-count gate.
 abstract final class QuickLogClassifier {
-  /// Minimum word count before classification is attempted.
   static const _minWords = 3;
 
-  /// Classify [text] and return a suggested [QuickLogEntryType].
-  ///
-  /// Returns null when the text has fewer than [_minWords] words, unless it
-  /// confidently matches a vital reading (e.g. "74kg", "144cm", "4'8""):
-  /// those numeric+unit patterns are unambiguous enough to skip the
-  /// word-count gate that guards the fuzzier keyword matches below.
-  ///
-  /// [conditionCatalog]/[trackedConditions] and [symptomCatalog]/
-  /// [trackedSymptoms] let Condition and Symptom classification recognise a
-  /// known or previously-tracked name even when it isn't in the generic
-  /// keyword lists below: mirroring how [QuickLogParser.matchMedication]
-  /// checks the profile's real medications at save time. [loggedSymptomNames]
-  /// covers the much more common case of a symptom typed into the standalone
-  /// symptom entry form, which never creates a [UserSymptom] record at all
-  /// (see `recentSymptomNamesProvider`): without it, a symptom logged that
-  /// way is never recognised again. All of these default to empty so callers
-  /// that only care about generic keyword classification (e.g. existing unit
-  /// tests) don't need to pass them.
+  /// Minimum score that counts as a real signal. Below this the text
+  /// falls through to Journal (or null, when it is too short).
+  static const _threshold = 20;
+
+  static const _tieBreak = [
+    QuickLogEntryType.vital,
+    QuickLogEntryType.sleep,
+    QuickLogEntryType.medication,
+    QuickLogEntryType.doctorVisit,
+    QuickLogEntryType.hydration,
+    QuickLogEntryType.meal,
+    QuickLogEntryType.activity,
+    QuickLogEntryType.flare,
+    QuickLogEntryType.condition,
+    QuickLogEntryType.bowel,
+    QuickLogEntryType.symptom,
+    QuickLogEntryType.mood,
+    QuickLogEntryType.cycle,
+    QuickLogEntryType.journal,
+  ];
+
   static QuickLogEntryType? classify(
     String text, {
     List<Condition> conditionCatalog = const [],
@@ -54,189 +64,427 @@ abstract final class QuickLogClassifier {
     List<Symptom> symptomCatalog = const [],
     List<UserSymptom> trackedSymptoms = const [],
     List<String> loggedSymptomNames = const [],
+    List<String> medicationNames = const [],
+    bool cycleTrackingEnabled = false,
+    bool bowelTrackingEnabled = false,
   }) {
     final trimmed = text.trim();
     if (trimmed.isEmpty) return null;
 
-    final lower = trimmed.toLowerCase();
-    if (_matchesVital(lower)) return QuickLogEntryType.vital;
+    final scores = _score(
+      trimmed,
+      conditionCatalog: conditionCatalog,
+      trackedConditions: trackedConditions,
+      symptomCatalog: symptomCatalog,
+      trackedSymptoms: trackedSymptoms,
+      loggedSymptomNames: loggedSymptomNames,
+      medicationNames: medicationNames,
+      cycleTrackingEnabled: cycleTrackingEnabled,
+      bowelTrackingEnabled: bowelTrackingEnabled,
+    );
 
-    final wordCount = trimmed.split(RegExp(r'\s+')).length;
-    if (wordCount < _minWords) return null;
+    QuickLogEntryType? best;
+    var bestScore = _threshold - 1;
+    for (final type in _tieBreak) {
+      final score = scores[type] ?? 0;
+      if (score > bestScore) {
+        best = type;
+        bestScore = score;
+      }
+    }
 
-    if (_matchesSleep(lower)) return QuickLogEntryType.sleep;
-    if (_matchesMedication(lower)) return QuickLogEntryType.medication;
-    if (_matchesDoctor(lower)) return QuickLogEntryType.doctorVisit;
-    if (_matchesMeal(lower)) return QuickLogEntryType.meal;
-    if (_matchesActivity(lower)) return QuickLogEntryType.activity;
-    if (_matchesConditionKeyword(lower) ||
-        QuickLogParser.matchCondition(
-              trimmed,
-              conditionCatalog,
-              trackedConditions,
-            ) !=
-            null) {
-      return QuickLogEntryType.condition;
+    if (best == null) {
+      final words = trimmed.split(RegExp(r'\s+')).length;
+      if (words < _minWords) return null;
+      return QuickLogEntryType.journal;
     }
-    if (_matchesSymptom(lower) ||
-        QuickLogParser.matchSymptom(
-              trimmed,
-              symptomCatalog,
-              trackedSymptoms,
-              loggedNames: loggedSymptomNames,
-            ) !=
-            null) {
-      return QuickLogEntryType.symptom;
-    }
-    return QuickLogEntryType.journal;
+    return best;
   }
 
-  // ── Pattern matchers ─────────────────────────────────────────────────────
+  static Map<QuickLogEntryType, int> _score(
+    String text, {
+    required List<Condition> conditionCatalog,
+    required List<UserCondition> trackedConditions,
+    required List<Symptom> symptomCatalog,
+    required List<UserSymptom> trackedSymptoms,
+    required List<String> loggedSymptomNames,
+    required List<String> medicationNames,
+    required bool cycleTrackingEnabled,
+    required bool bowelTrackingEnabled,
+  }) {
+    final scores = {for (final type in QuickLogEntryType.values) type: 0};
+    final lower = text.toLowerCase();
 
-  static bool _matchesVital(String lower) {
-    // Blood pressure and heart rate/pulse share bounds-checked parsing with
-    // QuickLogParser, so an unbounded fraction ("3/4 of a sandwich") or a
-    // typed date ("9/17") never lights up a chip the save step would then
-    // reject, and "HR 72"/"Pulse 72" (no "bpm" unit) still get one.
-    if (QuickLogParser.parseBloodPressure(lower) != null) return true;
-    if (QuickLogParser.parseHeartRate(lower) != null) return true;
-    // Height as feet'inches (e.g. "4'8"" or "4'8")
-    if (RegExp(r'''\d{1,2}\s*'\s*\d{1,2}\s*"?''').hasMatch(lower)) {
-      return true;
+    if (QuickLogParser.parseVitals(text).isNotEmpty) {
+      scores[QuickLogEntryType.vital] = 100;
     }
-    // Number + recognised unit (including height in cm and respiratory rate
-    // in br/min: without this branch, "Respiratory rate 16 br/min" falls
-    // through to the word-count-gated keyword checks below and gets
-    // misclassified as Meal, since "rate" contains the substring "ate").
-    return RegExp(
-      r'\d+(\.\d+)?\s*'
-      r'(mmhg|°c|°f|degrees?|%|kg|lbs?|lb|mmol|mg/dl|cm|'
-      r'br/min|breaths?\s*(?:per\s*minute|/\s*min))',
-      caseSensitive: false,
+
+    scores[QuickLogEntryType.sleep] = _sleepScore(text);
+    scores[QuickLogEntryType.medication] = _medicationScore(
+      text,
+      medicationNames,
+    );
+    scores[QuickLogEntryType.doctorVisit] = _doctorScore(text);
+    scores[QuickLogEntryType.activity] = _activityScore(text);
+    scores[QuickLogEntryType.condition] = _conditionScore(
+      text,
+      conditionCatalog,
+      trackedConditions,
+    );
+    scores[QuickLogEntryType.symptom] = _symptomScore(
+      text,
+      symptomCatalog,
+      trackedSymptoms,
+      loggedSymptomNames,
+    );
+    scores[QuickLogEntryType.flare] = _flareScore(text);
+    scores[QuickLogEntryType.meal] = _mealScore(
+      text,
+      lower,
+      symptomScore: scores[QuickLogEntryType.symptom]!,
+    );
+    scores[QuickLogEntryType.hydration] = _hydrationScore(
+      text,
+      mealScore: scores[QuickLogEntryType.meal]!,
+    );
+    scores[QuickLogEntryType.mood] = _moodScore(
+      text,
+      symptomScore: scores[QuickLogEntryType.symptom]!,
+      conditionScore: scores[QuickLogEntryType.condition]!,
+    );
+    if (cycleTrackingEnabled) {
+      scores[QuickLogEntryType.cycle] = _cycleScore(text);
+    }
+    if (bowelTrackingEnabled) {
+      scores[QuickLogEntryType.bowel] = _bowelScore(text);
+    }
+
+    // A bare "flare" is a symptom. Start/end language is a flare, and
+    // should outrank the symptom hit on the same word.
+    if ((scores[QuickLogEntryType.flare] ?? 0) >= _threshold) {
+      scores[QuickLogEntryType.symptom] = 0;
+    }
+
+    return scores;
+  }
+
+  static int _sleepScore(String text) {
+    if (QuickLogText.mentionsAny(text, const [
+      'slept',
+      'sleep',
+      'nap',
+      'napped',
+      'insomnia',
+      'overslept',
+      'dozed',
+      'snooze',
+    ])) {
+      return 50;
+    }
+    if (QuickLogText.mentionsAny(text, const ['woke up', 'woke', 'waking']) &&
+        !QuickLogText.mentionsAny(text, const ['walk', 'walked', 'walking'])) {
+      return 45;
+    }
+    return 0;
+  }
+
+  static int _medicationScore(String text, List<String> medicationNames) {
+    if (QuickLogParser.isDoseChange(text) &&
+        QuickLogParser.parseDoseStatus(text) == null &&
+        !QuickLogText.mentionsAny(text, const ['took', 'taken'])) {
+      return 0;
+    }
+
+    var score = 0;
+    if (QuickLogText.mentionsAny(text, const ['took', 'taken'])) score = 8;
+    if (QuickLogText.mentionsAny(text, const [
+          'pill',
+          'tablet',
+          'capsule',
+          'medication',
+          'medicine',
+          'prescribed',
+        ]) ||
+        RegExp(r'\d+\s*mg\b', caseSensitive: false).hasMatch(text)) {
+      score = 55;
+    }
+    if (QuickLogText.mentionsAny(text, const [
+      'paracetamol',
+      'ibuprofen',
+      'naproxen',
+      'prednisolone',
+      'methotrexate',
+      'hydroxychloroquine',
+    ])) {
+      score = 58;
+    }
+    for (final name in medicationNames) {
+      if (QuickLogParser.textMentionsName(text, name)) {
+        score = 70;
+        break;
+      }
+    }
+    if (QuickLogParser.parseDoseStatus(text) != null && score < 55) {
+      score = score < 8 ? 0 : 55;
+    }
+    return score;
+  }
+
+  static int _doctorScore(String text) {
+    final physio =
+        QuickLogText.mentions(text, 'physio') ||
+        QuickLogText.mentions(text, 'physiotherapy');
+    final physioIsExercise =
+        physio &&
+        QuickLogText.mentionsAny(text, const [
+          'exercise',
+          'stretch',
+          'routine',
+        ]);
+    if (physioIsExercise) return 0;
+
+    if (RegExp(r'\bdr\.?\b', caseSensitive: false).hasMatch(text) ||
+        QuickLogText.mentionsAny(text, const [
+          'doctor',
+          'appointment',
+          'clinic',
+          'hospital',
+          'consultant',
+          'specialist',
+          'rheumatology',
+          'rheumatologist',
+        ]) ||
+        (physio && !physioIsExercise)) {
+      return 50;
+    }
+    return 0;
+  }
+
+  static int _activityScore(String text) {
+    final lower = text.toLowerCase();
+    final ranOut = RegExp(r'\bran out\b').hasMatch(lower);
+    final walked =
+        QuickLogText.mentionsAny(text, const [
+          'walked',
+          'walking',
+          'went for a walk',
+        ]) ||
+        RegExp(r'\b(?:a|the)\s+walk\b', caseSensitive: false).hasMatch(text) ||
+        (QuickLogText.mentions(text, 'walk') &&
+            QuickLogParser.parseActivity(text).durationMinutes != null);
+    final movement = QuickLogText.mentionsAny(text, const [
+      'yoga',
+      'stretching',
+      'stretch',
+      'exercise',
+      'exercised',
+      'rest day',
+      'rested',
+      'housework',
+      'cleaning',
+      'gardening',
+      'gentle',
+      'activity',
+      'minutes of',
+      'jog',
+      'jogged',
+      'swim',
+      'swimming',
+      'cycled',
+      'cycling',
+      'bike',
+      'pilates',
+      'tai chi',
+      'hoovered',
+      'vacuumed',
+      'laundry',
+      'shopping',
+    ]);
+    final ran = !ranOut && QuickLogText.mentionsAny(text, const ['ran', 'run']);
+    if (walked || movement || ran) return 46;
+
+    final social =
+        QuickLogText.mentionsAny(text, const ['met', 'visited']) &&
+        QuickLogText.mentionsAny(text, const ['friend', 'family']);
+    if (social) return 46;
+
+    final work =
+        QuickLogText.mentionsAny(text, const ['work', 'shift']) &&
+        (QuickLogParser.parseActivity(text).durationMinutes != null ||
+            QuickLogParser.parseActivity(text).effortLevel != null ||
+            RegExp(
+              r'\b(?:full day|on my feet|shift)\b',
+              caseSensitive: false,
+            ).hasMatch(text));
+    if (work) return 46;
+
+    if (QuickLogText.mentions(text, 'physio') &&
+        QuickLogText.mentionsAny(text, const [
+          'exercise',
+          'stretch',
+          'routine',
+        ])) {
+      return 50;
+    }
+    return 0;
+  }
+
+  static int _conditionScore(
+    String text,
+    List<Condition> catalog,
+    List<UserCondition> tracked,
+  ) {
+    if (QuickLogParser.matchCondition(text, catalog, tracked) != null) {
+      return 72;
+    }
+    if (QuickLogText.mentionsAny(text, const [
+      'diagnosed',
+      'diagnosis',
+      'remission',
+      'relapse',
+      'relapsed',
+    ])) {
+      return 55;
+    }
+    return 0;
+  }
+
+  static int _symptomScore(
+    String text,
+    List<Symptom> catalog,
+    List<UserSymptom> tracked,
+    List<String> loggedNames,
+  ) {
+    const generic = [
+      'pain',
+      'ache',
+      'hurt',
+      'sore',
+      'tired',
+      'fatigue',
+      'nausea',
+      'nauseated',
+      'nauseous',
+      'dizzy',
+      'swollen',
+      'swelling',
+      'stiff',
+      'stiffness',
+      'flare',
+      'itchy',
+      'rash',
+      'fever',
+      'headache',
+      'migraine',
+      'cramping',
+      'cramp',
+    ];
+    final affirmativeGeneric = generic.where(
+      (word) => QuickLogText.mentionsAffirmative(text, word),
+    );
+    if (affirmativeGeneric.isNotEmpty) return 46;
+
+    final matched = QuickLogParser.matchSymptom(
+      text,
+      catalog,
+      tracked,
+      loggedNames: loggedNames,
+    );
+    if (matched != null && !QuickLogText.isNegated(text, matched.name)) {
+      return 74;
+    }
+    return 0;
+  }
+
+  static int _flareScore(String text) {
+    // Above a catalogue condition (72) so "Lupus flare kicking off" is a
+    // flare that can still link the condition, not a condition-only save.
+    return QuickLogParser.parseFlareIntent(text) == FlareIntent.none ? 0 : 80;
+  }
+
+  static int _mealScore(
+    String text,
+    String lower, {
+    required int symptomScore,
+  }) {
+    if (RegExp(
+      r'\b(?:skipping|skipped)\s+(?:breakfast|lunch|dinner|supper)\b',
+    ).hasMatch(lower)) {
+      return 0;
+    }
+
+    final strong =
+        QuickLogText.mentionsAny(text, const [
+          'ate',
+          'snack',
+          'supper',
+          'brunch',
+          'grilled',
+          'salad',
+          'soup',
+          'sandwich',
+          'meal',
+          'food',
+        ]) ||
+        RegExp(
+          r'\beating\s+(?:a\s+|the\s+|some\s+|my\s+)?[a-z]{3,}',
+        ).hasMatch(lower) ||
+        RegExp(
+          r'\bfor\s+(?:breakfast|lunch|dinner|supper|brunch)\b',
+        ).hasMatch(lower);
+
+    if (strong) return 52;
+
+    final mentionsMealtime = QuickLogText.mentionsAny(text, const [
+      'breakfast',
+      'lunch',
+      'dinner',
+    ]);
+    if (!mentionsMealtime) return 0;
+
+    final afterMeal = RegExp(
+      r'\bafter\s+(?:breakfast|lunch|dinner|eating)\b',
     ).hasMatch(lower);
+    if (afterMeal && symptomScore >= _threshold) return 12;
+    if (afterMeal) return 40;
+    return 48;
   }
 
-  // Checked before medication so "took a nap" is not read as a dose ('took'),
-  // and before meal so "slept badly after dinner" stays a sleep entry.
-  static bool _matchesSleep(String lower) => _any(lower, [
-    'slept',
-    'sleep',
-    'nap ',
-    'napped',
-    'a nap',
-    'insomnia',
-    'woke up',
-    'woke ',
-    'waking',
-    'overslept',
-  ]);
+  static int _hydrationScore(String text, {required int mealScore}) {
+    if (mealScore >= 52) return 0;
+    if (QuickLogParser.parseFluid(text) == null) return 0;
+    return 60;
+  }
 
-  static bool _matchesMedication(String lower) => _any(lower, [
-    'took',
-    'taken',
-    ' mg',
-    'pill',
-    'tablet',
-    'capsule',
-    'medication',
-    'medicine',
-    'prescribed',
-    'paracetamol',
-    'ibuprofen',
-    'naproxen',
-    'prednisolone',
-    'methotrexate',
-    'hydroxychloroquine',
-  ]);
+  static int _moodScore(
+    String text, {
+    required int symptomScore,
+    required int conditionScore,
+  }) {
+    if (symptomScore >= 70 || conditionScore >= 70) return 0;
+    if (QuickLogText.mentionsAny(text, const [
+      'anxious',
+      'stressed',
+      'stress',
+      'mood',
+      'wellbeing',
+      'calm',
+      'relaxed',
+    ])) {
+      return 44;
+    }
+    if (QuickLogText.mentions(text, 'low') &&
+        QuickLogText.mentionsAny(text, const ['feeling', 'felt', 'mood'])) {
+      return 44;
+    }
+    return 0;
+  }
 
-  static bool _matchesDoctor(String lower) =>
-      lower.contains('dr.') ||
-      lower.contains('dr ') ||
-      _any(lower, [
-        'doctor',
-        'appointment',
-        'clinic',
-        'hospital',
-        'physio',
-        'consultant',
-        'specialist',
-        'rheumatol',
-        'saw dr',
-      ]);
+  static int _cycleScore(String text) {
+    return QuickLogParser.parseCyclePhase(text) == null ? 0 : 54;
+  }
 
-  static bool _matchesMeal(String lower) => _any(lower, [
-    'ate',
-    'drank',
-    'drink',
-    'breakfast',
-    'lunch',
-    'dinner',
-    'snack',
-    'eating',
-    'supper',
-    'brunch',
-    'meal',
-    'food',
-    'grilled',
-    'salad',
-    'soup',
-    'sandwich',
-  ]);
-
-  // Generic condition/diagnosis-status language: independent of whether the
-  // named condition itself is in the catalogue or already tracked, mirroring
-  // how _matchesSymptom's generic word list works alongside catalogue-aware
-  // matching.
-  static bool _matchesConditionKeyword(String lower) =>
-      _any(lower, ['diagnosed', 'diagnosis', 'remission', 'relapse']);
-
-  static bool _matchesSymptom(String lower) => _any(lower, [
-    'pain',
-    'ache',
-    'hurt',
-    'sore',
-    'tired',
-    'fatigue',
-    'nausea',
-    'nauseated',
-    'nauseous',
-    'dizzy',
-    'swollen',
-    'swelling',
-    'stiff',
-    'stiffness',
-    'flare',
-    'itchy',
-    'rash',
-    'fever',
-    'headache',
-    'migraine',
-    'cramping',
-    'cramp',
-  ]);
-
-  static bool _matchesActivity(String lower) => _any(lower, [
-    'walked',
-    'walking',
-    'went for a walk',
-    'yoga',
-    'stretching',
-    'exercise',
-    'exercised',
-    'rest day',
-    'rested',
-    'housework',
-    'cleaning',
-    'gardening',
-    'physio',
-    'physiotherapy',
-    'gentle',
-    'activity',
-    'minutes of',
-    'min walk',
-    'min run',
-  ]);
-
-  static bool _any(String text, List<String> keywords) =>
-      keywords.any(text.contains);
+  static int _bowelScore(String text) {
+    return QuickLogParser.parseElimination(text) == null ? 0 : 54;
+  }
 }

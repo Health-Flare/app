@@ -23,19 +23,21 @@ Feature: Dashboard
   # Quick-entry sheet
   # ---------------------------------------------------------------------------
 
-  Scenario: Tapping the FAB opens a quick-entry choice sheet
+  Scenario: Tapping the FAB opens Quick Log
     When I tap the log-entry FAB
-    Then a sheet appears offering "Journal entry" and "Sleep" options
+    Then the quick log sheet slides up
+    And the freeform text field is focused
+    And the primary button reads "Add to Journal"
 
-  Scenario: Choosing "Journal entry" opens the journal composer
-    When I tap the log-entry FAB
-    And I choose "Journal entry"
-    Then the journal composer screen is shown
-
-  Scenario: Choosing "Sleep" opens the sleep entry screen
-    When I tap the log-entry FAB
-    And I choose "Sleep"
-    Then the sleep entry screen is shown
+  Scenario: The same Quick Log sheet opens from every main tab
+    When I open Quick Log from the Tracking tab
+    And I open Quick Log from the Medications tab
+    And I open Quick Log from the Meals tab
+    And I open Quick Log from the Journal tab
+    And I open Quick Log from the Sleep tab
+    And I open Quick Log from Reports
+    Then each one is the same freeform Quick Log sheet
+    And none of those tabs still offers a type-specific add button as its primary FAB
 
   # ---------------------------------------------------------------------------
   # Activity feed: content
