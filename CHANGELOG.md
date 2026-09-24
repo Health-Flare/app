@@ -50,7 +50,7 @@ Subsection meanings (from Keep a Changelog):
 - The export screen now says plainly who can read an exported file and what Health Flare does (and doesn't) do with it.
 
 ### Changed
-- _Nothing yet._
+- The Settings button now appears in the top bar on every screen, just left of the profile icon, instead of only on the Dashboard.
 
 ### Deprecated
 - _Nothing yet._

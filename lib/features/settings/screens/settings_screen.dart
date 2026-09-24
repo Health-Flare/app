@@ -28,7 +28,10 @@ class SettingsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: const HFAppBar(title: Text('Settings')),
+      appBar: const HFAppBar(
+        title: Text('Settings'),
+        showSettingsButton: false,
+      ),
       body: ListView(
         children: [
           // ── Data & backup ─────────────────────────────────────────────────

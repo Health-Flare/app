@@ -201,6 +201,19 @@ Feature: UI Patterns and Design Language
     Then the profile icon occupies the rightmost position in the trailing action row
     And all other utility actions (e.g. search, filter, overflow menu) appear to its left
 
+  Scenario: A Settings button is always available immediately left of the profile icon
+    Given any screen that shows the profile icon in the AppBar
+    And the screen is not the Settings screen itself
+    Then a Settings (gear) button is shown directly to the left of the profile icon
+    And any screen-specific utility actions appear to the left of the Settings button
+    And tapping it opens the Settings screen
+    And the Settings button does not count toward the overflow-menu threshold for utility actions
+
+  Scenario: The Settings screen does not show its own Settings button
+    Given I am on the Settings screen
+    Then no Settings button is shown in the AppBar
+    And the profile icon is still the rightmost element
+
   Scenario: AppBar trailing actions do not overlap the profile icon tap target
     Given a screen with both the profile icon and one or more utility actions
     Then every action button's tap target is fully within the visible screen bounds
