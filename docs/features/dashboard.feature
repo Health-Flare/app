@@ -29,16 +29,6 @@ Feature: Dashboard
     And the freeform text field is focused
     And the primary button reads "Add to Journal"
 
-  Scenario: The same Quick Log sheet opens from every main tab
-    When I open Quick Log from the Tracking tab
-    And I open Quick Log from the Medications tab
-    And I open Quick Log from the Meals tab
-    And I open Quick Log from the Journal tab
-    And I open Quick Log from the Sleep tab
-    And I open Quick Log from Reports
-    Then each one is the same freeform Quick Log sheet
-    And none of those tabs still offers a type-specific add button as its primary FAB
-
   # ---------------------------------------------------------------------------
   # Activity feed: content
   # ---------------------------------------------------------------------------

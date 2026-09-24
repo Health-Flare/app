@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/core/providers/symptom_entry_provider.dart';
 import 'package:health_flare/core/providers/vital_entry_provider.dart';
+import 'package:health_flare/core/router/app_router.dart';
 import 'package:health_flare/features/symptoms_vitals/screens/symptom_entry_form_screen.dart';
 import 'package:health_flare/features/symptoms_vitals/screens/symptoms_vitals_screen.dart';
 import 'package:health_flare/features/symptoms_vitals/screens/vital_entry_form_screen.dart';
@@ -231,6 +233,47 @@ void main() {
 
       expect(find.text('Heart Rate'), findsOneWidget);
       expect(find.text('72 BPM'), findsOneWidget);
+    });
+
+    testWidgets('symptoms tab add opens the symptom form', (tester) async {
+      final router = GoRouter(
+        initialLocation: '/symptoms',
+        routes: [
+          GoRoute(
+            path: '/symptoms',
+            builder: (_, _) => const SymptomsVitalsScreen(),
+          ),
+          GoRoute(
+            path: AppRoutes.symptomsNew,
+            builder: (_, _) => const Scaffold(body: Text('Log symptom screen')),
+          ),
+        ],
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            symptomEntryListProvider.overrideWith(_FakeSymptomList.new),
+            vitalEntryListProvider.overrideWith(_FakeVitalList.new),
+            activeProfileProvider.overrideWith(_FakeActiveProfile.new),
+            profileListProvider.overrideWith(_FakeProfileList.new),
+            activeProfileDataProvider.overrideWith((ref) => _sarah),
+            activeProfileSymptomEntriesProvider.overrideWith((ref) => const []),
+            activeProfileVitalEntriesProvider.overrideWith((ref) => const []),
+          ],
+          child: MaterialApp.router(routerConfig: router),
+        ),
+      );
+      await tester.pump();
+
+      expect(find.byTooltip('Log symptom'), findsOneWidget);
+      expect(find.text('What would you like to log?'), findsNothing);
+
+      await tester.tap(find.byTooltip('Log symptom'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+
+      expect(find.text('Log symptom screen'), findsOneWidget);
     });
   });
 

@@ -88,7 +88,9 @@ void main() {
       expect(find.byType(FloatingActionButton), findsOneWidget);
     });
 
-    testWidgets('tapping the FAB opens Quick Log', (tester) async {
+    testWidgets('tapping the FAB navigates to the new sleep entry screen', (
+      tester,
+    ) async {
       await tester.pumpWidget(_buildScreen());
       await tester.pump();
 
@@ -96,8 +98,7 @@ void main() {
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 300));
 
-      expect(find.text('What would you like to log?'), findsOneWidget);
-      expect(find.text('Add to Journal'), findsOneWidget);
+      expect(find.text('Log sleep screen'), findsOneWidget);
     });
 
     testWidgets('tapping an entry navigates to edit with the entry passed', (

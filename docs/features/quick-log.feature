@@ -19,21 +19,28 @@ Feature: Quick Log
     And it is positioned in the bottom-right corner of the screen
     And it does not obscure dashboard content beneath it
 
-  Scenario: The log entry button is visible on every main screen
+  Scenario: Typed screens keep an add button for that screen
     Given "Sarah" is the active profile
-    When I navigate to the Dashboard screen
-    Then the log entry button is visible
-    When I navigate to the Symptoms & Vitals screen
-    Then the log entry button is visible
-    When I navigate to the Medications screen
-    Then the log entry button is visible
-    When I navigate to the Meals screen
-    Then the log entry button is visible
-    When I navigate to the Reports screen
-    Then the log entry button is visible
+    When I am on the Tracking screen with the Symptoms tab selected
+    Then the add button opens the symptom form
+    And the quick log sheet does not open
+    When I switch to the Vitals tab
+    Then the add button opens the vital form
+    When I switch to the Conditions tab
+    Then the add button opens the condition screen
+    When I am on the Medications screen
+    Then the add button opens the new medication form
+    When I am on the Meals screen
+    Then the add button opens the meal form
+    When I am on the Journal screen
+    Then the add button opens the journal composer
+    When I am on the Sleep screen
+    Then the add button opens the sleep form
+    When I am on the Reports screen
+    Then no quick log button is shown
 
   Scenario: The log entry button is a FloatingActionButton with a + icon
-    Given I am on any main screen
+    Given I am on the Dashboard screen
     Then the log entry button is a FloatingActionButton
     And it displays a + icon
     And it uses the primary colour token

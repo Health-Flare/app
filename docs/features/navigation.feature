@@ -90,12 +90,25 @@ Feature: Navigation and General UX
   # Quick entry
   # ---------------------------------------------------------------------------
 
-  Scenario: Any health entry can be started in 2 taps from any main screen
-    Given I am on any main screen
+  Scenario: Any health entry can be started in 2 taps from the dashboard
+    Given I am on the Dashboard screen
     When I tap the log entry button
     Then the quick log sheet opens
     And I can begin typing immediately
-    And tapping Save completes the entry: 2 taps total from any screen
+    And tapping Save completes the entry: 2 taps total from the dashboard
+
+  Scenario: The Tracking add button follows the selected tab
+    Given I am on the Tracking screen
+    And the Symptoms tab is selected
+    When I tap the add button
+    Then the symptom form opens
+    And the quick log sheet stays closed
+    When the Vitals tab is selected
+    And I tap the add button
+    Then the vital form opens
+    When the Conditions tab is selected
+    And I tap the add button
+    Then the condition screen opens
 
   # ---------------------------------------------------------------------------
   # Profile switcher

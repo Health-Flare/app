@@ -6,7 +6,6 @@ import 'package:intl/intl.dart';
 import 'package:health_flare/core/providers/report_provider.dart';
 import 'package:health_flare/core/router/app_router.dart';
 import 'package:health_flare/features/reports/models/report_config.dart';
-import 'package:health_flare/features/quick_log/widgets/quick_log_fab.dart';
 import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 
 /// Report configuration and generation screen.
@@ -48,7 +47,6 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
 
     return Scaffold(
       appBar: const HFAppBar(title: Text('Reports')),
-      floatingActionButton: const QuickLogFab(heroTag: 'fab_reports'),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [

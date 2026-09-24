@@ -52,7 +52,7 @@ Subsection meanings (from Keep a Changelog):
 - Peak flow and step count can be saved as vitals.
 
 ### Changed
-- The + button on Dashboard, Tracking, Meds, Meals, Journal, Sleep, and Reports opens the same Quick Log sheet.
+- The Dashboard + button opens Quick Log. Tracking, Meds, Meals, Journal, and Sleep keep an add button for that screen.
 - The Quick Log button says "Add to Journal" when the detected type cannot actually be saved, so the button matches what is stored.
 - Daily check-in wellbeing can be left unset. A mood note never invents a score, and an existing score is not replaced by a guess.
 

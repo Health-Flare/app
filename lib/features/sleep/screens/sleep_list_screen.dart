@@ -6,7 +6,6 @@ import 'package:health_flare/core/providers/sleep_provider.dart';
 import 'package:health_flare/core/router/app_router.dart';
 import 'package:health_flare/features/sleep/widgets/sleep_entry_card.dart';
 import 'package:health_flare/models/sleep_entry.dart';
-import 'package:health_flare/features/quick_log/widgets/quick_log_fab.dart';
 import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 
 /// Reverse-chronological list of sleep entries for the active profile.
@@ -41,7 +40,11 @@ class SleepListScreen extends ConsumerWidget {
                 const SliverToBoxAdapter(child: SizedBox(height: 100)),
               ],
             ),
-      floatingActionButton: const QuickLogFab(heroTag: 'fab_sleep'),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => context.push(AppRoutes.sleepNew),
+        tooltip: 'Log sleep',
+        child: const Icon(Icons.add),
+      ),
     );
   }
 }
