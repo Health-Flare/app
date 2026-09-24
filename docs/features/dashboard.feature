@@ -23,19 +23,11 @@ Feature: Dashboard
   # Quick-entry sheet
   # ---------------------------------------------------------------------------
 
-  Scenario: Tapping the FAB opens a quick-entry choice sheet
+  Scenario: Tapping the FAB opens Quick Log
     When I tap the log-entry FAB
-    Then a sheet appears offering "Journal entry" and "Sleep" options
-
-  Scenario: Choosing "Journal entry" opens the journal composer
-    When I tap the log-entry FAB
-    And I choose "Journal entry"
-    Then the journal composer screen is shown
-
-  Scenario: Choosing "Sleep" opens the sleep entry screen
-    When I tap the log-entry FAB
-    And I choose "Sleep"
-    Then the sleep entry screen is shown
+    Then the quick log sheet slides up
+    And the freeform text field is focused
+    And the primary button reads "Add to Journal"
 
   # ---------------------------------------------------------------------------
   # Activity feed: content

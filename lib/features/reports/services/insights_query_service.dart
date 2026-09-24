@@ -90,6 +90,7 @@ abstract final class InsightsQueryService {
 
     final wellbeingTrend =
         allCheckins
+            .where((c) => c.wellbeing != null)
             .map(
               (c) => TrendPoint(
                 date: DateTime(
@@ -97,7 +98,7 @@ abstract final class InsightsQueryService {
                   c.checkinDate.month,
                   c.checkinDate.day,
                 ),
-                value: c.wellbeing.toDouble(),
+                value: c.wellbeing!.toDouble(),
               ),
             )
             .toList()

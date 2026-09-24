@@ -168,6 +168,22 @@ Feature: Daily Check-in
     And days without a check-in are visually distinguished from days with one
     And I can browse backwards through the history
 
+  Scenario: A mood quick log does not invent a wellbeing score
+    Given Sarah has no check-in today
+    When I quick-log "Feeling really low and anxious"
+    Then today's check-in notes contain that text
+    And wellbeing is unset
+    And the dashboard does not show a guessed score
+
+  Scenario: An explicit wellbeing number is stored and a later guess does not replace it
+    Given today's check-in has wellbeing 6
+    When I quick-log "Wellbeing about 4/10, bit stressed"
+    Then wellbeing is 4
+    And stress is medium
+    When I later quick-log "Feeling really low"
+    Then wellbeing is still 4
+    And the new sentence is appended to the notes
+
   Scenario: Days with no check-in show a gap, not a zero
     Given "Sarah" has no check-in for "2026-03-09"
     When I view the check-in history

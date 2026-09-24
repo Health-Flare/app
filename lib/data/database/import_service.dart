@@ -8,7 +8,9 @@ import 'package:health_flare/data/models/appointment_isar.dart';
 import 'package:health_flare/data/models/condition_isar.dart';
 import 'package:health_flare/data/models/daily_checkin_isar.dart';
 import 'package:health_flare/data/models/dose_log_isar.dart';
+import 'package:health_flare/data/models/elimination_entry_isar.dart';
 import 'package:health_flare/data/models/flare_isar.dart';
+import 'package:health_flare/data/models/fluid_intake_isar.dart';
 import 'package:health_flare/data/models/journal_entry_isar.dart';
 import 'package:health_flare/data/models/meal_entry_isar.dart';
 import 'package:health_flare/data/models/medication_isar.dart';
@@ -103,14 +105,37 @@ class ImportService {
 
   // ── Isar lifecycle ────────────────────────────────────────────────────────
 
+  /// libmdbx meta signature written at byte 20 of every database this Isar
+  /// core creates (isar_community 3.3.2, libmdbx 0.13.8). A PDF, CSV, or
+  /// empty file does not have it.
+  static const _isarMagicOffset = 20;
+  static const _isarMagic = <int>[
+    0x03,
+    0x11,
+    0x4C,
+    0xEF,
+    0xBD,
+    0x9D,
+    0x65,
+    0x59,
+  ];
+
   /// Opens a working copy of [backupFilePath] and checks it really is a
   /// Health Flare database, throwing [InvalidBackupException] if not.
   ///
   /// Isar does not reject a file that isn't an Isar database: it silently
-  /// reinitialises it as a fresh, empty one. So "it opened" proves nothing.
-  /// Every real app database has the [AppSettings] singleton (id 1), written
-  /// by [MigrationRunner] on first launch, so its absence is the tell.
+  /// reinitialises it as a fresh, empty one and maps that file. Opening a
+  /// PDF or an empty file that way, then deleting it, faults the process
+  /// with SIGBUS when the mapping is torn down. The on-disk signature is
+  /// checked first so those files never reach [Isar.open].
+  ///
+  /// A real Isar file from something other than this app still opens. Every
+  /// real app database has the [AppSettings] singleton (id 1), written by
+  /// [MigrationRunner] on first launch, so its absence is the tell.
   static Future<Isar> _openBackup(String backupFilePath) async {
+    if (!await _hasIsarHeader(backupFilePath)) {
+      throw const InvalidBackupException();
+    }
     final tmp = await getTemporaryDirectory();
     final importPath = '${tmp.path}/$_importDbName.isar';
     // Always start from a fresh copy so we never corrupt the user's backup.
@@ -128,6 +153,26 @@ class ImportService {
       throw const InvalidBackupException();
     }
     return backup;
+  }
+
+  static Future<bool> _hasIsarHeader(String path) async {
+    final file = File(path);
+    if (!file.existsSync()) return false;
+    final raf = await file.open();
+    try {
+      if (await raf.length() < _isarMagicOffset + _isarMagic.length) {
+        return false;
+      }
+      await raf.setPosition(_isarMagicOffset);
+      final bytes = await raf.read(_isarMagic.length);
+      if (bytes.length < _isarMagic.length) return false;
+      for (var i = 0; i < _isarMagic.length; i++) {
+        if (bytes[i] != _isarMagic[i]) return false;
+      }
+      return true;
+    } finally {
+      await raf.close();
+    }
   }
 
   static Future<Isar> _openImportCopy(String directory) {
@@ -150,6 +195,8 @@ class ImportService {
         DailyCheckinIsarSchema,
         AppointmentIsarSchema,
         ActivityEntryIsarSchema,
+        FluidIntakeIsarSchema,
+        EliminationEntryIsarSchema,
       ],
       directory: directory,
       name: _importDbName,
@@ -564,6 +611,10 @@ class _Ctx {
     }
     if (include(ImportCategoryId.symptomEntries)) {
       total += await _importSymptomEntries();
+      total += await _importElimination();
+    }
+    if (include(ImportCategoryId.meals)) {
+      total += await _importFluids();
     }
 
     return total;
@@ -588,7 +639,8 @@ class _Ctx {
         ..weatherTrackingEnabled = bp.weatherTrackingEnabled
         ..weatherOptInShown = bp.weatherOptInShown
         ..colorSeed = bp.colorSeed
-        ..cycleTrackingEnabled = bp.cycleTrackingEnabled;
+        ..cycleTrackingEnabled = bp.cycleTrackingEnabled
+        ..bowelTrackingEnabled = bp.bowelTrackingEnabled;
       await main.writeTxn(() async {
         final newId = await main.profileIsars.put(newProfile);
         profileMap[bp.id] = newId;
@@ -1082,6 +1134,7 @@ class _Ctx {
           ..profileId = pid
           ..name = be.name
           ..severity = be.severity
+          ..locations = be.locations
           ..notes = be.notes
           ..loggedAt = be.loggedAt
           ..createdAt = be.createdAt
@@ -1099,6 +1152,70 @@ class _Ctx {
 
     if (toInsert.isNotEmpty) {
       await main.writeTxn(() async => main.symptomEntryIsars.putAll(toInsert));
+    }
+    return toInsert.length;
+  }
+
+  Future<int> _importFluids() async {
+    final backupItems = await backup.fluidIntakeIsars.where().findAll();
+    final mainSet = (await main.fluidIntakeIsars.where().findAll())
+        .map((e) => '${e.profileId}_${e.loggedAt.millisecondsSinceEpoch}')
+        .toSet();
+    final toInsert = <FluidIntakeIsar>[];
+    for (final be in backupItems) {
+      final pid = profileMap[be.profileId];
+      if (pid == null) continue;
+      if (mainSet.contains('${pid}_${be.loggedAt.millisecondsSinceEpoch}')) {
+        continue;
+      }
+      toInsert.add(
+        FluidIntakeIsar()
+          ..profileId = pid
+          ..loggedAt = be.loggedAt
+          ..volumeMl = be.volumeMl
+          ..drinkType = be.drinkType
+          ..notes = be.notes
+          ..createdAt = be.createdAt,
+      );
+    }
+    if (toInsert.isNotEmpty) {
+      await main.writeTxn(() async => main.fluidIntakeIsars.putAll(toInsert));
+    }
+    return toInsert.length;
+  }
+
+  Future<int> _importElimination() async {
+    final backupItems = await backup.eliminationEntryIsars.where().findAll();
+    final mainSet = (await main.eliminationEntryIsars.where().findAll())
+        .map(
+          (e) =>
+              '${e.profileId}_${e.loggedAt.millisecondsSinceEpoch}_${e.kind}',
+        )
+        .toSet();
+    final toInsert = <EliminationEntryIsar>[];
+    for (final be in backupItems) {
+      final pid = profileMap[be.profileId];
+      if (pid == null) continue;
+      final fingerprint =
+          '${pid}_${be.loggedAt.millisecondsSinceEpoch}_${be.kind}';
+      if (mainSet.contains(fingerprint)) continue;
+      toInsert.add(
+        EliminationEntryIsar()
+          ..profileId = pid
+          ..loggedAt = be.loggedAt
+          ..kind = be.kind
+          ..bristolType = be.bristolType
+          ..count = be.count
+          ..blood = be.blood
+          ..urgency = be.urgency
+          ..notes = be.notes
+          ..createdAt = be.createdAt,
+      );
+    }
+    if (toInsert.isNotEmpty) {
+      await main.writeTxn(
+        () async => main.eliminationEntryIsars.putAll(toInsert),
+      );
     }
     return toInsert.length;
   }

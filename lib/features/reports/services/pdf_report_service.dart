@@ -200,7 +200,11 @@ abstract final class PdfReportService {
     out.add(_sectionTitle('Daily check-ins (${data.checkins.length})'));
     for (final e in data.checkins) {
       final label = _fmt.format(e.checkinDate);
-      final value = StringBuffer('Wellbeing ${e.wellbeing}/10');
+      final value = StringBuffer(
+        e.wellbeing == null
+            ? 'Wellbeing not recorded'
+            : 'Wellbeing ${e.wellbeing}/10',
+      );
       if (e.stressLevel != null) value.write('  ·  stress: ${e.stressLevel}');
       if (e.cyclePhase != null) value.write('  ·  ${e.cyclePhase}');
       if (e.notes != null) value.write('\n${e.notes}');

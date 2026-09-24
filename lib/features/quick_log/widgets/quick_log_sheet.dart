@@ -6,7 +6,11 @@ import 'package:intl/intl.dart';
 import 'package:health_flare/core/providers/activity_entry_provider.dart';
 import 'package:health_flare/core/providers/appointment_provider.dart';
 import 'package:health_flare/core/providers/condition_provider.dart';
+import 'package:health_flare/core/providers/daily_checkin_provider.dart';
 import 'package:health_flare/core/providers/dose_log_provider.dart';
+import 'package:health_flare/core/providers/elimination_provider.dart';
+import 'package:health_flare/core/providers/flare_provider.dart';
+import 'package:health_flare/core/providers/fluid_intake_provider.dart';
 import 'package:health_flare/core/providers/journal_provider.dart';
 import 'package:health_flare/core/providers/meal_entry_provider.dart';
 import 'package:health_flare/core/providers/medication_provider.dart';
@@ -14,13 +18,18 @@ import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/core/providers/sleep_provider.dart';
 import 'package:health_flare/core/providers/symptom_entry_provider.dart';
 import 'package:health_flare/core/providers/vital_entry_provider.dart';
+import 'package:health_flare/core/providers/weather_provider.dart';
 import 'package:health_flare/core/router/app_router.dart';
 import 'package:health_flare/features/illness/screens/illness_screen.dart';
 import 'package:health_flare/features/quick_log/quick_log_classifier.dart';
 import 'package:health_flare/features/quick_log/quick_log_parser.dart';
+import 'package:health_flare/features/quick_log/quick_log_text.dart';
+import 'package:health_flare/features/shared/widgets/weather_chip.dart';
 import 'package:health_flare/features/sleep/screens/sleep_entry_screen.dart';
 import 'package:health_flare/models/journal_entry.dart';
+import 'package:health_flare/models/medication.dart';
 import 'package:health_flare/models/user_condition.dart';
+import 'package:health_flare/models/weather_snapshot.dart';
 
 /// Opens the quick-log bottom sheet. Call from any screen that has a FAB.
 Future<void> showQuickLogSheet(BuildContext context) {
@@ -41,8 +50,11 @@ class _QuickLogSheet extends ConsumerStatefulWidget {
 
 class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
   final _textController = TextEditingController();
+  late DateTime _openedAt;
   late DateTime _timestamp;
+  bool _timestampManual = false;
   QuickLogEntryType? _classification;
+  QuickLogEntryType? _typeOverride;
   bool _saving = false;
 
   static final _fmt = DateFormat('EEE, d MMM · HH:mm');
@@ -50,7 +62,8 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
   @override
   void initState() {
     super.initState();
-    _timestamp = DateTime.now();
+    _openedAt = DateTime.now();
+    _timestamp = _openedAt;
     _textController.addListener(_onTextChanged);
   }
 
@@ -61,22 +74,128 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
   }
 
   void _onTextChanged() {
-    final next = QuickLogClassifier.classify(
-      _textController.text,
+    if (!mounted) return;
+    if (_textController.text.trim().isEmpty) {
+      setState(() {
+        _classification = null;
+        _typeOverride = null;
+        if (!_timestampManual) _timestamp = _openedAt;
+      });
+      return;
+    }
+    final next = _classify(_textController.text);
+    setState(() {
+      _classification = next;
+      _typeOverride = null;
+      if (!_timestampManual) {
+        _timestamp = _resolvedTimestamp(next);
+      }
+    });
+  }
+
+  QuickLogEntryType? _classify(String text) {
+    final profile = ref.read(activeProfileDataProvider);
+    final medications = ref.read(activeProfileMedicationsProvider);
+    return QuickLogClassifier.classify(
+      text,
       conditionCatalog: ref.read(conditionCatalogProvider),
       trackedConditions: ref.read(userConditionListProvider),
       symptomCatalog: ref.read(symptomCatalogProvider),
       trackedSymptoms: ref.read(userSymptomListProvider),
       loggedSymptomNames: ref.read(recentSymptomNamesProvider),
+      medicationNames: [for (final med in medications) med.name],
+      cycleTrackingEnabled: profile?.cycleTrackingEnabled ?? false,
+      bowelTrackingEnabled: profile?.bowelTrackingEnabled ?? false,
     );
-    if (next != _classification) {
-      setState(() => _classification = next);
-    }
+  }
+
+  DateTime _resolvedTimestamp(QuickLogEntryType? type) {
+    final parsed = QuickLogParser.parseRelativeTimestamp(
+      _textController.text,
+      _openedAt,
+      preserveLastNight: type == QuickLogEntryType.sleep,
+    );
+    return parsed ?? _openedAt;
   }
 
   String get _text => _textController.text.trim();
   bool get _hasText => _text.isNotEmpty;
+  QuickLogEntryType? get _effectiveType => _typeOverride ?? _classification;
   bool get _canSave => _hasText && !_saving;
+
+  WeatherSnapshot? get _weather =>
+      ref.read(currentWeatherProvider).asData?.value;
+
+  bool _canQuickAdd(QuickLogEntryType? type) {
+    switch (type) {
+      case null:
+      case QuickLogEntryType.journal:
+        return false;
+      case QuickLogEntryType.vital:
+        return QuickLogParser.parseVitals(_text).isNotEmpty;
+      case QuickLogEntryType.medication:
+        if (QuickLogParser.isDoseChange(_text) &&
+            QuickLogParser.parseDoseStatus(_text) == null) {
+          return false;
+        }
+        return _matchedMedication() != null;
+      case QuickLogEntryType.sleep:
+        return QuickLogParser.parseSleepTimeRange(_text, _timestamp) != null ||
+            QuickLogParser.parseSleepDuration(_text) != null;
+      case QuickLogEntryType.condition:
+        return _matchedCondition();
+      case QuickLogEntryType.hydration:
+        return QuickLogParser.parseFluid(_text) != null;
+      case QuickLogEntryType.bowel:
+        final profile = ref.read(activeProfileDataProvider);
+        return profile?.bowelTrackingEnabled == true &&
+            QuickLogParser.parseElimination(_text) != null;
+      case QuickLogEntryType.cycle:
+        final profile = ref.read(activeProfileDataProvider);
+        return profile?.cycleTrackingEnabled == true &&
+            QuickLogParser.parseCyclePhase(_text) != null;
+      case QuickLogEntryType.flare:
+        final intent = QuickLogParser.parseFlareIntent(_text);
+        if (intent == FlareIntent.start) return true;
+        if (intent == FlareIntent.end) {
+          return ref.read(activeFlareProvider) != null;
+        }
+        return false;
+      case QuickLogEntryType.meal:
+      case QuickLogEntryType.symptom:
+      case QuickLogEntryType.doctorVisit:
+      case QuickLogEntryType.activity:
+      case QuickLogEntryType.mood:
+        return true;
+    }
+  }
+
+  Medication? _matchedMedication() => QuickLogParser.matchMedication(
+    _text,
+    ref.read(activeProfileMedicationsProvider),
+  );
+
+  UserCondition? _trackedForMatchedCondition() {
+    final condition = QuickLogParser.matchCondition(
+      _text,
+      ref.read(conditionCatalogProvider),
+      ref.read(userConditionListProvider),
+    );
+    if (condition == null) return null;
+    return ref
+        .read(userConditionListProvider)
+        .where((item) => item.conditionId == condition.id)
+        .firstOrNull;
+  }
+
+  /// Catalogue condition, or null when the name is not in the catalogue.
+  bool _matchedCondition() =>
+      QuickLogParser.matchCondition(
+        _text,
+        ref.read(conditionCatalogProvider),
+        ref.read(userConditionListProvider),
+      ) !=
+      null;
 
   // ── Save ────────────────────────────────────────────────────────────────
 
@@ -86,64 +205,51 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
     try {
       final profileId = ref.read(activeProfileProvider);
       if (profileId == null) return;
-      await _quickSave(profileId);
+      final type = _effectiveType;
+      if (_canQuickAdd(type)) {
+        await _quickSave(profileId, type!);
+      } else {
+        await _saveJournal(profileId);
+      }
       if (mounted) Navigator.of(context).pop();
     } finally {
       if (mounted) setState(() => _saving = false);
     }
   }
 
-  Future<void> _quickSave(int profileId) async {
-    switch (_classification) {
+  Future<void> _quickSave(int profileId, QuickLogEntryType type) async {
+    switch (type) {
       case QuickLogEntryType.meal:
         await ref
             .read(mealEntryListProvider.notifier)
             .add(
               profileId: profileId,
               description: _text,
-              hasReaction: false,
+              hasReaction: QuickLogParser.hasMealReaction(_text),
               loggedAt: _timestamp,
+              weatherSnapshot: _weather,
             );
       case QuickLogEntryType.symptom:
-        final matchedSymptom = QuickLogParser.matchSymptom(
-          _text,
-          ref.read(symptomCatalogProvider),
-          ref.read(userSymptomListProvider),
-          loggedNames: ref.read(recentSymptomNamesProvider),
-        );
-        await ref
-            .read(symptomEntryListProvider.notifier)
-            .add(
-              profileId: profileId,
-              // A matched canonical name keeps repeated mentions of the same
-              // symptom consolidated under one name for trend/insight
-              // purposes, rather than accumulating near-duplicate free text
-              // ("Brain fog", "brain fog again", "Bad brain fog today", …).
-              // The original wording is never lost: it goes to notes.
-              name: matchedSymptom?.name ?? _text,
-              severity: QuickLogParser.parseSeverity(_text) ?? 5,
-              loggedAt: _timestamp,
-              notes: matchedSymptom != null ? _text : null,
-            );
+        await _saveSymptom(profileId);
       case QuickLogEntryType.doctorVisit:
         await ref
             .read(appointmentListProvider.notifier)
             .add(profileId: profileId, title: _text, scheduledAt: _timestamp);
       case QuickLogEntryType.activity:
+        final parsed = QuickLogParser.parseActivity(_text);
         await ref
             .read(activityEntryListProvider.notifier)
             .add(
               profileId: profileId,
               description: _text,
+              activityType: parsed.type,
+              effortLevel: parsed.effortLevel,
+              durationMinutes: parsed.durationMinutes,
               loggedAt: _timestamp,
+              weatherSnapshot: _weather,
             );
       case QuickLogEntryType.vital:
-        final parsed = QuickLogParser.parseVitals(_text);
-        if (parsed.isEmpty) {
-          await _saveJournal(profileId);
-          return;
-        }
-        for (final vital in parsed) {
+        for (final vital in QuickLogParser.parseVitals(_text)) {
           await ref
               .read(vitalEntryListProvider.notifier)
               .add(
@@ -157,10 +263,7 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
               );
         }
       case QuickLogEntryType.medication:
-        final medication = QuickLogParser.matchMedication(
-          _text,
-          ref.read(activeProfileMedicationsProvider),
-        );
+        final medication = _matchedMedication();
         if (medication == null) {
           await _saveJournal(profileId);
           return;
@@ -173,10 +276,11 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
               loggedAt: _timestamp,
               amount: medication.doseAmount,
               unit: medication.doseUnit,
-              status: 'taken',
+              status: QuickLogParser.parseDoseStatus(_text) ?? 'taken',
               notes: _text,
             );
       case QuickLogEntryType.sleep:
+        final nap = QuickLogParser.isNap(_text) ? true : null;
         final range = QuickLogParser.parseSleepTimeRange(_text, _timestamp);
         if (range != null) {
           await ref
@@ -186,6 +290,7 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
                 bedtime: range.$1,
                 wakeTime: range.$2,
                 notes: _text,
+                isNap: nap,
               );
           return;
         }
@@ -201,68 +306,226 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
               bedtime: _timestamp.subtract(duration),
               wakeTime: _timestamp,
               notes: _text,
+              isNap: nap,
             );
       case QuickLogEntryType.condition:
-        final trackedConditions = ref.read(userConditionListProvider);
-        final condition = QuickLogParser.matchCondition(
-          _text,
-          ref.read(conditionCatalogProvider),
-          trackedConditions,
+        await _saveCondition(profileId);
+      case QuickLogEntryType.journal:
+        await _saveJournal(profileId);
+      case QuickLogEntryType.flare:
+        await _saveFlare(profileId);
+      case QuickLogEntryType.mood:
+        await _upsertCheckin(
+          profileId,
+          wellbeing: QuickLogParser.parseExplicitWellbeing(_text),
+          stressLevel: QuickLogParser.parseStress(_text),
         );
-        if (condition == null) {
+      case QuickLogEntryType.cycle:
+        await _upsertCheckin(
+          profileId,
+          cyclePhase: QuickLogParser.parseCyclePhase(_text),
+          stressLevel: QuickLogParser.parseStress(_text),
+          wellbeing: QuickLogParser.parseExplicitWellbeing(_text),
+        );
+        if (QuickLogText.mentionsAny(_text, const ['cramp', 'pain', 'ache'])) {
+          final matched = QuickLogParser.matchSymptom(
+            _text,
+            ref.read(symptomCatalogProvider),
+            ref.read(userSymptomListProvider),
+            loggedNames: ref.read(recentSymptomNamesProvider),
+          );
+          final name =
+              matched?.name ??
+              (QuickLogText.mentions(_text, 'cramp') ? 'Cramps' : 'Pain');
+          await _saveSymptom(profileId, name: name);
+        }
+      case QuickLogEntryType.hydration:
+        final fluid = QuickLogParser.parseFluid(_text);
+        if (fluid == null) {
           await _saveJournal(profileId);
           return;
         }
-        final existing = trackedConditions
-            .where((uc) => uc.conditionId == condition.id)
-            .firstOrNull;
-        final parsedStatus = QuickLogParser.parseConditionStatus(_text);
-
-        if (existing == null) {
-          // Not yet tracked: start tracking. "Diagnosed"/"found out"
-          // language makes *now* a trustworthy diagnosis date; a bare
-          // mention of an already-known condition does not, so diagnosedAt
-          // stays unset rather than guessing.
+        await ref
+            .read(fluidIntakeListProvider.notifier)
+            .add(
+              profileId: profileId,
+              loggedAt: _timestamp,
+              volumeMl: fluid.volumeMl,
+              drinkType: fluid.drinkType,
+              notes: _text,
+            );
+      case QuickLogEntryType.bowel:
+        final parsed = QuickLogParser.parseElimination(_text);
+        if (parsed == null) {
+          await _saveJournal(profileId);
+          return;
+        }
+        final copies = parsed.count <= 0 ? 1 : parsed.count;
+        for (var i = 0; i < copies; i++) {
           await ref
-              .read(userConditionListProvider.notifier)
+              .read(eliminationListProvider.notifier)
               .add(
-                conditionId: condition.id,
-                conditionName: condition.name,
-                diagnosedAt: QuickLogParser.mentionsNewDiagnosis(_text)
-                    ? _timestamp
-                    : null,
-                status: parsedStatus ?? ConditionStatus.active,
-              );
-        } else if (parsedStatus != null && parsedStatus != existing.status) {
-          // Already tracked and the text signals an actual status change:
-          // record it in the condition's history. Conditions have no
-          // per-occurrence log record otherwise (unlike vitals or doses), so
-          // this and the branch above are the whole save.
-          await ref
-              .read(userConditionListProvider.notifier)
-              .update(
-                existing.copyWith(
-                  status: parsedStatus,
-                  statusHistory: [
-                    ...existing.statusHistory,
-                    ConditionStatusEvent(
-                      eventType: parsedStatus == ConditionStatus.inRecovery
-                          ? 'recovery'
-                          : 'relapse',
-                      date: _timestamp,
-                    ),
-                  ],
-                ),
+                profileId: profileId,
+                loggedAt: _timestamp,
+                kind: parsed.kind,
+                bristolType: parsed.bristolType,
+                count: parsed.count <= 0 ? 0 : 1,
+                blood: parsed.blood,
+                urgency: parsed.urgency,
+                notes: _text,
               );
         }
-      case QuickLogEntryType.journal:
-      case null:
-        await _saveJournal(profileId);
     }
   }
 
-  /// Fallback for classifications whose values could not be extracted:
-  /// the user's text is preserved as a journal entry rather than dropped.
+  Future<void> _saveSymptom(
+    int profileId, {
+    String? name,
+    int? flareIsarId,
+  }) async {
+    final matched = QuickLogParser.matchSymptom(
+      _text,
+      ref.read(symptomCatalogProvider),
+      ref.read(userSymptomListProvider),
+      loggedNames: ref.read(recentSymptomNamesProvider),
+    );
+    final resolvedName = name ?? matched?.name ?? _text;
+    await ref
+        .read(symptomEntryListProvider.notifier)
+        .add(
+          profileId: profileId,
+          name: resolvedName,
+          severity: QuickLogParser.parseSeverity(_text) ?? 5,
+          locations: QuickLogParser.parseLocations(_text),
+          loggedAt: _timestamp,
+          notes: matched != null || name != null ? _text : null,
+          flareIsarId: flareIsarId,
+          weatherSnapshot: _weather,
+        );
+  }
+
+  Future<void> _saveCondition(int profileId) async {
+    final trackedConditions = ref.read(userConditionListProvider);
+    final condition = QuickLogParser.matchCondition(
+      _text,
+      ref.read(conditionCatalogProvider),
+      trackedConditions,
+    );
+    if (condition == null) {
+      await _saveJournal(profileId);
+      return;
+    }
+    final existing = trackedConditions
+        .where((item) => item.conditionId == condition.id)
+        .firstOrNull;
+    final parsedStatus = QuickLogParser.parseConditionStatus(_text);
+
+    if (existing == null) {
+      await ref
+          .read(userConditionListProvider.notifier)
+          .add(
+            conditionId: condition.id,
+            conditionName: condition.name,
+            diagnosedAt: QuickLogParser.mentionsNewDiagnosis(_text)
+                ? _timestamp
+                : null,
+            status: parsedStatus ?? ConditionStatus.active,
+          );
+    } else if (parsedStatus != null && parsedStatus != existing.status) {
+      await ref
+          .read(userConditionListProvider.notifier)
+          .update(
+            existing.copyWith(
+              status: parsedStatus,
+              statusHistory: [
+                ...existing.statusHistory,
+                ConditionStatusEvent(
+                  eventType: parsedStatus == ConditionStatus.inRecovery
+                      ? 'recovery'
+                      : 'relapse',
+                  date: _timestamp,
+                ),
+              ],
+            ),
+          );
+    }
+  }
+
+  Future<void> _saveFlare(int profileId) async {
+    final intent = QuickLogParser.parseFlareIntent(_text);
+    final active = ref.read(activeFlareProvider);
+    final severity = QuickLogParser.parseSeverity(_text);
+    if (intent == FlareIntent.end) {
+      if (active == null) {
+        await _saveJournal(profileId);
+        return;
+      }
+      await ref
+          .read(flareListProvider.notifier)
+          .update(
+            active.copyWith(
+              endedAt: _timestamp,
+              peakSeverity: severity,
+              notes: _appendNotes(active.notes, _text),
+              updatedAt: DateTime.now(),
+            ),
+          );
+      return;
+    }
+    if (intent == FlareIntent.start && active != null) {
+      await _saveSymptom(profileId, flareIsarId: active.id);
+      return;
+    }
+    final tracked = _trackedForMatchedCondition();
+    await ref
+        .read(flareListProvider.notifier)
+        .add(
+          profileId: profileId,
+          startedAt: _timestamp,
+          conditionIsarIds: tracked == null ? const [] : [tracked.id],
+          initialSeverity: severity,
+          notes: _text,
+        );
+  }
+
+  Future<void> _upsertCheckin(
+    int profileId, {
+    int? wellbeing,
+    String? stressLevel,
+    String? cyclePhase,
+  }) async {
+    final notifier = ref.read(dailyCheckinListProvider.notifier);
+    final existing = notifier.checkinForDate(profileId, _timestamp);
+    if (existing == null) {
+      await notifier.add(
+        profileId: profileId,
+        checkinDate: _timestamp,
+        wellbeing: wellbeing,
+        stressLevel: stressLevel,
+        cyclePhase: cyclePhase,
+        notes: _text,
+        weatherSnapshot: _weather,
+      );
+      return;
+    }
+    await notifier.update(
+      existing.copyWith(
+        wellbeing: wellbeing,
+        stressLevel: stressLevel,
+        cyclePhase: cyclePhase,
+        notes: _appendNotes(existing.notes, _text),
+        updatedAt: DateTime.now(),
+        weatherSnapshot: existing.weatherSnapshot ?? _weather,
+      ),
+    );
+  }
+
+  String _appendNotes(String? existing, String addition) {
+    if (existing == null || existing.trim().isEmpty) return addition;
+    if (existing.contains(addition)) return existing;
+    return '$existing\n$addition';
+  }
+
   Future<void> _saveJournal(int profileId) {
     return ref
         .read(journalEntryListProvider.notifier)
@@ -270,14 +533,16 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
           profileId: profileId,
           createdAt: _timestamp,
           firstSnapshot: JournalSnapshot(body: _text, savedAt: DateTime.now()),
+          weatherSnapshot: _weather,
         );
   }
 
   // ── Add details ─────────────────────────────────────────────────────────
 
   void _addDetails() {
+    final type = _effectiveType;
     Navigator.of(context).pop();
-    switch (_classification) {
+    switch (type) {
       case QuickLogEntryType.meal:
         context.push(AppRoutes.mealsNew, extra: _text);
       case QuickLogEntryType.symptom:
@@ -290,16 +555,32 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
         context.push(AppRoutes.vitalsNew, extra: _text);
       case QuickLogEntryType.sleep:
         final range = QuickLogParser.parseSleepTimeRange(_text, _timestamp);
+        final duration = QuickLogParser.parseSleepDuration(_text);
         context.push(
           AppRoutes.sleepNew,
           extra: SleepEntryPrefill(
             notes: _text,
-            bedtime: range?.$1,
-            wakeTime: range?.$2,
+            bedtime:
+                range?.$1 ??
+                (duration == null ? null : _timestamp.subtract(duration)),
+            wakeTime: range?.$2 ?? (duration == null ? null : _timestamp),
+            isNap: QuickLogParser.isNap(_text) ? true : null,
           ),
         );
       case QuickLogEntryType.medication:
-        context.push(AppRoutes.medicationsNew);
+        final medication = _matchedMedication();
+        if (medication != null) {
+          context.push(
+            AppRoutes.medicationsDoseNew(medication.id),
+            extra: {
+              'med': medication,
+              'notes': _text,
+              'status': QuickLogParser.parseDoseStatus(_text) ?? 'taken',
+            },
+          );
+        } else {
+          context.push(AppRoutes.medicationsNew, extra: _text);
+        }
       case QuickLogEntryType.condition:
         final matched = QuickLogParser.matchCondition(
           _text,
@@ -310,6 +591,13 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
           AppRoutes.illness,
           extra: IllnessScreenPrefill(query: _text, conditionId: matched?.id),
         );
+      case QuickLogEntryType.flare:
+        context.push(AppRoutes.flareNew, extra: _text);
+      case QuickLogEntryType.mood:
+      case QuickLogEntryType.cycle:
+        context.push(AppRoutes.checkinNew, extra: _text);
+      case QuickLogEntryType.hydration:
+      case QuickLogEntryType.bowel:
       case QuickLogEntryType.journal:
       case null:
         context.push(AppRoutes.journalNew, extra: _text);
@@ -320,11 +608,16 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
 
   Future<void> _pickTimestamp() async {
     final now = DateTime.now();
+    final horizon = now.add(const Duration(days: 730));
+    final lastDate = _timestamp.isAfter(horizon) ? _timestamp : horizon;
+    var initial = _timestamp;
+    if (initial.isAfter(lastDate)) initial = lastDate;
+    if (initial.isBefore(DateTime(2000))) initial = DateTime(2000);
     final date = await showDatePicker(
       context: context,
-      initialDate: _timestamp,
+      initialDate: initial,
       firstDate: DateTime(2000),
-      lastDate: now,
+      lastDate: lastDate,
     );
     if (date == null || !mounted) return;
     final time = await showTimePicker(
@@ -333,6 +626,7 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
     );
     if (!mounted) return;
     setState(() {
+      _timestampManual = true;
       _timestamp = DateTime(
         date.year,
         date.month,
@@ -341,6 +635,18 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
         time?.minute ?? _timestamp.minute,
       );
     });
+  }
+
+  List<QuickLogEntryType> get _typeChoices {
+    final profile = ref.read(activeProfileDataProvider);
+    return [
+      for (final type in QuickLogEntryType.values)
+        if (type != QuickLogEntryType.cycle ||
+            profile?.cycleTrackingEnabled == true)
+          if (type != QuickLogEntryType.bowel ||
+              profile?.bowelTrackingEnabled == true)
+            type,
+    ];
   }
 
   // ── Dismiss guard ───────────────────────────────────────────────────────
@@ -378,6 +684,9 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
     final profile = ref.watch(activeProfileDataProvider);
     final profileName = profile?.name ?? '';
     final kbHeight = MediaQuery.of(context).viewInsets.bottom;
+    final weather = ref.watch(currentWeatherProvider).asData?.value;
+    final type = _effectiveType;
+    final quickAdd = _canQuickAdd(type);
 
     return PopScope(
       canPop: !_hasText,
@@ -392,7 +701,6 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // ── Header ────────────────────────────────────────────────
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 12, 8, 0),
                 child: Row(
@@ -412,8 +720,6 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
                   ],
                 ),
               ),
-
-              // ── Text field ────────────────────────────────────────────
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: TextField(
@@ -429,55 +735,70 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
                   style: tt.bodyLarge,
                 ),
               ),
-
               const Divider(height: 1),
-
-              // ── Timestamp row ─────────────────────────────────────────
               Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
                   vertical: 8,
                 ),
-                child: GestureDetector(
-                  onTap: _pickTimestamp,
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.schedule_outlined,
-                        size: 16,
-                        color: cs.onSurfaceVariant,
+                child: Row(
+                  children: [
+                    GestureDetector(
+                      onTap: _pickTimestamp,
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.schedule_outlined,
+                            size: 16,
+                            color: cs.onSurfaceVariant,
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            _fmt.format(_timestamp),
+                            style: tt.bodySmall?.copyWith(
+                              color: cs.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(width: 6),
-                      Text(
-                        _fmt.format(_timestamp),
-                        style: tt.bodySmall?.copyWith(
-                          color: cs.onSurfaceVariant,
-                        ),
-                      ),
+                    ),
+                    if (weather != null) ...[
+                      const SizedBox(width: 12),
+                      WeatherChip(snapshot: weather),
                     ],
-                  ),
+                  ],
                 ),
               ),
-
-              // ── Type chip + Add details ───────────────────────────────
-              if (_classification != null)
+              if (type != null)
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
                   child: Row(
                     children: [
-                      Semantics(
-                        liveRegion: true,
-                        label: 'Classified as ${_chipLabel(_classification!)}',
-                        child: Chip(
-                          label: Text(_chipLabel(_classification!)),
-                          avatar: Icon(
-                            _chipIcon(_classification!),
-                            size: 16,
-                            color: cs.primary,
+                      PopupMenuButton<QuickLogEntryType>(
+                        tooltip: 'Change entry type',
+                        onSelected: (picked) =>
+                            setState(() => _typeOverride = picked),
+                        itemBuilder: (context) => [
+                          for (final choice in _typeChoices)
+                            PopupMenuItem(
+                              value: choice,
+                              child: Text(_chipLabel(choice)),
+                            ),
+                        ],
+                        child: Semantics(
+                          liveRegion: true,
+                          label: 'Classified as ${_chipLabel(type)}',
+                          child: Chip(
+                            label: Text(_chipLabel(type)),
+                            avatar: Icon(
+                              _chipIcon(type),
+                              size: 16,
+                              color: cs.primary,
+                            ),
+                            backgroundColor: cs.primaryContainer,
+                            padding: EdgeInsets.zero,
+                            visualDensity: VisualDensity.compact,
                           ),
-                          backgroundColor: cs.primaryContainer,
-                          padding: EdgeInsets.zero,
-                          visualDensity: VisualDensity.compact,
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -488,8 +809,6 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
                     ],
                   ),
                 ),
-
-              // ── Save button ───────────────────────────────────────────
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
                 child: FilledButton(
@@ -502,7 +821,7 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
                         )
                       : Semantics(
                           liveRegion: true,
-                          child: Text(_primaryButtonLabel(_classification)),
+                          child: Text(_primaryButtonLabel(type, quickAdd)),
                         ),
                 ),
               ),
@@ -526,6 +845,11 @@ String _chipLabel(QuickLogEntryType type) => switch (type) {
   QuickLogEntryType.sleep => 'Sleep',
   QuickLogEntryType.condition => 'Condition',
   QuickLogEntryType.journal => 'Journal',
+  QuickLogEntryType.flare => 'Flare',
+  QuickLogEntryType.mood => 'Mood',
+  QuickLogEntryType.cycle => 'Cycle',
+  QuickLogEntryType.hydration => 'Fluids',
+  QuickLogEntryType.bowel => 'Bowel',
 };
 
 IconData _chipIcon(QuickLogEntryType type) => switch (type) {
@@ -538,14 +862,18 @@ IconData _chipIcon(QuickLogEntryType type) => switch (type) {
   QuickLogEntryType.sleep => Icons.bedtime_outlined,
   QuickLogEntryType.condition => Icons.assignment_late_outlined,
   QuickLogEntryType.journal => Icons.book_outlined,
+  QuickLogEntryType.flare => Icons.local_fire_department_outlined,
+  QuickLogEntryType.mood => Icons.mood_outlined,
+  QuickLogEntryType.cycle => Icons.water_drop_outlined,
+  QuickLogEntryType.hydration => Icons.local_drink_outlined,
+  QuickLogEntryType.bowel => Icons.health_and_safety_outlined,
 };
 
-/// The primary button always names what tapping it will do: quick-add the
-/// detected structured record, or fall back to a plain journal entry when
-/// nothing is detected (or the user overrides the type to Journal): never a
-/// generic "Save" that leaves that ambiguous.
-String _primaryButtonLabel(QuickLogEntryType? type) {
-  if (type == null || type == QuickLogEntryType.journal) {
+/// Names the record that will actually be saved. A detected type that cannot
+/// be persisted (no matching medication, no vital reading, and so on) uses
+/// "Add to Journal" so the button, the chip, and the database agree.
+String _primaryButtonLabel(QuickLogEntryType? type, bool canQuickAdd) {
+  if (type == null || type == QuickLogEntryType.journal || !canQuickAdd) {
     return 'Add to Journal';
   }
   return 'Quick Add: ${_chipLabel(type)}';

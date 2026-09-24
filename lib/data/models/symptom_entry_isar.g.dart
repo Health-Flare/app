@@ -27,31 +27,36 @@ const SymptomEntryIsarSchema = CollectionSchema(
       name: r'flareIsarId',
       type: IsarType.long,
     ),
-    r'loggedAt': PropertySchema(
+    r'locations': PropertySchema(
       id: 2,
+      name: r'locations',
+      type: IsarType.stringList,
+    ),
+    r'loggedAt': PropertySchema(
+      id: 3,
       name: r'loggedAt',
       type: IsarType.dateTime,
     ),
-    r'name': PropertySchema(id: 3, name: r'name', type: IsarType.string),
-    r'notes': PropertySchema(id: 4, name: r'notes', type: IsarType.string),
+    r'name': PropertySchema(id: 4, name: r'name', type: IsarType.string),
+    r'notes': PropertySchema(id: 5, name: r'notes', type: IsarType.string),
     r'profileId': PropertySchema(
-      id: 5,
+      id: 6,
       name: r'profileId',
       type: IsarType.long,
     ),
-    r'severity': PropertySchema(id: 6, name: r'severity', type: IsarType.long),
+    r'severity': PropertySchema(id: 7, name: r'severity', type: IsarType.long),
     r'userConditionIsarId': PropertySchema(
-      id: 7,
+      id: 8,
       name: r'userConditionIsarId',
       type: IsarType.long,
     ),
     r'userSymptomIsarId': PropertySchema(
-      id: 8,
+      id: 9,
       name: r'userSymptomIsarId',
       type: IsarType.long,
     ),
     r'weatherSnapshot': PropertySchema(
-      id: 9,
+      id: 10,
       name: r'weatherSnapshot',
       type: IsarType.object,
       target: r'WeatherSnapshotIsar',
@@ -104,6 +109,13 @@ int _symptomEntryIsarEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
+  bytesCount += 3 + object.locations.length * 3;
+  {
+    for (var i = 0; i < object.locations.length; i++) {
+      final value = object.locations[i];
+      bytesCount += value.length * 3;
+    }
+  }
   bytesCount += 3 + object.name.length * 3;
   {
     final value = object.notes;
@@ -134,15 +146,16 @@ void _symptomEntryIsarSerialize(
 ) {
   writer.writeDateTime(offsets[0], object.createdAt);
   writer.writeLong(offsets[1], object.flareIsarId);
-  writer.writeDateTime(offsets[2], object.loggedAt);
-  writer.writeString(offsets[3], object.name);
-  writer.writeString(offsets[4], object.notes);
-  writer.writeLong(offsets[5], object.profileId);
-  writer.writeLong(offsets[6], object.severity);
-  writer.writeLong(offsets[7], object.userConditionIsarId);
-  writer.writeLong(offsets[8], object.userSymptomIsarId);
+  writer.writeStringList(offsets[2], object.locations);
+  writer.writeDateTime(offsets[3], object.loggedAt);
+  writer.writeString(offsets[4], object.name);
+  writer.writeString(offsets[5], object.notes);
+  writer.writeLong(offsets[6], object.profileId);
+  writer.writeLong(offsets[7], object.severity);
+  writer.writeLong(offsets[8], object.userConditionIsarId);
+  writer.writeLong(offsets[9], object.userSymptomIsarId);
   writer.writeObject<WeatherSnapshotIsar>(
-    offsets[9],
+    offsets[10],
     allOffsets,
     WeatherSnapshotIsarSchema.serialize,
     object.weatherSnapshot,
@@ -159,15 +172,16 @@ SymptomEntryIsar _symptomEntryIsarDeserialize(
   object.createdAt = reader.readDateTime(offsets[0]);
   object.flareIsarId = reader.readLongOrNull(offsets[1]);
   object.id = id;
-  object.loggedAt = reader.readDateTime(offsets[2]);
-  object.name = reader.readString(offsets[3]);
-  object.notes = reader.readStringOrNull(offsets[4]);
-  object.profileId = reader.readLong(offsets[5]);
-  object.severity = reader.readLong(offsets[6]);
-  object.userConditionIsarId = reader.readLongOrNull(offsets[7]);
-  object.userSymptomIsarId = reader.readLongOrNull(offsets[8]);
+  object.locations = reader.readStringList(offsets[2]) ?? [];
+  object.loggedAt = reader.readDateTime(offsets[3]);
+  object.name = reader.readString(offsets[4]);
+  object.notes = reader.readStringOrNull(offsets[5]);
+  object.profileId = reader.readLong(offsets[6]);
+  object.severity = reader.readLong(offsets[7]);
+  object.userConditionIsarId = reader.readLongOrNull(offsets[8]);
+  object.userSymptomIsarId = reader.readLongOrNull(offsets[9]);
   object.weatherSnapshot = reader.readObjectOrNull<WeatherSnapshotIsar>(
-    offsets[9],
+    offsets[10],
     WeatherSnapshotIsarSchema.deserialize,
     allOffsets,
   );
@@ -186,20 +200,22 @@ P _symptomEntryIsarDeserializeProp<P>(
     case 1:
       return (reader.readLongOrNull(offset)) as P;
     case 2:
-      return (reader.readDateTime(offset)) as P;
+      return (reader.readStringList(offset) ?? []) as P;
     case 3:
-      return (reader.readString(offset)) as P;
+      return (reader.readDateTime(offset)) as P;
     case 4:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 5:
-      return (reader.readLong(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 6:
       return (reader.readLong(offset)) as P;
     case 7:
-      return (reader.readLongOrNull(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 8:
       return (reader.readLongOrNull(offset)) as P;
     case 9:
+      return (reader.readLongOrNull(offset)) as P;
+    case 10:
       return (reader.readObjectOrNull<WeatherSnapshotIsar>(
             offset,
             WeatherSnapshotIsarSchema.deserialize,
@@ -703,6 +719,200 @@ extension SymptomEntryIsarQueryFilter
           upper: upper,
           includeUpper: includeUpper,
         ),
+      );
+    });
+  }
+
+  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
+  locationsElementEqualTo(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'locations',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
+  locationsElementGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'locations',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
+  locationsElementLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'locations',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
+  locationsElementBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'locations',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
+  locationsElementStartsWith(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'locations',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
+  locationsElementEndsWith(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'locations',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
+  locationsElementContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'locations',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
+  locationsElementMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'locations',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
+  locationsElementIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'locations', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
+  locationsElementIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'locations', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
+  locationsLengthEqualTo(int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(r'locations', length, true, length, true);
+    });
+  }
+
+  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
+  locationsIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(r'locations', 0, true, 0, true);
+    });
+  }
+
+  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
+  locationsIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(r'locations', 0, false, 999999, true);
+    });
+  }
+
+  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
+  locationsLengthLessThan(int length, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(r'locations', 0, true, length, include);
+    });
+  }
+
+  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
+  locationsLengthGreaterThan(int length, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(r'locations', length, include, 999999, true);
+    });
+  }
+
+  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
+  locationsLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'locations',
+        lower,
+        includeLower,
+        upper,
+        includeUpper,
       );
     });
   }
@@ -1634,6 +1844,13 @@ extension SymptomEntryIsarQueryWhereDistinct
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QDistinct>
+  distinctByLocations() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'locations');
+    });
+  }
+
+  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QDistinct>
   distinctByLoggedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'loggedAt');
@@ -1703,6 +1920,13 @@ extension SymptomEntryIsarQueryProperty
   QueryBuilder<SymptomEntryIsar, int?, QQueryOperations> flareIsarIdProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'flareIsarId');
+    });
+  }
+
+  QueryBuilder<SymptomEntryIsar, List<String>, QQueryOperations>
+  locationsProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'locations');
     });
   }
 

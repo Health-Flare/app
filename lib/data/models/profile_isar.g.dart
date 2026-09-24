@@ -22,34 +22,39 @@ const ProfileIsarSchema = CollectionSchema(
       name: r'avatarPath',
       type: IsarType.string,
     ),
-    r'colorSeed': PropertySchema(
+    r'bowelTrackingEnabled': PropertySchema(
       id: 1,
+      name: r'bowelTrackingEnabled',
+      type: IsarType.bool,
+    ),
+    r'colorSeed': PropertySchema(
+      id: 2,
       name: r'colorSeed',
       type: IsarType.long,
     ),
     r'cycleTrackingEnabled': PropertySchema(
-      id: 2,
+      id: 3,
       name: r'cycleTrackingEnabled',
       type: IsarType.bool,
     ),
     r'dateOfBirth': PropertySchema(
-      id: 3,
+      id: 4,
       name: r'dateOfBirth',
       type: IsarType.dateTime,
     ),
     r'firstLogShown': PropertySchema(
-      id: 4,
+      id: 5,
       name: r'firstLogShown',
       type: IsarType.bool,
     ),
-    r'name': PropertySchema(id: 5, name: r'name', type: IsarType.string),
+    r'name': PropertySchema(id: 6, name: r'name', type: IsarType.string),
     r'weatherOptInShown': PropertySchema(
-      id: 6,
+      id: 7,
       name: r'weatherOptInShown',
       type: IsarType.bool,
     ),
     r'weatherTrackingEnabled': PropertySchema(
-      id: 7,
+      id: 8,
       name: r'weatherTrackingEnabled',
       type: IsarType.bool,
     ),
@@ -91,13 +96,14 @@ void _profileIsarSerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeString(offsets[0], object.avatarPath);
-  writer.writeLong(offsets[1], object.colorSeed);
-  writer.writeBool(offsets[2], object.cycleTrackingEnabled);
-  writer.writeDateTime(offsets[3], object.dateOfBirth);
-  writer.writeBool(offsets[4], object.firstLogShown);
-  writer.writeString(offsets[5], object.name);
-  writer.writeBool(offsets[6], object.weatherOptInShown);
-  writer.writeBool(offsets[7], object.weatherTrackingEnabled);
+  writer.writeBool(offsets[1], object.bowelTrackingEnabled);
+  writer.writeLong(offsets[2], object.colorSeed);
+  writer.writeBool(offsets[3], object.cycleTrackingEnabled);
+  writer.writeDateTime(offsets[4], object.dateOfBirth);
+  writer.writeBool(offsets[5], object.firstLogShown);
+  writer.writeString(offsets[6], object.name);
+  writer.writeBool(offsets[7], object.weatherOptInShown);
+  writer.writeBool(offsets[8], object.weatherTrackingEnabled);
 }
 
 ProfileIsar _profileIsarDeserialize(
@@ -108,14 +114,15 @@ ProfileIsar _profileIsarDeserialize(
 ) {
   final object = ProfileIsar();
   object.avatarPath = reader.readStringOrNull(offsets[0]);
-  object.colorSeed = reader.readLongOrNull(offsets[1]);
-  object.cycleTrackingEnabled = reader.readBool(offsets[2]);
-  object.dateOfBirth = reader.readDateTimeOrNull(offsets[3]);
-  object.firstLogShown = reader.readBool(offsets[4]);
+  object.bowelTrackingEnabled = reader.readBool(offsets[1]);
+  object.colorSeed = reader.readLongOrNull(offsets[2]);
+  object.cycleTrackingEnabled = reader.readBool(offsets[3]);
+  object.dateOfBirth = reader.readDateTimeOrNull(offsets[4]);
+  object.firstLogShown = reader.readBool(offsets[5]);
   object.id = id;
-  object.name = reader.readString(offsets[5]);
-  object.weatherOptInShown = reader.readBool(offsets[6]);
-  object.weatherTrackingEnabled = reader.readBool(offsets[7]);
+  object.name = reader.readString(offsets[6]);
+  object.weatherOptInShown = reader.readBool(offsets[7]);
+  object.weatherTrackingEnabled = reader.readBool(offsets[8]);
   return object;
 }
 
@@ -129,18 +136,20 @@ P _profileIsarDeserializeProp<P>(
     case 0:
       return (reader.readStringOrNull(offset)) as P;
     case 1:
-      return (reader.readLongOrNull(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 2:
-      return (reader.readBool(offset)) as P;
+      return (reader.readLongOrNull(offset)) as P;
     case 3:
-      return (reader.readDateTimeOrNull(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 4:
-      return (reader.readBool(offset)) as P;
+      return (reader.readDateTimeOrNull(offset)) as P;
     case 5:
-      return (reader.readString(offset)) as P;
-    case 6:
       return (reader.readBool(offset)) as P;
+    case 6:
+      return (reader.readString(offset)) as P;
     case 7:
+      return (reader.readBool(offset)) as P;
+    case 8:
       return (reader.readBool(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -402,6 +411,18 @@ extension ProfileIsarQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(property: r'avatarPath', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
+  bowelTrackingEnabledEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'bowelTrackingEnabled',
+          value: value,
+        ),
       );
     });
   }
@@ -821,6 +842,20 @@ extension ProfileIsarQuerySortBy
     });
   }
 
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy>
+  sortByBowelTrackingEnabled() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'bowelTrackingEnabled', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy>
+  sortByBowelTrackingEnabledDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'bowelTrackingEnabled', Sort.desc);
+    });
+  }
+
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy> sortByColorSeed() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'colorSeed', Sort.asc);
@@ -924,6 +959,20 @@ extension ProfileIsarQuerySortThenBy
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy> thenByAvatarPathDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'avatarPath', Sort.desc);
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy>
+  thenByBowelTrackingEnabled() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'bowelTrackingEnabled', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy>
+  thenByBowelTrackingEnabledDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'bowelTrackingEnabled', Sort.desc);
     });
   }
 
@@ -1041,6 +1090,13 @@ extension ProfileIsarQueryWhereDistinct
     });
   }
 
+  QueryBuilder<ProfileIsar, ProfileIsar, QDistinct>
+  distinctByBowelTrackingEnabled() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'bowelTrackingEnabled');
+    });
+  }
+
   QueryBuilder<ProfileIsar, ProfileIsar, QDistinct> distinctByColorSeed() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'colorSeed');
@@ -1100,6 +1156,13 @@ extension ProfileIsarQueryProperty
   QueryBuilder<ProfileIsar, String?, QQueryOperations> avatarPathProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'avatarPath');
+    });
+  }
+
+  QueryBuilder<ProfileIsar, bool, QQueryOperations>
+  bowelTrackingEnabledProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'bowelTrackingEnabled');
     });
   }
 

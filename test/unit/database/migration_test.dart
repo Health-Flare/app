@@ -11,6 +11,8 @@ import 'package:health_flare/data/models/appointment_isar.dart';
 import 'package:health_flare/data/models/condition_isar.dart';
 import 'package:health_flare/data/models/daily_checkin_isar.dart';
 import 'package:health_flare/data/models/dose_log_isar.dart';
+import 'package:health_flare/data/models/elimination_entry_isar.dart';
+import 'package:health_flare/data/models/fluid_intake_isar.dart';
 import 'package:health_flare/data/models/flare_isar.dart';
 import 'package:health_flare/data/models/journal_entry_isar.dart';
 import 'package:health_flare/data/models/meal_entry_isar.dart';
@@ -84,6 +86,8 @@ Future<Isar> _openIsar() async {
       DailyCheckinIsarSchema,
       AppointmentIsarSchema,
       ActivityEntryIsarSchema,
+      FluidIntakeIsarSchema,
+      EliminationEntryIsarSchema,
     ],
     directory: '',
     name: 'migration_test_${DateTime.now().microsecondsSinceEpoch}',
@@ -109,7 +113,7 @@ void main() {
   });
 
   group('MigrationRunner', () {
-    test('fresh install: schemaVersion reaches target (v15)', () async {
+    test('fresh install: schemaVersion reaches target (v16)', () async {
       final isar = await _openIsar();
 
       // No AppSettings doc exists yet → currentVersion = 0.
@@ -117,7 +121,7 @@ void main() {
 
       final settings = await isar.appSettings.get(1);
       expect(settings, isNotNull);
-      expect(settings!.schemaVersion, 15);
+      expect(settings!.schemaVersion, 16);
     });
 
     test('v2 migration seeds condition catalogue', () async {
@@ -169,7 +173,7 @@ void main() {
       expect(countAfter, countBefore);
 
       final settings = await isar.appSettings.get(1);
-      expect(settings!.schemaVersion, 15);
+      expect(settings!.schemaVersion, 16);
     });
 
     test('migration from v1 preserves existing profiles', () async {
@@ -190,7 +194,7 @@ void main() {
         await isar.profileIsars.put(profile);
       });
 
-      // Migrate v1 → v15.
+      // Migrate v1 → v16.
       await MigrationRunner.run(isar);
 
       // Profile should still exist after migration.
@@ -199,17 +203,17 @@ void main() {
       expect(profiles.first.name, 'Test User');
 
       final settings = await isar.appSettings.get(1);
-      expect(settings!.schemaVersion, 15);
+      expect(settings!.schemaVersion, 16);
     });
 
     test(
       'all Isar schemas registered in IsarService match MigrationRunner',
       () {
         // This test ensures app_database.dart and migration_runner.dart agree
-        // on the target version. Both hardcode v15: this test would fail if
+        // on the target version. Both hardcode v16: this test would fail if
         // one is updated without the other.
         //
-        // The target version is verified by the migration reaching v15 in the
+        // The target version is verified by the migration reaching v16 in the
         // test above. Here we just confirm the schema list in IsarService is
         // consistent (it compiles, which means all schemas exist).
         expect(IsarService, isNotNull);

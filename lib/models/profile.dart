@@ -17,6 +17,7 @@ class Profile {
     this.weatherTrackingEnabled = false,
     this.colorSeed,
     this.cycleTrackingEnabled = false,
+    this.bowelTrackingEnabled = false,
   });
 
   /// Stable local identifier. In the in-memory MVP this is a simple
@@ -41,8 +42,13 @@ class Profile {
   final int? colorSeed;
 
   /// Whether menstrual cycle tracking is enabled for this profile.
-  /// When true, cycle phase field appears in daily check-in.
+  /// When true, cycle phase field appears in daily check-in and Quick Log
+  /// may suggest a Cycle chip.
   final bool cycleTrackingEnabled;
+
+  /// Whether bowel and bladder logging is enabled for this profile.
+  /// Off by default so the Bowel chip is not an ambient exposure.
+  final bool bowelTrackingEnabled;
 
   /// Returns true if this profile has a real photo rather than a generated one.
   bool get hasAvatar => avatarPath != null;
@@ -80,6 +86,7 @@ class Profile {
     bool? weatherTrackingEnabled,
     int? colorSeed,
     bool? cycleTrackingEnabled,
+    bool? bowelTrackingEnabled,
     bool clearDateOfBirth = false,
     bool clearAvatar = false,
   }) {
@@ -92,6 +99,7 @@ class Profile {
           weatherTrackingEnabled ?? this.weatherTrackingEnabled,
       colorSeed: colorSeed ?? this.colorSeed,
       cycleTrackingEnabled: cycleTrackingEnabled ?? this.cycleTrackingEnabled,
+      bowelTrackingEnabled: bowelTrackingEnabled ?? this.bowelTrackingEnabled,
     );
   }
 

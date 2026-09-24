@@ -38,6 +38,10 @@ class ProfileIsar {
   /// Whether menstrual cycle tracking is enabled for this profile.
   bool cycleTrackingEnabled = false;
 
+  /// Whether bowel and bladder logging is enabled for this profile.
+  /// Off by default so Quick Log does not surface a Bowel chip unasked.
+  bool bowelTrackingEnabled = false;
+
   // ── Conversion ────────────────────────────────────────────────────────────
 
   /// Convert to the immutable domain class used by the UI.
@@ -49,6 +53,7 @@ class ProfileIsar {
     weatherTrackingEnabled: weatherTrackingEnabled,
     colorSeed: colorSeed,
     cycleTrackingEnabled: cycleTrackingEnabled,
+    bowelTrackingEnabled: bowelTrackingEnabled,
   );
 
   /// Construct from a domain [Profile] for writing to Isar.
@@ -64,5 +69,6 @@ class ProfileIsar {
     ..avatarPath = p.avatarPath
     ..weatherTrackingEnabled = p.weatherTrackingEnabled
     ..colorSeed = p.colorSeed
-    ..cycleTrackingEnabled = p.cycleTrackingEnabled;
+    ..cycleTrackingEnabled = p.cycleTrackingEnabled
+    ..bowelTrackingEnabled = p.bowelTrackingEnabled;
 }

@@ -46,7 +46,7 @@ class DailyCheckinListNotifier extends Notifier<List<DailyCheckin>> {
   Future<int> add({
     required int profileId,
     required DateTime checkinDate,
-    required int wellbeing,
+    int? wellbeing,
     String? stressLevel,
     String? cyclePhase,
     String? notes,

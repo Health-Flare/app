@@ -103,7 +103,7 @@ class _CheckInTile extends StatelessWidget {
 class _WellbeingBadge extends StatelessWidget {
   const _WellbeingBadge({required this.wellbeing});
 
-  final int wellbeing;
+  final int? wellbeing;
 
   @override
   Widget build(BuildContext context) {
@@ -112,13 +112,14 @@ class _WellbeingBadge extends StatelessWidget {
       backgroundColor: _color(wellbeing, cs),
       radius: 20,
       child: Text(
-        '$wellbeing',
+        wellbeing?.toString() ?? '–',
         style: TextStyle(color: cs.onPrimary, fontWeight: FontWeight.bold),
       ),
     );
   }
 
-  Color _color(int v, ColorScheme cs) {
+  Color _color(int? v, ColorScheme cs) {
+    if (v == null) return cs.surfaceContainerHighest;
     if (v >= 8) return Colors.green.shade600;
     if (v >= 5) return Colors.orange.shade600;
     return cs.error;

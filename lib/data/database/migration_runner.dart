@@ -22,6 +22,9 @@ import 'package:health_flare/data/seed_data.dart';
 /// Schema v13 = added status + statusHistory (ConditionStatusEventIsar) to UserConditionIsar.
 /// Schema v14 = added weatherSnapshot embedded field to SymptomEntryIsar, MealEntryIsar, ActivityEntryIsar, DailyCheckinIsar.
 /// Schema v15 = added weather embedded field to JournalEntryIsar.
+/// Schema v16 = nullable DailyCheckin.wellbeing; SymptomEntry.locations;
+///              Profile.bowelTrackingEnabled; FluidIntakeIsar and
+///              EliminationEntryIsar collections.
 ///
 /// How to add a future migration:
 ///   1. Increment [_targetVersion].
@@ -35,7 +38,7 @@ import 'package:health_flare/data/seed_data.dart';
 class MigrationRunner {
   MigrationRunner._();
 
-  static const int _targetVersion = 15;
+  static const int _targetVersion = 16;
 
   /// Run all pending migrations and update [AppSettings.schemaVersion].
   ///
@@ -219,6 +222,20 @@ class MigrationRunner {
       await isar.writeTxn(() async {
         final s = await isar.appSettings.get(1) ?? (AppSettings()..id = 1);
         s.schemaVersion = 15;
+        await isar.appSettings.put(s);
+      });
+    }
+
+    // ── v15 → v16: quick-log domains ──────────────────────────────────────
+    // DailyCheckin.wellbeing becomes nullable (existing scores stay).
+    // SymptomEntryIsar gains locations (default empty).
+    // ProfileIsar gains bowelTrackingEnabled (default false).
+    // FluidIntakeIsar and EliminationEntryIsar collections are registered.
+    // Isar applies the structural changes. No value rewrite is required.
+    if (currentVersion < 16) {
+      await isar.writeTxn(() async {
+        final s = await isar.appSettings.get(1) ?? (AppSettings()..id = 1);
+        s.schemaVersion = 16;
         await isar.appSettings.put(s);
       });
     }

@@ -62,11 +62,19 @@ class SleepEntryScreen extends ConsumerStatefulWidget {
 /// parsed from it, the resulting times into [SleepEntryScreen] as its route
 /// `extra`.
 class SleepEntryPrefill {
-  const SleepEntryPrefill({this.notes, this.bedtime, this.wakeTime});
+  const SleepEntryPrefill({
+    this.notes,
+    this.bedtime,
+    this.wakeTime,
+    this.isNap,
+  });
 
   final String? notes;
   final DateTime? bedtime;
   final DateTime? wakeTime;
+
+  /// When set, overrides the automatic "already slept today" nap guess.
+  final bool? isNap;
 }
 
 class _SleepEntryScreenState extends ConsumerState<SleepEntryScreen> {
@@ -97,10 +105,11 @@ class _SleepEntryScreenState extends ConsumerState<SleepEntryScreen> {
           widget.prefill?.wakeTime ?? today.add(const Duration(hours: 7));
       final profileId = ref.read(activeProfileProvider);
       _isNap =
-          profileId != null &&
-          ref
-              .read(sleepEntryListProvider)
-              .any((e) => e.profileId == profileId && e.date == today);
+          widget.prefill?.isNap ??
+          (profileId != null &&
+              ref
+                  .read(sleepEntryListProvider)
+                  .any((e) => e.profileId == profileId && e.date == today));
       _notesController = TextEditingController(
         text: widget.prefill?.notes ?? '',
       );

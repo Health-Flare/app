@@ -20,6 +20,9 @@ class SymptomEntryIsar {
 
   late int severity;
 
+  /// Canonical body regions ("knees", "left hip", "hands").
+  List<String> locations = [];
+
   String? notes;
 
   @Index()
@@ -38,6 +41,7 @@ class SymptomEntryIsar {
     userSymptomIsarId: userSymptomIsarId,
     userConditionIsarId: userConditionIsarId,
     severity: severity,
+    locations: locations,
     notes: notes,
     loggedAt: loggedAt,
     createdAt: createdAt,
@@ -52,6 +56,7 @@ class SymptomEntryIsar {
     ..userSymptomIsarId = e.userSymptomIsarId
     ..userConditionIsarId = e.userConditionIsarId
     ..severity = e.severity
+    ..locations = e.locations
     ..notes = e.notes
     ..loggedAt = e.loggedAt
     ..createdAt = e.createdAt

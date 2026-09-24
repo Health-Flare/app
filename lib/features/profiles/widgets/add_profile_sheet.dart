@@ -34,6 +34,8 @@ class _AddProfileSheetState extends ConsumerState<AddProfileSheet> {
   String? _avatarPath;
   bool _isSaving = false;
   bool _weatherEnabled = false;
+  bool _cycleEnabled = false;
+  bool _bowelEnabled = false;
 
   final _picker = ImagePicker();
 
@@ -50,6 +52,8 @@ class _AddProfileSheetState extends ConsumerState<AddProfileSheet> {
     }
     _avatarPath = existing?.avatarPath;
     _weatherEnabled = existing?.weatherTrackingEnabled ?? false;
+    _cycleEnabled = existing?.cycleTrackingEnabled ?? false;
+    _bowelEnabled = existing?.bowelTrackingEnabled ?? false;
   }
 
   @override
@@ -114,6 +118,8 @@ class _AddProfileSheetState extends ConsumerState<AddProfileSheet> {
         avatarPath: _avatarPath,
         clearDateOfBirth: _dateOfBirth == null,
         weatherTrackingEnabled: _weatherEnabled,
+        cycleTrackingEnabled: _cycleEnabled,
+        bowelTrackingEnabled: _bowelEnabled,
       );
       await listNotifier.update(updated);
     } else {
@@ -332,6 +338,25 @@ class _AddProfileSheetState extends ConsumerState<AddProfileSheet> {
                     value: _weatherEnabled,
                     onChanged: (value) =>
                         setState(() => _weatherEnabled = value),
+                  ),
+                  SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text('Cycle tracking'),
+                    subtitle: const Text(
+                      'Show a Cycle chip in Quick Log and a phase on check-ins',
+                    ),
+                    value: _cycleEnabled,
+                    onChanged: (value) => setState(() => _cycleEnabled = value),
+                  ),
+                  SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text('Bowel and bladder tracking'),
+                    subtitle: const Text(
+                      'Off until you turn it on. Quick Log will not suggest '
+                      'a Bowel chip before then.',
+                    ),
+                    value: _bowelEnabled,
+                    onChanged: (value) => setState(() => _bowelEnabled = value),
                   ),
                 ],
 
