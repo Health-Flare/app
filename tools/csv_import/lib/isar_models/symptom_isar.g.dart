@@ -459,7 +459,7 @@ extension SymptomIsarQueryFilter
   }
 
   QueryBuilder<SymptomIsar, SymptomIsar, QAfterFilterCondition>
-  nameIsNotEmpty() {
+      nameIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(property: r'name', value: ''),

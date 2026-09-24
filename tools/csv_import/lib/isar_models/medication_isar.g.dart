@@ -331,7 +331,7 @@ extension MedicationIsarQueryWhere
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterWhereClause>
-  profileIdEqualTo(int profileId) {
+      profileIdEqualTo(int profileId) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IndexWhereClause.equalTo(indexName: r'profileId', value: [profileId]),
@@ -340,7 +340,7 @@ extension MedicationIsarQueryWhere
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterWhereClause>
-  profileIdNotEqualTo(int profileId) {
+      profileIdNotEqualTo(int profileId) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -383,7 +383,7 @@ extension MedicationIsarQueryWhere
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterWhereClause>
-  profileIdGreaterThan(int profileId, {bool include = false}) {
+      profileIdGreaterThan(int profileId, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IndexWhereClause.between(
@@ -397,7 +397,7 @@ extension MedicationIsarQueryWhere
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterWhereClause>
-  profileIdLessThan(int profileId, {bool include = false}) {
+      profileIdLessThan(int profileId, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IndexWhereClause.between(
@@ -411,7 +411,7 @@ extension MedicationIsarQueryWhere
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterWhereClause>
-  profileIdBetween(
+      profileIdBetween(
     int lowerProfileId,
     int upperProfileId, {
     bool includeLower = true,
@@ -431,7 +431,7 @@ extension MedicationIsarQueryWhere
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterWhereClause>
-  startDateEqualTo(DateTime startDate) {
+      startDateEqualTo(DateTime startDate) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IndexWhereClause.equalTo(indexName: r'startDate', value: [startDate]),
@@ -440,7 +440,7 @@ extension MedicationIsarQueryWhere
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterWhereClause>
-  startDateNotEqualTo(DateTime startDate) {
+      startDateNotEqualTo(DateTime startDate) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -483,7 +483,7 @@ extension MedicationIsarQueryWhere
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterWhereClause>
-  startDateGreaterThan(DateTime startDate, {bool include = false}) {
+      startDateGreaterThan(DateTime startDate, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IndexWhereClause.between(
@@ -497,7 +497,7 @@ extension MedicationIsarQueryWhere
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterWhereClause>
-  startDateLessThan(DateTime startDate, {bool include = false}) {
+      startDateLessThan(DateTime startDate, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IndexWhereClause.between(
@@ -511,7 +511,7 @@ extension MedicationIsarQueryWhere
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterWhereClause>
-  startDateBetween(
+      startDateBetween(
     DateTime lowerStartDate,
     DateTime upperStartDate, {
     bool includeLower = true,
@@ -534,7 +534,7 @@ extension MedicationIsarQueryWhere
 extension MedicationIsarQueryFilter
     on QueryBuilder<MedicationIsar, MedicationIsar, QFilterCondition> {
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  createdAtEqualTo(DateTime value) {
+      createdAtEqualTo(DateTime value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'createdAt', value: value),
@@ -543,7 +543,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  createdAtGreaterThan(DateTime value, {bool include = false}) {
+      createdAtGreaterThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -556,7 +556,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  createdAtLessThan(DateTime value, {bool include = false}) {
+      createdAtLessThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -569,7 +569,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  createdAtBetween(
+      createdAtBetween(
     DateTime lower,
     DateTime upper, {
     bool includeLower = true,
@@ -589,7 +589,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  doseAmountEqualTo(double value, {double epsilon = Query.epsilon}) {
+      doseAmountEqualTo(double value, {double epsilon = Query.epsilon}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(
@@ -602,7 +602,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  doseAmountGreaterThan(
+      doseAmountGreaterThan(
     double value, {
     bool include = false,
     double epsilon = Query.epsilon,
@@ -620,7 +620,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  doseAmountLessThan(
+      doseAmountLessThan(
     double value, {
     bool include = false,
     double epsilon = Query.epsilon,
@@ -638,7 +638,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  doseAmountBetween(
+      doseAmountBetween(
     double lower,
     double upper, {
     bool includeLower = true,
@@ -660,7 +660,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  doseUnitEqualTo(String value, {bool caseSensitive = true}) {
+      doseUnitEqualTo(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(
@@ -673,7 +673,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  doseUnitGreaterThan(
+      doseUnitGreaterThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -691,7 +691,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  doseUnitLessThan(
+      doseUnitLessThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -709,7 +709,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  doseUnitBetween(
+      doseUnitBetween(
     String lower,
     String upper, {
     bool includeLower = true,
@@ -731,7 +731,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  doseUnitStartsWith(String value, {bool caseSensitive = true}) {
+      doseUnitStartsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.startsWith(
@@ -744,7 +744,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  doseUnitEndsWith(String value, {bool caseSensitive = true}) {
+      doseUnitEndsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.endsWith(
@@ -757,7 +757,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  doseUnitContains(String value, {bool caseSensitive = true}) {
+      doseUnitContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.contains(
@@ -770,7 +770,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  doseUnitMatches(String pattern, {bool caseSensitive = true}) {
+      doseUnitMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.matches(
@@ -783,7 +783,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  doseUnitIsEmpty() {
+      doseUnitIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'doseUnit', value: ''),
@@ -792,7 +792,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  doseUnitIsNotEmpty() {
+      doseUnitIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(property: r'doseUnit', value: ''),
@@ -801,7 +801,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  endDateIsNull() {
+      endDateIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNull(property: r'endDate'),
@@ -810,7 +810,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  endDateIsNotNull() {
+      endDateIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNotNull(property: r'endDate'),
@@ -819,7 +819,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  endDateEqualTo(DateTime? value) {
+      endDateEqualTo(DateTime? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'endDate', value: value),
@@ -828,7 +828,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  endDateGreaterThan(DateTime? value, {bool include = false}) {
+      endDateGreaterThan(DateTime? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -841,7 +841,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  endDateLessThan(DateTime? value, {bool include = false}) {
+      endDateLessThan(DateTime? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -854,7 +854,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  endDateBetween(
+      endDateBetween(
     DateTime? lower,
     DateTime? upper, {
     bool includeLower = true,
@@ -874,7 +874,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  frequencyEqualTo(String value, {bool caseSensitive = true}) {
+      frequencyEqualTo(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(
@@ -887,7 +887,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  frequencyGreaterThan(
+      frequencyGreaterThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -905,7 +905,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  frequencyLessThan(
+      frequencyLessThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -923,7 +923,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  frequencyBetween(
+      frequencyBetween(
     String lower,
     String upper, {
     bool includeLower = true,
@@ -945,7 +945,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  frequencyStartsWith(String value, {bool caseSensitive = true}) {
+      frequencyStartsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.startsWith(
@@ -958,7 +958,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  frequencyEndsWith(String value, {bool caseSensitive = true}) {
+      frequencyEndsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.endsWith(
@@ -971,7 +971,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  frequencyContains(String value, {bool caseSensitive = true}) {
+      frequencyContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.contains(
@@ -984,7 +984,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  frequencyMatches(String pattern, {bool caseSensitive = true}) {
+      frequencyMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.matches(
@@ -997,7 +997,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  frequencyIsEmpty() {
+      frequencyIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'frequency', value: ''),
@@ -1006,7 +1006,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  frequencyIsNotEmpty() {
+      frequencyIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(property: r'frequency', value: ''),
@@ -1015,7 +1015,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  frequencyLabelIsNull() {
+      frequencyLabelIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNull(property: r'frequencyLabel'),
@@ -1024,7 +1024,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  frequencyLabelIsNotNull() {
+      frequencyLabelIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNotNull(property: r'frequencyLabel'),
@@ -1033,7 +1033,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  frequencyLabelEqualTo(String? value, {bool caseSensitive = true}) {
+      frequencyLabelEqualTo(String? value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(
@@ -1046,7 +1046,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  frequencyLabelGreaterThan(
+      frequencyLabelGreaterThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -1064,7 +1064,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  frequencyLabelLessThan(
+      frequencyLabelLessThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -1082,7 +1082,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  frequencyLabelBetween(
+      frequencyLabelBetween(
     String? lower,
     String? upper, {
     bool includeLower = true,
@@ -1104,7 +1104,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  frequencyLabelStartsWith(String value, {bool caseSensitive = true}) {
+      frequencyLabelStartsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.startsWith(
@@ -1117,7 +1117,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  frequencyLabelEndsWith(String value, {bool caseSensitive = true}) {
+      frequencyLabelEndsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.endsWith(
@@ -1130,7 +1130,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  frequencyLabelContains(String value, {bool caseSensitive = true}) {
+      frequencyLabelContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.contains(
@@ -1143,7 +1143,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  frequencyLabelMatches(String pattern, {bool caseSensitive = true}) {
+      frequencyLabelMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.matches(
@@ -1156,7 +1156,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  frequencyLabelIsEmpty() {
+      frequencyLabelIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'frequencyLabel', value: ''),
@@ -1165,7 +1165,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  frequencyLabelIsNotEmpty() {
+      frequencyLabelIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(property: r'frequencyLabel', value: ''),
@@ -1184,7 +1184,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  idGreaterThan(Id value, {bool include = false}) {
+      idGreaterThan(Id value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -1197,7 +1197,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  idLessThan(Id value, {bool include = false}) {
+      idLessThan(Id value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -1229,7 +1229,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  medicationTypeEqualTo(String value, {bool caseSensitive = true}) {
+      medicationTypeEqualTo(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(
@@ -1242,7 +1242,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  medicationTypeGreaterThan(
+      medicationTypeGreaterThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -1260,7 +1260,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  medicationTypeLessThan(
+      medicationTypeLessThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -1278,7 +1278,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  medicationTypeBetween(
+      medicationTypeBetween(
     String lower,
     String upper, {
     bool includeLower = true,
@@ -1300,7 +1300,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  medicationTypeStartsWith(String value, {bool caseSensitive = true}) {
+      medicationTypeStartsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.startsWith(
@@ -1313,7 +1313,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  medicationTypeEndsWith(String value, {bool caseSensitive = true}) {
+      medicationTypeEndsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.endsWith(
@@ -1326,7 +1326,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  medicationTypeContains(String value, {bool caseSensitive = true}) {
+      medicationTypeContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.contains(
@@ -1339,7 +1339,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  medicationTypeMatches(String pattern, {bool caseSensitive = true}) {
+      medicationTypeMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.matches(
@@ -1352,7 +1352,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  medicationTypeIsEmpty() {
+      medicationTypeIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'medicationType', value: ''),
@@ -1361,7 +1361,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  medicationTypeIsNotEmpty() {
+      medicationTypeIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(property: r'medicationType', value: ''),
@@ -1370,7 +1370,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  nameEqualTo(String value, {bool caseSensitive = true}) {
+      nameEqualTo(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(
@@ -1383,7 +1383,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  nameGreaterThan(
+      nameGreaterThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -1401,7 +1401,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  nameLessThan(
+      nameLessThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -1419,7 +1419,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  nameBetween(
+      nameBetween(
     String lower,
     String upper, {
     bool includeLower = true,
@@ -1441,7 +1441,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  nameStartsWith(String value, {bool caseSensitive = true}) {
+      nameStartsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.startsWith(
@@ -1454,7 +1454,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  nameEndsWith(String value, {bool caseSensitive = true}) {
+      nameEndsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.endsWith(
@@ -1467,7 +1467,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  nameContains(String value, {bool caseSensitive = true}) {
+      nameContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.contains(
@@ -1480,7 +1480,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  nameMatches(String pattern, {bool caseSensitive = true}) {
+      nameMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.matches(
@@ -1493,7 +1493,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  nameIsEmpty() {
+      nameIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'name', value: ''),
@@ -1502,7 +1502,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  nameIsNotEmpty() {
+      nameIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(property: r'name', value: ''),
@@ -1511,7 +1511,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  notesIsNull() {
+      notesIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNull(property: r'notes'),
@@ -1520,7 +1520,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  notesIsNotNull() {
+      notesIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNotNull(property: r'notes'),
@@ -1529,7 +1529,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  notesEqualTo(String? value, {bool caseSensitive = true}) {
+      notesEqualTo(String? value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(
@@ -1542,7 +1542,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  notesGreaterThan(
+      notesGreaterThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -1560,7 +1560,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  notesLessThan(
+      notesLessThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -1578,7 +1578,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  notesBetween(
+      notesBetween(
     String? lower,
     String? upper, {
     bool includeLower = true,
@@ -1600,7 +1600,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  notesStartsWith(String value, {bool caseSensitive = true}) {
+      notesStartsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.startsWith(
@@ -1613,7 +1613,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  notesEndsWith(String value, {bool caseSensitive = true}) {
+      notesEndsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.endsWith(
@@ -1626,7 +1626,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  notesContains(String value, {bool caseSensitive = true}) {
+      notesContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.contains(
@@ -1639,7 +1639,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  notesMatches(String pattern, {bool caseSensitive = true}) {
+      notesMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.matches(
@@ -1652,7 +1652,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  notesIsEmpty() {
+      notesIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'notes', value: ''),
@@ -1661,7 +1661,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  notesIsNotEmpty() {
+      notesIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(property: r'notes', value: ''),
@@ -1670,7 +1670,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  profileIdEqualTo(int value) {
+      profileIdEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'profileId', value: value),
@@ -1679,7 +1679,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  profileIdGreaterThan(int value, {bool include = false}) {
+      profileIdGreaterThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -1692,7 +1692,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  profileIdLessThan(int value, {bool include = false}) {
+      profileIdLessThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -1705,7 +1705,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  profileIdBetween(
+      profileIdBetween(
     int lower,
     int upper, {
     bool includeLower = true,
@@ -1725,7 +1725,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  startDateEqualTo(DateTime value) {
+      startDateEqualTo(DateTime value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'startDate', value: value),
@@ -1734,7 +1734,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  startDateGreaterThan(DateTime value, {bool include = false}) {
+      startDateGreaterThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -1747,7 +1747,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  startDateLessThan(DateTime value, {bool include = false}) {
+      startDateLessThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -1760,7 +1760,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  startDateBetween(
+      startDateBetween(
     DateTime lower,
     DateTime upper, {
     bool includeLower = true,
@@ -1780,7 +1780,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  updatedAtIsNull() {
+      updatedAtIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNull(property: r'updatedAt'),
@@ -1789,7 +1789,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  updatedAtIsNotNull() {
+      updatedAtIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNotNull(property: r'updatedAt'),
@@ -1798,7 +1798,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  updatedAtEqualTo(DateTime? value) {
+      updatedAtEqualTo(DateTime? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'updatedAt', value: value),
@@ -1807,7 +1807,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  updatedAtGreaterThan(DateTime? value, {bool include = false}) {
+      updatedAtGreaterThan(DateTime? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -1820,7 +1820,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  updatedAtLessThan(DateTime? value, {bool include = false}) {
+      updatedAtLessThan(DateTime? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -1833,7 +1833,7 @@ extension MedicationIsarQueryFilter
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterFilterCondition>
-  updatedAtBetween(
+      updatedAtBetween(
     DateTime? lower,
     DateTime? upper, {
     bool includeLower = true,
@@ -1868,21 +1868,21 @@ extension MedicationIsarQuerySortBy
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterSortBy>
-  sortByCreatedAtDesc() {
+      sortByCreatedAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'createdAt', Sort.desc);
     });
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterSortBy>
-  sortByDoseAmount() {
+      sortByDoseAmount() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'doseAmount', Sort.asc);
     });
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterSortBy>
-  sortByDoseAmountDesc() {
+      sortByDoseAmountDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'doseAmount', Sort.desc);
     });
@@ -1895,7 +1895,7 @@ extension MedicationIsarQuerySortBy
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterSortBy>
-  sortByDoseUnitDesc() {
+      sortByDoseUnitDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'doseUnit', Sort.desc);
     });
@@ -1908,7 +1908,7 @@ extension MedicationIsarQuerySortBy
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterSortBy>
-  sortByEndDateDesc() {
+      sortByEndDateDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'endDate', Sort.desc);
     });
@@ -1921,35 +1921,35 @@ extension MedicationIsarQuerySortBy
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterSortBy>
-  sortByFrequencyDesc() {
+      sortByFrequencyDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'frequency', Sort.desc);
     });
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterSortBy>
-  sortByFrequencyLabel() {
+      sortByFrequencyLabel() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'frequencyLabel', Sort.asc);
     });
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterSortBy>
-  sortByFrequencyLabelDesc() {
+      sortByFrequencyLabelDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'frequencyLabel', Sort.desc);
     });
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterSortBy>
-  sortByMedicationType() {
+      sortByMedicationType() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'medicationType', Sort.asc);
     });
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterSortBy>
-  sortByMedicationTypeDesc() {
+      sortByMedicationTypeDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'medicationType', Sort.desc);
     });
@@ -1986,7 +1986,7 @@ extension MedicationIsarQuerySortBy
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterSortBy>
-  sortByProfileIdDesc() {
+      sortByProfileIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'profileId', Sort.desc);
     });
@@ -1999,7 +1999,7 @@ extension MedicationIsarQuerySortBy
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterSortBy>
-  sortByStartDateDesc() {
+      sortByStartDateDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'startDate', Sort.desc);
     });
@@ -2012,7 +2012,7 @@ extension MedicationIsarQuerySortBy
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterSortBy>
-  sortByUpdatedAtDesc() {
+      sortByUpdatedAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'updatedAt', Sort.desc);
     });
@@ -2028,21 +2028,21 @@ extension MedicationIsarQuerySortThenBy
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterSortBy>
-  thenByCreatedAtDesc() {
+      thenByCreatedAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'createdAt', Sort.desc);
     });
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterSortBy>
-  thenByDoseAmount() {
+      thenByDoseAmount() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'doseAmount', Sort.asc);
     });
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterSortBy>
-  thenByDoseAmountDesc() {
+      thenByDoseAmountDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'doseAmount', Sort.desc);
     });
@@ -2055,7 +2055,7 @@ extension MedicationIsarQuerySortThenBy
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterSortBy>
-  thenByDoseUnitDesc() {
+      thenByDoseUnitDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'doseUnit', Sort.desc);
     });
@@ -2068,7 +2068,7 @@ extension MedicationIsarQuerySortThenBy
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterSortBy>
-  thenByEndDateDesc() {
+      thenByEndDateDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'endDate', Sort.desc);
     });
@@ -2081,21 +2081,21 @@ extension MedicationIsarQuerySortThenBy
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterSortBy>
-  thenByFrequencyDesc() {
+      thenByFrequencyDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'frequency', Sort.desc);
     });
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterSortBy>
-  thenByFrequencyLabel() {
+      thenByFrequencyLabel() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'frequencyLabel', Sort.asc);
     });
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterSortBy>
-  thenByFrequencyLabelDesc() {
+      thenByFrequencyLabelDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'frequencyLabel', Sort.desc);
     });
@@ -2114,14 +2114,14 @@ extension MedicationIsarQuerySortThenBy
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterSortBy>
-  thenByMedicationType() {
+      thenByMedicationType() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'medicationType', Sort.asc);
     });
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterSortBy>
-  thenByMedicationTypeDesc() {
+      thenByMedicationTypeDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'medicationType', Sort.desc);
     });
@@ -2158,7 +2158,7 @@ extension MedicationIsarQuerySortThenBy
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterSortBy>
-  thenByProfileIdDesc() {
+      thenByProfileIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'profileId', Sort.desc);
     });
@@ -2171,7 +2171,7 @@ extension MedicationIsarQuerySortThenBy
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterSortBy>
-  thenByStartDateDesc() {
+      thenByStartDateDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'startDate', Sort.desc);
     });
@@ -2184,7 +2184,7 @@ extension MedicationIsarQuerySortThenBy
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QAfterSortBy>
-  thenByUpdatedAtDesc() {
+      thenByUpdatedAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'updatedAt', Sort.desc);
     });
@@ -2194,14 +2194,14 @@ extension MedicationIsarQuerySortThenBy
 extension MedicationIsarQueryWhereDistinct
     on QueryBuilder<MedicationIsar, MedicationIsar, QDistinct> {
   QueryBuilder<MedicationIsar, MedicationIsar, QDistinct>
-  distinctByCreatedAt() {
+      distinctByCreatedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'createdAt');
     });
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QDistinct>
-  distinctByDoseAmount() {
+      distinctByDoseAmount() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'doseAmount');
     });
@@ -2230,7 +2230,7 @@ extension MedicationIsarQueryWhereDistinct
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QDistinct>
-  distinctByFrequencyLabel({bool caseSensitive = true}) {
+      distinctByFrequencyLabel({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(
         r'frequencyLabel',
@@ -2240,7 +2240,7 @@ extension MedicationIsarQueryWhereDistinct
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QDistinct>
-  distinctByMedicationType({bool caseSensitive = true}) {
+      distinctByMedicationType({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(
         r'medicationType',
@@ -2266,21 +2266,21 @@ extension MedicationIsarQueryWhereDistinct
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QDistinct>
-  distinctByProfileId() {
+      distinctByProfileId() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'profileId');
     });
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QDistinct>
-  distinctByStartDate() {
+      distinctByStartDate() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'startDate');
     });
   }
 
   QueryBuilder<MedicationIsar, MedicationIsar, QDistinct>
-  distinctByUpdatedAt() {
+      distinctByUpdatedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'updatedAt');
     });
@@ -2326,14 +2326,14 @@ extension MedicationIsarQueryProperty
   }
 
   QueryBuilder<MedicationIsar, String?, QQueryOperations>
-  frequencyLabelProperty() {
+      frequencyLabelProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'frequencyLabel');
     });
   }
 
   QueryBuilder<MedicationIsar, String, QQueryOperations>
-  medicationTypeProperty() {
+      medicationTypeProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'medicationType');
     });
@@ -2364,7 +2364,7 @@ extension MedicationIsarQueryProperty
   }
 
   QueryBuilder<MedicationIsar, DateTime?, QQueryOperations>
-  updatedAtProperty() {
+      updatedAtProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'updatedAt');
     });

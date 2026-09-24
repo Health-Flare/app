@@ -254,7 +254,7 @@ extension ConditionIsarQueryWhere
 extension ConditionIsarQueryFilter
     on QueryBuilder<ConditionIsar, ConditionIsar, QFilterCondition> {
   QueryBuilder<ConditionIsar, ConditionIsar, QAfterFilterCondition>
-  globalEqualTo(bool value) {
+      globalEqualTo(bool value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'global', value: value),
@@ -273,7 +273,7 @@ extension ConditionIsarQueryFilter
   }
 
   QueryBuilder<ConditionIsar, ConditionIsar, QAfterFilterCondition>
-  idGreaterThan(Id value, {bool include = false}) {
+      idGreaterThan(Id value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -335,7 +335,7 @@ extension ConditionIsarQueryFilter
   }
 
   QueryBuilder<ConditionIsar, ConditionIsar, QAfterFilterCondition>
-  nameGreaterThan(
+      nameGreaterThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -353,7 +353,7 @@ extension ConditionIsarQueryFilter
   }
 
   QueryBuilder<ConditionIsar, ConditionIsar, QAfterFilterCondition>
-  nameLessThan(
+      nameLessThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -392,7 +392,7 @@ extension ConditionIsarQueryFilter
   }
 
   QueryBuilder<ConditionIsar, ConditionIsar, QAfterFilterCondition>
-  nameStartsWith(String value, {bool caseSensitive = true}) {
+      nameStartsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.startsWith(
@@ -405,7 +405,7 @@ extension ConditionIsarQueryFilter
   }
 
   QueryBuilder<ConditionIsar, ConditionIsar, QAfterFilterCondition>
-  nameEndsWith(String value, {bool caseSensitive = true}) {
+      nameEndsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.endsWith(
@@ -418,7 +418,7 @@ extension ConditionIsarQueryFilter
   }
 
   QueryBuilder<ConditionIsar, ConditionIsar, QAfterFilterCondition>
-  nameContains(String value, {bool caseSensitive = true}) {
+      nameContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.contains(
@@ -446,7 +446,7 @@ extension ConditionIsarQueryFilter
   }
 
   QueryBuilder<ConditionIsar, ConditionIsar, QAfterFilterCondition>
-  nameIsEmpty() {
+      nameIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'name', value: ''),
@@ -455,7 +455,7 @@ extension ConditionIsarQueryFilter
   }
 
   QueryBuilder<ConditionIsar, ConditionIsar, QAfterFilterCondition>
-  nameIsNotEmpty() {
+      nameIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(property: r'name', value: ''),

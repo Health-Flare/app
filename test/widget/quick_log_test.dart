@@ -974,6 +974,37 @@ void main() {
       expect(journalCalls, hasLength(1));
     });
 
+    testWidgets('sleep text with a 12-hour time range saves a sleep entry', (
+      tester,
+    ) async {
+      await _openSheet(tester);
+      await _typeAndSave(tester, 'slept 8pm to 4am');
+
+      expect(sleepCalls, hasLength(1));
+      final bedtime = sleepCalls.single['bedtime'] as DateTime;
+      final wakeTime = sleepCalls.single['wakeTime'] as DateTime;
+      expect(bedtime.hour, 20);
+      expect(wakeTime.hour, 4);
+      expect(wakeTime.difference(bedtime), const Duration(hours: 8));
+      expect(sleepCalls.single['notes'], 'slept 8pm to 4am');
+      expect(journalCalls, isEmpty);
+    });
+
+    testWidgets('sleep text with a 24-hour time range saves a sleep entry', (
+      tester,
+    ) async {
+      await _openSheet(tester);
+      await _typeAndSave(tester, 'slept 20:00 to 4:00');
+
+      expect(sleepCalls, hasLength(1));
+      final bedtime = sleepCalls.single['bedtime'] as DateTime;
+      final wakeTime = sleepCalls.single['wakeTime'] as DateTime;
+      expect(bedtime.hour, 20);
+      expect(wakeTime.hour, 4);
+      expect(wakeTime.difference(bedtime), const Duration(hours: 8));
+      expect(journalCalls, isEmpty);
+    });
+
     testWidgets('Condition-typed save starts tracking the matched condition', (
       tester,
     ) async {

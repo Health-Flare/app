@@ -227,7 +227,7 @@ extension SymptomEntryIsarQueryWhere
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterWhereClause>
-  idNotEqualTo(Id id) {
+      idNotEqualTo(Id id) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -250,7 +250,7 @@ extension SymptomEntryIsarQueryWhere
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterWhereClause>
-  idGreaterThan(Id id, {bool include = false}) {
+      idGreaterThan(Id id, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.greaterThan(lower: id, includeLower: include),
@@ -259,7 +259,7 @@ extension SymptomEntryIsarQueryWhere
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterWhereClause>
-  idLessThan(Id id, {bool include = false}) {
+      idLessThan(Id id, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.lessThan(upper: id, includeUpper: include),
@@ -286,7 +286,7 @@ extension SymptomEntryIsarQueryWhere
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterWhereClause>
-  profileIdEqualTo(int profileId) {
+      profileIdEqualTo(int profileId) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IndexWhereClause.equalTo(indexName: r'profileId', value: [profileId]),
@@ -295,7 +295,7 @@ extension SymptomEntryIsarQueryWhere
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterWhereClause>
-  profileIdNotEqualTo(int profileId) {
+      profileIdNotEqualTo(int profileId) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -338,7 +338,7 @@ extension SymptomEntryIsarQueryWhere
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterWhereClause>
-  profileIdGreaterThan(int profileId, {bool include = false}) {
+      profileIdGreaterThan(int profileId, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IndexWhereClause.between(
@@ -352,7 +352,7 @@ extension SymptomEntryIsarQueryWhere
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterWhereClause>
-  profileIdLessThan(int profileId, {bool include = false}) {
+      profileIdLessThan(int profileId, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IndexWhereClause.between(
@@ -366,7 +366,7 @@ extension SymptomEntryIsarQueryWhere
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterWhereClause>
-  profileIdBetween(
+      profileIdBetween(
     int lowerProfileId,
     int upperProfileId, {
     bool includeLower = true,
@@ -386,7 +386,7 @@ extension SymptomEntryIsarQueryWhere
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterWhereClause>
-  loggedAtEqualTo(DateTime loggedAt) {
+      loggedAtEqualTo(DateTime loggedAt) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IndexWhereClause.equalTo(indexName: r'loggedAt', value: [loggedAt]),
@@ -395,7 +395,7 @@ extension SymptomEntryIsarQueryWhere
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterWhereClause>
-  loggedAtNotEqualTo(DateTime loggedAt) {
+      loggedAtNotEqualTo(DateTime loggedAt) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -438,7 +438,7 @@ extension SymptomEntryIsarQueryWhere
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterWhereClause>
-  loggedAtGreaterThan(DateTime loggedAt, {bool include = false}) {
+      loggedAtGreaterThan(DateTime loggedAt, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IndexWhereClause.between(
@@ -452,7 +452,7 @@ extension SymptomEntryIsarQueryWhere
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterWhereClause>
-  loggedAtLessThan(DateTime loggedAt, {bool include = false}) {
+      loggedAtLessThan(DateTime loggedAt, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IndexWhereClause.between(
@@ -466,7 +466,7 @@ extension SymptomEntryIsarQueryWhere
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterWhereClause>
-  loggedAtBetween(
+      loggedAtBetween(
     DateTime lowerLoggedAt,
     DateTime upperLoggedAt, {
     bool includeLower = true,
@@ -489,7 +489,7 @@ extension SymptomEntryIsarQueryWhere
 extension SymptomEntryIsarQueryFilter
     on QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QFilterCondition> {
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-  createdAtEqualTo(DateTime value) {
+      createdAtEqualTo(DateTime value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'createdAt', value: value),
@@ -498,7 +498,7 @@ extension SymptomEntryIsarQueryFilter
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-  createdAtGreaterThan(DateTime value, {bool include = false}) {
+      createdAtGreaterThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -511,7 +511,7 @@ extension SymptomEntryIsarQueryFilter
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-  createdAtLessThan(DateTime value, {bool include = false}) {
+      createdAtLessThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -524,7 +524,7 @@ extension SymptomEntryIsarQueryFilter
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-  createdAtBetween(
+      createdAtBetween(
     DateTime lower,
     DateTime upper, {
     bool includeLower = true,
@@ -544,7 +544,7 @@ extension SymptomEntryIsarQueryFilter
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-  flareIsarIdIsNull() {
+      flareIsarIdIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNull(property: r'flareIsarId'),
@@ -553,7 +553,7 @@ extension SymptomEntryIsarQueryFilter
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-  flareIsarIdIsNotNull() {
+      flareIsarIdIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNotNull(property: r'flareIsarId'),
@@ -562,7 +562,7 @@ extension SymptomEntryIsarQueryFilter
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-  flareIsarIdEqualTo(int? value) {
+      flareIsarIdEqualTo(int? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'flareIsarId', value: value),
@@ -571,7 +571,7 @@ extension SymptomEntryIsarQueryFilter
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-  flareIsarIdGreaterThan(int? value, {bool include = false}) {
+      flareIsarIdGreaterThan(int? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -584,7 +584,7 @@ extension SymptomEntryIsarQueryFilter
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-  flareIsarIdLessThan(int? value, {bool include = false}) {
+      flareIsarIdLessThan(int? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -597,7 +597,7 @@ extension SymptomEntryIsarQueryFilter
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-  flareIsarIdBetween(
+      flareIsarIdBetween(
     int? lower,
     int? upper, {
     bool includeLower = true,
@@ -617,7 +617,7 @@ extension SymptomEntryIsarQueryFilter
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-  idEqualTo(Id value) {
+      idEqualTo(Id value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'id', value: value),
@@ -626,7 +626,7 @@ extension SymptomEntryIsarQueryFilter
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-  idGreaterThan(Id value, {bool include = false}) {
+      idGreaterThan(Id value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -639,7 +639,7 @@ extension SymptomEntryIsarQueryFilter
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-  idLessThan(Id value, {bool include = false}) {
+      idLessThan(Id value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -652,7 +652,7 @@ extension SymptomEntryIsarQueryFilter
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-  idBetween(
+      idBetween(
     Id lower,
     Id upper, {
     bool includeLower = true,
@@ -672,7 +672,7 @@ extension SymptomEntryIsarQueryFilter
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-  loggedAtEqualTo(DateTime value) {
+      loggedAtEqualTo(DateTime value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'loggedAt', value: value),
@@ -681,7 +681,7 @@ extension SymptomEntryIsarQueryFilter
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-  loggedAtGreaterThan(DateTime value, {bool include = false}) {
+      loggedAtGreaterThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -694,7 +694,7 @@ extension SymptomEntryIsarQueryFilter
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-  loggedAtLessThan(DateTime value, {bool include = false}) {
+      loggedAtLessThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -707,7 +707,7 @@ extension SymptomEntryIsarQueryFilter
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-  loggedAtBetween(
+      loggedAtBetween(
     DateTime lower,
     DateTime upper, {
     bool includeLower = true,
@@ -727,7 +727,7 @@ extension SymptomEntryIsarQueryFilter
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-  nameEqualTo(String value, {bool caseSensitive = true}) {
+      nameEqualTo(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(
@@ -740,7 +740,7 @@ extension SymptomEntryIsarQueryFilter
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-  nameGreaterThan(
+      nameGreaterThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -758,7 +758,7 @@ extension SymptomEntryIsarQueryFilter
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-  nameLessThan(
+      nameLessThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -776,7 +776,7 @@ extension SymptomEntryIsarQueryFilter
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-  nameBetween(
+      nameBetween(
     String lower,
     String upper, {
     bool includeLower = true,
@@ -798,7 +798,7 @@ extension SymptomEntryIsarQueryFilter
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-  nameStartsWith(String value, {bool caseSensitive = true}) {
+      nameStartsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.startsWith(
@@ -811,7 +811,7 @@ extension SymptomEntryIsarQueryFilter
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-  nameEndsWith(String value, {bool caseSensitive = true}) {
+      nameEndsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.endsWith(
@@ -824,7 +824,7 @@ extension SymptomEntryIsarQueryFilter
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-  nameContains(String value, {bool caseSensitive = true}) {
+      nameContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.contains(
@@ -837,7 +837,7 @@ extension SymptomEntryIsarQueryFilter
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-  nameMatches(String pattern, {bool caseSensitive = true}) {
+      nameMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.matches(
@@ -850,7 +850,7 @@ extension SymptomEntryIsarQueryFilter
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-  nameIsEmpty() {
+      nameIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'name', value: ''),
@@ -859,7 +859,7 @@ extension SymptomEntryIsarQueryFilter
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-  nameIsNotEmpty() {
+      nameIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(property: r'name', value: ''),
@@ -868,7 +868,7 @@ extension SymptomEntryIsarQueryFilter
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-  notesIsNull() {
+      notesIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNull(property: r'notes'),
@@ -877,7 +877,7 @@ extension SymptomEntryIsarQueryFilter
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-  notesIsNotNull() {
+      notesIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNotNull(property: r'notes'),
@@ -886,7 +886,7 @@ extension SymptomEntryIsarQueryFilter
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-  notesEqualTo(String? value, {bool caseSensitive = true}) {
+      notesEqualTo(String? value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(
@@ -899,7 +899,7 @@ extension SymptomEntryIsarQueryFilter
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-  notesGreaterThan(
+      notesGreaterThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -917,7 +917,7 @@ extension SymptomEntryIsarQueryFilter
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-  notesLessThan(
+      notesLessThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -935,7 +935,7 @@ extension SymptomEntryIsarQueryFilter
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-  notesBetween(
+      notesBetween(
     String? lower,
     String? upper, {
     bool includeLower = true,
@@ -957,7 +957,7 @@ extension SymptomEntryIsarQueryFilter
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-  notesStartsWith(String value, {bool caseSensitive = true}) {
+      notesStartsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.startsWith(
@@ -970,7 +970,7 @@ extension SymptomEntryIsarQueryFilter
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-  notesEndsWith(String value, {bool caseSensitive = true}) {
+      notesEndsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.endsWith(
@@ -983,7 +983,7 @@ extension SymptomEntryIsarQueryFilter
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-  notesContains(String value, {bool caseSensitive = true}) {
+      notesContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.contains(
@@ -996,7 +996,7 @@ extension SymptomEntryIsarQueryFilter
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-  notesMatches(String pattern, {bool caseSensitive = true}) {
+      notesMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.matches(
@@ -1009,7 +1009,7 @@ extension SymptomEntryIsarQueryFilter
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-  notesIsEmpty() {
+      notesIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'notes', value: ''),
@@ -1018,7 +1018,7 @@ extension SymptomEntryIsarQueryFilter
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-  notesIsNotEmpty() {
+      notesIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(property: r'notes', value: ''),
@@ -1027,7 +1027,7 @@ extension SymptomEntryIsarQueryFilter
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-  profileIdEqualTo(int value) {
+      profileIdEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'profileId', value: value),
@@ -1036,7 +1036,7 @@ extension SymptomEntryIsarQueryFilter
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-  profileIdGreaterThan(int value, {bool include = false}) {
+      profileIdGreaterThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -1049,7 +1049,7 @@ extension SymptomEntryIsarQueryFilter
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-  profileIdLessThan(int value, {bool include = false}) {
+      profileIdLessThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -1062,7 +1062,7 @@ extension SymptomEntryIsarQueryFilter
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-  profileIdBetween(
+      profileIdBetween(
     int lower,
     int upper, {
     bool includeLower = true,
@@ -1082,7 +1082,7 @@ extension SymptomEntryIsarQueryFilter
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-  severityEqualTo(int value) {
+      severityEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'severity', value: value),
@@ -1091,7 +1091,7 @@ extension SymptomEntryIsarQueryFilter
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-  severityGreaterThan(int value, {bool include = false}) {
+      severityGreaterThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -1104,7 +1104,7 @@ extension SymptomEntryIsarQueryFilter
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-  severityLessThan(int value, {bool include = false}) {
+      severityLessThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -1117,7 +1117,7 @@ extension SymptomEntryIsarQueryFilter
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-  severityBetween(
+      severityBetween(
     int lower,
     int upper, {
     bool includeLower = true,
@@ -1137,7 +1137,7 @@ extension SymptomEntryIsarQueryFilter
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-  userConditionIsarIdIsNull() {
+      userConditionIsarIdIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNull(property: r'userConditionIsarId'),
@@ -1146,7 +1146,7 @@ extension SymptomEntryIsarQueryFilter
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-  userConditionIsarIdIsNotNull() {
+      userConditionIsarIdIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNotNull(property: r'userConditionIsarId'),
@@ -1155,7 +1155,7 @@ extension SymptomEntryIsarQueryFilter
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-  userConditionIsarIdEqualTo(int? value) {
+      userConditionIsarIdEqualTo(int? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'userConditionIsarId', value: value),
@@ -1164,7 +1164,7 @@ extension SymptomEntryIsarQueryFilter
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-  userConditionIsarIdGreaterThan(int? value, {bool include = false}) {
+      userConditionIsarIdGreaterThan(int? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -1177,7 +1177,7 @@ extension SymptomEntryIsarQueryFilter
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-  userConditionIsarIdLessThan(int? value, {bool include = false}) {
+      userConditionIsarIdLessThan(int? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -1190,7 +1190,7 @@ extension SymptomEntryIsarQueryFilter
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-  userConditionIsarIdBetween(
+      userConditionIsarIdBetween(
     int? lower,
     int? upper, {
     bool includeLower = true,
@@ -1210,7 +1210,7 @@ extension SymptomEntryIsarQueryFilter
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-  userSymptomIsarIdIsNull() {
+      userSymptomIsarIdIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNull(property: r'userSymptomIsarId'),
@@ -1219,7 +1219,7 @@ extension SymptomEntryIsarQueryFilter
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-  userSymptomIsarIdIsNotNull() {
+      userSymptomIsarIdIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNotNull(property: r'userSymptomIsarId'),
@@ -1228,7 +1228,7 @@ extension SymptomEntryIsarQueryFilter
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-  userSymptomIsarIdEqualTo(int? value) {
+      userSymptomIsarIdEqualTo(int? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'userSymptomIsarId', value: value),
@@ -1237,7 +1237,7 @@ extension SymptomEntryIsarQueryFilter
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-  userSymptomIsarIdGreaterThan(int? value, {bool include = false}) {
+      userSymptomIsarIdGreaterThan(int? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -1250,7 +1250,7 @@ extension SymptomEntryIsarQueryFilter
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-  userSymptomIsarIdLessThan(int? value, {bool include = false}) {
+      userSymptomIsarIdLessThan(int? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -1263,7 +1263,7 @@ extension SymptomEntryIsarQueryFilter
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
-  userSymptomIsarIdBetween(
+      userSymptomIsarIdBetween(
     int? lower,
     int? upper, {
     bool includeLower = true,
@@ -1292,42 +1292,42 @@ extension SymptomEntryIsarQueryLinks
 extension SymptomEntryIsarQuerySortBy
     on QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QSortBy> {
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-  sortByCreatedAt() {
+      sortByCreatedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'createdAt', Sort.asc);
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-  sortByCreatedAtDesc() {
+      sortByCreatedAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'createdAt', Sort.desc);
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-  sortByFlareIsarId() {
+      sortByFlareIsarId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'flareIsarId', Sort.asc);
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-  sortByFlareIsarIdDesc() {
+      sortByFlareIsarIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'flareIsarId', Sort.desc);
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-  sortByLoggedAt() {
+      sortByLoggedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'loggedAt', Sort.asc);
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-  sortByLoggedAtDesc() {
+      sortByLoggedAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'loggedAt', Sort.desc);
     });
@@ -1340,7 +1340,7 @@ extension SymptomEntryIsarQuerySortBy
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-  sortByNameDesc() {
+      sortByNameDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'name', Sort.desc);
     });
@@ -1353,63 +1353,63 @@ extension SymptomEntryIsarQuerySortBy
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-  sortByNotesDesc() {
+      sortByNotesDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'notes', Sort.desc);
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-  sortByProfileId() {
+      sortByProfileId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'profileId', Sort.asc);
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-  sortByProfileIdDesc() {
+      sortByProfileIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'profileId', Sort.desc);
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-  sortBySeverity() {
+      sortBySeverity() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'severity', Sort.asc);
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-  sortBySeverityDesc() {
+      sortBySeverityDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'severity', Sort.desc);
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-  sortByUserConditionIsarId() {
+      sortByUserConditionIsarId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'userConditionIsarId', Sort.asc);
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-  sortByUserConditionIsarIdDesc() {
+      sortByUserConditionIsarIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'userConditionIsarId', Sort.desc);
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-  sortByUserSymptomIsarId() {
+      sortByUserSymptomIsarId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'userSymptomIsarId', Sort.asc);
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-  sortByUserSymptomIsarIdDesc() {
+      sortByUserSymptomIsarIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'userSymptomIsarId', Sort.desc);
     });
@@ -1419,28 +1419,28 @@ extension SymptomEntryIsarQuerySortBy
 extension SymptomEntryIsarQuerySortThenBy
     on QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QSortThenBy> {
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-  thenByCreatedAt() {
+      thenByCreatedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'createdAt', Sort.asc);
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-  thenByCreatedAtDesc() {
+      thenByCreatedAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'createdAt', Sort.desc);
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-  thenByFlareIsarId() {
+      thenByFlareIsarId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'flareIsarId', Sort.asc);
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-  thenByFlareIsarIdDesc() {
+      thenByFlareIsarIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'flareIsarId', Sort.desc);
     });
@@ -1453,21 +1453,21 @@ extension SymptomEntryIsarQuerySortThenBy
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-  thenByIdDesc() {
+      thenByIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.desc);
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-  thenByLoggedAt() {
+      thenByLoggedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'loggedAt', Sort.asc);
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-  thenByLoggedAtDesc() {
+      thenByLoggedAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'loggedAt', Sort.desc);
     });
@@ -1480,7 +1480,7 @@ extension SymptomEntryIsarQuerySortThenBy
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-  thenByNameDesc() {
+      thenByNameDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'name', Sort.desc);
     });
@@ -1493,63 +1493,63 @@ extension SymptomEntryIsarQuerySortThenBy
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-  thenByNotesDesc() {
+      thenByNotesDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'notes', Sort.desc);
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-  thenByProfileId() {
+      thenByProfileId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'profileId', Sort.asc);
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-  thenByProfileIdDesc() {
+      thenByProfileIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'profileId', Sort.desc);
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-  thenBySeverity() {
+      thenBySeverity() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'severity', Sort.asc);
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-  thenBySeverityDesc() {
+      thenBySeverityDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'severity', Sort.desc);
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-  thenByUserConditionIsarId() {
+      thenByUserConditionIsarId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'userConditionIsarId', Sort.asc);
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-  thenByUserConditionIsarIdDesc() {
+      thenByUserConditionIsarIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'userConditionIsarId', Sort.desc);
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-  thenByUserSymptomIsarId() {
+      thenByUserSymptomIsarId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'userSymptomIsarId', Sort.asc);
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
-  thenByUserSymptomIsarIdDesc() {
+      thenByUserSymptomIsarIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'userSymptomIsarId', Sort.desc);
     });
@@ -1559,21 +1559,21 @@ extension SymptomEntryIsarQuerySortThenBy
 extension SymptomEntryIsarQueryWhereDistinct
     on QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QDistinct> {
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QDistinct>
-  distinctByCreatedAt() {
+      distinctByCreatedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'createdAt');
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QDistinct>
-  distinctByFlareIsarId() {
+      distinctByFlareIsarId() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'flareIsarId');
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QDistinct>
-  distinctByLoggedAt() {
+      distinctByLoggedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'loggedAt');
     });
@@ -1596,28 +1596,28 @@ extension SymptomEntryIsarQueryWhereDistinct
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QDistinct>
-  distinctByProfileId() {
+      distinctByProfileId() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'profileId');
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QDistinct>
-  distinctBySeverity() {
+      distinctBySeverity() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'severity');
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QDistinct>
-  distinctByUserConditionIsarId() {
+      distinctByUserConditionIsarId() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'userConditionIsarId');
     });
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QDistinct>
-  distinctByUserSymptomIsarId() {
+      distinctByUserSymptomIsarId() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'userSymptomIsarId');
     });
@@ -1633,7 +1633,7 @@ extension SymptomEntryIsarQueryProperty
   }
 
   QueryBuilder<SymptomEntryIsar, DateTime, QQueryOperations>
-  createdAtProperty() {
+      createdAtProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'createdAt');
     });
@@ -1646,7 +1646,7 @@ extension SymptomEntryIsarQueryProperty
   }
 
   QueryBuilder<SymptomEntryIsar, DateTime, QQueryOperations>
-  loggedAtProperty() {
+      loggedAtProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'loggedAt');
     });
@@ -1677,14 +1677,14 @@ extension SymptomEntryIsarQueryProperty
   }
 
   QueryBuilder<SymptomEntryIsar, int?, QQueryOperations>
-  userConditionIsarIdProperty() {
+      userConditionIsarIdProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'userConditionIsarId');
     });
   }
 
   QueryBuilder<SymptomEntryIsar, int?, QQueryOperations>
-  userSymptomIsarIdProperty() {
+      userSymptomIsarIdProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'userSymptomIsarId');
     });

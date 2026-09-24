@@ -253,6 +253,81 @@ void main() {
     });
   });
 
+  group('QuickLogParser.parseSleepTimeRange', () {
+    // Reference "now" the quick-log entry was timestamped at — the sheet's
+    // save behaviour anchors wake time to this date, same as
+    // parseSleepDuration's callers do with the entry timestamp.
+    final reference = DateTime(2026, 3, 15, 6, 30);
+
+    test('parses a 12-hour range crossing midnight', () {
+      final range = QuickLogParser.parseSleepTimeRange(
+        'slept 8pm to 4am',
+        reference,
+      );
+      expect(range, isNotNull);
+      expect(range!.$1, DateTime(2026, 3, 14, 20));
+      expect(range.$2, DateTime(2026, 3, 15, 4));
+    });
+
+    test('parses a 24-hour range crossing midnight', () {
+      final range = QuickLogParser.parseSleepTimeRange(
+        'slept 20:00 to 4:00',
+        reference,
+      );
+      expect(range, isNotNull);
+      expect(range!.$1, DateTime(2026, 3, 14, 20));
+      expect(range.$2, DateTime(2026, 3, 15, 4));
+    });
+
+    test('parses minutes in a 12-hour range', () {
+      final range = QuickLogParser.parseSleepTimeRange(
+        'slept 10:15pm to 6:45am',
+        reference,
+      );
+      expect(range, isNotNull);
+      expect(range!.$1, DateTime(2026, 3, 14, 22, 15));
+      expect(range.$2, DateTime(2026, 3, 15, 6, 45));
+    });
+
+    test('accepts a hyphen separator', () {
+      final range = QuickLogParser.parseSleepTimeRange(
+        'slept 8pm-4am',
+        reference,
+      );
+      expect(range, isNotNull);
+      expect(range!.$1, DateTime(2026, 3, 14, 20));
+      expect(range.$2, DateTime(2026, 3, 15, 4));
+    });
+
+    test('keeps a same-day range same-day when it does not cross midnight', () {
+      // A short early-morning nap: 1am to 3am, no midnight crossing needed.
+      final range = QuickLogParser.parseSleepTimeRange(
+        'napped 1am to 3am',
+        reference,
+      );
+      expect(range, isNotNull);
+      expect(range!.$1, DateTime(2026, 3, 15, 1));
+      expect(range.$2, DateTime(2026, 3, 15, 3));
+    });
+
+    test('returns null without a recognisable time range', () {
+      expect(
+        QuickLogParser.parseSleepTimeRange(
+          'Terrible night, kept waking up',
+          reference,
+        ),
+        isNull,
+      );
+      expect(
+        QuickLogParser.parseSleepTimeRange(
+          'Slept for 6 hours last night',
+          reference,
+        ),
+        isNull,
+      );
+    });
+  });
+
   group('QuickLogParser.matchMedication', () {
     test('matches a medication name case-insensitively', () {
       final meds = [_med(1, 'Ibuprofen'), _med(2, 'Methotrexate')];

@@ -183,7 +183,7 @@ extension UserConditionIsarQueryWhereSort
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterWhere>
-  anyProfileId() {
+      anyProfileId() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         const IndexWhereClause.any(indexName: r'profileId'),
@@ -192,7 +192,7 @@ extension UserConditionIsarQueryWhereSort
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterWhere>
-  anyConditionId() {
+      anyConditionId() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         const IndexWhereClause.any(indexName: r'conditionId'),
@@ -204,14 +204,14 @@ extension UserConditionIsarQueryWhereSort
 extension UserConditionIsarQueryWhere
     on QueryBuilder<UserConditionIsar, UserConditionIsar, QWhereClause> {
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterWhereClause>
-  idEqualTo(Id id) {
+      idEqualTo(Id id) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IdWhereClause.between(lower: id, upper: id));
     });
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterWhereClause>
-  idNotEqualTo(Id id) {
+      idNotEqualTo(Id id) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -234,7 +234,7 @@ extension UserConditionIsarQueryWhere
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterWhereClause>
-  idGreaterThan(Id id, {bool include = false}) {
+      idGreaterThan(Id id, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.greaterThan(lower: id, includeLower: include),
@@ -243,7 +243,7 @@ extension UserConditionIsarQueryWhere
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterWhereClause>
-  idLessThan(Id id, {bool include = false}) {
+      idLessThan(Id id, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.lessThan(upper: id, includeUpper: include),
@@ -252,7 +252,7 @@ extension UserConditionIsarQueryWhere
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterWhereClause>
-  idBetween(
+      idBetween(
     Id lowerId,
     Id upperId, {
     bool includeLower = true,
@@ -271,7 +271,7 @@ extension UserConditionIsarQueryWhere
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterWhereClause>
-  profileIdEqualTo(int profileId) {
+      profileIdEqualTo(int profileId) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IndexWhereClause.equalTo(indexName: r'profileId', value: [profileId]),
@@ -280,7 +280,7 @@ extension UserConditionIsarQueryWhere
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterWhereClause>
-  profileIdNotEqualTo(int profileId) {
+      profileIdNotEqualTo(int profileId) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -323,7 +323,7 @@ extension UserConditionIsarQueryWhere
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterWhereClause>
-  profileIdGreaterThan(int profileId, {bool include = false}) {
+      profileIdGreaterThan(int profileId, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IndexWhereClause.between(
@@ -337,7 +337,7 @@ extension UserConditionIsarQueryWhere
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterWhereClause>
-  profileIdLessThan(int profileId, {bool include = false}) {
+      profileIdLessThan(int profileId, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IndexWhereClause.between(
@@ -351,7 +351,7 @@ extension UserConditionIsarQueryWhere
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterWhereClause>
-  profileIdBetween(
+      profileIdBetween(
     int lowerProfileId,
     int upperProfileId, {
     bool includeLower = true,
@@ -371,7 +371,7 @@ extension UserConditionIsarQueryWhere
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterWhereClause>
-  conditionIdEqualTo(int conditionId) {
+      conditionIdEqualTo(int conditionId) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IndexWhereClause.equalTo(
@@ -383,7 +383,7 @@ extension UserConditionIsarQueryWhere
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterWhereClause>
-  conditionIdNotEqualTo(int conditionId) {
+      conditionIdNotEqualTo(int conditionId) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -426,7 +426,7 @@ extension UserConditionIsarQueryWhere
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterWhereClause>
-  conditionIdGreaterThan(int conditionId, {bool include = false}) {
+      conditionIdGreaterThan(int conditionId, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IndexWhereClause.between(
@@ -440,7 +440,7 @@ extension UserConditionIsarQueryWhere
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterWhereClause>
-  conditionIdLessThan(int conditionId, {bool include = false}) {
+      conditionIdLessThan(int conditionId, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IndexWhereClause.between(
@@ -454,7 +454,7 @@ extension UserConditionIsarQueryWhere
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterWhereClause>
-  conditionIdBetween(
+      conditionIdBetween(
     int lowerConditionId,
     int upperConditionId, {
     bool includeLower = true,
@@ -477,7 +477,7 @@ extension UserConditionIsarQueryWhere
 extension UserConditionIsarQueryFilter
     on QueryBuilder<UserConditionIsar, UserConditionIsar, QFilterCondition> {
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterFilterCondition>
-  conditionIdEqualTo(int value) {
+      conditionIdEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'conditionId', value: value),
@@ -486,7 +486,7 @@ extension UserConditionIsarQueryFilter
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterFilterCondition>
-  conditionIdGreaterThan(int value, {bool include = false}) {
+      conditionIdGreaterThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -499,7 +499,7 @@ extension UserConditionIsarQueryFilter
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterFilterCondition>
-  conditionIdLessThan(int value, {bool include = false}) {
+      conditionIdLessThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -512,7 +512,7 @@ extension UserConditionIsarQueryFilter
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterFilterCondition>
-  conditionIdBetween(
+      conditionIdBetween(
     int lower,
     int upper, {
     bool includeLower = true,
@@ -532,7 +532,7 @@ extension UserConditionIsarQueryFilter
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterFilterCondition>
-  conditionNameEqualTo(String value, {bool caseSensitive = true}) {
+      conditionNameEqualTo(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(
@@ -545,7 +545,7 @@ extension UserConditionIsarQueryFilter
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterFilterCondition>
-  conditionNameGreaterThan(
+      conditionNameGreaterThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -563,7 +563,7 @@ extension UserConditionIsarQueryFilter
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterFilterCondition>
-  conditionNameLessThan(
+      conditionNameLessThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -581,7 +581,7 @@ extension UserConditionIsarQueryFilter
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterFilterCondition>
-  conditionNameBetween(
+      conditionNameBetween(
     String lower,
     String upper, {
     bool includeLower = true,
@@ -603,7 +603,7 @@ extension UserConditionIsarQueryFilter
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterFilterCondition>
-  conditionNameStartsWith(String value, {bool caseSensitive = true}) {
+      conditionNameStartsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.startsWith(
@@ -616,7 +616,7 @@ extension UserConditionIsarQueryFilter
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterFilterCondition>
-  conditionNameEndsWith(String value, {bool caseSensitive = true}) {
+      conditionNameEndsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.endsWith(
@@ -629,7 +629,7 @@ extension UserConditionIsarQueryFilter
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterFilterCondition>
-  conditionNameContains(String value, {bool caseSensitive = true}) {
+      conditionNameContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.contains(
@@ -642,7 +642,7 @@ extension UserConditionIsarQueryFilter
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterFilterCondition>
-  conditionNameMatches(String pattern, {bool caseSensitive = true}) {
+      conditionNameMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.matches(
@@ -655,7 +655,7 @@ extension UserConditionIsarQueryFilter
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterFilterCondition>
-  conditionNameIsEmpty() {
+      conditionNameIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'conditionName', value: ''),
@@ -664,7 +664,7 @@ extension UserConditionIsarQueryFilter
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterFilterCondition>
-  conditionNameIsNotEmpty() {
+      conditionNameIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(property: r'conditionName', value: ''),
@@ -673,7 +673,7 @@ extension UserConditionIsarQueryFilter
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterFilterCondition>
-  diagnosedAtIsNull() {
+      diagnosedAtIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNull(property: r'diagnosedAt'),
@@ -682,7 +682,7 @@ extension UserConditionIsarQueryFilter
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterFilterCondition>
-  diagnosedAtIsNotNull() {
+      diagnosedAtIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNotNull(property: r'diagnosedAt'),
@@ -691,7 +691,7 @@ extension UserConditionIsarQueryFilter
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterFilterCondition>
-  diagnosedAtEqualTo(DateTime? value) {
+      diagnosedAtEqualTo(DateTime? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'diagnosedAt', value: value),
@@ -700,7 +700,7 @@ extension UserConditionIsarQueryFilter
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterFilterCondition>
-  diagnosedAtGreaterThan(DateTime? value, {bool include = false}) {
+      diagnosedAtGreaterThan(DateTime? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -713,7 +713,7 @@ extension UserConditionIsarQueryFilter
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterFilterCondition>
-  diagnosedAtLessThan(DateTime? value, {bool include = false}) {
+      diagnosedAtLessThan(DateTime? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -726,7 +726,7 @@ extension UserConditionIsarQueryFilter
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterFilterCondition>
-  diagnosedAtBetween(
+      diagnosedAtBetween(
     DateTime? lower,
     DateTime? upper, {
     bool includeLower = true,
@@ -746,7 +746,7 @@ extension UserConditionIsarQueryFilter
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterFilterCondition>
-  idEqualTo(Id value) {
+      idEqualTo(Id value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'id', value: value),
@@ -755,7 +755,7 @@ extension UserConditionIsarQueryFilter
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterFilterCondition>
-  idGreaterThan(Id value, {bool include = false}) {
+      idGreaterThan(Id value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -768,7 +768,7 @@ extension UserConditionIsarQueryFilter
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterFilterCondition>
-  idLessThan(Id value, {bool include = false}) {
+      idLessThan(Id value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -781,7 +781,7 @@ extension UserConditionIsarQueryFilter
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterFilterCondition>
-  idBetween(
+      idBetween(
     Id lower,
     Id upper, {
     bool includeLower = true,
@@ -801,7 +801,7 @@ extension UserConditionIsarQueryFilter
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterFilterCondition>
-  notesIsNull() {
+      notesIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNull(property: r'notes'),
@@ -810,7 +810,7 @@ extension UserConditionIsarQueryFilter
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterFilterCondition>
-  notesIsNotNull() {
+      notesIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         const FilterCondition.isNotNull(property: r'notes'),
@@ -819,7 +819,7 @@ extension UserConditionIsarQueryFilter
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterFilterCondition>
-  notesEqualTo(String? value, {bool caseSensitive = true}) {
+      notesEqualTo(String? value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(
@@ -832,7 +832,7 @@ extension UserConditionIsarQueryFilter
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterFilterCondition>
-  notesGreaterThan(
+      notesGreaterThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -850,7 +850,7 @@ extension UserConditionIsarQueryFilter
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterFilterCondition>
-  notesLessThan(
+      notesLessThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -868,7 +868,7 @@ extension UserConditionIsarQueryFilter
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterFilterCondition>
-  notesBetween(
+      notesBetween(
     String? lower,
     String? upper, {
     bool includeLower = true,
@@ -890,7 +890,7 @@ extension UserConditionIsarQueryFilter
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterFilterCondition>
-  notesStartsWith(String value, {bool caseSensitive = true}) {
+      notesStartsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.startsWith(
@@ -903,7 +903,7 @@ extension UserConditionIsarQueryFilter
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterFilterCondition>
-  notesEndsWith(String value, {bool caseSensitive = true}) {
+      notesEndsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.endsWith(
@@ -916,7 +916,7 @@ extension UserConditionIsarQueryFilter
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterFilterCondition>
-  notesContains(String value, {bool caseSensitive = true}) {
+      notesContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.contains(
@@ -929,7 +929,7 @@ extension UserConditionIsarQueryFilter
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterFilterCondition>
-  notesMatches(String pattern, {bool caseSensitive = true}) {
+      notesMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.matches(
@@ -942,7 +942,7 @@ extension UserConditionIsarQueryFilter
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterFilterCondition>
-  notesIsEmpty() {
+      notesIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'notes', value: ''),
@@ -951,7 +951,7 @@ extension UserConditionIsarQueryFilter
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterFilterCondition>
-  notesIsNotEmpty() {
+      notesIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(property: r'notes', value: ''),
@@ -960,7 +960,7 @@ extension UserConditionIsarQueryFilter
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterFilterCondition>
-  profileIdEqualTo(int value) {
+      profileIdEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'profileId', value: value),
@@ -969,7 +969,7 @@ extension UserConditionIsarQueryFilter
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterFilterCondition>
-  profileIdGreaterThan(int value, {bool include = false}) {
+      profileIdGreaterThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -982,7 +982,7 @@ extension UserConditionIsarQueryFilter
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterFilterCondition>
-  profileIdLessThan(int value, {bool include = false}) {
+      profileIdLessThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -995,7 +995,7 @@ extension UserConditionIsarQueryFilter
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterFilterCondition>
-  profileIdBetween(
+      profileIdBetween(
     int lower,
     int upper, {
     bool includeLower = true,
@@ -1015,7 +1015,7 @@ extension UserConditionIsarQueryFilter
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterFilterCondition>
-  trackedSinceEqualTo(DateTime value) {
+      trackedSinceEqualTo(DateTime value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'trackedSince', value: value),
@@ -1024,7 +1024,7 @@ extension UserConditionIsarQueryFilter
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterFilterCondition>
-  trackedSinceGreaterThan(DateTime value, {bool include = false}) {
+      trackedSinceGreaterThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -1037,7 +1037,7 @@ extension UserConditionIsarQueryFilter
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterFilterCondition>
-  trackedSinceLessThan(DateTime value, {bool include = false}) {
+      trackedSinceLessThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -1050,7 +1050,7 @@ extension UserConditionIsarQueryFilter
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterFilterCondition>
-  trackedSinceBetween(
+      trackedSinceBetween(
     DateTime lower,
     DateTime upper, {
     bool includeLower = true,
@@ -1079,84 +1079,84 @@ extension UserConditionIsarQueryLinks
 extension UserConditionIsarQuerySortBy
     on QueryBuilder<UserConditionIsar, UserConditionIsar, QSortBy> {
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterSortBy>
-  sortByConditionId() {
+      sortByConditionId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'conditionId', Sort.asc);
     });
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterSortBy>
-  sortByConditionIdDesc() {
+      sortByConditionIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'conditionId', Sort.desc);
     });
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterSortBy>
-  sortByConditionName() {
+      sortByConditionName() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'conditionName', Sort.asc);
     });
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterSortBy>
-  sortByConditionNameDesc() {
+      sortByConditionNameDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'conditionName', Sort.desc);
     });
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterSortBy>
-  sortByDiagnosedAt() {
+      sortByDiagnosedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'diagnosedAt', Sort.asc);
     });
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterSortBy>
-  sortByDiagnosedAtDesc() {
+      sortByDiagnosedAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'diagnosedAt', Sort.desc);
     });
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterSortBy>
-  sortByNotes() {
+      sortByNotes() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'notes', Sort.asc);
     });
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterSortBy>
-  sortByNotesDesc() {
+      sortByNotesDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'notes', Sort.desc);
     });
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterSortBy>
-  sortByProfileId() {
+      sortByProfileId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'profileId', Sort.asc);
     });
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterSortBy>
-  sortByProfileIdDesc() {
+      sortByProfileIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'profileId', Sort.desc);
     });
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterSortBy>
-  sortByTrackedSince() {
+      sortByTrackedSince() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'trackedSince', Sort.asc);
     });
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterSortBy>
-  sortByTrackedSinceDesc() {
+      sortByTrackedSinceDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'trackedSince', Sort.desc);
     });
@@ -1166,42 +1166,42 @@ extension UserConditionIsarQuerySortBy
 extension UserConditionIsarQuerySortThenBy
     on QueryBuilder<UserConditionIsar, UserConditionIsar, QSortThenBy> {
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterSortBy>
-  thenByConditionId() {
+      thenByConditionId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'conditionId', Sort.asc);
     });
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterSortBy>
-  thenByConditionIdDesc() {
+      thenByConditionIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'conditionId', Sort.desc);
     });
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterSortBy>
-  thenByConditionName() {
+      thenByConditionName() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'conditionName', Sort.asc);
     });
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterSortBy>
-  thenByConditionNameDesc() {
+      thenByConditionNameDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'conditionName', Sort.desc);
     });
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterSortBy>
-  thenByDiagnosedAt() {
+      thenByDiagnosedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'diagnosedAt', Sort.asc);
     });
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterSortBy>
-  thenByDiagnosedAtDesc() {
+      thenByDiagnosedAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'diagnosedAt', Sort.desc);
     });
@@ -1214,49 +1214,49 @@ extension UserConditionIsarQuerySortThenBy
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterSortBy>
-  thenByIdDesc() {
+      thenByIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.desc);
     });
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterSortBy>
-  thenByNotes() {
+      thenByNotes() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'notes', Sort.asc);
     });
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterSortBy>
-  thenByNotesDesc() {
+      thenByNotesDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'notes', Sort.desc);
     });
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterSortBy>
-  thenByProfileId() {
+      thenByProfileId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'profileId', Sort.asc);
     });
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterSortBy>
-  thenByProfileIdDesc() {
+      thenByProfileIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'profileId', Sort.desc);
     });
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterSortBy>
-  thenByTrackedSince() {
+      thenByTrackedSince() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'trackedSince', Sort.asc);
     });
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QAfterSortBy>
-  thenByTrackedSinceDesc() {
+      thenByTrackedSinceDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'trackedSince', Sort.desc);
     });
@@ -1266,14 +1266,14 @@ extension UserConditionIsarQuerySortThenBy
 extension UserConditionIsarQueryWhereDistinct
     on QueryBuilder<UserConditionIsar, UserConditionIsar, QDistinct> {
   QueryBuilder<UserConditionIsar, UserConditionIsar, QDistinct>
-  distinctByConditionId() {
+      distinctByConditionId() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'conditionId');
     });
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QDistinct>
-  distinctByConditionName({bool caseSensitive = true}) {
+      distinctByConditionName({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(
         r'conditionName',
@@ -1283,28 +1283,28 @@ extension UserConditionIsarQueryWhereDistinct
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QDistinct>
-  distinctByDiagnosedAt() {
+      distinctByDiagnosedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'diagnosedAt');
     });
   }
 
-  QueryBuilder<UserConditionIsar, UserConditionIsar, QDistinct>
-  distinctByNotes({bool caseSensitive = true}) {
+  QueryBuilder<UserConditionIsar, UserConditionIsar, QDistinct> distinctByNotes(
+      {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'notes', caseSensitive: caseSensitive);
     });
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QDistinct>
-  distinctByProfileId() {
+      distinctByProfileId() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'profileId');
     });
   }
 
   QueryBuilder<UserConditionIsar, UserConditionIsar, QDistinct>
-  distinctByTrackedSince() {
+      distinctByTrackedSince() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'trackedSince');
     });
@@ -1326,14 +1326,14 @@ extension UserConditionIsarQueryProperty
   }
 
   QueryBuilder<UserConditionIsar, String, QQueryOperations>
-  conditionNameProperty() {
+      conditionNameProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'conditionName');
     });
   }
 
   QueryBuilder<UserConditionIsar, DateTime?, QQueryOperations>
-  diagnosedAtProperty() {
+      diagnosedAtProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'diagnosedAt');
     });
@@ -1352,7 +1352,7 @@ extension UserConditionIsarQueryProperty
   }
 
   QueryBuilder<UserConditionIsar, DateTime, QQueryOperations>
-  trackedSinceProperty() {
+      trackedSinceProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'trackedSince');
     });
