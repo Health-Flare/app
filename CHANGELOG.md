@@ -46,13 +46,35 @@ Subsection meanings (from Keep a Changelog):
 ## [Unreleased]
 
 ### Added
+- _Nothing yet._
+
+### Changed
+- _Nothing yet._
+
+### Deprecated
+- _Nothing yet._
+
+### Removed
+- _Nothing yet._
+
+### Fixed
+- _Nothing yet._
+
+### Security
+- _Nothing yet._
+
+## [1.9.1] - 2026-09-24
+
+### Added
+- Quick Log reads what you type far more accurately. It weighs the whole entry instead of grabbing the first keyword, so a named medication dose is no longer mistaken for a condition mention, and it only offers a quick save when the values can actually be stored.
 - Quick Log can record a flare start or end, a mood or cycle note on today's check-in, fluid intake, and (only after you turn it on) bowel or bladder events.
 - Symptom entries can store body locations, and the symptom form has a location picker.
 - Profile edit can turn cycle tracking and bowel tracking on or off. Both stay off until you choose them.
 - Peak flow and step count can be saved as vitals.
 
 ### Changed
-- The Dashboard + button opens Quick Log. Tracking, Meds, Meals, Journal, and Sleep keep an add button for that screen.
+- Short notes stay short. A one-word entry such as "Tired" is kept as a plain note instead of being guessed into a record, and opening Quick Log with an empty field no longer touches your data.
+- The Dashboard + button opens Quick Log. Tracking, Meds, Meals, and Journal keep an add button for that screen, so a symptom log is saved as a symptom and not a journal note. The Sleep tab + button opens Quick Log.
 - The Quick Log button says "Add to Journal" when the detected type cannot actually be saved, so the button matches what is stored.
 - Daily check-in wellbeing can be left unset. A mood note never invents a score, and an existing score is not replaced by a guess.
 
@@ -338,7 +360,8 @@ Subsection meanings (from Keep a Changelog):
 - Offline-first guarantee: zero outbound network requests at runtime, enforced
   by the `url-scan` CI check.
 
-[Unreleased]: https://github.com/Health-Flare/app/compare/v1.9.0...HEAD
+[Unreleased]: https://github.com/Health-Flare/app/compare/v1.9.1...HEAD
+[1.9.1]: https://github.com/Health-Flare/app/compare/v1.9.0...v1.9.1
 [1.9.0]: https://github.com/Health-Flare/app/compare/v1.8.0...v1.9.0
 [1.8.0]: https://github.com/Health-Flare/app/compare/v1.7.1...v1.8.0
 [1.7.1]: https://github.com/Health-Flare/app/compare/v1.7.0...v1.7.1
