@@ -31,7 +31,7 @@ dependencies:
 
   # Backup: share exported file and pick a backup file to restore
   share_plus: ^13.3.0
-  file_picker: ^12.2.0
+  file_picker: ^13.0.0
 
   # Open URLs in browser (privacy policy link)
   url_launcher: ^6.3.1
