@@ -205,8 +205,22 @@ class _SleepEntryScreenState extends ConsumerState<SleepEntryScreen> {
   // ── Save ──────────────────────────────────────────────────────────────────
 
   Future<void> _save() async {
-    if (!_timingValid || _submitting) return;
+    if (_submitting) return;
     setState(() => _submitting = true);
+    final saved = await _persist();
+    if (!mounted) return;
+    if (!saved) {
+      setState(() => _submitting = false);
+      return;
+    }
+    context.pop();
+  }
+
+  /// Writes the form without leaving the screen. Returns false (writing
+  /// nothing) if the times are invalid. Used by Save, and by Move so
+  /// pending edits travel with the entry.
+  Future<bool> _persist() async {
+    if (!_timingValid) return false;
 
     final notes = _notesController.text.trim().isEmpty
         ? null
@@ -239,8 +253,7 @@ class _SleepEntryScreenState extends ConsumerState<SleepEntryScreen> {
             ),
           );
     }
-
-    if (mounted) context.pop();
+    return true;
   }
 
   Future<void> _confirmDelete(
@@ -289,6 +302,7 @@ class _SleepEntryScreenState extends ConsumerState<SleepEntryScreen> {
         actions: [
           if (widget.entry != null)
             MoveEntryAction(
+              beforeMove: _persist,
               onMove: (target) => ref
                   .read(sleepEntryListProvider.notifier)
                   .moveToProfile(widget.entry!.id, target.id),

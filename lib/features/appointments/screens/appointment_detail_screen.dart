@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import 'package:health_flare/core/providers/appointment_provider.dart';
+import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/core/router/app_router.dart';
 import 'package:health_flare/models/appointment.dart';
 import 'package:health_flare/features/shared/widgets/move_entry_action.dart';
@@ -92,6 +93,51 @@ class _AppointmentDetailViewState
       context,
     ).showSnackBar(const SnackBar(content: Text('Outcome saved')));
   }
+
+  /// Saves anything typed but not yet saved: outcome notes, and a question
+  /// or medication change that wasn't added. Called before a move so
+  /// nothing typed on this screen is left behind (#77). Unlike Save
+  /// outcome, it doesn't mark the appointment completed.
+  Future<bool> _savePending() async {
+    final appt = _current();
+    final notes = _outcomeController.text.trim();
+    final question = _questionController.text.trim();
+    final change = _medChangeController.text.trim();
+    final notesChanged = notes != (appt.outcomeNotes ?? '').trim();
+    if (!notesChanged && question.isEmpty && change.isEmpty) return true;
+
+    await _updateAppointment(
+      appt.copyWith(
+        outcomeNotes: notes.isEmpty ? null : notes,
+        clearOutcomeNotes: notes.isEmpty,
+        questions: [
+          ...appt.questions,
+          if (question.isNotEmpty)
+            AppointmentQuestion(questionId: _uuid(), question: question),
+        ],
+        medicationChanges: [
+          ...appt.medicationChanges,
+          if (change.isNotEmpty)
+            MedicationChange(changeId: _uuid(), description: change),
+        ],
+        updatedAt: DateTime.now(),
+      ),
+    );
+    _questionController.clear();
+    _medChangeController.clear();
+    return true;
+  }
+
+  /// The latest saved version of this appointment.
+  Appointment _current() =>
+      ref
+          .read(appointmentListProvider)
+          .cast<Appointment?>()
+          .firstWhere(
+            (a) => a?.id == widget.appointment.id,
+            orElse: () => null,
+          ) ??
+      widget.appointment;
 
   Future<void> _toggleQuestion(AppointmentQuestion q) async {
     final updated = widget.appointment.copyWith(
@@ -204,6 +250,14 @@ class _AppointmentDetailViewState
         ),
         actions: [
           MoveEntryAction(
+            beforeMove: _savePending,
+            notices: [
+              if (appt.medicationChanges.any(
+                (c) => c.linkedMedicationIsarId != null,
+              ))
+                'Medication changes keep their text but are no longer '
+                    "linked to ${ref.read(activeProfileDataProvider)?.name ?? 'this profile'}'s medications.",
+            ],
             onMove: (target) => ref
                 .read(appointmentListProvider.notifier)
                 .moveToProfile(appt.id, target.id),

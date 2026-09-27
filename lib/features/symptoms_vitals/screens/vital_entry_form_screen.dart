@@ -101,6 +101,21 @@ class _VitalEntryFormScreenState extends ConsumerState<VitalEntryFormScreen> {
   }
 
   Future<void> _save() async {
+    if (_submitting) return;
+    setState(() => _submitting = true);
+    final saved = await _persist();
+    if (!mounted) return;
+    if (!saved) {
+      setState(() => _submitting = false);
+      return;
+    }
+    context.pop();
+  }
+
+  /// Validates and writes the form without leaving the screen. Returns
+  /// false (writing nothing) if a value is missing or not a number. Used by
+  /// Save, and by Move so pending edits travel with the entry.
+  Future<bool> _persist() async {
     final valueText = _valueController.text.trim();
     final value2Text = _value2Controller.text.trim();
     final needsSecondary = _vitalType.hasSecondaryValue;
@@ -111,8 +126,7 @@ class _VitalEntryFormScreenState extends ConsumerState<VitalEntryFormScreen> {
           needsSecondary &&
           (value2Text.isEmpty || double.tryParse(value2Text) == null);
     });
-    if (_valueError || _value2Error || _submitting) return;
-    setState(() => _submitting = true);
+    if (_valueError || _value2Error) return false;
 
     final value = double.parse(valueText);
     final value2 = needsSecondary ? double.parse(value2Text) : null;
@@ -149,8 +163,7 @@ class _VitalEntryFormScreenState extends ConsumerState<VitalEntryFormScreen> {
             ),
           );
     }
-
-    if (mounted) context.pop();
+    return true;
   }
 
   Future<void> _confirmDelete() async {
@@ -191,6 +204,12 @@ class _VitalEntryFormScreenState extends ConsumerState<VitalEntryFormScreen> {
         actions: [
           if (isEdit)
             MoveEntryAction(
+              beforeMove: _persist,
+              notices: [
+                if (widget.entry!.flareIsarId != null)
+                  'It will no longer be part of '
+                      "${ref.read(activeProfileDataProvider)?.name ?? 'this profile'}'s flare.",
+              ],
               onMove: (target) => ref
                   .read(vitalEntryListProvider.notifier)
                   .moveToProfile(widget.entry!.id, target.id),

@@ -124,7 +124,13 @@ class _DoseLogFormScreenState extends ConsumerState<DoseLogFormScreen> {
   Future<void> _save() async {
     if (_submitting) return;
     setState(() => _submitting = true);
+    await _persist();
+    if (mounted) context.pop();
+  }
 
+  /// Writes the form to the database without leaving the screen. Used by
+  /// Save, and by Move so pending edits travel with the dose.
+  Future<bool> _persist() async {
     final amount =
         double.tryParse(_amountController.text.trim()) ??
         widget.medication.doseAmount;
@@ -167,8 +173,7 @@ class _DoseLogFormScreenState extends ConsumerState<DoseLogFormScreen> {
             ),
           );
     }
-
-    if (mounted) context.pop();
+    return true;
   }
 
   Future<void> _confirmDelete() async {
@@ -218,20 +223,31 @@ class _DoseLogFormScreenState extends ConsumerState<DoseLogFormScreen> {
         actions: [
           if (isEdit)
             MoveEntryAction(
-              // A dose must point at a medication on its own profile, so it
-              // can only move where the same medication exists (#77).
-              unavailableReason: (target) =>
-                  _targetMedication(target.id) == null
-                  ? 'No ${widget.medication.name} in '
-                        "${target.name}'s medications"
-                  : null,
+              // A dose belongs to a medication on its own profile. On the
+              // target it joins the medication of the same name, or that
+              // medication is added there first (#77). Nothing is dropped.
+              beforeMove: _persist,
+              notices: [
+                if (widget.doseLog!.flareIsarId != null)
+                  'It will no longer be part of '
+                      "${activeProfile?.name ?? 'this profile'}'s flare.",
+              ],
+              noticesFor: (target) {
+                final match = _targetMedication(target.id);
+                final med = widget.medication;
+                return [
+                  if (match != null)
+                    "It will be logged under ${target.name}'s ${match.name}."
+                  else
+                    "${target.name} doesn't have ${med.name} yet. It will be "
+                        "added to ${target.name}'s medications "
+                        '(${med.doseDisplay}, ${med.frequencyDisplay}) so '
+                        'the dose has a home.',
+                ];
+              },
               onMove: (target) => ref
                   .read(doseLogListProvider.notifier)
-                  .moveToProfile(
-                    widget.doseLog!.id,
-                    target.id,
-                    targetMedicationId: _targetMedication(target.id)!.id,
-                  ),
+                  .moveToProfile(widget.doseLog!.id, target.id),
             ),
           if (isEdit)
             IconButton(

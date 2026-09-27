@@ -24,7 +24,9 @@ final _moved = <Profile>[];
 
 Widget _buildApp({
   required List<Profile> profiles,
-  String? Function(Profile target)? unavailableReason,
+  Future<void> Function(Profile target)? onMove,
+  Future<bool> Function()? beforeMove,
+  List<String> notices = const [],
 }) {
   final router = GoRouter(
     initialLocation: '/',
@@ -49,8 +51,9 @@ Widget _buildApp({
             title: const Text('Entry detail'),
             actions: [
               MoveEntryAction(
-                onMove: (target) async => _moved.add(target),
-                unavailableReason: unavailableReason,
+                onMove: onMove ?? (target) async => _moved.add(target),
+                beforeMove: beforeMove,
+                notices: notices,
               ),
             ],
           ),
@@ -72,10 +75,17 @@ Widget _buildApp({
 Future<void> _openDetail(
   WidgetTester tester,
   List<Profile> profiles, {
-  String? Function(Profile target)? unavailableReason,
+  Future<void> Function(Profile target)? onMove,
+  Future<bool> Function()? beforeMove,
+  List<String> notices = const [],
 }) async {
   await tester.pumpWidget(
-    _buildApp(profiles: profiles, unavailableReason: unavailableReason),
+    _buildApp(
+      profiles: profiles,
+      onMove: onMove,
+      beforeMove: beforeMove,
+      notices: notices,
+    ),
   );
   await tester.pump();
   await tester.tap(find.text('Open detail'));
@@ -121,6 +131,8 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('Dad'));
       await tester.pumpAndSettle();
+      await tester.tap(find.text('Move'));
+      await tester.pumpAndSettle();
 
       expect(_moved.map((p) => p.id), [2]);
       expect(find.text('Moved to Dad'), findsOneWidget);
@@ -143,28 +155,97 @@ void main() {
       expect(find.text('Entry body'), findsOneWidget);
     });
 
-    // #77: a dose can only move to a profile with the same medication.
-    testWidgets('an unavailable target shows its reason and cannot be chosen', (
-      tester,
-    ) async {
-      await _openDetail(
-        tester,
-        [sarah, dad, mia],
-        unavailableReason: (p) =>
-            p.id == dad.id ? "No Ibuprofen in Dad's medications" : null,
-      );
+    // Moving must never lose data (#77 follow-up).
+    Future<void> pickDad(WidgetTester tester) async {
       await tester.tap(find.byIcon(Icons.swap_horiz));
       await tester.pumpAndSettle();
-
-      expect(find.text("No Ibuprofen in Dad's medications"), findsOneWidget);
       await tester.tap(find.text('Dad'));
       await tester.pumpAndSettle();
-      expect(_moved, isEmpty);
-      expect(find.text('Move this entry to'), findsOneWidget);
+    }
 
-      await tester.tap(find.text('Mia'));
+    testWidgets('asks for confirmation before moving', (tester) async {
+      await _openDetail(tester, [sarah, dad]);
+      await pickDad(tester);
+
+      expect(find.text('Move to Dad?'), findsOneWidget);
+      expect(_moved, isEmpty, reason: 'nothing moves until confirmed');
+    });
+
+    testWidgets('cancelling the confirmation leaves the entry alone', (
+      tester,
+    ) async {
+      await _openDetail(tester, [sarah, dad]);
+      await pickDad(tester);
+      await tester.tap(find.text('Cancel'));
       await tester.pumpAndSettle();
-      expect(_moved.map((p) => p.id), [3]);
+
+      expect(_moved, isEmpty);
+      expect(find.text('Entry body'), findsOneWidget);
+    });
+
+    testWidgets('the confirmation lists what will change', (tester) async {
+      await _openDetail(
+        tester,
+        [sarah, dad],
+        notices: ["It will no longer be part of Sarah's flare."],
+      );
+      await pickDad(tester);
+
+      expect(
+        find.text("It will no longer be part of Sarah's flare."),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('pending edits are saved before the move', (tester) async {
+      final order = <String>[];
+      await _openDetail(
+        tester,
+        [sarah, dad],
+        beforeMove: () async {
+          order.add('save');
+          return true;
+        },
+        onMove: (target) async => order.add('move'),
+      );
+      await pickDad(tester);
+      await tester.tap(find.text('Move'));
+      await tester.pumpAndSettle();
+
+      expect(order, ['save', 'move']);
+    });
+
+    testWidgets('if the edits cannot be saved, nothing moves', (tester) async {
+      await _openDetail(tester, [sarah, dad], beforeMove: () async => false);
+      await pickDad(tester);
+      await tester.tap(find.text('Move'));
+      await tester.pumpAndSettle();
+
+      expect(_moved, isEmpty);
+      expect(
+        find.text('Fix the highlighted fields first, then move it again.'),
+        findsOneWidget,
+      );
+      expect(find.text('Entry body'), findsOneWidget, reason: 'stays open');
+    });
+
+    testWidgets('a failed move says so and keeps the screen open', (
+      tester,
+    ) async {
+      await _openDetail(tester, [
+        sarah,
+        dad,
+      ], onMove: (target) async => throw StateError('disk full'));
+      await pickDad(tester);
+      await tester.tap(find.text('Move'));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text("Couldn't move this entry. It's still in Sarah's record."),
+        findsOneWidget,
+      );
+      expect(find.text('Moved to Dad'), findsNothing);
+      expect(find.text('Entry body'), findsOneWidget);
     });
   });
 }

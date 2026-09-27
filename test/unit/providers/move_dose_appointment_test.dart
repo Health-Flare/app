@@ -6,7 +6,9 @@ import 'package:health_flare/core/providers/appointment_provider.dart';
 import 'package:health_flare/core/providers/database_provider.dart';
 import 'package:health_flare/core/providers/dose_log_provider.dart';
 import 'package:health_flare/data/models/appointment_isar.dart';
+import 'package:health_flare/core/providers/medication_provider.dart';
 import 'package:health_flare/data/models/dose_log_isar.dart';
+import 'package:health_flare/data/models/medication_isar.dart';
 import 'package:health_flare/models/appointment.dart';
 
 // Regression tests for #77: doses and appointments could not be moved to
@@ -14,7 +16,7 @@ import 'package:health_flare/models/appointment.dart';
 
 Future<Isar> _openIsar() async {
   return Isar.open(
-    [DoseLogIsarSchema, AppointmentIsarSchema],
+    [DoseLogIsarSchema, AppointmentIsarSchema, MedicationIsarSchema],
     directory: '',
     name: 'move_dose_appt_test_${DateTime.now().microsecondsSinceEpoch}',
   );
@@ -95,6 +97,96 @@ void main() {
           .read(doseLogListProvider.notifier)
           .moveToProfile(9999, 2, targetMedicationId: 20);
       expect(await isar.doseLogIsars.count(), 0);
+    });
+
+    // When the target has no matching medication, the move creates one from
+    // the source medication, in the same transaction, so the dose always has
+    // a parent and nothing is dropped.
+    Future<(int, int)> sarahsIbuprofenDose(ProviderContainer c) async {
+      final medId = await c
+          .read(medicationListProvider.notifier)
+          .add(
+            profileId: 1,
+            name: 'Ibuprofen',
+            medicationType: 'medication',
+            doseAmount: 400,
+            doseUnit: 'mg',
+            frequency: 'as_needed',
+            startDate: DateTime(2026, 1, 1),
+            notes: "Sarah's note",
+          );
+      final doseId = await c
+          .read(doseLogListProvider.notifier)
+          .add(
+            profileId: 1,
+            medicationIsarId: medId,
+            loggedAt: DateTime(2026, 7, 1, 12),
+            amount: 400,
+            unit: 'mg',
+            status: 'taken',
+          );
+      return (medId, doseId);
+    }
+
+    test('without a target medication, creates one on the target profile '
+        'and links the dose to it', () async {
+      final (isar, container) = await _setUp();
+      final (sourceMedId, doseId) = await sarahsIbuprofenDose(container);
+
+      await container
+          .read(doseLogListProvider.notifier)
+          .moveToProfile(doseId, 2);
+
+      final dose = (await isar.doseLogIsars.get(doseId))!;
+      expect(dose.profileId, 2);
+      expect(dose.medicationIsarId, isNot(sourceMedId));
+      final created = (await isar.medicationIsars.get(dose.medicationIsarId))!;
+      expect(created.profileId, 2);
+      expect(created.name, 'Ibuprofen');
+      expect(created.medicationType, 'medication');
+      expect(created.doseAmount, 400);
+      expect(created.doseUnit, 'mg');
+      expect(created.frequency, 'as_needed');
+      expect(created.notes, isNull, reason: "Sarah's notes stay with Sarah");
+    });
+
+    test("the source profile's medication is left alone", () async {
+      final (isar, container) = await _setUp();
+      final (sourceMedId, doseId) = await sarahsIbuprofenDose(container);
+
+      await container
+          .read(doseLogListProvider.notifier)
+          .moveToProfile(doseId, 2);
+
+      final source = (await isar.medicationIsars.get(sourceMedId))!;
+      expect(source.profileId, 1);
+      expect(source.notes, "Sarah's note");
+      expect(await isar.medicationIsars.count(), 2);
+    });
+
+    test('if the source medication is gone, fails without touching '
+        'the dose', () async {
+      final (isar, container) = await _setUp();
+      final id = await container
+          .read(doseLogListProvider.notifier)
+          .add(
+            profileId: 1,
+            medicationIsarId: 777, // no such medication
+            loggedAt: DateTime(2026, 7, 1),
+            amount: 1,
+            unit: 'tab',
+            status: 'taken',
+          );
+
+      await expectLater(
+        container.read(doseLogListProvider.notifier).moveToProfile(id, 2),
+        throwsStateError,
+      );
+
+      final dose = (await isar.doseLogIsars.get(id))!;
+      expect(dose.profileId, 1);
+      expect(dose.medicationIsarId, 777);
+      expect(await isar.medicationIsars.count(), 0);
     });
   });
 

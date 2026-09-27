@@ -474,8 +474,9 @@ void main() {
       expect(find.byIcon(Icons.delete_outline), findsOneWidget);
     });
 
-    // #77: a dose logged under the wrong person can be moved, but only to a
-    // profile that has the same medication.
+    // #77: a dose logged under the wrong person can be moved to anyone.
+    // It joins the target's medication of the same name, or that medication
+    // is added to the target first. Nothing is dropped.
     group('Move to another profile', () {
       final dad = Profile(id: 2, name: 'Dad');
       final mia = Profile(id: 3, name: 'Mia');
@@ -519,9 +520,16 @@ void main() {
         expect(find.byTooltip('Move to another profile'), findsNothing);
       });
 
-      testWidgets('disables profiles without the same medication', (
-        tester,
-      ) async {
+      Future<void> chooseTarget(WidgetTester tester, String name) async {
+        await tester.tap(find.byTooltip('Move to another profile'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text(name));
+        await tester.pumpAndSettle();
+      }
+
+      // No profile is ever unavailable: the confirmation says what happens
+      // to the medication instead.
+      testWidgets('every other profile can be chosen', (tester) async {
         await tester.pumpWidget(
           _buildDoseForm(
             med: _med(),
@@ -534,15 +542,83 @@ void main() {
         await tester.tap(find.byTooltip('Move to another profile'));
         await tester.pumpAndSettle();
 
-        expect(find.text("No Metformin in Mia's medications"), findsOneWidget);
-        final dadTile = tester.widget<ListTile>(
-          find.ancestor(of: find.text('Dad'), matching: find.byType(ListTile)),
+        for (final name in ['Dad', 'Mia']) {
+          final tile = tester.widget<ListTile>(
+            find.ancestor(of: find.text(name), matching: find.byType(ListTile)),
+          );
+          expect(tile.enabled, isTrue, reason: name);
+        }
+      });
+
+      testWidgets("says the dose joins the target's existing medication", (
+        tester,
+      ) async {
+        await tester.pumpWidget(
+          _buildDoseForm(
+            med: _med(),
+            doseLog: log,
+            profiles: [_sarah, dad],
+            allMeds: [_med(), dadsMetformin()],
+          ),
         );
-        final miaTile = tester.widget<ListTile>(
-          find.ancestor(of: find.text('Mia'), matching: find.byType(ListTile)),
+        await tester.pump();
+        await chooseTarget(tester, 'Dad');
+
+        expect(
+          find.text("It will be logged under Dad's metformin."),
+          findsOneWidget,
         );
-        expect(dadTile.enabled, isTrue);
-        expect(miaTile.enabled, isFalse);
+      });
+
+      testWidgets('offers to add the medication when the target lacks it', (
+        tester,
+      ) async {
+        await tester.pumpWidget(
+          _buildDoseForm(
+            med: _med(),
+            doseLog: log,
+            profiles: [_sarah, mia],
+            allMeds: [_med()],
+          ),
+        );
+        await tester.pump();
+        await chooseTarget(tester, 'Mia');
+
+        expect(
+          find.text(
+            "Mia doesn't have Metformin yet. It will be added to Mia's "
+            'medications (500 mg, Twice daily) so the dose has a home.',
+          ),
+          findsOneWidget,
+        );
+      });
+
+      testWidgets('warns when a flare link will be dropped', (tester) async {
+        await tester.pumpWidget(
+          _buildDoseForm(
+            med: _med(),
+            doseLog: DoseLog(
+              id: 1,
+              profileId: 1,
+              medicationIsarId: 1,
+              loggedAt: _now,
+              createdAt: _now,
+              amount: 500,
+              unit: 'mg',
+              status: 'taken',
+              flareIsarId: 7,
+            ),
+            profiles: [_sarah, dad],
+            allMeds: [_med(), dadsMetformin()],
+          ),
+        );
+        await tester.pump();
+        await chooseTarget(tester, 'Dad');
+
+        expect(
+          find.text("It will no longer be part of Sarah's flare."),
+          findsOneWidget,
+        );
       });
     });
   });
