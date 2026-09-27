@@ -4,9 +4,11 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import 'package:health_flare/core/providers/dose_log_provider.dart';
+import 'package:health_flare/core/providers/medication_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/models/dose_log.dart';
 import 'package:health_flare/models/medication.dart';
+import 'package:health_flare/features/shared/widgets/move_entry_action.dart';
 import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 
 /// Full-screen form for logging or editing a dose entry.
@@ -193,6 +195,12 @@ class _DoseLogFormScreenState extends ConsumerState<DoseLogFormScreen> {
     }
   }
 
+  Medication? _targetMedication(int profileId) => matchingMedication(
+    ref.read(medicationListProvider),
+    widget.medication,
+    profileId,
+  );
+
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
@@ -208,6 +216,23 @@ class _DoseLogFormScreenState extends ConsumerState<DoseLogFormScreen> {
           isEdit ? 'Edit dose' : 'Log dose for ${widget.medication.name}',
         ),
         actions: [
+          if (isEdit)
+            MoveEntryAction(
+              // A dose must point at a medication on its own profile, so it
+              // can only move where the same medication exists (#77).
+              unavailableReason: (target) =>
+                  _targetMedication(target.id) == null
+                  ? 'No ${widget.medication.name} in '
+                        "${target.name}'s medications"
+                  : null,
+              onMove: (target) => ref
+                  .read(doseLogListProvider.notifier)
+                  .moveToProfile(
+                    widget.doseLog!.id,
+                    target.id,
+                    targetMedicationId: _targetMedication(target.id)!.id,
+                  ),
+            ),
           if (isEdit)
             IconButton(
               icon: const Icon(Icons.delete_outline),

@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:health_flare/core/providers/appointment_provider.dart';
 import 'package:health_flare/core/router/app_router.dart';
 import 'package:health_flare/models/appointment.dart';
+import 'package:health_flare/features/shared/widgets/move_entry_action.dart';
 import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 
 /// Full detail view for an appointment.
@@ -202,6 +203,11 @@ class _AppointmentDetailViewState
           appt.isUpcoming ? 'Upcoming appointment' : 'Appointment detail',
         ),
         actions: [
+          MoveEntryAction(
+            onMove: (target) => ref
+                .read(appointmentListProvider.notifier)
+                .moveToProfile(appt.id, target.id),
+          ),
           IconButton(
             icon: const Icon(Icons.edit_outlined),
             tooltip: 'Edit',

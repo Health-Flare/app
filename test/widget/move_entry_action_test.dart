@@ -22,7 +22,10 @@ class _FakeProfileList extends ProfileListNotifier {
 
 final _moved = <Profile>[];
 
-Widget _buildApp({required List<Profile> profiles}) {
+Widget _buildApp({
+  required List<Profile> profiles,
+  String? Function(Profile target)? unavailableReason,
+}) {
   final router = GoRouter(
     initialLocation: '/',
     routes: [
@@ -45,7 +48,10 @@ Widget _buildApp({required List<Profile> profiles}) {
           appBar: AppBar(
             title: const Text('Entry detail'),
             actions: [
-              MoveEntryAction(onMove: (target) async => _moved.add(target)),
+              MoveEntryAction(
+                onMove: (target) async => _moved.add(target),
+                unavailableReason: unavailableReason,
+              ),
             ],
           ),
           body: const Center(child: Text('Entry body')),
@@ -63,8 +69,14 @@ Widget _buildApp({required List<Profile> profiles}) {
   );
 }
 
-Future<void> _openDetail(WidgetTester tester, List<Profile> profiles) async {
-  await tester.pumpWidget(_buildApp(profiles: profiles));
+Future<void> _openDetail(
+  WidgetTester tester,
+  List<Profile> profiles, {
+  String? Function(Profile target)? unavailableReason,
+}) async {
+  await tester.pumpWidget(
+    _buildApp(profiles: profiles, unavailableReason: unavailableReason),
+  );
   await tester.pump();
   await tester.tap(find.text('Open detail'));
   await tester.pumpAndSettle();
@@ -129,6 +141,30 @@ void main() {
 
       expect(_moved, isEmpty);
       expect(find.text('Entry body'), findsOneWidget);
+    });
+
+    // #77: a dose can only move to a profile with the same medication.
+    testWidgets('an unavailable target shows its reason and cannot be chosen', (
+      tester,
+    ) async {
+      await _openDetail(
+        tester,
+        [sarah, dad, mia],
+        unavailableReason: (p) =>
+            p.id == dad.id ? "No Ibuprofen in Dad's medications" : null,
+      );
+      await tester.tap(find.byIcon(Icons.swap_horiz));
+      await tester.pumpAndSettle();
+
+      expect(find.text("No Ibuprofen in Dad's medications"), findsOneWidget);
+      await tester.tap(find.text('Dad'));
+      await tester.pumpAndSettle();
+      expect(_moved, isEmpty);
+      expect(find.text('Move this entry to'), findsOneWidget);
+
+      await tester.tap(find.text('Mia'));
+      await tester.pumpAndSettle();
+      expect(_moved.map((p) => p.id), [3]);
     });
   });
 }

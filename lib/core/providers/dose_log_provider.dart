@@ -90,6 +90,28 @@ class DoseLogListNotifier extends Notifier<List<DoseLog>> {
     });
   }
 
+  /// Reassign a dose to a different profile (wrong-profile recovery).
+  ///
+  /// A dose points at a medication, and medications belong to one profile,
+  /// so the caller must supply the target profile's matching medication
+  /// ([targetMedicationId]; see [matchingMedication]). Any flare link is
+  /// cleared: flares belong to the source profile.
+  Future<void> moveToProfile(
+    int id,
+    int newProfileId, {
+    required int targetMedicationId,
+  }) async {
+    final isar = ref.read(isarProvider);
+    await isar.writeTxn(() async {
+      final row = await isar.doseLogIsars.get(id);
+      if (row == null) return;
+      row.profileId = newProfileId;
+      row.medicationIsarId = targetMedicationId;
+      row.flareIsarId = null;
+      await isar.doseLogIsars.put(row);
+    });
+  }
+
   /// Remove all dose logs for a given medication (used on medication delete).
   Future<void> removeAllForMedication(int medicationId) async {
     final isar = ref.read(isarProvider);

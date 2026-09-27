@@ -256,16 +256,68 @@ Feature: Profile Management
     When I move that symptom entry to "Dad"
     Then the entry no longer references Sarah's flare
 
-  Scenario: Journal, meal, symptom, vital, sleep, and activity entries can all be moved
+  Scenario: Every kind of entry can be moved
     Given profiles "Sarah" and "Dad" exist
     Then the "Move to another profile" action is available on:
-      | Entry type | Where                    |
-      | Journal    | journal detail screen    |
-      | Meal       | meal detail screen       |
-      | Symptom    | symptom edit screen      |
-      | Vital      | vital edit screen        |
-      | Sleep      | sleep edit screen        |
-      | Activity   | activity edit screen     |
+      | Entry type      | Where                      |
+      | Journal         | journal detail screen      |
+      | Meal            | meal detail screen         |
+      | Symptom         | symptom edit screen        |
+      | Vital           | vital edit screen          |
+      | Sleep           | sleep edit screen          |
+      | Activity        | activity edit screen       |
+      | Medication dose | dose edit screen           |
+      | Appointment     | appointment detail screen  |
+
+  # Doses point at a medication, and medications belong to one profile.
+  # A dose can only move where the same medication already exists; the app
+  # never creates a medication on someone's record as a side effect. (#77)
+
+  Scenario: A dose moves to a profile that has the same medication
+    Given profiles "Sarah" and "Dad" exist
+    And both Sarah and Dad have "Ibuprofen" in their medications
+    And Sarah's record has an Ibuprofen dose logged at 12:00 rated "Helped a little"
+    When I move that dose to "Dad"
+    Then the dose appears in Dad's Ibuprofen history
+    And it keeps its time, amount, status, rating, and notes
+    And it no longer appears in Sarah's Ibuprofen history
+
+  Scenario: Medication names match regardless of capitals and spacing
+    Given Sarah has "Ibuprofen" and Dad has " ibuprofen" in their medications
+    When I move one of Sarah's Ibuprofen doses to "Dad"
+    Then the dose appears in Dad's ibuprofen history
+
+  Scenario: A profile without the medication is shown but can't be chosen
+    Given profiles "Sarah", "Dad", and "Mia" exist
+    And only Sarah and Dad have "Ibuprofen" in their medications
+    When I tap "Move to another profile" on one of Sarah's Ibuprofen doses
+    Then "Mia" is listed but disabled
+    And it says "No Ibuprofen in Mia's medications"
+    And "Dad" can be chosen
+
+  Scenario: A moved dose prefers the target's active medication
+    Given Dad has a discontinued "Ibuprofen" and an active "Ibuprofen"
+    When I move one of Sarah's Ibuprofen doses to "Dad"
+    Then the dose is linked to Dad's active Ibuprofen
+
+  Scenario: Moving a dose clears any flare link
+    Given one of Sarah's doses is linked to her active flare
+    When I move that dose to "Dad"
+    Then the dose no longer references Sarah's flare
+
+  Scenario: An appointment moves with its questions and outcome
+    Given Sarah's record has an appointment "Rheumatology follow-up" with Dr. Chen
+    And it has a question marked as discussed and outcome notes
+    When I move that appointment to "Dad"
+    Then the appointment appears in Dad's appointments
+    And it keeps its title, provider, date, questions, and outcome notes
+
+  Scenario: Medication changes on a moved appointment keep their text
+    Given one of Sarah's appointments has the medication change "Start methotrexate 10 mg weekly"
+    And that change is linked to Sarah's methotrexate
+    When I move that appointment to "Dad"
+    Then the change still reads "Start methotrexate 10 mg weekly"
+    And it is no longer linked to Sarah's medication
 
   # ---------------------------------------------------------------------------
   # First launch / onboarding

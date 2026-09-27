@@ -14,10 +14,20 @@ import 'package:health_flare/models/profile.dart';
 /// confirmation snackbar, and pops the current screen (the entry no longer
 /// belongs to the profile being viewed).
 class MoveEntryAction extends ConsumerWidget {
-  const MoveEntryAction({super.key, required this.onMove});
+  const MoveEntryAction({
+    super.key,
+    required this.onMove,
+    this.unavailableReason,
+  });
 
   /// Performs the actual reassignment (a provider `moveToProfile` call).
   final Future<void> Function(Profile target) onMove;
+
+  /// Optional: why this entry can't go to [target], or null if it can.
+  /// Unavailable profiles are still listed, disabled, with the reason as a
+  /// subtitle, so the person knows what to fix (e.g. a dose needs the same
+  /// medication on the target profile).
+  final String? Function(Profile target)? unavailableReason;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -37,7 +47,10 @@ class MoveEntryAction extends ConsumerWidget {
     final target = await showModalBottomSheet<Profile>(
       context: context,
       useSafeArea: true,
-      builder: (_) => _MoveTargetSheet(targets: targets),
+      builder: (_) => _MoveTargetSheet(
+        targets: targets,
+        unavailableReason: unavailableReason,
+      ),
     );
     if (target == null || !context.mounted) return;
 
@@ -52,9 +65,10 @@ class MoveEntryAction extends ConsumerWidget {
 }
 
 class _MoveTargetSheet extends StatelessWidget {
-  const _MoveTargetSheet({required this.targets});
+  const _MoveTargetSheet({required this.targets, this.unavailableReason});
 
   final List<Profile> targets;
+  final String? Function(Profile target)? unavailableReason;
 
   @override
   Widget build(BuildContext context) {
@@ -82,10 +96,19 @@ class _MoveTargetSheet extends StatelessWidget {
             ),
           ),
           for (final profile in targets)
-            ListTile(
-              leading: ProfileAvatar(profile: profile),
-              title: Text(profile.name),
-              onTap: () => Navigator.of(context).pop(profile),
+            Builder(
+              builder: (context) {
+                final reason = unavailableReason?.call(profile);
+                return ListTile(
+                  leading: ProfileAvatar(profile: profile),
+                  title: Text(profile.name),
+                  subtitle: reason == null ? null : Text(reason),
+                  enabled: reason == null,
+                  onTap: reason == null
+                      ? () => Navigator.of(context).pop(profile)
+                      : null,
+                );
+              },
             ),
           const SizedBox(height: 8),
         ],

@@ -38,8 +38,12 @@ class _FakeActiveProfile extends ActiveProfileNotifier {
 }
 
 class _FakeProfileList extends ProfileListNotifier {
+  _FakeProfileList([List<Profile>? profiles])
+    : profiles = profiles ?? [Profile(id: 1, name: 'Sarah')];
+  final List<Profile> profiles;
+
   @override
-  List<Profile> build() => [Profile(id: 1, name: 'Sarah')];
+  List<Profile> build() => profiles;
 }
 
 // ---------------------------------------------------------------------------
@@ -129,12 +133,20 @@ Widget _buildMedicationForm({Medication? medication}) {
   );
 }
 
-Widget _buildDoseForm({required Medication med, DoseLog? doseLog}) {
+Widget _buildDoseForm({
+  required Medication med,
+  DoseLog? doseLog,
+  List<Profile>? profiles,
+  List<Medication>? allMeds,
+}) {
   return ProviderScope(
     overrides: [
       doseLogListProvider.overrideWith(_FakeDoseLogList.new),
+      medicationListProvider.overrideWith(
+        () => _FakeMedicationList(meds: allMeds ?? [med]),
+      ),
       activeProfileProvider.overrideWith(_FakeActiveProfile.new),
-      profileListProvider.overrideWith(_FakeProfileList.new),
+      profileListProvider.overrideWith(() => _FakeProfileList(profiles)),
       activeProfileDataProvider.overrideWith((ref) => _sarah),
     ],
     child: MaterialApp(
@@ -460,6 +472,78 @@ void main() {
       await tester.pump();
 
       expect(find.byIcon(Icons.delete_outline), findsOneWidget);
+    });
+
+    // #77: a dose logged under the wrong person can be moved, but only to a
+    // profile that has the same medication.
+    group('Move to another profile', () {
+      final dad = Profile(id: 2, name: 'Dad');
+      final mia = Profile(id: 3, name: 'Mia');
+      final log = DoseLog(
+        id: 1,
+        profileId: 1,
+        medicationIsarId: 1,
+        loggedAt: _now,
+        createdAt: _now,
+        amount: 500,
+        unit: 'mg',
+        status: 'taken',
+      );
+      Medication dadsMetformin() => Medication(
+        id: 2,
+        profileId: 2,
+        name: 'metformin',
+        medicationType: 'medication',
+        doseAmount: 850,
+        doseUnit: 'mg',
+        frequency: 'daily',
+        startDate: DateTime(2026, 1, 1),
+        createdAt: _now,
+      );
+
+      testWidgets('is offered when editing a dose and others exist', (
+        tester,
+      ) async {
+        await tester.pumpWidget(
+          _buildDoseForm(med: _med(), doseLog: log, profiles: [_sarah, dad]),
+        );
+        await tester.pump();
+        expect(find.byTooltip('Move to another profile'), findsOneWidget);
+      });
+
+      testWidgets('is not offered when logging a new dose', (tester) async {
+        await tester.pumpWidget(
+          _buildDoseForm(med: _med(), profiles: [_sarah, dad]),
+        );
+        await tester.pump();
+        expect(find.byTooltip('Move to another profile'), findsNothing);
+      });
+
+      testWidgets('disables profiles without the same medication', (
+        tester,
+      ) async {
+        await tester.pumpWidget(
+          _buildDoseForm(
+            med: _med(),
+            doseLog: log,
+            profiles: [_sarah, dad, mia],
+            allMeds: [_med(), dadsMetformin()],
+          ),
+        );
+        await tester.pump();
+        await tester.tap(find.byTooltip('Move to another profile'));
+        await tester.pumpAndSettle();
+
+        expect(find.text("No Metformin in Mia's medications"), findsOneWidget);
+        final dadTile = tester.widget<ListTile>(
+          find.ancestor(of: find.text('Dad'), matching: find.byType(ListTile)),
+        );
+        final miaTile = tester.widget<ListTile>(
+          find.ancestor(of: find.text('Mia'), matching: find.byType(ListTile)),
+        );
+        expect(dadTile.enabled, isTrue);
+        expect(miaTile.enabled, isFalse);
+      });
     });
   });
 

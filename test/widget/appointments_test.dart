@@ -30,8 +30,12 @@ class _FakeActiveProfile extends ActiveProfileNotifier {
 }
 
 class _FakeProfileList extends ProfileListNotifier {
+  _FakeProfileList([List<Profile>? profiles])
+    : profiles = profiles ?? [Profile(id: 1, name: 'Sarah')];
+  final List<Profile> profiles;
+
   @override
-  List<Profile> build() => [Profile(id: 1, name: 'Sarah')];
+  List<Profile> build() => profiles;
 }
 
 // ---------------------------------------------------------------------------
@@ -66,7 +70,10 @@ Appointment makeAppointment({
 // Helpers
 // ---------------------------------------------------------------------------
 
-List<Override> _baseOverrides({List<Appointment> appointments = const []}) => [
+List<Override> _baseOverrides({
+  List<Appointment> appointments = const [],
+  List<Profile>? profiles,
+}) => [
   appointmentListProvider.overrideWith(
     () => _FakeAppointmentList(appointments: appointments),
   ),
@@ -88,7 +95,7 @@ List<Override> _baseOverrides({List<Appointment> appointments = const []}) => [
           ..sort((a, b) => a.scheduledAt.compareTo(b.scheduledAt)),
   ),
   activeProfileProvider.overrideWith(_FakeActiveProfile.new),
-  profileListProvider.overrideWith(_FakeProfileList.new),
+  profileListProvider.overrideWith(() => _FakeProfileList(profiles)),
   activeProfileDataProvider.overrideWith(
     (ref) => Profile(id: 1, name: 'Sarah'),
   ),
@@ -113,9 +120,12 @@ Widget _buildFormScreen({Appointment? appointment, String? prefillProvider}) {
   );
 }
 
-Widget _buildDetailScreen({required Appointment appointment}) {
+Widget _buildDetailScreen({
+  required Appointment appointment,
+  List<Profile>? profiles,
+}) {
   return ProviderScope(
-    overrides: _baseOverrides(appointments: [appointment]),
+    overrides: _baseOverrides(appointments: [appointment], profiles: profiles),
     child: MaterialApp(
       home: AppointmentDetailScreen(appointmentId: appointment.id),
     ),
@@ -228,6 +238,33 @@ void main() {
   // ---------------------------------------------------------------------------
 
   group('AppointmentDetailScreen', () {
+    // #77: appointments logged under the wrong person can be moved.
+    testWidgets('offers "Move to another profile" when others exist', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _buildDetailScreen(
+          appointment: makeAppointment(),
+          profiles: [
+            Profile(id: 1, name: 'Sarah'),
+            Profile(id: 2, name: 'Dad'),
+          ],
+        ),
+      );
+      await tester.pump();
+      expect(find.byTooltip('Move to another profile'), findsOneWidget);
+    });
+
+    testWidgets('hides "Move to another profile" with a single profile', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _buildDetailScreen(appointment: makeAppointment()),
+      );
+      await tester.pump();
+      expect(find.byTooltip('Move to another profile'), findsNothing);
+    });
+
     testWidgets('shows upcoming header for upcoming appointment', (
       tester,
     ) async {
