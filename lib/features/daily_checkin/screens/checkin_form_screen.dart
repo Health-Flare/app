@@ -174,6 +174,7 @@ class _CheckInFormScreenState extends ConsumerState<CheckInFormScreen> {
                   snapshot: _isEdit
                       ? widget.checkin?.weatherSnapshot
                       : _capturedWeather,
+                  showDetails: _isEdit,
                 ),
               ),
 

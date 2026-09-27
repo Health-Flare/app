@@ -226,6 +226,7 @@ class _SymptomEntryFormScreenState
                   snapshot: isEdit
                       ? widget.entry?.weatherSnapshot
                       : _capturedWeather,
+                  showDetails: isEdit,
                 ),
               ),
 

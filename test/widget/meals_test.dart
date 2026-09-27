@@ -11,6 +11,7 @@ import 'package:health_flare/features/meals/screens/meals_screen.dart';
 import 'package:health_flare/models/meal_entry.dart';
 import 'package:health_flare/models/profile.dart';
 import 'package:health_flare/models/symptom_entry.dart';
+import 'package:health_flare/models/weather_snapshot.dart';
 
 // ---------------------------------------------------------------------------
 // Fakes
@@ -55,6 +56,7 @@ MealEntry makeMeal({
   String? notes,
   String? photoPath,
   DateTime? loggedAt,
+  WeatherSnapshot? weather,
 }) => MealEntry(
   id: id,
   profileId: 1,
@@ -64,6 +66,7 @@ MealEntry makeMeal({
   hasReaction: hasReaction,
   loggedAt: loggedAt ?? _now,
   createdAt: _now,
+  weatherSnapshot: weather,
 );
 
 // ---------------------------------------------------------------------------
@@ -290,6 +293,28 @@ void main() {
   // ---------------------------------------------------------------------------
 
   group('MealDetailScreen', () {
+    testWidgets('shows weather conditions, pressure and humidity', (
+      tester,
+    ) async {
+      final entry = makeMeal(
+        description: 'Porridge',
+        weather: WeatherSnapshot(
+          temperatureCelsius: 22,
+          weatherCode: 0, // Clear sky
+          pressureHPa: 1021.4,
+          humidityPercent: 45,
+          windSpeedKmh: 8,
+          capturedAt: _now,
+        ),
+      );
+
+      await tester.pumpWidget(_buildDetailScreen(entry: entry));
+      await tester.pump();
+
+      expect(find.text('Clear sky, 22°C'), findsOneWidget);
+      expect(find.text('Pressure 1021 hPa · Humidity 45%'), findsOneWidget);
+    });
+
     testWidgets('shows meal description and timestamp', (tester) async {
       final entry = makeMeal(description: 'Grilled salmon');
 
