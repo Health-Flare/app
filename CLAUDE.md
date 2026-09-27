@@ -292,7 +292,7 @@ flutter test test/widget/onboarding_screen_test.dart
 - All data stored in Isar on device
 - Export/share only when user explicitly requests
 - One narrow exception: opt-in weather capture calls the Open-Meteo API (coordinates sent,
-  never stored; see the README's Privacy section and `.url-scan-ignore`)
+  never stored; see the README's Privacy section, `docs/development.md`'s Offline-first rule, and `.url-scan-ignore`)
 
 ### Multi-Profile Support
 
