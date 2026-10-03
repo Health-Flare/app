@@ -256,16 +256,121 @@ Feature: Profile Management
     When I move that symptom entry to "Dad"
     Then the entry no longer references Sarah's flare
 
-  Scenario: Journal, meal, symptom, vital, sleep, and activity entries can all be moved
+  Scenario: Every kind of entry can be moved
     Given profiles "Sarah" and "Dad" exist
     Then the "Move to another profile" action is available on:
-      | Entry type | Where                    |
-      | Journal    | journal detail screen    |
-      | Meal       | meal detail screen       |
-      | Symptom    | symptom edit screen      |
-      | Vital      | vital edit screen        |
-      | Sleep      | sleep edit screen        |
-      | Activity   | activity edit screen     |
+      | Entry type      | Where                      |
+      | Journal         | journal detail screen      |
+      | Meal            | meal detail screen         |
+      | Symptom         | symptom edit screen        |
+      | Vital           | vital edit screen          |
+      | Sleep           | sleep edit screen          |
+      | Activity        | activity edit screen       |
+      | Medication dose | dose edit screen           |
+      | Appointment     | appointment detail screen  |
+
+  # Moving never loses data. The person sees what will change before
+  # anything happens, edits in progress are saved first, and if the move
+  # fails the entry stays where it was. (#77)
+
+  Scenario: The move is confirmed before anything changes
+    Given profiles "Sarah" and "Dad" exist
+    When I choose "Move to another profile" on one of Sarah's entries
+    And I pick "Dad"
+    Then I'm asked "Move to Dad?" with Cancel and Move
+    When I tap "Cancel"
+    Then the entry is still in Sarah's record
+
+  Scenario: Edits in progress are saved before the entry moves
+    Given I'm editing one of Sarah's symptom entries
+    And I have changed its notes without saving
+    When I move it to "Dad"
+    Then the entry in Dad's record has the changed notes
+
+  Scenario: Text typed on an appointment is kept when it moves
+    Given I'm viewing one of Sarah's appointments
+    And I've typed outcome notes without tapping "Save outcome"
+    And I've typed a question and a medication change without adding them
+    When I move the appointment to "Dad"
+    Then Dad's appointment has the outcome notes, the question, and the change
+    And the appointment's status is unchanged
+
+  Scenario: An edit that can't be saved blocks the move
+    Given I'm editing one of Sarah's symptom entries
+    And I have cleared the symptom name
+    When I try to move it to "Dad"
+    Then the entry stays in Sarah's record, unchanged
+    And I see "Fix the highlighted fields first, then move it again."
+
+  Scenario: A failed move leaves the entry where it was
+    Given moving one of Sarah's entries to "Dad" fails
+    Then the entry is still in Sarah's record
+    And I see "Couldn't move this entry. It's still in Sarah's record."
+    And the screen stays open
+
+  Scenario: The confirmation says when a flare link will be dropped
+    Given one of Sarah's entries is linked to her flare
+    When I pick "Dad" as the move target
+    Then the confirmation says "It will no longer be part of Sarah's flare."
+
+  # Doses point at a medication, and medications belong to one profile. On
+  # the target, a dose joins the medication with the same name. If there
+  # isn't one, the move adds it to the target's medications first, in the
+  # same step, and says so up front. (#77)
+
+  Scenario: A dose moves to a profile that has the same medication
+    Given profiles "Sarah" and "Dad" exist
+    And both Sarah and Dad have "Ibuprofen" in their medications
+    And Sarah's record has an Ibuprofen dose logged at 12:00 rated "Helped a little"
+    When I move that dose to "Dad"
+    Then the dose appears in Dad's Ibuprofen history
+    And it keeps its time, amount, status, rating, and notes
+    And it no longer appears in Sarah's Ibuprofen history
+
+  Scenario: Medication names match regardless of capitals and spacing
+    Given Sarah has "Ibuprofen" and Dad has " ibuprofen" in their medications
+    When I move one of Sarah's Ibuprofen doses to "Dad"
+    Then the dose appears in Dad's ibuprofen history
+
+  Scenario: The confirmation says which medication the dose joins
+    Given both Sarah and Dad have "Metformin" in their medications
+    When I pick "Dad" as the target for one of Sarah's Metformin doses
+    Then the confirmation says "It will be logged under Dad's Metformin."
+
+  Scenario: Moving a dose to someone without that medication adds it
+    Given profiles "Sarah" and "Mia" exist
+    And only Sarah has "Metformin 500 mg, twice daily" in her medications
+    When I pick "Mia" as the target for one of Sarah's Metformin doses
+    Then the confirmation says Metformin will be added to Mia's medications
+    When I tap "Move"
+    Then Mia's medications include "Metformin 500 mg, twice daily"
+    And the dose appears in Mia's Metformin history
+    And Sarah's Metformin and its notes are unchanged
+    And Sarah's notes on Metformin are not copied to Mia
+
+  Scenario: A moved dose prefers the target's active medication
+    Given Dad has a discontinued "Ibuprofen" and an active "Ibuprofen"
+    When I move one of Sarah's Ibuprofen doses to "Dad"
+    Then the dose is linked to Dad's active Ibuprofen
+
+  Scenario: Moving a dose clears any flare link
+    Given one of Sarah's doses is linked to her active flare
+    When I move that dose to "Dad"
+    Then the dose no longer references Sarah's flare
+
+  Scenario: An appointment moves with its questions and outcome
+    Given Sarah's record has an appointment "Rheumatology follow-up" with Dr. Chen
+    And it has a question marked as discussed and outcome notes
+    When I move that appointment to "Dad"
+    Then the appointment appears in Dad's appointments
+    And it keeps its title, provider, date, questions, and outcome notes
+
+  Scenario: Medication changes on a moved appointment keep their text
+    Given one of Sarah's appointments has the medication change "Start methotrexate 10 mg weekly"
+    And that change is linked to Sarah's methotrexate
+    When I move that appointment to "Dad"
+    Then the change still reads "Start methotrexate 10 mg weekly"
+    And it is no longer linked to Sarah's medication
 
   # ---------------------------------------------------------------------------
   # First launch / onboarding

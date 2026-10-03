@@ -113,6 +113,27 @@ final medicationListProvider =
       MedicationListNotifier.new,
     );
 
+/// The medication on [targetProfileId] that a dose of [source] should link
+/// to when the dose is moved there (#77). Matches by name, ignoring case and
+/// surrounding whitespace, and prefers an active medication. Returns null
+/// when the target profile has no medication with that name.
+Medication? matchingMedication(
+  List<Medication> all,
+  Medication source,
+  int targetProfileId,
+) {
+  final name = source.name.trim().toLowerCase();
+  final matches = all
+      .where(
+        (m) =>
+            m.profileId == targetProfileId &&
+            m.name.trim().toLowerCase() == name,
+      )
+      .toList();
+  if (matches.isEmpty) return null;
+  return matches.firstWhere((m) => m.isActive, orElse: () => matches.first);
+}
+
 // ---------------------------------------------------------------------------
 // Active profile's medications
 // ---------------------------------------------------------------------------
