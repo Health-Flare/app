@@ -131,5 +131,6 @@ class InsightData {
       wellbeingTrend.isEmpty &&
       foodTriggers.isEmpty &&
       !sleepCorrelation.hasData &&
-      weatherImpact.isEmpty;
+      weatherImpact.isEmpty &&
+      vitalTrends.isEmpty;
 }

@@ -11,7 +11,7 @@ import 'package:health_flare/data/models/symptom_entry_isar.dart';
 import 'package:health_flare/data/models/vital_entry_isar.dart';
 import 'package:health_flare/features/reports/models/insight_data.dart';
 import 'package:health_flare/features/reports/services/insights_query_service.dart';
-import 'package:health_flare/features/reports/services/vital_units.dart';
+import 'package:health_flare/models/vital_units.dart';
 import 'package:health_flare/models/vital_type.dart';
 
 Future<Isar> _openIsar() => Isar.open(

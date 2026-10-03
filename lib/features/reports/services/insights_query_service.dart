@@ -1,13 +1,45 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar_community/isar.dart';
 
+import 'package:health_flare/core/providers/database_provider.dart';
 import 'package:health_flare/data/models/daily_checkin_isar.dart';
 import 'package:health_flare/data/models/flare_isar.dart';
 import 'package:health_flare/data/models/meal_entry_isar.dart';
 import 'package:health_flare/data/models/sleep_entry_isar.dart';
 import 'package:health_flare/data/models/symptom_entry_isar.dart';
+import 'package:health_flare/data/models/vital_entry_isar.dart';
 import 'package:health_flare/features/reports/models/insight_data.dart';
 import 'package:health_flare/models/meal_entry.dart';
 import 'package:health_flare/models/symptom_entry.dart';
+import 'package:health_flare/models/vital_entry.dart';
+import 'package:health_flare/models/vital_type.dart';
+import 'package:health_flare/models/vital_units.dart';
+
+/// [InsightsQueryService.query] bound to the app database, so screens never
+/// touch Isar directly and tests can swap in a fake.
+typedef InsightsQuery =
+    Future<InsightData> Function({
+      required int profileId,
+      required DateTime start,
+      required DateTime end,
+      String? temperatureUnit,
+    });
+
+final insightsQueryProvider = Provider<InsightsQuery>(
+  (ref) =>
+      ({
+        required int profileId,
+        required DateTime start,
+        required DateTime end,
+        String? temperatureUnit,
+      }) => InsightsQueryService.query(
+        isar: ref.read(isarProvider),
+        profileId: profileId,
+        start: start,
+        end: end,
+        temperatureUnit: temperatureUnit,
+      ),
+);
 
 /// Queries Isar and computes insight data for a profile and date window.
 abstract final class InsightsQueryService {
@@ -216,6 +248,57 @@ abstract final class InsightsQueryService {
             .toList()
           ..sort((a, b) => b.avgSeverity.compareTo(a.avgSeverity));
 
+    // ── Compute vital trends ──────────────────────────────────────────────────
+
+    final allVitals = (await isar.vitalEntryIsars.where().findAll())
+        .where((r) => isProfile(r.profileId) && inWindow(r.loggedAt))
+        .map((r) => r.toDomain())
+        .toList();
+
+    final vitalsByType = <VitalType, List<VitalEntry>>{};
+    for (final v in allVitals) {
+      (vitalsByType[v.vitalType] ??= []).add(v);
+    }
+
+    final vitalTrends = <VitalTrend>[];
+    for (final type in VitalType.values) {
+      final entries = vitalsByType[type];
+      if (entries == null || entries.isEmpty) continue;
+      entries.sort((a, b) => a.loggedAt.compareTo(b.loggedAt));
+
+      // Chart unit: the profile's preference for temperature, otherwise the
+      // unit of the most recent reading. Display only; rows are untouched.
+      final preferred = type == VitalType.temperature ? temperatureUnit : null;
+      final unit =
+          (preferred != null && type.availableUnits.contains(preferred))
+          ? preferred
+          : entries.last.unit;
+
+      double toUnit(double v, String from) =>
+          VitalUnits.convert(v, from: from, to: unit);
+
+      vitalTrends.add(
+        VitalTrend(
+          type: type,
+          unit: unit,
+          points: [
+            for (final e in entries)
+              TrendPoint(date: e.loggedAt, value: toUnit(e.value, e.unit)),
+          ],
+          secondaryPoints: type.hasSecondaryValue
+              ? [
+                  for (final e in entries)
+                    if (e.value2 != null)
+                      TrendPoint(
+                        date: e.loggedAt,
+                        value: toUnit(e.value2!, e.unit),
+                      ),
+                ]
+              : const [],
+        ),
+      );
+    }
+
     return InsightData(
       start: windowStart,
       end: windowEnd,
@@ -225,6 +308,7 @@ abstract final class InsightsQueryService {
       foodTriggers: foodTriggers,
       sleepCorrelation: sleepCorrelation,
       weatherImpact: weatherImpact,
+      vitalTrends: vitalTrends,
     );
   }
 }
