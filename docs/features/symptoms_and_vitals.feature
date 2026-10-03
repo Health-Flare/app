@@ -118,6 +118,56 @@ Feature: Symptom and Vitals Logging
     And no entry is saved
 
   # ---------------------------------------------------------------------------
+  # Temperature unit preference (issue #83)
+  # ---------------------------------------------------------------------------
+
+  # The profile's temperature unit only changes what is shown. A reading is
+  # saved in the unit it was entered in and is never rewritten.
+
+  Scenario: New temperature entries start in the profile's unit
+    Given "Sarah"'s temperature unit is "°F"
+    When I open the new vital entry screen
+    And I select "Temperature" as the vital type
+    Then the unit is "°F"
+    And I can still change it to "°C" for this entry
+
+  Scenario: New temperature entries start in °C when the unit is "As logged"
+    Given "Sarah"'s temperature unit is "As logged"
+    When I open the new vital entry screen
+    And I select "Temperature" as the vital type
+    Then the unit is "°C"
+
+  Scenario: A reading is saved in the unit it was entered in
+    Given "Sarah"'s temperature unit is "°C"
+    When I log a temperature of 100.4 °F
+    Then the saved reading is 100.4 °F
+
+  Scenario: The vitals list shows temperatures in the profile's unit
+    Given "Sarah"'s temperature unit is "°C"
+    And she logged a temperature of 100.4 °F
+    When I view the vitals log
+    Then the entry shows "38.0 °C"
+
+  Scenario: The vitals list shows temperatures as logged when no unit is chosen
+    Given "Sarah"'s temperature unit is "As logged"
+    And she logged a temperature of 100.4 °F
+    When I view the vitals log
+    Then the entry shows "100.4 °F"
+
+  Scenario: Editing a reading shows the value that was saved
+    Given "Sarah"'s temperature unit is "°C"
+    And she logged a temperature of 100.4 °F
+    When I edit that entry
+    Then the value field shows "100.4" and the unit is "°F"
+    And saving without changes leaves the reading at 100.4 °F
+
+  Scenario: Exports keep readings as logged
+    Given "Sarah"'s temperature unit is "°C"
+    And she logged a temperature of 100.4 °F
+    When I export a report as CSV including vitals
+    Then the temperature row shows 100.4 in °F
+
+  # ---------------------------------------------------------------------------
   # Viewing symptom and vital history
   # ---------------------------------------------------------------------------
 

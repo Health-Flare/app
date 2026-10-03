@@ -77,6 +77,48 @@ Feature: Profile Management
     And I save the changes
     Then the profile "Dad" now has a date of birth of "1952-04-10"
 
+  # Temperature unit (issue #83). A display preference only: readings are
+  # stored exactly as entered and converted when shown.
+
+  Scenario: A new profile shows temperatures as they were logged
+    Given I have created a profile named "Sarah"
+    When I edit the profile "Sarah"
+    Then the temperature unit is set to "As logged"
+
+  Scenario Outline: Choose a temperature unit for a profile
+    When I edit the profile "Sarah"
+    And I set the temperature unit to "<unit>"
+    And I save the changes
+    Then "Sarah"'s temperature unit is "<unit>"
+    And the setting is still "<unit>" after restarting the app
+
+    Examples:
+      | unit      |
+      | °C        |
+      | °F        |
+      | As logged |
+
+  Scenario: Each profile has its own temperature unit
+    Given "Sarah"'s temperature unit is "°C"
+    And "Dad"'s temperature unit is "°F"
+    When I switch to "Dad"
+    Then temperatures are shown in °F
+    When I switch to "Sarah"
+    Then temperatures are shown in °C
+
+  Scenario: Changing the temperature unit does not change saved readings
+    Given "Sarah" logged a temperature of 100.4 °F
+    When I set "Sarah"'s temperature unit to "°C"
+    Then the reading is shown as 38.0 °C
+    And the saved reading is still 100.4 °F
+    When I set "Sarah"'s temperature unit back to "°F"
+    Then the reading is shown as 100.4 °F
+
+  Scenario: The temperature unit carries over in a backup
+    Given "Sarah"'s temperature unit is "°F"
+    When I export a backup and import it on another device
+    Then "Sarah"'s temperature unit is "°F"
+
   Scenario: Change a profile avatar
     Given a profile named "Sarah" exists with no avatar
     When I open the profile settings for "Sarah"

@@ -38,6 +38,13 @@ class VitalEntry {
     return '$formatted $unit';
   }
 
+  /// [displayValue] with temperatures converted to [temperatureUnit]
+  /// ('°C' or '°F'). Null means show the reading as logged.
+  String displayValueIn({String? temperatureUnit}) {
+    // TODO(#83): not implemented yet.
+    return displayValue;
+  }
+
   VitalEntry copyWith({
     VitalType? vitalType,
     double? value,

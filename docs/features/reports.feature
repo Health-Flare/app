@@ -225,12 +225,21 @@ Feature: Reports and Data Export
     And the axis is not the 1–10 severity scale
 
   Scenario: Readings in mixed units are shown in one unit
-    Given "Sarah" logged a temperature of 37.0 °C two days ago
+    Given "Sarah"'s temperature unit is set to "As logged"
+    And she logged a temperature of 37.0 °C two days ago
     And she logged a temperature of 100.4 °F yesterday
     When I view the temperature chart
     Then the chart is labelled in °F, the unit of her most recent reading
     And the 37.0 °C reading is plotted as 98.6 °F
     And her saved readings are unchanged
+
+  Scenario: The temperature chart uses the profile's temperature unit
+    Given "Sarah"'s temperature unit is set to "°C"
+    And she logged a temperature of 100.4 °F yesterday
+    When I view the temperature chart
+    Then the chart is labelled in °C
+    And the 100.4 °F reading is plotted as 38.0 °C
+    And her saved reading is still 100.4 °F
 
   Scenario: Blood pressure shows systolic and diastolic as two lines
     Given "Sarah" has blood pressure readings in the last 30 days

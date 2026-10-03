@@ -16,6 +16,7 @@ abstract final class InsightsQueryService {
     required int profileId,
     required DateTime start,
     required DateTime end,
+    String? temperatureUnit,
   }) async {
     final windowStart = _startOfDay(start);
     final windowEnd = _endOfDay(end);
