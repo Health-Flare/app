@@ -1,5 +1,6 @@
 import 'package:health_flare/models/meal_entry.dart';
 import 'package:health_flare/models/symptom_entry.dart';
+import 'package:health_flare/models/vital_type.dart';
 
 /// Average symptom severity for a specific weather condition.
 class WeatherConditionSeverity {
@@ -28,6 +29,25 @@ class SymptomTrend {
 
   final String name;
   final List<TrendPoint> points; // sorted ascending by date
+}
+
+/// Readings for one vital type, all expressed in [unit].
+///
+/// [points] carry the full logged timestamp (not truncated to the day), so
+/// several readings on one day stay separate. [secondaryPoints] holds the
+/// diastolic series for blood pressure and is empty for every other type.
+class VitalTrend {
+  const VitalTrend({
+    required this.type,
+    required this.unit,
+    required this.points,
+    this.secondaryPoints = const [],
+  });
+
+  final VitalType type;
+  final String unit;
+  final List<TrendPoint> points; // sorted ascending by date
+  final List<TrendPoint> secondaryPoints; // sorted ascending by date
 }
 
 /// A time window during which a flare was active.
@@ -78,6 +98,7 @@ class InsightData {
     required this.foodTriggers,
     required this.sleepCorrelation,
     required this.weatherImpact,
+    this.vitalTrends = const [],
   });
 
   final DateTime start;
@@ -101,6 +122,9 @@ class InsightData {
   /// Average symptom severity per weather condition (requires ≥2 samples per condition).
   /// Sorted by avg severity descending (most impactful conditions first).
   final List<WeatherConditionSeverity> weatherImpact;
+
+  /// One trend per vital type with readings in the window.
+  final List<VitalTrend> vitalTrends;
 
   bool get isEmpty =>
       symptomTrends.isEmpty &&

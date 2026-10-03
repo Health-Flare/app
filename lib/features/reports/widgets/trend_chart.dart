@@ -19,6 +19,8 @@ class TrendChart extends StatelessWidget {
     this.flarePeriods = const [],
     this.maxY = 10.0,
     this.lineColor,
+    this.secondaryPoints = const [],
+    this.fitToData = false,
   });
 
   final List<TrendPoint> points;
@@ -27,6 +29,13 @@ class TrendChart extends StatelessWidget {
   final List<InsightFlarePeriod> flarePeriods;
   final double maxY;
   final Color? lineColor;
+
+  /// Optional second series (diastolic blood pressure), drawn as its own line.
+  final List<TrendPoint> secondaryPoints;
+
+  /// When true, the y-axis is fitted to the readings instead of 0..[maxY].
+  /// Used for vitals, whose values are not on the 1–10 severity scale.
+  final bool fitToData;
 
   static final _axisDateFmt = DateFormat('d MMM');
 
