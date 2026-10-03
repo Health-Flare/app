@@ -282,6 +282,33 @@ void main() {
   // ---------------------------------------------------------------------------
 
   group('SymptomEntryFormScreen', () {
+    testWidgets('edit form shows saved weather with pressure and humidity', (
+      tester,
+    ) async {
+      final entry = SymptomEntry(
+        id: 1,
+        profileId: 1,
+        name: 'Headache',
+        severity: 6,
+        loggedAt: DateTime(2026, 2, 15, 8, 0),
+        createdAt: DateTime(2026, 2, 15, 8, 0),
+        weatherSnapshot: WeatherSnapshot(
+          temperatureCelsius: 12,
+          weatherCode: 61, // Rain
+          pressureHPa: 1004.8,
+          humidityPercent: 91,
+          windSpeedKmh: 25,
+          capturedAt: DateTime(2026, 2, 15, 8, 0),
+        ),
+      );
+
+      await tester.pumpWidget(_buildSymptomForm(entry: entry));
+      await tester.pump();
+
+      expect(find.text('Rain, 12°C'), findsOneWidget);
+      expect(find.text('Pressure 1005 hPa · Humidity 91%'), findsOneWidget);
+    });
+
     testWidgets('shows "Logging for Sarah" label', (tester) async {
       await tester.pumpWidget(_buildSymptomForm());
       await tester.pump();

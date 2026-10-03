@@ -148,6 +148,36 @@ Feature: Weather context on log entries
     When I open that entry in the composer for editing
     Then the weather chip shows "Thunderstorm, 18°C"
 
+  # ── Pressure and humidity on single-entry views ───────────────────────────
+  # Compact contexts (list subtitles, journal cards, new-entry forms) show only
+  # conditions and temperature. Views of one saved entry add a second line.
+
+  Scenario: Pressure and humidity are shown on the meal detail screen
+    Given a saved meal entry with weather snapshot "Clear sky, 22°C", pressure 1021.4 hPa and humidity 45%
+    When I open that meal's detail screen
+    Then "Pressure 1021 hPa · Humidity 45%" is shown beneath the weather summary
+
+  Scenario: Pressure and humidity are shown on the journal detail screen
+    Given a saved journal entry with weather snapshot "Snow, 0°C", pressure 998.2 hPa and humidity 88%
+    When I open that entry's detail screen
+    Then "Pressure 998 hPa · Humidity 88%" is shown beneath the weather summary
+
+  Scenario Outline: Pressure and humidity are shown when editing an entry with saved weather
+    Given an existing <entry type> with weather snapshot pressure 1004.8 hPa and humidity 91%
+    When I open that entry for editing
+    Then "Pressure 1005 hPa · Humidity 91%" is shown beneath the weather summary
+
+    Examples:
+      | entry type       |
+      | symptom entry    |
+      | meal entry       |
+      | activity entry   |
+      | daily check-in   |
+
+  Scenario: Pressure and humidity are not shown in compact weather chips
+    Given the weather chip is shown on a new entry form, a list row, or a journal card
+    Then only the conditions and temperature are shown
+
   # ── Disabled ──────────────────────────────────────────────────────────────
 
   Scenario: No weather chip shown when weather tracking is disabled

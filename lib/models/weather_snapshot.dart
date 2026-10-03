@@ -22,6 +22,11 @@ class WeatherSnapshot {
   String get displayString =>
       '$conditionLabel, ${temperatureCelsius.round()}°C';
 
+  /// Secondary conditions shown on detail views, e.g.
+  /// "Pressure 1013 hPa · Humidity 62%".
+  String get detailString =>
+      'Pressure ${pressureHPa.round()} hPa · Humidity $humidityPercent%';
+
   IconData get icon => _wmoIcon(weatherCode);
 
   static String _wmoLabel(int code) {

@@ -72,7 +72,7 @@ class JournalDetailScreen extends ConsumerWidget {
 
             // Weather (if captured at time of writing)
             if (entry.weatherSnapshot != null) ...[
-              WeatherChip(snapshot: entry.weatherSnapshot),
+              WeatherChip(snapshot: entry.weatherSnapshot, showDetails: true),
               const SizedBox(height: 8),
             ],
 

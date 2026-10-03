@@ -147,7 +147,10 @@ class MealDetailScreen extends ConsumerWidget {
                   // Weather snapshot
                   if (entry.weatherSnapshot != null) ...[
                     const SizedBox(height: 12),
-                    WeatherChip(snapshot: entry.weatherSnapshot),
+                    WeatherChip(
+                      snapshot: entry.weatherSnapshot,
+                      showDetails: true,
+                    ),
                   ],
 
                   // Notes

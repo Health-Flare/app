@@ -258,6 +258,7 @@ class _MealEntryFormScreenState extends ConsumerState<MealEntryFormScreen> {
                   snapshot: _isEdit
                       ? widget.entry?.weatherSnapshot
                       : _capturedWeather,
+                  showDetails: _isEdit,
                 ),
               ),
 

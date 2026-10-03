@@ -8,6 +8,7 @@ import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/features/journal/screens/journal_detail_screen.dart';
 import 'package:health_flare/models/journal_entry.dart';
 import 'package:health_flare/models/profile.dart';
+import 'package:health_flare/models/weather_snapshot.dart';
 
 // ---------------------------------------------------------------------------
 // Fakes
@@ -53,6 +54,7 @@ JournalEntry _entry({
   JournalMood? mood,
   int? energyLevel,
   bool edited = false,
+  WeatherSnapshot? weather,
 }) {
   final created = DateTime(2026, 2, 14, 10, 0);
   final saved = edited ? DateTime(2026, 2, 14, 12, 0) : created;
@@ -63,8 +65,18 @@ JournalEntry _entry({
     snapshots: [JournalSnapshot(body: body, title: title, savedAt: saved)],
     mood: mood?.index,
     energyLevel: energyLevel,
+    weatherSnapshot: weather,
   );
 }
+
+final _snowSnapshot = WeatherSnapshot(
+  temperatureCelsius: 0,
+  weatherCode: 71, // Snow
+  pressureHPa: 998.2,
+  humidityPercent: 88,
+  windSpeedKmh: 20,
+  capturedAt: DateTime(2026, 2, 14, 10, 0),
+);
 
 /// Builds the detail screen inside a GoRouter so that context.pop() works.
 Widget _buildDetail(_FakeJournalList fakeList, JournalEntry entry) {
@@ -104,6 +116,29 @@ Widget _buildDetail(_FakeJournalList fakeList, JournalEntry entry) {
 void main() {
   group('JournalDetailScreen', () {
     group('content display', () {
+      testWidgets('shows weather conditions, pressure and humidity', (
+        tester,
+      ) async {
+        final entry = _entry(weather: _snowSnapshot);
+        final fake = _FakeJournalList([entry]);
+        await tester.pumpWidget(_buildDetail(fake, entry));
+        await tester.pump();
+
+        expect(find.text('Snow, 0°C'), findsOneWidget);
+        expect(find.text('Pressure 998 hPa · Humidity 88%'), findsOneWidget);
+      });
+
+      testWidgets('shows no weather details when none was captured', (
+        tester,
+      ) async {
+        final entry = _entry();
+        final fake = _FakeJournalList([entry]);
+        await tester.pumpWidget(_buildDetail(fake, entry));
+        await tester.pump();
+
+        expect(find.textContaining('hPa'), findsNothing);
+      });
+
       testWidgets('shows full body text', (tester) async {
         final entry = _entry(body: 'Joint pain all day');
         final fake = _FakeJournalList([entry]);

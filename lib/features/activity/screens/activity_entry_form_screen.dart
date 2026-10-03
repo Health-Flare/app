@@ -254,6 +254,7 @@ class _ActivityEntryFormScreenState
                   snapshot: _isEdit
                       ? widget.entry?.weatherSnapshot
                       : _capturedWeather,
+                  showDetails: _isEdit,
                 ),
               ),
 
