@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import 'package:health_flare/core/providers/flare_provider.dart';
+import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/core/providers/meal_entry_provider.dart';
 import 'package:health_flare/core/providers/symptom_entry_provider.dart';
 import 'package:health_flare/core/providers/vital_entry_provider.dart';
@@ -35,6 +36,10 @@ class FlareDetailScreen extends ConsumerWidget {
         body: Center(child: Text('Flare not found')),
       );
     }
+
+    final temperatureUnit = ref.watch(
+      activeProfileDataProvider.select((p) => p?.temperatureUnit),
+    );
 
     // Entries tagged to this flare (flareIsarId == flare.id).
     final symptoms =
@@ -154,7 +159,10 @@ class FlareDetailScreen extends ConsumerWidget {
             _SectionHeader(label: 'Vitals (${vitals.length})'),
             SliverList(
               delegate: SliverChildBuilderDelegate(
-                (ctx, i) => _VitalTile(entry: vitals[i]),
+                (ctx, i) => _VitalTile(
+                  entry: vitals[i],
+                  temperatureUnit: temperatureUnit,
+                ),
                 childCount: vitals.length,
               ),
             ),
@@ -536,8 +544,9 @@ class _SymptomTile extends StatelessWidget {
 }
 
 class _VitalTile extends StatelessWidget {
-  const _VitalTile({required this.entry});
+  const _VitalTile({required this.entry, this.temperatureUnit});
   final VitalEntry entry;
+  final String? temperatureUnit;
 
   @override
   Widget build(BuildContext context) {
@@ -553,7 +562,10 @@ class _VitalTile extends StatelessWidget {
         ),
       ),
       title: Text(entry.vitalType.label),
-      subtitle: Text('${entry.displayValue} · ${fmt.format(entry.loggedAt)}'),
+      subtitle: Text(
+        '${entry.displayValueIn(temperatureUnit: temperatureUnit)} · '
+        '${fmt.format(entry.loggedAt)}',
+      ),
       dense: true,
     );
   }

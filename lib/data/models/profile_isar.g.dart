@@ -48,13 +48,18 @@ const ProfileIsarSchema = CollectionSchema(
       type: IsarType.bool,
     ),
     r'name': PropertySchema(id: 6, name: r'name', type: IsarType.string),
-    r'weatherOptInShown': PropertySchema(
+    r'temperatureUnit': PropertySchema(
       id: 7,
+      name: r'temperatureUnit',
+      type: IsarType.string,
+    ),
+    r'weatherOptInShown': PropertySchema(
+      id: 8,
       name: r'weatherOptInShown',
       type: IsarType.bool,
     ),
     r'weatherTrackingEnabled': PropertySchema(
-      id: 8,
+      id: 9,
       name: r'weatherTrackingEnabled',
       type: IsarType.bool,
     ),
@@ -86,6 +91,12 @@ int _profileIsarEstimateSize(
     }
   }
   bytesCount += 3 + object.name.length * 3;
+  {
+    final value = object.temperatureUnit;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
   return bytesCount;
 }
 
@@ -102,8 +113,9 @@ void _profileIsarSerialize(
   writer.writeDateTime(offsets[4], object.dateOfBirth);
   writer.writeBool(offsets[5], object.firstLogShown);
   writer.writeString(offsets[6], object.name);
-  writer.writeBool(offsets[7], object.weatherOptInShown);
-  writer.writeBool(offsets[8], object.weatherTrackingEnabled);
+  writer.writeString(offsets[7], object.temperatureUnit);
+  writer.writeBool(offsets[8], object.weatherOptInShown);
+  writer.writeBool(offsets[9], object.weatherTrackingEnabled);
 }
 
 ProfileIsar _profileIsarDeserialize(
@@ -121,8 +133,9 @@ ProfileIsar _profileIsarDeserialize(
   object.firstLogShown = reader.readBool(offsets[5]);
   object.id = id;
   object.name = reader.readString(offsets[6]);
-  object.weatherOptInShown = reader.readBool(offsets[7]);
-  object.weatherTrackingEnabled = reader.readBool(offsets[8]);
+  object.temperatureUnit = reader.readStringOrNull(offsets[7]);
+  object.weatherOptInShown = reader.readBool(offsets[8]);
+  object.weatherTrackingEnabled = reader.readBool(offsets[9]);
   return object;
 }
 
@@ -148,8 +161,10 @@ P _profileIsarDeserializeProp<P>(
     case 6:
       return (reader.readString(offset)) as P;
     case 7:
-      return (reader.readBool(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 8:
+      return (reader.readBool(offset)) as P;
+    case 9:
       return (reader.readBool(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -801,6 +816,165 @@ extension ProfileIsarQueryFilter
   }
 
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
+  temperatureUnitIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'temperatureUnit'),
+      );
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
+  temperatureUnitIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'temperatureUnit'),
+      );
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
+  temperatureUnitEqualTo(String? value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'temperatureUnit',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
+  temperatureUnitGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'temperatureUnit',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
+  temperatureUnitLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'temperatureUnit',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
+  temperatureUnitBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'temperatureUnit',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
+  temperatureUnitStartsWith(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'temperatureUnit',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
+  temperatureUnitEndsWith(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'temperatureUnit',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
+  temperatureUnitContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'temperatureUnit',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
+  temperatureUnitMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'temperatureUnit',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
+  temperatureUnitIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'temperatureUnit', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
+  temperatureUnitIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'temperatureUnit', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
   weatherOptInShownEqualTo(bool value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
@@ -916,6 +1090,19 @@ extension ProfileIsarQuerySortBy
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy> sortByNameDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'name', Sort.desc);
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy> sortByTemperatureUnit() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'temperatureUnit', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy>
+  sortByTemperatureUnitDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'temperatureUnit', Sort.desc);
     });
   }
 
@@ -1051,6 +1238,19 @@ extension ProfileIsarQuerySortThenBy
     });
   }
 
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy> thenByTemperatureUnit() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'temperatureUnit', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy>
+  thenByTemperatureUnitDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'temperatureUnit', Sort.desc);
+    });
+  }
+
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy>
   thenByWeatherOptInShown() {
     return QueryBuilder.apply(this, (query) {
@@ -1130,6 +1330,17 @@ extension ProfileIsarQueryWhereDistinct
     });
   }
 
+  QueryBuilder<ProfileIsar, ProfileIsar, QDistinct> distinctByTemperatureUnit({
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(
+        r'temperatureUnit',
+        caseSensitive: caseSensitive,
+      );
+    });
+  }
+
   QueryBuilder<ProfileIsar, ProfileIsar, QDistinct>
   distinctByWeatherOptInShown() {
     return QueryBuilder.apply(this, (query) {
@@ -1194,6 +1405,13 @@ extension ProfileIsarQueryProperty
   QueryBuilder<ProfileIsar, String, QQueryOperations> nameProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'name');
+    });
+  }
+
+  QueryBuilder<ProfileIsar, String?, QQueryOperations>
+  temperatureUnitProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'temperatureUnit');
     });
   }
 

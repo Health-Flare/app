@@ -94,6 +94,24 @@ void main() {
       expect((await isar.profileIsars.get(id))!.temperatureUnit, '°C');
     });
 
+    test('a reload finishing after dispose does not throw', () async {
+      // ProfileListNotifier.build() kicks off an async _reload. Disposing the
+      // container before it completes used to set state on a disposed ref
+      // ("Cannot use the Ref ... after it has been disposed").
+      final isar = await _openIsar();
+      addTearDown(() => isar.close(deleteFromDisk: true));
+      await isar.writeTxn(
+        () => isar.profileIsars.put(ProfileIsar()..name = 'Sarah'),
+      );
+      final container = ProviderContainer(
+        overrides: [isarProvider.overrideWithValue(isar)],
+      );
+
+      container.read(profileListProvider);
+      container.dispose();
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+    });
+
     test('update back to "As logged" clears the unit', () async {
       final isar = await _openIsar();
       addTearDown(() => isar.close(deleteFromDisk: true));

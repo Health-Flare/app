@@ -68,6 +68,18 @@ class _VitalEntryFormScreenState extends ConsumerState<VitalEntryFormScreen> {
     }
   }
 
+  /// New temperature entries start in the profile's temperature unit;
+  /// everything else (and "As logged") starts in the type's default.
+  String _defaultUnitFor(VitalType t) {
+    final preferred = ref.read(activeProfileDataProvider)?.temperatureUnit;
+    if (t == VitalType.temperature &&
+        preferred != null &&
+        t.availableUnits.contains(preferred)) {
+      return preferred;
+    }
+    return t.defaultUnit;
+  }
+
   @override
   void dispose() {
     _valueController.dispose();
@@ -255,7 +267,7 @@ class _VitalEntryFormScreenState extends ConsumerState<VitalEntryFormScreen> {
                 if (t == null) return;
                 setState(() {
                   _vitalType = t;
-                  _unit = t.defaultUnit;
+                  _unit = _defaultUnitFor(t);
                   if (!t.hasSecondaryValue) {
                     _value2Controller.clear();
                     _value2Error = false;

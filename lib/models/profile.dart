@@ -107,7 +107,9 @@ class Profile {
       colorSeed: colorSeed ?? this.colorSeed,
       cycleTrackingEnabled: cycleTrackingEnabled ?? this.cycleTrackingEnabled,
       bowelTrackingEnabled: bowelTrackingEnabled ?? this.bowelTrackingEnabled,
-      // TODO(#83): carry temperatureUnit through copyWith.
+      temperatureUnit: clearTemperatureUnit
+          ? null
+          : (temperatureUnit ?? this.temperatureUnit),
     );
   }
 

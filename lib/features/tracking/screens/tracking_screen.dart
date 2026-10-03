@@ -208,13 +208,14 @@ class _VitalList extends StatelessWidget {
   }
 }
 
-class _VitalEntryTile extends StatelessWidget {
+class _VitalEntryTile extends ConsumerWidget {
   const _VitalEntryTile({required this.entry});
 
   final VitalEntry entry;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final tempUnit = ref.watch(activeProfileDataProvider)?.temperatureUnit;
     final cs = Theme.of(context).colorScheme;
     final fmt = DateFormat('d MMM yyyy, HH:mm');
 
@@ -231,7 +232,10 @@ class _VitalEntryTile extends StatelessWidget {
       title: Text(entry.vitalType.label),
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [Text(entry.displayValue), Text(fmt.format(entry.loggedAt))],
+        children: [
+          Text(entry.displayValueIn(temperatureUnit: tempUnit)),
+          Text(fmt.format(entry.loggedAt)),
+        ],
       ),
       isThreeLine: true,
       trailing: const Icon(Icons.chevron_right),

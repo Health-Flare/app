@@ -7,6 +7,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/core/providers/vital_entry_provider.dart';
+import 'package:health_flare/features/dashboard/widgets/dashboard_activity_feed.dart';
+import 'package:health_flare/models/activity_item.dart';
 import 'package:health_flare/features/profiles/widgets/add_profile_sheet.dart';
 import 'package:health_flare/features/symptoms_vitals/screens/symptoms_vitals_screen.dart';
 import 'package:health_flare/features/symptoms_vitals/screens/vital_entry_form_screen.dart';
@@ -270,6 +272,36 @@ void main() {
       await _selectTemperature(tester);
 
       expect(_unitShown(tester), '°C');
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // Dashboard activity feed
+  // -------------------------------------------------------------------------
+
+  group('DashboardActivityFeed temperature unit', () {
+    Widget feed({String? unit}) => MaterialApp(
+      home: Scaffold(
+        body: DashboardActivityFeed(
+          items: [
+            VitalActivityItem(
+              timestamp: DateTime(2026, 9, 20, 8),
+              entry: _temp(100.4, '°F'),
+            ),
+          ],
+          temperatureUnit: unit,
+        ),
+      ),
+    );
+
+    testWidgets('shows the reading in the profile unit', (tester) async {
+      await tester.pumpWidget(feed(unit: '°C'));
+      expect(find.textContaining('38.0 °C'), findsOneWidget);
+    });
+
+    testWidgets('shows the reading as logged by default', (tester) async {
+      await tester.pumpWidget(feed());
+      expect(find.textContaining('100.4 °F'), findsOneWidget);
     });
   });
 

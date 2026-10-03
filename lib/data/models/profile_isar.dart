@@ -43,8 +43,7 @@ class ProfileIsar {
   bool bowelTrackingEnabled = false;
 
   /// Unit temperatures are shown in: '°C', '°F', or null for "As logged".
-  /// TODO(#83): add to the generated schema.
-  @ignore
+  /// Display only: vital readings keep the unit they were saved in.
   String? temperatureUnit;
 
   // ── Conversion ────────────────────────────────────────────────────────────
@@ -59,6 +58,7 @@ class ProfileIsar {
     colorSeed: colorSeed,
     cycleTrackingEnabled: cycleTrackingEnabled,
     bowelTrackingEnabled: bowelTrackingEnabled,
+    temperatureUnit: temperatureUnit,
   );
 
   /// Construct from a domain [Profile] for writing to Isar.
@@ -75,5 +75,6 @@ class ProfileIsar {
     ..weatherTrackingEnabled = p.weatherTrackingEnabled
     ..colorSeed = p.colorSeed
     ..cycleTrackingEnabled = p.cycleTrackingEnabled
-    ..bowelTrackingEnabled = p.bowelTrackingEnabled;
+    ..bowelTrackingEnabled = p.bowelTrackingEnabled
+    ..temperatureUnit = p.temperatureUnit;
 }

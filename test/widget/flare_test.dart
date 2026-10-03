@@ -18,6 +18,7 @@ import 'package:health_flare/models/meal_entry.dart';
 import 'package:health_flare/models/profile.dart';
 import 'package:health_flare/models/symptom_entry.dart';
 import 'package:health_flare/models/vital_entry.dart';
+import 'package:health_flare/models/vital_type.dart';
 
 // ---------------------------------------------------------------------------
 // Fakes
@@ -140,6 +141,7 @@ Widget _buildDetailScreen({
   List<SymptomEntry> symptoms = const [],
   List<VitalEntry> vitals = const [],
   List<MealEntry> meals = const [],
+  String? temperatureUnit,
 }) {
   return ProviderScope(
     overrides: [
@@ -154,7 +156,8 @@ Widget _buildDetailScreen({
       activeProfileProvider.overrideWith(_FakeActiveProfile.new),
       profileListProvider.overrideWith(_FakeProfileList.new),
       activeProfileDataProvider.overrideWith(
-        (ref) => Profile(id: 1, name: 'Sarah'),
+        (ref) =>
+            Profile(id: 1, name: 'Sarah', temperatureUnit: temperatureUnit),
       ),
       activeFlareProvider.overrideWith((ref) => flare.isActive ? flare : null),
     ],
@@ -316,6 +319,30 @@ void main() {
 
       expect(find.text('Joint pain'), findsOneWidget);
       expect(find.text('Symptoms (1)'), findsOneWidget);
+    });
+
+    // Issue #83: tagged vitals follow the profile temperature unit.
+    testWidgets('shows tagged temperatures in the profile unit', (
+      tester,
+    ) async {
+      final flare = makeFlare(id: 1, active: true);
+      final temp = VitalEntry(
+        id: 1,
+        profileId: 1,
+        vitalType: VitalType.temperature,
+        value: 100.4,
+        unit: '°F',
+        loggedAt: _now,
+        createdAt: _now,
+        flareIsarId: 1,
+      );
+
+      await tester.pumpWidget(
+        _buildDetailScreen(flare: flare, vitals: [temp], temperatureUnit: '°C'),
+      );
+      await tester.pump();
+
+      expect(find.textContaining('38.0 °C'), findsOneWidget);
     });
 
     testWidgets('shows meal entries tagged to this flare', (tester) async {

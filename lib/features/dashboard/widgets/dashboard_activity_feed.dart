@@ -11,9 +11,17 @@ import 'package:health_flare/models/activity_item.dart';
 /// The provider ([dashboardActivityProvider]) has already capped the list
 /// to ten items and sorted them newest-first.
 class DashboardActivityFeed extends StatelessWidget {
-  const DashboardActivityFeed({super.key, required this.items});
+  const DashboardActivityFeed({
+    super.key,
+    required this.items,
+    this.temperatureUnit,
+  });
 
   final List<ActivityItem> items;
+
+  /// The active profile's temperature unit ('°C', '°F', or null for as
+  /// logged). Display only.
+  final String? temperatureUnit;
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +87,8 @@ class DashboardActivityFeed extends StatelessWidget {
         leading: Icon(Icons.monitor_heart_outlined, color: cs.primary),
         title: Text(entry.vitalType.label),
         subtitle: Text(
-          '${_formatDate(item.timestamp)} · ${entry.displayValue}',
+          '${_formatDate(item.timestamp)} · '
+          '${entry.displayValueIn(temperatureUnit: temperatureUnit)}',
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),

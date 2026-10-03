@@ -120,6 +120,9 @@ class _DashboardBody extends ConsumerWidget {
     final tt = Theme.of(context).textTheme;
     final hasActivity = ref.watch(dashboardHasActivityProvider);
     final items = ref.watch(dashboardActivityProvider);
+    final temperatureUnit = ref.watch(
+      activeProfileDataProvider.select((p) => p?.temperatureUnit),
+    );
 
     if (!hasActivity) {
       return Column(
@@ -169,7 +172,7 @@ class _DashboardBody extends ConsumerWidget {
         const ActiveFlareBanner(),
         const DailyCheckinCard(),
         const UpcomingAppointmentsCard(),
-        DashboardActivityFeed(items: items),
+        DashboardActivityFeed(items: items, temperatureUnit: temperatureUnit),
       ],
     );
   }
