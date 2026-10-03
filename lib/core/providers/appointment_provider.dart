@@ -70,6 +70,26 @@ class AppointmentListNotifier extends Notifier<List<Appointment>> {
     });
   }
 
+  /// Reassign an appointment to a different profile (wrong-profile recovery).
+  ///
+  /// Questions, outcome notes, and medication-change text move with it.
+  /// Links from medication changes to medications are cleared: those
+  /// medications belong to the source profile.
+  Future<void> moveToProfile(int id, int newProfileId) async {
+    final isar = ref.read(isarProvider);
+    await isar.writeTxn(() async {
+      final row = await isar.appointmentIsars.get(id);
+      if (row == null) return;
+      row.profileId = newProfileId;
+      row.medicationChanges = [
+        for (final change in row.medicationChanges)
+          change..linkedMedicationIsarId = null,
+      ];
+      row.updatedAt = DateTime.now();
+      await isar.appointmentIsars.put(row);
+    });
+  }
+
   /// Look up by id from in-memory state.
   Appointment? byId(int id) {
     try {

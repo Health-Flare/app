@@ -1,7 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar_community/isar.dart';
 
+import 'package:health_flare/core/providers/medication_provider.dart';
 import 'package:health_flare/data/models/dose_log_isar.dart';
+import 'package:health_flare/data/models/medication_isar.dart';
 import 'package:health_flare/models/dose_log.dart';
 import 'package:health_flare/core/providers/database_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
@@ -88,6 +90,74 @@ class DoseLogListNotifier extends Notifier<List<DoseLog>> {
     await isar.writeTxn(() async {
       await isar.doseLogIsars.delete(id);
     });
+  }
+
+  /// Reassign a dose to a different profile (wrong-profile recovery).
+  ///
+  /// A dose points at a medication, and medications belong to one profile,
+  /// so the dose is relinked on the target: to [targetMedicationId] if
+  /// given, else to the target's medication with the same name (see
+  /// [matchingMedication]), else to a copy of the source medication created
+  /// on the target profile. The copy takes the name, type, dose, and
+  /// schedule, not the notes, which stay with the source profile.
+  ///
+  /// Everything happens in one transaction: the dose is never left pointing
+  /// at another profile's medication or at nothing. Throws [StateError],
+  /// changing nothing, if the source medication no longer exists.
+  /// Any flare link is cleared: flares belong to the source profile.
+  Future<void> moveToProfile(
+    int id,
+    int newProfileId, {
+    int? targetMedicationId,
+  }) async {
+    final isar = ref.read(isarProvider);
+    await isar.writeTxn(() async {
+      final row = await isar.doseLogIsars.get(id);
+      if (row == null) return;
+      row.medicationIsarId =
+          targetMedicationId ??
+          await _medicationOnTarget(isar, row.medicationIsarId, newProfileId);
+      row.profileId = newProfileId;
+      row.flareIsarId = null;
+      await isar.doseLogIsars.put(row);
+    });
+  }
+
+  /// Inside a write transaction: the id of [newProfileId]'s medication
+  /// matching [sourceMedicationId], creating it if there isn't one.
+  Future<int> _medicationOnTarget(
+    Isar isar,
+    int sourceMedicationId,
+    int newProfileId,
+  ) async {
+    final source = await isar.medicationIsars.get(sourceMedicationId);
+    if (source == null) {
+      throw StateError('Medication $sourceMedicationId no longer exists');
+    }
+    final targetMeds = await isar.medicationIsars
+        .filter()
+        .profileIdEqualTo(newProfileId)
+        .findAll();
+    final match = matchingMedication(
+      targetMeds.map((m) => m.toDomain()).toList(),
+      source.toDomain(),
+      newProfileId,
+    );
+    if (match != null) return match.id;
+
+    final copy = MedicationIsar()
+      ..id = Isar.autoIncrement
+      ..profileId = newProfileId
+      ..name = source.name
+      ..medicationType = source.medicationType
+      ..doseAmount = source.doseAmount
+      ..doseUnit = source.doseUnit
+      ..frequency = source.frequency
+      ..frequencyLabel = source.frequencyLabel
+      ..startDate = source.startDate
+      ..endDate = source.endDate
+      ..createdAt = DateTime.now();
+    return isar.medicationIsars.put(copy);
   }
 
   /// Remove all dose logs for a given medication (used on medication delete).

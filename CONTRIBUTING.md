@@ -1,8 +1,8 @@
 # Contributing to Health Flare
 
 Thanks for considering a contribution. Health Flare is free software (GPL-3.0) and welcomes
-outside contributions: this doc covers the essentials; `CLAUDE.md` and the README's
-"Contributing" section have the full day-to-day developer workflow.
+outside contributions: this doc covers the essentials; [`docs/development.md`](docs/development.md)
+and `CLAUDE.md` have the full day-to-day developer workflow.
 
 By submitting a contribution, you agree it is licensed under the project's
 [GNU GPL-3.0](LICENSE.md), the same as the rest of the codebase. There is no separate CLA to sign.
@@ -18,18 +18,18 @@ Please also read the [Code of Conduct](CODE_OF_CONDUCT.md): it applies to all pr
   invest time in an implementation.
 - This is a **fully offline-first** app with one narrow, documented exception (opt-in weather
   lookup). New network calls, analytics, or telemetry will not be accepted: see the "Offline-first
-  rule" in the README.
+  rule" in [`docs/development.md`](docs/development.md).
 
 ## Getting set up
 
 ```bash
-git clone https://git.ahosking.com/HealthFlare/app.git
+git clone https://github.com/Health-Flare/app.git
 cd app
 flutter pub get
 flutter run
 ```
 
-See the README's "Prerequisites" and "Code generation" sections for the Riverpod/Isar codegen
+See the "Prerequisites" and "Code generation" sections of [`docs/development.md`](docs/development.md) for the Riverpod/Isar codegen
 setup: Isar uses an isolated codegen project (`scripts/isar_codegen/`) due to an analyzer version
 conflict with the Riverpod generator.
 

@@ -38,8 +38,12 @@ class _FakeActiveProfile extends ActiveProfileNotifier {
 }
 
 class _FakeProfileList extends ProfileListNotifier {
+  _FakeProfileList([List<Profile>? profiles])
+    : profiles = profiles ?? [Profile(id: 1, name: 'Sarah')];
+  final List<Profile> profiles;
+
   @override
-  List<Profile> build() => [Profile(id: 1, name: 'Sarah')];
+  List<Profile> build() => profiles;
 }
 
 // ---------------------------------------------------------------------------
@@ -129,12 +133,20 @@ Widget _buildMedicationForm({Medication? medication}) {
   );
 }
 
-Widget _buildDoseForm({required Medication med, DoseLog? doseLog}) {
+Widget _buildDoseForm({
+  required Medication med,
+  DoseLog? doseLog,
+  List<Profile>? profiles,
+  List<Medication>? allMeds,
+}) {
   return ProviderScope(
     overrides: [
       doseLogListProvider.overrideWith(_FakeDoseLogList.new),
+      medicationListProvider.overrideWith(
+        () => _FakeMedicationList(meds: allMeds ?? [med]),
+      ),
       activeProfileProvider.overrideWith(_FakeActiveProfile.new),
-      profileListProvider.overrideWith(_FakeProfileList.new),
+      profileListProvider.overrideWith(() => _FakeProfileList(profiles)),
       activeProfileDataProvider.overrideWith((ref) => _sarah),
     ],
     child: MaterialApp(
@@ -460,6 +472,154 @@ void main() {
       await tester.pump();
 
       expect(find.byIcon(Icons.delete_outline), findsOneWidget);
+    });
+
+    // #77: a dose logged under the wrong person can be moved to anyone.
+    // It joins the target's medication of the same name, or that medication
+    // is added to the target first. Nothing is dropped.
+    group('Move to another profile', () {
+      final dad = Profile(id: 2, name: 'Dad');
+      final mia = Profile(id: 3, name: 'Mia');
+      final log = DoseLog(
+        id: 1,
+        profileId: 1,
+        medicationIsarId: 1,
+        loggedAt: _now,
+        createdAt: _now,
+        amount: 500,
+        unit: 'mg',
+        status: 'taken',
+      );
+      Medication dadsMetformin() => Medication(
+        id: 2,
+        profileId: 2,
+        name: 'metformin',
+        medicationType: 'medication',
+        doseAmount: 850,
+        doseUnit: 'mg',
+        frequency: 'daily',
+        startDate: DateTime(2026, 1, 1),
+        createdAt: _now,
+      );
+
+      testWidgets('is offered when editing a dose and others exist', (
+        tester,
+      ) async {
+        await tester.pumpWidget(
+          _buildDoseForm(med: _med(), doseLog: log, profiles: [_sarah, dad]),
+        );
+        await tester.pump();
+        expect(find.byTooltip('Move to another profile'), findsOneWidget);
+      });
+
+      testWidgets('is not offered when logging a new dose', (tester) async {
+        await tester.pumpWidget(
+          _buildDoseForm(med: _med(), profiles: [_sarah, dad]),
+        );
+        await tester.pump();
+        expect(find.byTooltip('Move to another profile'), findsNothing);
+      });
+
+      Future<void> chooseTarget(WidgetTester tester, String name) async {
+        await tester.tap(find.byTooltip('Move to another profile'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text(name));
+        await tester.pumpAndSettle();
+      }
+
+      // No profile is ever unavailable: the confirmation says what happens
+      // to the medication instead.
+      testWidgets('every other profile can be chosen', (tester) async {
+        await tester.pumpWidget(
+          _buildDoseForm(
+            med: _med(),
+            doseLog: log,
+            profiles: [_sarah, dad, mia],
+            allMeds: [_med(), dadsMetformin()],
+          ),
+        );
+        await tester.pump();
+        await tester.tap(find.byTooltip('Move to another profile'));
+        await tester.pumpAndSettle();
+
+        for (final name in ['Dad', 'Mia']) {
+          final tile = tester.widget<ListTile>(
+            find.ancestor(of: find.text(name), matching: find.byType(ListTile)),
+          );
+          expect(tile.enabled, isTrue, reason: name);
+        }
+      });
+
+      testWidgets("says the dose joins the target's existing medication", (
+        tester,
+      ) async {
+        await tester.pumpWidget(
+          _buildDoseForm(
+            med: _med(),
+            doseLog: log,
+            profiles: [_sarah, dad],
+            allMeds: [_med(), dadsMetformin()],
+          ),
+        );
+        await tester.pump();
+        await chooseTarget(tester, 'Dad');
+
+        expect(
+          find.text("It will be logged under Dad's metformin."),
+          findsOneWidget,
+        );
+      });
+
+      testWidgets('offers to add the medication when the target lacks it', (
+        tester,
+      ) async {
+        await tester.pumpWidget(
+          _buildDoseForm(
+            med: _med(),
+            doseLog: log,
+            profiles: [_sarah, mia],
+            allMeds: [_med()],
+          ),
+        );
+        await tester.pump();
+        await chooseTarget(tester, 'Mia');
+
+        expect(
+          find.text(
+            "Mia doesn't have Metformin yet. It will be added to Mia's "
+            'medications (500 mg, Twice daily) so the dose has a home.',
+          ),
+          findsOneWidget,
+        );
+      });
+
+      testWidgets('warns when a flare link will be dropped', (tester) async {
+        await tester.pumpWidget(
+          _buildDoseForm(
+            med: _med(),
+            doseLog: DoseLog(
+              id: 1,
+              profileId: 1,
+              medicationIsarId: 1,
+              loggedAt: _now,
+              createdAt: _now,
+              amount: 500,
+              unit: 'mg',
+              status: 'taken',
+              flareIsarId: 7,
+            ),
+            profiles: [_sarah, dad],
+            allMeds: [_med(), dadsMetformin()],
+          ),
+        );
+        await tester.pump();
+        await chooseTarget(tester, 'Dad');
+
+        expect(
+          find.text("It will no longer be part of Sarah's flare."),
+          findsOneWidget,
+        );
+      });
     });
   });
 

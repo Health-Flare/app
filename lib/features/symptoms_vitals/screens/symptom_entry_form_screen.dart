@@ -95,12 +95,26 @@ class _SymptomEntryFormScreenState
   }
 
   Future<void> _save() async {
+    if (_submitting) return;
+    setState(() => _submitting = true);
+    final saved = await _persist();
+    if (!mounted) return;
+    if (!saved) {
+      setState(() => _submitting = false);
+      return;
+    }
+    context.pop();
+  }
+
+  /// Validates and writes the form without leaving the screen. Returns
+  /// false (writing nothing) if a required field is missing. Used by Save,
+  /// and by Move so pending edits travel with the entry.
+  Future<bool> _persist() async {
     setState(() {
       _nameError = _nameController.text.trim().isEmpty;
       _severityError = _severity == null;
     });
-    if (_nameError || _severityError || _submitting) return;
-    setState(() => _submitting = true);
+    if (_nameError || _severityError) return false;
 
     final notes = _notesController.text.trim().isEmpty
         ? null
@@ -133,8 +147,7 @@ class _SymptomEntryFormScreenState
             ),
           );
     }
-
-    if (mounted) context.pop();
+    return true;
   }
 
   Future<void> _confirmDelete() async {
@@ -188,6 +201,12 @@ class _SymptomEntryFormScreenState
         actions: [
           if (isEdit)
             MoveEntryAction(
+              beforeMove: _persist,
+              notices: [
+                if (widget.entry!.flareIsarId != null)
+                  'It will no longer be part of '
+                      "${ref.read(activeProfileDataProvider)?.name ?? 'this profile'}'s flare.",
+              ],
               onMove: (target) => ref
                   .read(symptomEntryListProvider.notifier)
                   .moveToProfile(widget.entry!.id, target.id),

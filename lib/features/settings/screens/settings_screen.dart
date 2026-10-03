@@ -6,6 +6,7 @@ import 'package:health_flare/core/providers/backup_provider.dart';
 import 'package:health_flare/core/providers/database_provider.dart';
 import 'package:health_flare/data/database/app_settings.dart';
 import 'package:health_flare/data/database/import_service.dart';
+import 'package:health_flare/features/settings/widgets/app_version_tile.dart';
 import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 
 // ---------------------------------------------------------------------------
@@ -873,6 +874,9 @@ class _AboutTiles extends ConsumerWidget {
             }
           },
         ),
+
+        // App version
+        const AppVersionTile(leading: Icon(Icons.new_releases_outlined)),
 
         // Schema version
         schemaAsync.when(

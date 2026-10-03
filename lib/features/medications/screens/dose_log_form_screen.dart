@@ -4,9 +4,11 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import 'package:health_flare/core/providers/dose_log_provider.dart';
+import 'package:health_flare/core/providers/medication_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/models/dose_log.dart';
 import 'package:health_flare/models/medication.dart';
+import 'package:health_flare/features/shared/widgets/move_entry_action.dart';
 import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 
 /// Full-screen form for logging or editing a dose entry.
@@ -122,7 +124,13 @@ class _DoseLogFormScreenState extends ConsumerState<DoseLogFormScreen> {
   Future<void> _save() async {
     if (_submitting) return;
     setState(() => _submitting = true);
+    await _persist();
+    if (mounted) context.pop();
+  }
 
+  /// Writes the form to the database without leaving the screen. Used by
+  /// Save, and by Move so pending edits travel with the dose.
+  Future<bool> _persist() async {
     final amount =
         double.tryParse(_amountController.text.trim()) ??
         widget.medication.doseAmount;
@@ -165,8 +173,7 @@ class _DoseLogFormScreenState extends ConsumerState<DoseLogFormScreen> {
             ),
           );
     }
-
-    if (mounted) context.pop();
+    return true;
   }
 
   Future<void> _confirmDelete() async {
@@ -193,6 +200,12 @@ class _DoseLogFormScreenState extends ConsumerState<DoseLogFormScreen> {
     }
   }
 
+  Medication? _targetMedication(int profileId) => matchingMedication(
+    ref.read(medicationListProvider),
+    widget.medication,
+    profileId,
+  );
+
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
@@ -208,6 +221,34 @@ class _DoseLogFormScreenState extends ConsumerState<DoseLogFormScreen> {
           isEdit ? 'Edit dose' : 'Log dose for ${widget.medication.name}',
         ),
         actions: [
+          if (isEdit)
+            MoveEntryAction(
+              // A dose belongs to a medication on its own profile. On the
+              // target it joins the medication of the same name, or that
+              // medication is added there first (#77). Nothing is dropped.
+              beforeMove: _persist,
+              notices: [
+                if (widget.doseLog!.flareIsarId != null)
+                  'It will no longer be part of '
+                      "${activeProfile?.name ?? 'this profile'}'s flare.",
+              ],
+              noticesFor: (target) {
+                final match = _targetMedication(target.id);
+                final med = widget.medication;
+                return [
+                  if (match != null)
+                    "It will be logged under ${target.name}'s ${match.name}."
+                  else
+                    "${target.name} doesn't have ${med.name} yet. It will be "
+                        "added to ${target.name}'s medications "
+                        '(${med.doseDisplay}, ${med.frequencyDisplay}) so '
+                        'the dose has a home.',
+                ];
+              },
+              onMove: (target) => ref
+                  .read(doseLogListProvider.notifier)
+                  .moveToProfile(widget.doseLog!.id, target.id),
+            ),
           if (isEdit)
             IconButton(
               icon: const Icon(Icons.delete_outline),

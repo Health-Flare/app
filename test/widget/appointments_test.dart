@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:health_flare/core/providers/appointment_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
@@ -24,14 +25,41 @@ class _FakeAppointmentList extends AppointmentListNotifier {
   List<Appointment> build() => appointments;
 }
 
+/// Records update/move calls so tests can check nothing typed is lost when
+/// an appointment moves (#77).
+class _RecordingAppointmentList extends AppointmentListNotifier {
+  _RecordingAppointmentList(this.appointment);
+  final Appointment appointment;
+  final updates = <Appointment>[];
+  final calls = <String>[];
+
+  @override
+  List<Appointment> build() => [appointment];
+
+  @override
+  Future<void> update(Appointment updated) async {
+    updates.add(updated);
+    calls.add('update');
+    state = [updated];
+  }
+
+  @override
+  Future<void> moveToProfile(int id, int newProfileId) async =>
+      calls.add('move:$newProfileId');
+}
+
 class _FakeActiveProfile extends ActiveProfileNotifier {
   @override
   int? build() => 1;
 }
 
 class _FakeProfileList extends ProfileListNotifier {
+  _FakeProfileList([List<Profile>? profiles])
+    : profiles = profiles ?? [Profile(id: 1, name: 'Sarah')];
+  final List<Profile> profiles;
+
   @override
-  List<Profile> build() => [Profile(id: 1, name: 'Sarah')];
+  List<Profile> build() => profiles;
 }
 
 // ---------------------------------------------------------------------------
@@ -66,7 +94,10 @@ Appointment makeAppointment({
 // Helpers
 // ---------------------------------------------------------------------------
 
-List<Override> _baseOverrides({List<Appointment> appointments = const []}) => [
+List<Override> _baseOverrides({
+  List<Appointment> appointments = const [],
+  List<Profile>? profiles,
+}) => [
   appointmentListProvider.overrideWith(
     () => _FakeAppointmentList(appointments: appointments),
   ),
@@ -88,7 +119,7 @@ List<Override> _baseOverrides({List<Appointment> appointments = const []}) => [
           ..sort((a, b) => a.scheduledAt.compareTo(b.scheduledAt)),
   ),
   activeProfileProvider.overrideWith(_FakeActiveProfile.new),
-  profileListProvider.overrideWith(_FakeProfileList.new),
+  profileListProvider.overrideWith(() => _FakeProfileList(profiles)),
   activeProfileDataProvider.overrideWith(
     (ref) => Profile(id: 1, name: 'Sarah'),
   ),
@@ -113,9 +144,12 @@ Widget _buildFormScreen({Appointment? appointment, String? prefillProvider}) {
   );
 }
 
-Widget _buildDetailScreen({required Appointment appointment}) {
+Widget _buildDetailScreen({
+  required Appointment appointment,
+  List<Profile>? profiles,
+}) {
   return ProviderScope(
-    overrides: _baseOverrides(appointments: [appointment]),
+    overrides: _baseOverrides(appointments: [appointment], profiles: profiles),
     child: MaterialApp(
       home: AppointmentDetailScreen(appointmentId: appointment.id),
     ),
@@ -228,6 +262,146 @@ void main() {
   // ---------------------------------------------------------------------------
 
   group('AppointmentDetailScreen', () {
+    group('moving keeps text typed but not saved (#77)', () {
+      Future<_RecordingAppointmentList> moveAfter(
+        WidgetTester tester,
+        Future<void> Function() type,
+      ) async {
+        final fake = _RecordingAppointmentList(
+          makeAppointment(status: AppointmentStatus.upcoming),
+        );
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              appointmentListProvider.overrideWith(() => fake),
+              activeProfileProvider.overrideWith(_FakeActiveProfile.new),
+              profileListProvider.overrideWith(
+                () => _FakeProfileList([
+                  Profile(id: 1, name: 'Sarah'),
+                  Profile(id: 2, name: 'Dad'),
+                ]),
+              ),
+            ],
+            child: MaterialApp.router(
+              routerConfig: GoRouter(
+                initialLocation: '/detail',
+                routes: [
+                  GoRoute(
+                    path: '/',
+                    builder: (_, _) => const Scaffold(body: Text('Root')),
+                    routes: [
+                      GoRoute(
+                        path: 'detail',
+                        builder: (_, _) => AppointmentDetailScreen(
+                          appointmentId: fake.appointment.id,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        await type();
+        await tester.tap(find.byTooltip('Move to another profile'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Dad'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Move'));
+        await tester.pumpAndSettle();
+        return fake;
+      }
+
+      testWidgets('unsaved outcome notes are saved, then it moves', (
+        tester,
+      ) async {
+        final fake = await moveAfter(tester, () async {
+          await tester.enterText(
+            find.widgetWithText(TextField, 'What did the doctor say?'),
+            'Try a lower dose',
+          );
+        });
+        expect(fake.calls, ['update', 'move:2']);
+        expect(fake.updates.single.outcomeNotes, 'Try a lower dose');
+        expect(
+          fake.updates.single.status,
+          AppointmentStatus.upcoming,
+          reason: 'moving is not completing the appointment',
+        );
+      });
+
+      testWidgets('a typed question that was not added is kept', (
+        tester,
+      ) async {
+        final fake = await moveAfter(tester, () async {
+          await tester.enterText(
+            find.widgetWithText(TextField, 'Add a question'),
+            'Is this a side effect?',
+          );
+        });
+        expect(fake.calls, ['update', 'move:2']);
+        expect(
+          fake.updates.single.questions.map((q) => q.question),
+          contains('Is this a side effect?'),
+        );
+      });
+
+      testWidgets('a typed medication change that was not added is kept', (
+        tester,
+      ) async {
+        final fake = await moveAfter(tester, () async {
+          // The list is lazy: scroll until the field is built.
+          final field = find.widgetWithText(TextField, 'Add medication change');
+          await tester.scrollUntilVisible(
+            field,
+            200,
+            scrollable: find.byType(Scrollable).first,
+          );
+          await tester.pumpAndSettle();
+          await tester.enterText(field, 'Stop naproxen');
+        });
+        expect(fake.calls, ['update', 'move:2']);
+        expect(
+          fake.updates.single.medicationChanges.map((c) => c.description),
+          contains('Stop naproxen'),
+        );
+      });
+
+      testWidgets('with nothing pending, it just moves', (tester) async {
+        final fake = await moveAfter(tester, () async {});
+        expect(fake.calls, ['move:2']);
+      });
+    });
+
+    // #77: appointments logged under the wrong person can be moved.
+    testWidgets('offers "Move to another profile" when others exist', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _buildDetailScreen(
+          appointment: makeAppointment(),
+          profiles: [
+            Profile(id: 1, name: 'Sarah'),
+            Profile(id: 2, name: 'Dad'),
+          ],
+        ),
+      );
+      await tester.pump();
+      expect(find.byTooltip('Move to another profile'), findsOneWidget);
+    });
+
+    testWidgets('hides "Move to another profile" with a single profile', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _buildDetailScreen(appointment: makeAppointment()),
+      );
+      await tester.pump();
+      expect(find.byTooltip('Move to another profile'), findsNothing);
+    });
+
     testWidgets('shows upcoming header for upcoming appointment', (
       tester,
     ) async {

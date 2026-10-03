@@ -100,13 +100,26 @@ class _ActivityEntryFormScreenState
   }
 
   Future<void> _save() async {
+    if (_submitting) return;
+    setState(() => _submitting = true);
+    final saved = await _persist();
+    if (!mounted) return;
+    if (!saved) {
+      setState(() => _submitting = false);
+      return;
+    }
+    context.pop();
+  }
+
+  /// Validates and writes the form without leaving the screen. Returns
+  /// false (writing nothing) if the description is empty. Used by Save,
+  /// and by Move so pending edits travel with the entry.
+  Future<bool> _persist() async {
     final description = _descriptionController.text.trim();
     if (description.isEmpty) {
       setState(() => _descriptionError = true);
-      return;
+      return false;
     }
-
-    setState(() => _submitting = true);
 
     final notifier = ref.read(activityEntryListProvider.notifier);
     final notes = _notesController.text.trim();
@@ -133,10 +146,7 @@ class _ActivityEntryFormScreenState
       );
     } else {
       final profileId = ref.read(activeProfileProvider);
-      if (profileId == null) {
-        setState(() => _submitting = false);
-        return;
-      }
+      if (profileId == null) return false;
       await notifier.add(
         profileId: profileId,
         description: description,
@@ -148,9 +158,7 @@ class _ActivityEntryFormScreenState
         weatherSnapshot: _capturedWeather,
       );
     }
-
-    if (!mounted) return;
-    context.pop();
+    return true;
   }
 
   Future<void> _delete() async {
@@ -202,6 +210,12 @@ class _ActivityEntryFormScreenState
         actions: [
           if (_isEdit)
             MoveEntryAction(
+              beforeMove: _persist,
+              notices: [
+                if (widget.entry!.flareIsarId != null)
+                  'It will no longer be part of '
+                      "${ref.read(activeProfileDataProvider)?.name ?? 'this profile'}'s flare.",
+              ],
               onMove: (target) => ref
                   .read(activityEntryListProvider.notifier)
                   .moveToProfile(widget.entry!.id, target.id),
@@ -325,6 +339,7 @@ class _ActivityEntryFormScreenState
 
             // Notes
             TextField(
+              key: const Key('activity_notes_field'),
               controller: _notesController,
               decoration: const InputDecoration(
                 labelText: 'Notes (optional)',
