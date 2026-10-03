@@ -26,6 +26,8 @@ class AddProfileSheet extends ConsumerStatefulWidget {
 }
 
 class _AddProfileSheetState extends ConsumerState<AddProfileSheet> {
+  static const _asLogged = 'As logged';
+
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _nameController;
   final _dobController = TextEditingController();
@@ -36,6 +38,9 @@ class _AddProfileSheetState extends ConsumerState<AddProfileSheet> {
   bool _weatherEnabled = false;
   bool _cycleEnabled = false;
   bool _bowelEnabled = false;
+
+  /// '°C', '°F', or null for "As logged".
+  String? _temperatureUnit;
 
   final _picker = ImagePicker();
 
@@ -54,6 +59,7 @@ class _AddProfileSheetState extends ConsumerState<AddProfileSheet> {
     _weatherEnabled = existing?.weatherTrackingEnabled ?? false;
     _cycleEnabled = existing?.cycleTrackingEnabled ?? false;
     _bowelEnabled = existing?.bowelTrackingEnabled ?? false;
+    _temperatureUnit = existing?.temperatureUnit;
   }
 
   @override
@@ -120,6 +126,8 @@ class _AddProfileSheetState extends ConsumerState<AddProfileSheet> {
         weatherTrackingEnabled: _weatherEnabled,
         cycleTrackingEnabled: _cycleEnabled,
         bowelTrackingEnabled: _bowelEnabled,
+        temperatureUnit: _temperatureUnit,
+        clearTemperatureUnit: _temperatureUnit == null,
       );
       await listNotifier.update(updated);
     } else {
@@ -357,6 +365,27 @@ class _AddProfileSheetState extends ConsumerState<AddProfileSheet> {
                     ),
                     value: _bowelEnabled,
                     onChanged: (value) => setState(() => _bowelEnabled = value),
+                  ),
+                  const SizedBox(height: 8),
+                  const ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: Text('Temperature unit'),
+                    subtitle: Text(
+                      'How temperatures are shown. Readings are kept as '
+                      'you entered them.',
+                    ),
+                  ),
+                  SegmentedButton<String>(
+                    segments: const [
+                      ButtonSegment(value: '°C', label: Text('°C')),
+                      ButtonSegment(value: '°F', label: Text('°F')),
+                      ButtonSegment(value: _asLogged, label: Text(_asLogged)),
+                    ],
+                    selected: {_temperatureUnit ?? _asLogged},
+                    onSelectionChanged: (sel) => setState(() {
+                      final v = sel.first;
+                      _temperatureUnit = v == _asLogged ? null : v;
+                    }),
                   ),
                 ],
 

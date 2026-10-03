@@ -190,6 +190,82 @@ Feature: Reports and Data Export
     And I select "Blood Pressure" as the vital to view
     Then I see a chart of systolic and diastolic readings over time
 
+  # Vital trends (issue #83). Temperature readings were logged but never
+  # charted: the insights screen did not read vitals at all.
+
+  Scenario: Temperature readings appear on the pattern insights screen
+    Given "Sarah" has logged these temperature readings in the last 30 days:
+      | Logged             | Value | Unit |
+      | 3 days ago 08:00   | 37.1  | °C   |
+      | 2 days ago 08:00   | 38.4  | °C   |
+      | yesterday 20:00    | 37.6  | °C   |
+    When I navigate to the pattern insights screen
+    Then I see a "Vitals" section
+    And "Temperature" is available as a vital to view
+    And the temperature chart shows 3 readings
+
+  Scenario: Only vital types with readings in the window can be selected
+    Given "Sarah" has temperature and weight readings in the last 30 days
+    And she has no heart rate readings
+    When I navigate to the pattern insights screen
+    Then I can choose "Temperature" or "Weight" as the vital to view
+    And "Heart Rate" is not offered
+
+  Scenario: Several readings on the same day are each plotted
+    Given "Sarah" logged a temperature of 37.2 °C at 08:00 today
+    And she logged a temperature of 38.6 °C at 20:00 today
+    When I view the temperature chart
+    Then both readings are shown as separate points
+    And they are not merged into a single daily value
+
+  Scenario: The vital chart's scale fits the readings
+    Given "Sarah" has temperature readings between 36.8 °C and 38.9 °C
+    When I view the temperature chart
+    Then every reading is inside the visible chart area
+    And the axis is not the 1–10 severity scale
+
+  Scenario: Readings in mixed units are shown in one unit
+    Given "Sarah"'s temperature unit is set to "As logged"
+    And she logged a temperature of 37.0 °C two days ago
+    And she logged a temperature of 100.4 °F yesterday
+    When I view the temperature chart
+    Then the chart is labelled in °F, the unit of her most recent reading
+    And the 37.0 °C reading is plotted as 98.6 °F
+    And her saved readings are unchanged
+
+  Scenario: The temperature chart uses the profile's temperature unit
+    Given "Sarah"'s temperature unit is set to "°C"
+    And she logged a temperature of 100.4 °F yesterday
+    When I view the temperature chart
+    Then the chart is labelled in °C
+    And the 100.4 °F reading is plotted as 38.0 °C
+    And her saved reading is still 100.4 °F
+
+  Scenario: Blood pressure shows systolic and diastolic as two lines
+    Given "Sarah" has blood pressure readings in the last 30 days
+    When I view the blood pressure chart
+    Then I see one line for systolic and one line for diastolic
+
+  Scenario: Flare periods are shaded behind vital charts
+    Given "Sarah" had a flare during the last 30 days
+    And she has temperature readings during and outside that flare
+    When I view the temperature chart
+    Then the flare period is shown as a shaded band behind the readings
+
+  Scenario: Vital charts only include the active profile's readings in the window
+    Given "Sarah" has a temperature reading from 10 days ago
+    And she has a temperature reading from 45 days ago
+    And "Ethan" has a temperature reading from yesterday
+    When I navigate to the pattern insights screen with "Last 30 days" selected
+    Then the temperature chart shows only Sarah's reading from 10 days ago
+
+  Scenario: Vitals alone are enough to show insights
+    Given "Sarah" has temperature readings in the last 30 days
+    And she has no symptoms, meals, sleep, or check-ins in that window
+    When I navigate to the pattern insights screen
+    Then I see the "Vitals" section
+    And I do not see "Not enough data yet"
+
   Scenario: View a daily wellbeing trend from check-in data
     Given "Sarah" has daily check-ins over the last 30 days
     When I navigate to the pattern insights screen

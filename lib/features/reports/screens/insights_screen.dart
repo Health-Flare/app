@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
-import 'package:health_flare/core/providers/database_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/features/reports/models/insight_data.dart';
 import 'package:health_flare/features/reports/services/insights_query_service.dart';
 import 'package:health_flare/features/reports/widgets/food_triggers_card.dart';
 import 'package:health_flare/features/reports/widgets/sleep_correlation_card.dart';
 import 'package:health_flare/features/reports/widgets/trend_chart.dart';
+import 'package:health_flare/features/reports/widgets/vital_trends_card.dart';
 import 'package:health_flare/features/reports/widgets/weather_impact_card.dart';
 import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 
@@ -47,7 +47,6 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
     });
 
     try {
-      final isar = ref.read(isarProvider);
       final profile = ref.read(activeProfileDataProvider);
       if (profile == null) {
         if (mounted) setState(() => _loading = false);
@@ -55,11 +54,11 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
       }
       final end = DateTime.now();
       final start = end.subtract(Duration(days: _windowDays - 1));
-      final data = await InsightsQueryService.query(
-        isar: isar,
+      final data = await ref.read(insightsQueryProvider)(
         profileId: profile.id,
         start: start,
         end: end,
+        temperatureUnit: profile.temperatureUnit,
       );
 
       if (!mounted) return;
@@ -149,6 +148,11 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
                           selected: _selectedSymptom,
                           onSymptomChanged: (name) =>
                               setState(() => _selectedSymptom = name),
+                        ),
+                      if (_data!.vitalTrends.isNotEmpty)
+                        _InsightCard(
+                          title: 'Vitals',
+                          child: VitalTrendsCard(data: _data!),
                         ),
                       if (_data!.wellbeingTrend.isNotEmpty)
                         _WellbeingSection(data: _data!),
@@ -396,7 +400,8 @@ class _EmptyState extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'Log symptoms, meals, sleep, and daily check-ins over the last '
+              'Log symptoms, vitals, meals, sleep, and daily check-ins over '
+              'the last '
               '$windowDays days to start seeing patterns here.',
               style: tt.bodySmall?.copyWith(color: cs.onSurfaceVariant),
               textAlign: TextAlign.center,

@@ -18,6 +18,7 @@ class Profile {
     this.colorSeed,
     this.cycleTrackingEnabled = false,
     this.bowelTrackingEnabled = false,
+    this.temperatureUnit,
   });
 
   /// Stable local identifier. In the in-memory MVP this is a simple
@@ -49,6 +50,10 @@ class Profile {
   /// Whether bowel and bladder logging is enabled for this profile.
   /// Off by default so the Bowel chip is not an ambient exposure.
   final bool bowelTrackingEnabled;
+
+  /// Unit temperatures are shown in for this profile: '°C', '°F', or null
+  /// for "As logged". Display only: readings keep the unit they were saved in.
+  final String? temperatureUnit;
 
   /// Returns true if this profile has a real photo rather than a generated one.
   bool get hasAvatar => avatarPath != null;
@@ -87,6 +92,8 @@ class Profile {
     int? colorSeed,
     bool? cycleTrackingEnabled,
     bool? bowelTrackingEnabled,
+    String? temperatureUnit,
+    bool clearTemperatureUnit = false,
     bool clearDateOfBirth = false,
     bool clearAvatar = false,
   }) {
@@ -100,6 +107,9 @@ class Profile {
       colorSeed: colorSeed ?? this.colorSeed,
       cycleTrackingEnabled: cycleTrackingEnabled ?? this.cycleTrackingEnabled,
       bowelTrackingEnabled: bowelTrackingEnabled ?? this.bowelTrackingEnabled,
+      temperatureUnit: clearTemperatureUnit
+          ? null
+          : (temperatureUnit ?? this.temperatureUnit),
     );
   }
 

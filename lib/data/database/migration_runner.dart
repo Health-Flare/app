@@ -25,6 +25,7 @@ import 'package:health_flare/data/seed_data.dart';
 /// Schema v16 = nullable DailyCheckin.wellbeing; SymptomEntry.locations;
 ///              Profile.bowelTrackingEnabled; FluidIntakeIsar and
 ///              EliminationEntryIsar collections.
+/// Schema v17 = Profile.temperatureUnit (nullable, display preference).
 ///
 /// How to add a future migration:
 ///   1. Increment [_targetVersion].
@@ -38,7 +39,7 @@ import 'package:health_flare/data/seed_data.dart';
 class MigrationRunner {
   MigrationRunner._();
 
-  static const int _targetVersion = 16;
+  static const int _targetVersion = 17;
 
   /// Run all pending migrations and update [AppSettings.schemaVersion].
   ///
@@ -236,6 +237,17 @@ class MigrationRunner {
       await isar.writeTxn(() async {
         final s = await isar.appSettings.get(1) ?? (AppSettings()..id = 1);
         s.schemaVersion = 16;
+        await isar.appSettings.put(s);
+      });
+    }
+
+    // ── v16 → v17: ProfileIsar gains temperatureUnit ──────────────────────
+    // Nullable; null means "As logged", so existing profiles keep showing
+    // readings exactly as before. Vital rows are not touched.
+    if (currentVersion < 17) {
+      await isar.writeTxn(() async {
+        final s = await isar.appSettings.get(1) ?? (AppSettings()..id = 1);
+        s.schemaVersion = 17;
         await isar.appSettings.put(s);
       });
     }

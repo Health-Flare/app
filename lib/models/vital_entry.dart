@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:health_flare/models/vital_type.dart';
+import 'package:health_flare/models/vital_units.dart';
 
 @immutable
 class VitalEntry {
@@ -36,6 +37,24 @@ class VitalEntry {
         ? value.toStringAsFixed(0)
         : value.toString();
     return '$formatted $unit';
+  }
+
+  /// [displayValue] with temperatures converted to [temperatureUnit]
+  /// ('°C' or '°F'). Null, or the reading's own unit, shows it as logged.
+  /// Other vital types are always shown as logged.
+  String displayValueIn({String? temperatureUnit}) {
+    if (vitalType != VitalType.temperature ||
+        temperatureUnit == null ||
+        temperatureUnit == unit ||
+        !vitalType.availableUnits.contains(temperatureUnit)) {
+      return displayValue;
+    }
+    final converted = VitalUnits.convert(
+      value,
+      from: unit,
+      to: temperatureUnit,
+    );
+    return '${converted.toStringAsFixed(1)} $temperatureUnit';
   }
 
   VitalEntry copyWith({

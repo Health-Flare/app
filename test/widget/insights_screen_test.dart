@@ -6,7 +6,10 @@ import 'package:health_flare/core/providers/database_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/features/reports/models/insight_data.dart';
 import 'package:health_flare/features/reports/screens/insights_screen.dart';
+import 'package:health_flare/features/reports/services/insights_query_service.dart';
+import 'package:health_flare/features/reports/widgets/vital_trends_card.dart';
 import 'package:health_flare/models/profile.dart';
+import 'package:health_flare/models/vital_type.dart';
 
 class _FakeActiveProfile extends ActiveProfileNotifier {
   @override
@@ -129,6 +132,84 @@ void main() {
       await tester.pump(const Duration(milliseconds: 100));
 
       expect(find.textContaining('Failed to load insights'), findsWidgets);
+    });
+  });
+
+  // ---------------------------------------------------------------------------
+  // Issue #83: vitals on the insights screen. The query itself is covered
+  // against real Isar in test/unit/insights_vitals_test.dart; real Isar in a
+  // widget test hangs here (see settings_backup_encryption_test.dart), so
+  // this checks the screen's wiring through [insightsQueryProvider].
+  // ---------------------------------------------------------------------------
+
+  group('InsightsScreen vitals', () {
+    InsightData vitalsOnly(String unit) => InsightData(
+      start: DateTime(2026, 9, 1),
+      end: DateTime(2026, 9, 30),
+      symptomTrends: const [],
+      wellbeingTrend: const [],
+      flarePeriods: const [],
+      foodTriggers: const [],
+      sleepCorrelation: const SleepCorrelation(),
+      weatherImpact: const [],
+      vitalTrends: [
+        VitalTrend(
+          type: VitalType.temperature,
+          unit: unit,
+          points: [TrendPoint(date: DateTime(2026, 9, 20, 8), value: 38.4)],
+        ),
+      ],
+    );
+
+    Widget build(Profile profile, List<String?> unitsAsked) => ProviderScope(
+      overrides: [
+        activeProfileProvider.overrideWith(_FakeActiveProfile.new),
+        profileListProvider.overrideWith(_FakeProfileList.new),
+        activeProfileDataProvider.overrideWith((ref) => profile),
+        isarProvider.overrideWith((ref) => throw UnimplementedError()),
+        insightsQueryProvider.overrideWithValue(({
+          required profileId,
+          required start,
+          required end,
+          temperatureUnit,
+        }) async {
+          unitsAsked.add(temperatureUnit);
+          return vitalsOnly(temperatureUnit ?? '°C');
+        }),
+      ],
+      child: const MaterialApp(home: InsightsScreen()),
+    );
+
+    testWidgets('vitals alone show a Vitals section, not the empty state', (
+      tester,
+    ) async {
+      await tester.pumpWidget(build(Profile(id: 1, name: 'Ethan'), []));
+      await tester.pump(const Duration(milliseconds: 100));
+
+      expect(find.text('Vitals'), findsOneWidget);
+      expect(find.byType(VitalTrendsCard), findsOneWidget);
+      expect(find.text('Not enough data yet'), findsNothing);
+    });
+
+    testWidgets('passes the profile temperature unit to the query', (
+      tester,
+    ) async {
+      final asked = <String?>[];
+      await tester.pumpWidget(
+        build(Profile(id: 1, name: 'Ethan', temperatureUnit: '°F'), asked),
+      );
+      await tester.pump(const Duration(milliseconds: 100));
+
+      expect(asked, ['°F']);
+      expect(find.textContaining('Temperature in °F'), findsOneWidget);
+    });
+
+    testWidgets('"As logged" passes no unit', (tester) async {
+      final asked = <String?>[];
+      await tester.pumpWidget(build(Profile(id: 1, name: 'Ethan'), asked));
+      await tester.pump(const Duration(milliseconds: 100));
+
+      expect(asked, [null]);
     });
   });
 }

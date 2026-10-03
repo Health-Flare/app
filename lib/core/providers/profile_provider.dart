@@ -81,6 +81,8 @@ class ProfileListNotifier extends Notifier<List<Profile>> {
 
   Future<void> _reload(Isar isar) async {
     final rows = await isar.profileIsars.where().findAll();
+    // The provider can be disposed while the read is in flight.
+    if (!ref.mounted) return;
     state = rows.map((r) => r.toDomain()).toList();
   }
 
@@ -125,7 +127,8 @@ class ProfileListNotifier extends Notifier<List<Profile>> {
         ..weatherTrackingEnabled = updated.weatherTrackingEnabled
         ..colorSeed = updated.colorSeed ?? existing.colorSeed
         ..cycleTrackingEnabled = updated.cycleTrackingEnabled
-        ..bowelTrackingEnabled = updated.bowelTrackingEnabled;
+        ..bowelTrackingEnabled = updated.bowelTrackingEnabled
+        ..temperatureUnit = updated.temperatureUnit;
       await isar.profileIsars.put(existing);
     });
   }

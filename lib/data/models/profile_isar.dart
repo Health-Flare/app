@@ -42,6 +42,10 @@ class ProfileIsar {
   /// Off by default so Quick Log does not surface a Bowel chip unasked.
   bool bowelTrackingEnabled = false;
 
+  /// Unit temperatures are shown in: '°C', '°F', or null for "As logged".
+  /// Display only: vital readings keep the unit they were saved in.
+  String? temperatureUnit;
+
   // ── Conversion ────────────────────────────────────────────────────────────
 
   /// Convert to the immutable domain class used by the UI.
@@ -54,6 +58,7 @@ class ProfileIsar {
     colorSeed: colorSeed,
     cycleTrackingEnabled: cycleTrackingEnabled,
     bowelTrackingEnabled: bowelTrackingEnabled,
+    temperatureUnit: temperatureUnit,
   );
 
   /// Construct from a domain [Profile] for writing to Isar.
@@ -70,5 +75,6 @@ class ProfileIsar {
     ..weatherTrackingEnabled = p.weatherTrackingEnabled
     ..colorSeed = p.colorSeed
     ..cycleTrackingEnabled = p.cycleTrackingEnabled
-    ..bowelTrackingEnabled = p.bowelTrackingEnabled;
+    ..bowelTrackingEnabled = p.bowelTrackingEnabled
+    ..temperatureUnit = p.temperatureUnit;
 }

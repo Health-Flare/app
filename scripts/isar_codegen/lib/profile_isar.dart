@@ -33,4 +33,7 @@ class ProfileIsar {
 
   /// Whether bowel and bladder logging is enabled for this profile.
   bool bowelTrackingEnabled = false;
+
+  /// Unit temperatures are shown in: '°C', '°F', or null for "As logged".
+  String? temperatureUnit;
 }

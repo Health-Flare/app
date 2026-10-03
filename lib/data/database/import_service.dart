@@ -640,7 +640,8 @@ class _Ctx {
         ..weatherOptInShown = bp.weatherOptInShown
         ..colorSeed = bp.colorSeed
         ..cycleTrackingEnabled = bp.cycleTrackingEnabled
-        ..bowelTrackingEnabled = bp.bowelTrackingEnabled;
+        ..bowelTrackingEnabled = bp.bowelTrackingEnabled
+        ..temperatureUnit = bp.temperatureUnit;
       await main.writeTxn(() async {
         final newId = await main.profileIsars.put(newProfile);
         profileMap[bp.id] = newId;
