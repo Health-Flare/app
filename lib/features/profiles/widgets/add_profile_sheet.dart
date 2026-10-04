@@ -114,6 +114,9 @@ class _AddProfileSheetState extends ConsumerState<AddProfileSheet> {
     if (_isSaving) return;
     setState(() => _isSaving = true);
 
+    // Capture this sheet's route before awaiting: the dashboard can push the
+    // post-setup flow on top while the save is still running.
+    final sheetRoute = ModalRoute.of(context);
     final listNotifier = ref.read(profileListProvider.notifier);
 
     if (_isEditMode) {
@@ -139,8 +142,22 @@ class _AddProfileSheetState extends ConsumerState<AddProfileSheet> {
       );
     }
     if (!mounted) return;
+    _closeSheet(sheetRoute);
+  }
 
-    if (mounted) Navigator.of(context).pop();
+  /// Close this sheet, and only this sheet.
+  ///
+  /// A plain `Navigator.pop()` closes whatever route is on top. Making a new
+  /// profile active triggers the post-setup flow, which can be pushed over
+  /// the sheet before the save finishes; popping would close that flow and
+  /// leave the sheet stuck on its spinner.
+  void _closeSheet(Route<dynamic>? route) {
+    final navigator = Navigator.of(context);
+    if (route == null || route.isCurrent) {
+      navigator.pop();
+    } else if (route.isActive) {
+      navigator.removeRoute(route);
+    }
   }
 
   Future<void> _deleteProfile() async {
@@ -174,8 +191,9 @@ class _AddProfileSheetState extends ConsumerState<AddProfileSheet> {
 
     if (confirmed != true || !mounted) return;
 
+    final sheetRoute = ModalRoute.of(context);
     await ref.read(profileListProvider.notifier).remove(profile.id);
-    if (mounted) Navigator.of(context).pop();
+    if (mounted) _closeSheet(sheetRoute);
   }
 
   @override
