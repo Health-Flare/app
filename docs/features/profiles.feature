@@ -31,6 +31,15 @@ Feature: Profile Management
     And I save the profile
     Then a profile named "Dad" is created with the date of birth and avatar stored
 
+  Scenario: Adding another profile closes the form and starts its welcome steps
+    Given profiles named "Sarah", "Dad" and "Mum" exist
+    When I open the profile switcher and tap "Add profile"
+    And I enter "Sam" as the profile name
+    And I save the profile
+    Then a profile named "Sam" is created and becomes the active profile
+    And the New profile form closes
+    And the welcome steps for "Sam" stay on screen
+
   Scenario: Cannot create a profile without a name
     When I navigate to the create profile screen
     And I leave the profile name empty
