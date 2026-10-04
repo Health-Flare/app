@@ -144,6 +144,27 @@ Feature: Profile Management
     And all health data associated with "Dad" is removed
     And "Sarah" remains the active profile
 
+  Scenario: Deleting a profile removes every kind of entry it owns
+    Given a profile named "Dad" exists
+    And "Dad" has symptoms, vitals, medications, doses, meals, sleep, activity,
+      fluids, bowel entries, flares, check-ins, appointments, conditions,
+      tracked symptoms and journal entries
+    When I delete the profile "Dad"
+    Then none of those entries remain on this device
+    And they are not included in any backup made afterwards
+    And every other profile's entries are unchanged
+
+  Scenario: Deleting a profile is all or nothing
+    Given a profile named "Dad" exists with health data
+    When deleting "Dad" fails part way through
+    Then "Dad" and all of their data are still on this device
+
+  Scenario: Updating removes data left behind by earlier deletes
+    Given an earlier version deleted a profile but kept some of its entries
+    When I update to this version
+    Then the entries that belong to no profile are removed
+    And every remaining profile's entries are unchanged
+
   Scenario: Cancel profile deletion
     Given a profile named "Dad" exists
     When I open the profile settings for "Dad"

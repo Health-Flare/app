@@ -113,7 +113,7 @@ void main() {
   });
 
   group('MigrationRunner', () {
-    test('fresh install: schemaVersion reaches target (v17)', () async {
+    test('fresh install: schemaVersion reaches target (v18)', () async {
       final isar = await _openIsar();
 
       // No AppSettings doc exists yet → currentVersion = 0.
@@ -121,7 +121,7 @@ void main() {
 
       final settings = await isar.appSettings.get(1);
       expect(settings, isNotNull);
-      expect(settings!.schemaVersion, 17);
+      expect(settings!.schemaVersion, 18);
     });
 
     test('v2 migration seeds condition catalogue', () async {
@@ -173,7 +173,7 @@ void main() {
       expect(countAfter, countBefore);
 
       final settings = await isar.appSettings.get(1);
-      expect(settings!.schemaVersion, 17);
+      expect(settings!.schemaVersion, 18);
     });
 
     test('migration from v1 preserves existing profiles', () async {
@@ -194,7 +194,7 @@ void main() {
         await isar.profileIsars.put(profile);
       });
 
-      // Migrate v1 → v17.
+      // Migrate v1 → v18.
       await MigrationRunner.run(isar);
 
       // Profile should still exist after migration.
@@ -203,17 +203,17 @@ void main() {
       expect(profiles.first.name, 'Test User');
 
       final settings = await isar.appSettings.get(1);
-      expect(settings!.schemaVersion, 17);
+      expect(settings!.schemaVersion, 18);
     });
 
     test(
       'all Isar schemas registered in IsarService match MigrationRunner',
       () {
         // This test ensures app_database.dart and migration_runner.dart agree
-        // on the target version. Both hardcode v17: this test would fail if
+        // on the target version. Both hardcode v18: this test would fail if
         // one is updated without the other.
         //
-        // The target version is verified by the migration reaching v17 in the
+        // The target version is verified by the migration reaching v18 in the
         // test above. Here we just confirm the schema list in IsarService is
         // consistent (it compiles, which means all schemas exist).
         expect(IsarService, isNotNull);
