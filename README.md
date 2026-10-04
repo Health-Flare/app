@@ -54,6 +54,10 @@ Full policy: [healthflare.org/privacy](https://healthflare.org/privacy). Why it'
 
 - **iPhone and iPad:** [App Store](https://apps.apple.com/app/health-flare/id6803123766)
 - **Android:** [Google Play](https://play.google.com/store/apps/details?id=org.healthflare.app.healthflare), or the APK from [GitHub Releases](https://github.com/Health-Flare/app/releases/latest)
+
+  To check a downloaded APK is ours, its signing certificate's SHA-256 should be
+  `7e:63:a6:89:1b:25:29:96:a6:ac:df:cd:c9:3a:dc:03:d6:f0:cc:9f:53:74:08:e8:5e:8c:c9:74:a7:6b:5a:6a`
+  (`apksigner verify --print-certs healthflare-vX.Y.Z.apk`). Play Store installs are signed by Google with a different key.
 - **Desktop and web:** planned
 
 What changed in each version: [CHANGELOG.md](CHANGELOG.md).

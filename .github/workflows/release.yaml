@@ -43,6 +43,24 @@ jobs:
       #   STORE_PASSWORD    storePassword value from key.properties
       #   KEY_ALIAS         keyAlias value from key.properties
       #   KEY_PASSWORD      keyPassword value from key.properties
+      # Fail fast if a signing secret is missing or empty (#106). The Gradle
+      # build also refuses, but this names the secret.
+      - name: Check signing secrets
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          missing=0
+          for name in KEYSTORE_BASE64 STORE_PASSWORD KEY_ALIAS KEY_PASSWORD; do
+            if [ -z "${!name}" ]; then
+              echo "::error::Secret $name is empty or not set"
+              missing=1
+            fi
+          done
+          exit $missing
+
       - name: Decode keystore
         run: |
           echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode \
@@ -65,6 +83,11 @@ jobs:
         run: |
           cp build/app/outputs/flutter-apk/app-release.apk \
             build/app/outputs/flutter-apk/healthflare-${{ github.ref_name }}.apk
+
+      # Refuse to publish anything not signed with the release key (#106).
+      # Expected fingerprint: android/release-signing.sha256.
+      - name: Verify release signature
+        run: scripts/release/verify_android_signature.sh build/app/outputs/flutter-apk/healthflare-${{ github.ref_name }}.apk
 
       # ── Publish ──────────────────────────────────────────────────────────────
       # github.api_url resolves to https://api.github.com; github.token is
