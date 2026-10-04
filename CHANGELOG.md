@@ -19,6 +19,7 @@ How to use this file
 - Insights has a Vitals card. It charts every vital type with readings in the selected window, plots each reading at its logged time, draws blood pressure as systolic and diastolic lines, and shades flare periods behind the chart.
 - Each profile has a temperature unit setting (°C, °F, or As logged). It changes how temperatures are shown; readings are stored as entered, and edit forms and exports show them as logged.
 - Medication doses and appointments can be moved to another profile. If the other profile doesn't have the medication yet, it is added for them as part of the move.
+- Before an app update changes how your data is stored, Health Flare saves a safety copy of your data on the phone first. The newest three copies are kept, and they are left out of your phone's iCloud or Google backup so they don't crowd it. If the copy can't be saved, the update waits and your data is left as it is.
 
 ### Changed
 - Moving any entry to another profile now asks first, and names anything that won't carry over, such as a flare link.
@@ -35,6 +36,7 @@ How to use this file
 ### Fixed
 - Vitals, including temperature, now appear on Insights. A profile with only vitals in the window no longer shows "Not enough data yet".
 - Moving an entry from an edit screen no longer discards changes you hadn't saved yet.
+- If updating your data fails, the app still opens and tells you, and the safety copy from before the update stays on the phone. It tries again next time. Before, a failed update stopped the app from opening at all.
 
 ### Security
 - Deleting a profile now removes all of its health data. Before, only its journal entries were removed; symptoms, vitals, medications, doses, meals, sleep, activity, fluids, bowel entries, flares, check-ins, appointments, tracked conditions and tracked symptoms stayed in the database and in backups. A one-time cleanup on upgrade removes data left behind by profiles deleted on 1.9.1 and earlier.

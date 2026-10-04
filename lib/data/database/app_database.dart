@@ -24,6 +24,7 @@ import 'package:health_flare/data/models/fluid_intake_isar.dart';
 import 'package:health_flare/data/database/app_settings.dart';
 import 'package:health_flare/data/database/backup_service.dart';
 import 'package:health_flare/data/database/migration_runner.dart';
+import 'package:health_flare/data/database/pre_migration_snapshot.dart';
 
 /// Startup data read before [runApp] so providers have real values on
 /// the first frame: avoids blank-frame flashes from async loads.
@@ -37,6 +38,12 @@ class StartupData {
 /// Opens and initialises the Isar database for the lifetime of the app.
 class IsarService {
   IsarService._();
+
+  /// What happened to the data migrations during the last [open]. Read by
+  /// [main] to tell the user about a skipped or failed upgrade.
+  static MigrationResult lastMigration = const MigrationResult(
+    MigrationOutcome.upToDate,
+  );
 
   /// Opens the Isar database, runs schema migrations, and returns the instance.
   ///
@@ -83,7 +90,18 @@ class IsarService {
       name: 'healthflare',
     );
 
-    await MigrationRunner.run(isar);
+    // Data migrations. On device, a copy of existing data is taken first and
+    // no migration runs without one (#110). A snapshot or migration failure
+    // doesn't stop the app opening: the result is shown to the user and the
+    // next launch tries again. Web has no file system to copy to.
+    if (directory != null) {
+      lastMigration = await PreMigrationSnapshot.migrate(
+        isar,
+        documentsDir: directory,
+      );
+    } else {
+      await MigrationRunner.run(isar);
+    }
 
     return isar;
   }

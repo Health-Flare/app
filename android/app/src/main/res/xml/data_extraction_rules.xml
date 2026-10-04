@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Android 12+ (API 31 and higher). Referenced by
+  android:dataExtractionRules in AndroidManifest.xml.
+
+  Everything is backed up and transferred to a new phone except the
+  pre-upgrade safety copies in snapshots/ (#110). The database itself stays
+  in both on purpose (#96, #97, #99). Up to 3 extra copies of it would count
+  against Android's 25 MB per-app cloud backup quota, and an app over quota
+  is not backed up at all. A new phone gets the current database, so old
+  safety copies are of no use there.
+
+  path_provider's documents directory is Context.getDir("flutter"), i.e.
+  <data dir>/app_flutter, which is what the "root" domain path is relative to.
+  Keep in step with backup_rules.xml.
+-->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="root" path="app_flutter/snapshots" />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="root" path="app_flutter/snapshots" />
+    </device-transfer>
+</data-extraction-rules>
