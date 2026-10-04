@@ -24,9 +24,9 @@ abstract final class CsvReportService {
       rows.add([
         _fmt.format(e.loggedAt),
         'Symptom',
-        e.name,
+        _text(e.name),
         'Severity ${e.severity}/10',
-        e.notes ?? '',
+        _text(e.notes),
       ]);
     }
 
@@ -36,7 +36,7 @@ abstract final class CsvReportService {
         'Vital',
         e.vitalType.label,
         e.displayValue,
-        e.notes ?? '',
+        _text(e.notes),
       ]);
     }
 
@@ -45,9 +45,9 @@ abstract final class CsvReportService {
       rows.add([
         _fmt.format(e.loggedAt),
         'Medication',
-        med?.name ?? 'Unknown',
-        '${e.amount} ${e.unit}',
-        e.notes ?? '',
+        med == null ? 'Unknown' : _text(med.name),
+        _text('${e.amount} ${e.unit}'),
+        _text(e.notes),
       ]);
     }
 
@@ -55,9 +55,9 @@ abstract final class CsvReportService {
       rows.add([
         _fmt.format(e.loggedAt),
         'Meal',
-        e.description,
+        _text(e.description),
         e.hasReaction ? 'Reaction flagged' : '',
-        e.notes ?? '',
+        _text(e.notes),
       ]);
     }
 
@@ -70,7 +70,7 @@ abstract final class CsvReportService {
         'Sleep',
         '${h}h ${m}m',
         e.qualityRating != null ? 'Quality ${e.qualityRating}/5' : '',
-        e.notes ?? '',
+        _text(e.notes),
       ]);
     }
 
@@ -81,8 +81,8 @@ abstract final class CsvReportService {
         e.wellbeing == null
             ? 'Wellbeing not recorded'
             : 'Wellbeing ${e.wellbeing}/10',
-        e.stressLevel ?? '',
-        e.notes ?? '',
+        _text(e.stressLevel),
+        _text(e.notes),
       ]);
     }
 
@@ -90,9 +90,9 @@ abstract final class CsvReportService {
       rows.add([
         _fmt.format(e.scheduledAt),
         'Appointment',
-        e.title,
+        _text(e.title),
         _apptStatus(e.status),
-        e.outcomeNotes ?? '',
+        _text(e.outcomeNotes),
       ]);
     }
 
@@ -100,8 +100,8 @@ abstract final class CsvReportService {
       rows.add([
         _fmt.format(e.createdAt),
         'Journal',
-        e.title ?? '',
-        e.body.length > 200 ? '${e.body.substring(0, 200)}…' : e.body,
+        _text(e.title),
+        _text(e.body.length > 200 ? '${e.body.substring(0, 200)}…' : e.body),
         '',
       ]);
     }
@@ -114,9 +114,9 @@ abstract final class CsvReportService {
       rows.add([
         _fmt.format(e.loggedAt),
         'Activity',
-        e.description,
+        _text(e.description),
         parts.join('  ·  '),
-        e.notes ?? '',
+        _text(e.notes),
       ]);
     }
 
@@ -126,6 +126,24 @@ abstract final class CsvReportService {
     rows.insert(0, header);
 
     return Csv().encode(rows);
+  }
+
+  /// Characters that make a spreadsheet read a cell as a formula
+  /// (=, +, -, @, tab, carriage return).
+  static const _formulaLeads = {'=', '+', '-', '@', '\t', '\r'};
+
+  /// Makes user-entered text safe to open in a spreadsheet (#108).
+  ///
+  /// Excel, Sheets and LibreOffice run a cell that starts with a formula
+  /// character, so a note like `=HYPERLINK(...)` in a symptom entry, or in a
+  /// backup someone else made, would run on the clinician's computer. A
+  /// leading apostrophe makes the spreadsheet show the text as typed. Only
+  /// cells that would be read as formulas are changed.
+  ///
+  /// Every column that holds user-entered text must go through this.
+  static String _text(String? value) {
+    if (value == null || value.isEmpty) return '';
+    return _formulaLeads.contains(value[0]) ? "'$value" : value;
   }
 
   static String _apptStatus(String status) => switch (status) {

@@ -150,6 +150,13 @@ Feature: Reports and Data Export
     When I export a report as CSV including symptoms
     Then the symptom CSV contains columns for: timestamp, symptom name, severity, and notes
 
+  Scenario: Text that looks like a spreadsheet formula is exported as text
+    Given a symptom entry with the note "=HYPERLINK(""x"",""Click"")"
+    When I export a report as CSV
+    And the CSV is opened in a spreadsheet
+    Then the note shows exactly as I typed it
+    And nothing in the export runs as a formula
+
   Scenario: CSV vitals export includes all vital fields
     When I export a report as CSV including vitals
     Then the vitals CSV contains columns for: timestamp, vital type, value, unit, and notes
