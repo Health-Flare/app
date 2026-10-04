@@ -678,5 +678,36 @@ void main() {
       final profiles = await main.profileIsars.where().findAll();
       expect(profiles.single.temperatureUnit, '°F');
     });
+
+    // Issue #117: a profile merged in from a backup must not take the id of
+    // a deleted profile whose entries are still on the device.
+    test(
+      'merge: an imported profile never reuses a deleted profile id',
+      () async {
+        final source = await _openIsar('import_id_reuse_source_${_uid()}');
+        await source.writeTxn(
+          () => source.profileIsars.put(ProfileIsar()..name = 'Sam'),
+        );
+        final path = await BackupService.export(source);
+        await source.close();
+
+        final main = await _openIsar('import_id_reuse_main_${_uid()}');
+        await main.writeTxn(() async {
+          final s = (await main.appSettings.get(1))!..lastProfileId = 4;
+          await main.appSettings.put(s);
+          await main.profileIsars.put(ProfileIsar()..name = 'Me');
+        });
+        final meId = (await main.profileIsars.where().findFirst())!.id;
+
+        await ImportService.mergeAll(path, main);
+
+        final sam = await main.profileIsars
+            .filter()
+            .nameEqualTo('Sam')
+            .findFirst();
+        expect(sam!.id, greaterThan(4));
+        expect(sam.id, isNot(meId));
+      },
+    );
   });
 }

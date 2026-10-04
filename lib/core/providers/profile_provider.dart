@@ -3,6 +3,7 @@ import 'package:isar_community/isar.dart';
 
 import 'package:health_flare/data/database/app_settings.dart';
 import 'package:health_flare/data/database/profile_deletion.dart';
+import 'package:health_flare/data/database/profile_ids.dart';
 import 'package:health_flare/data/models/profile_isar.dart';
 import 'package:health_flare/models/profile.dart';
 import 'package:health_flare/core/providers/database_provider.dart';
@@ -86,7 +87,8 @@ class ProfileListNotifier extends Notifier<List<Profile>> {
     state = rows.map((r) => r.toDomain()).toList();
   }
 
-  /// Add a new profile. Isar assigns its id; the new profile becomes active.
+  /// Add a new profile with a never-used id (see [nextProfileId]); the new
+  /// profile becomes active.
   ///
   /// Auto-assigns a [colorSeed] from the palette, cycling by current profile
   /// count so successive profiles get distinct colors.
@@ -98,15 +100,14 @@ class ProfileListNotifier extends Notifier<List<Profile>> {
     final isar = ref.read(isarProvider);
     final seed = _colorPalette[state.length % _colorPalette.length];
     final row = ProfileIsar()
-      ..id = Isar.autoIncrement
       ..name = name
       ..dateOfBirth = dateOfBirth
       ..avatarPath = avatarPath
       ..colorSeed = seed;
     await isar.writeTxn(() async {
+      row.id = await nextProfileId(isar);
       await isar.profileIsars.put(row);
     });
-    // row.id now holds the Isar-assigned id.
     await ref.read(activeProfileProvider.notifier).setActive(row.id);
   }
 

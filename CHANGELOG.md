@@ -35,6 +35,7 @@ How to use this file
 
 ### Fixed
 - Adding a profile from the profile switcher no longer leaves the New profile sheet stuck on a spinning button. The profile was saved, but the sheet closed the welcome steps for the new profile instead of itself.
+- A new profile no longer picks up entries from a profile you deleted before. After a deleted profile and an app restart, the next new profile could be given the deleted one's place and show symptoms or other entries you never logged for it. Entries a profile already picked up this way stay with it; the app can't tell them apart from your own.
 - Vitals, including temperature, now appear on Insights. A profile with only vitals in the window no longer shows "Not enough data yet".
 - Moving an entry from an edit screen no longer discards changes you hadn't saved yet.
 - If updating your data fails, the app still opens and tells you, and the safety copy from before the update stays on the phone. It tries again next time. Before, a failed update stopped the app from opening at all.

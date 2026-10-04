@@ -22,8 +22,13 @@ const AppSettingsSchema = CollectionSchema(
       name: r'activeProfileId',
       type: IsarType.long,
     ),
-    r'schemaVersion': PropertySchema(
+    r'lastProfileId': PropertySchema(
       id: 1,
+      name: r'lastProfileId',
+      type: IsarType.long,
+    ),
+    r'schemaVersion': PropertySchema(
+      id: 2,
       name: r'schemaVersion',
       type: IsarType.long,
     ),
@@ -58,7 +63,8 @@ void _appSettingsSerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeLong(offsets[0], object.activeProfileId);
-  writer.writeLong(offsets[1], object.schemaVersion);
+  writer.writeLong(offsets[1], object.lastProfileId);
+  writer.writeLong(offsets[2], object.schemaVersion);
 }
 
 AppSettings _appSettingsDeserialize(
@@ -70,7 +76,8 @@ AppSettings _appSettingsDeserialize(
   final object = AppSettings();
   object.activeProfileId = reader.readLongOrNull(offsets[0]);
   object.id = id;
-  object.schemaVersion = reader.readLong(offsets[1]);
+  object.lastProfileId = reader.readLong(offsets[1]);
+  object.schemaVersion = reader.readLong(offsets[2]);
   return object;
 }
 
@@ -84,6 +91,8 @@ P _appSettingsDeserializeProp<P>(
     case 0:
       return (reader.readLongOrNull(offset)) as P;
     case 1:
+      return (reader.readLong(offset)) as P;
+    case 2:
       return (reader.readLong(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -323,6 +332,61 @@ extension AppSettingsQueryFilter
   }
 
   QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+  lastProfileIdEqualTo(int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'lastProfileId', value: value),
+      );
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+  lastProfileIdGreaterThan(int value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'lastProfileId',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+  lastProfileIdLessThan(int value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'lastProfileId',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+  lastProfileIdBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'lastProfileId',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
   schemaVersionEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
@@ -399,6 +463,19 @@ extension AppSettingsQuerySortBy
     });
   }
 
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy> sortByLastProfileId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastProfileId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+  sortByLastProfileIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastProfileId', Sort.desc);
+    });
+  }
+
   QueryBuilder<AppSettings, AppSettings, QAfterSortBy> sortBySchemaVersion() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'schemaVersion', Sort.asc);
@@ -440,6 +517,19 @@ extension AppSettingsQuerySortThenBy
     });
   }
 
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy> thenByLastProfileId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastProfileId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+  thenByLastProfileIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastProfileId', Sort.desc);
+    });
+  }
+
   QueryBuilder<AppSettings, AppSettings, QAfterSortBy> thenBySchemaVersion() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'schemaVersion', Sort.asc);
@@ -463,6 +553,12 @@ extension AppSettingsQueryWhereDistinct
     });
   }
 
+  QueryBuilder<AppSettings, AppSettings, QDistinct> distinctByLastProfileId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'lastProfileId');
+    });
+  }
+
   QueryBuilder<AppSettings, AppSettings, QDistinct> distinctBySchemaVersion() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'schemaVersion');
@@ -481,6 +577,12 @@ extension AppSettingsQueryProperty
   QueryBuilder<AppSettings, int?, QQueryOperations> activeProfileIdProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'activeProfileId');
+    });
+  }
+
+  QueryBuilder<AppSettings, int, QQueryOperations> lastProfileIdProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'lastProfileId');
     });
   }
 

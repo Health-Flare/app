@@ -2,6 +2,7 @@ import 'package:isar_community/isar.dart';
 
 import 'package:health_flare/data/database/app_settings.dart';
 import 'package:health_flare/data/database/profile_deletion.dart';
+import 'package:health_flare/data/database/profile_ids.dart';
 import 'package:health_flare/data/models/condition_isar.dart';
 import 'package:health_flare/data/models/symptom_isar.dart';
 import 'package:health_flare/data/seed_data.dart';
@@ -29,6 +30,8 @@ import 'package:health_flare/data/seed_data.dart';
 /// Schema v17 = Profile.temperatureUnit (nullable, display preference).
 /// Schema v18 = no schema change; removes health data left behind by
 ///              profile deletes before this version (see profile_deletion.dart).
+/// Schema v19 = AppSettings.lastProfileId, seeded from the highest profile
+///              id in use so deleted profiles' ids are never reused (#117).
 ///
 /// How to add a future migration:
 ///   1. Increment [_targetVersion].
@@ -42,7 +45,7 @@ import 'package:health_flare/data/seed_data.dart';
 class MigrationRunner {
   MigrationRunner._();
 
-  static const int _targetVersion = 18;
+  static const int _targetVersion = 19;
 
   /// Whether existing data is waiting for a data migration: the database
   /// has been initialised before (schema version above 0) and is behind the
@@ -274,6 +277,19 @@ class MigrationRunner {
         await deleteOrphanedProfileData(isar);
         final s = await isar.appSettings.get(1) ?? (AppSettings()..id = 1);
         s.schemaVersion = 18;
+        await isar.appSettings.put(s);
+      });
+    }
+
+    // ── v18 → v19: never reuse a profile id ───────────────────────────────
+    // Seed the high-water mark from every id in use, including ids only
+    // entries still point at, so the next new profile can't pick them up.
+    if (currentVersion < 19) {
+      await isar.writeTxn(() async {
+        final highest = await highestProfileIdInUse(isar);
+        final s = await isar.appSettings.get(1) ?? (AppSettings()..id = 1);
+        if (highest > s.lastProfileId) s.lastProfileId = highest;
+        s.schemaVersion = 19;
         await isar.appSettings.put(s);
       });
     }
