@@ -98,7 +98,7 @@ bash scripts/check_deps.sh   # dependency health
 
 ## Offline-first rule
 
-Health Flare makes no outbound network requests at runtime, with one opt-in exception: weather capture calls the Open-Meteo API (see `.url-scan-ignore` for the allowed domains and why). No accounts, no sync, no analytics. Before opening a PR:
+Health Flare makes no outbound network requests at runtime, with one opt-in exception: weather capture sends an approximate location (rounded to about 1 km) to the Open-Meteo API (see `.url-scan-ignore` for the allowed domains and why). No accounts, no sync, no analytics. The database is included in the OS's own backup (iCloud, Google); privacy copy must say so rather than claim data never leaves the device. `test/unit/privacy_claims_test.dart` fails on the old wording. Before opening a PR:
 
 - No new `http://` or `https://` URLs in `lib/` or `test/` outside comments, unless added to `.url-scan-ignore` with a justification
 - No network-dependent packages (`dio`, `firebase_*`, `google_fonts`, etc.)
