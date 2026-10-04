@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -81,9 +82,14 @@ class _PickerStubNotifier extends BackupNotifier {
   String? pickedPath;
   int pickCount = 0;
 
+  /// When set, the picker stays open until this completes.
+  Completer<String?>? pickerGate;
+
   @override
   Future<String?> pickBackupFile() async {
     pickCount++;
+    final gate = pickerGate;
+    if (gate != null) return gate.future;
     return pickedPath;
   }
 }
@@ -471,6 +477,34 @@ void main() {
   // so without validation "Replace everything" would stage it and wipe the
   // live data on the next launch.
   // -------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
+  // Issue #87: the notifier can be disposed while the file picker is open.
+  // Writing the result to a disposed notifier threw "Cannot use the Ref
+  // ... after it has been disposed".
+  // -------------------------------------------------------------------------
+  group('disposed while the file picker is open', () {
+    test('cancelling the picker afterwards does not throw', () async {
+      notifier.pickerGate = Completer<String?>();
+      final pending = notifier.mergeRestore();
+
+      container.dispose();
+      notifier.pickerGate!.complete(null);
+      await pending;
+    });
+
+    test('picking a backup afterwards does not throw', () async {
+      final path = await plainBackupWith('FromPlain');
+      notifier.pickerGate = Completer<String?>();
+      final pending = notifier.mergeRestore();
+
+      container.dispose();
+      notifier.pickerGate!.complete(path);
+      await pending;
+
+      expect(decryptedCopies(), isEmpty);
+    });
+  });
+
   group('picking a file that is not a Health Flare backup', () {
     Future<String> pickedFile(String name, List<int> bytes) async {
       final picked = Directory('${tempRoot.path}/picked')

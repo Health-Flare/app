@@ -36,6 +36,7 @@ class DailyCheckinListNotifier extends Notifier<List<DailyCheckin>> {
 
   Future<void> _reload(Isar isar) async {
     final rows = await isar.dailyCheckinIsars.where().findAll();
+    if (!ref.mounted) return;
     state = rows.map((r) => r.toDomain()).toList();
   }
 

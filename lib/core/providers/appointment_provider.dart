@@ -28,6 +28,7 @@ class AppointmentListNotifier extends Notifier<List<Appointment>> {
 
   Future<void> _reload(Isar isar) async {
     final rows = await isar.appointmentIsars.where().findAll();
+    if (!ref.mounted) return;
     state = rows.map((r) => r.toDomain()).toList();
   }
 

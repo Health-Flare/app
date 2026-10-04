@@ -202,6 +202,7 @@ class ActiveProfileNotifier extends Notifier<int?> {
   Future<void> _loadFromDb() async {
     final isar = ref.read(isarProvider);
     final id = await _readActiveProfileId(isar);
+    if (!ref.mounted) return;
     state = id;
   }
 

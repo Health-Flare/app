@@ -35,6 +35,7 @@ class FlareListNotifier extends Notifier<List<Flare>> {
 
   Future<void> _reload(Isar isar) async {
     final rows = await isar.flareIsars.where().findAll();
+    if (!ref.mounted) return;
     state = rows.map((r) => r.toDomain()).toList();
   }
 

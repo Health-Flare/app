@@ -24,6 +24,7 @@ class FluidIntakeListNotifier extends Notifier<List<FluidIntake>> {
 
   Future<void> _reload(Isar isar) async {
     final rows = await isar.fluidIntakeIsars.where().findAll();
+    if (!ref.mounted) return;
     state = rows.map((r) => r.toDomain()).toList();
   }
 
