@@ -39,6 +39,7 @@ class ActivityEntryListNotifier extends Notifier<List<ActivityEntry>> {
 
   Future<void> _reload(Isar isar) async {
     final rows = await isar.activityEntryIsars.where().findAll();
+    if (!ref.mounted) return;
     state = rows.map((r) => r.toDomain()).toList();
   }
 

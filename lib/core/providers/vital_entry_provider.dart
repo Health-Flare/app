@@ -39,6 +39,7 @@ class VitalEntryListNotifier extends Notifier<List<VitalEntry>> {
 
   Future<void> _reload(Isar isar) async {
     final rows = await isar.vitalEntryIsars.where().findAll();
+    if (!ref.mounted) return;
     state = rows.map((r) => r.toDomain()).toList();
   }
 

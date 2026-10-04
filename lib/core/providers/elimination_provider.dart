@@ -24,6 +24,7 @@ class EliminationListNotifier extends Notifier<List<EliminationEntry>> {
 
   Future<void> _reload(Isar isar) async {
     final rows = await isar.eliminationEntryIsars.where().findAll();
+    if (!ref.mounted) return;
     state = rows.map((r) => r.toDomain()).toList();
   }
 
