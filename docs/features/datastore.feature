@@ -155,6 +155,61 @@ Feature: Persistent local datastore
     And the user's existing data is intact
     And an error is logged for diagnosis
 
+  # ---------------------------------------------------------------------------
+  # Safety copy before an upgrade (#110)
+  #
+  # Upgrades change the only copy of a family's records, and some of them
+  # delete rows (for example the clean-up of data left by deleted profiles).
+  # So before an upgrade touches existing data, the app saves a copy of it
+  # in a "snapshots" folder on the phone.
+  # ---------------------------------------------------------------------------
+
+  Scenario: A safety copy is taken before an upgrade changes my data
+    Given I have used Health Flare and my data is on an older version
+    When I open the app after an update that needs to change my data
+    Then a copy of my data from before the change is saved on this phone first
+    And the copy is named after the version it came from and the time it was taken
+    And then my data is updated
+
+  Scenario: New and up-to-date installs take no safety copy
+    Given the app is installed fresh, or my data is already up to date
+    When I open the app
+    Then no safety copy is made
+
+  Scenario: Only the last 3 safety copies are kept
+    Given 3 safety copies from earlier upgrades are on the phone
+    When another upgrade finishes
+    Then only the 3 newest copies remain
+    And files in the snapshots folder that aren't safety copies are left alone
+
+  Scenario: No safety copy, no upgrade
+    Given the safety copy can't be saved, for example because storage is full
+    When I open the app after an update
+    Then my data is not changed
+    And the app still opens
+    And I see "Health Flare couldn't save a safety copy of your data, so it didn't update it. Your data is unchanged. It will try again next time you open the app. If this keeps happening, free up some storage on your phone."
+    And the upgrade is tried again the next time I open the app
+
+  Scenario: A failed upgrade leaves a safety copy I can restore
+    Given an upgrade fails partway through
+    When I open the app
+    Then the app still opens
+    And I see "Health Flare couldn't finish updating your data. A copy of your data from before the update is saved on this phone. It will try again next time you open the app. To be safe, export a backup from Settings."
+    And the safety copy holds my data exactly as it was before the upgrade
+    And the copy can be restored the same way as a backup file ("Replace everything")
+
+  Scenario: Retrying a failed upgrade keeps the original safety copy
+    Given an upgrade failed partway and left a safety copy
+    When I open the app again and the upgrade is retried
+    Then the retry uses the safety copy from before the first attempt
+    And no new copy of the half-updated data is made
+
+  Scenario: Safety copies are not in phone backups
+    When the app saves a safety copy
+    Then the snapshots folder is left out of Google backup and new-phone transfer on Android
+    And it is left out of iCloud backup on iPhone
+    And my Health Flare data itself is still included in phone backups
+
   Scenario: The app handles a database file from an older app build
     Given the user downgrades the app to a version that expects schema version 1
     And the database file on disk is at schema version 2

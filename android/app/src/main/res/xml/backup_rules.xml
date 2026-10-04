@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Android 11 and below (API 30 and lower). Referenced by
+  android:fullBackupContent in AndroidManifest.xml.
+
+  Everything is backed up except the pre-upgrade safety copies in
+  snapshots/ (#110). The database itself stays in backups on purpose
+  (#96, #97, #99). Up to 3 extra copies of it would count against Android's
+  25 MB per-app backup quota, and an app over quota is not backed up at all.
+
+  path_provider's documents directory is Context.getDir("flutter"), i.e.
+  <data dir>/app_flutter, which is what the "root" domain path is relative to.
+  Keep in step with data_extraction_rules.xml.
+-->
+<full-backup-content>
+    <exclude domain="root" path="app_flutter/snapshots" />
+</full-backup-content>

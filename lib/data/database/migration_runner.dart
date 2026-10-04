@@ -44,6 +44,17 @@ class MigrationRunner {
 
   static const int _targetVersion = 18;
 
+  /// Whether existing data is waiting for a data migration: the database
+  /// has been initialised before (schema version above 0) and is behind the
+  /// current version. A fresh install returns false: it has nothing to lose.
+  ///
+  /// Used by [PreMigrationSnapshot] to decide whether to take a snapshot.
+  static Future<bool> needsMigration(Isar isar) async {
+    final settings = await isar.appSettings.get(1);
+    final currentVersion = settings?.schemaVersion ?? 0;
+    return currentVersion > 0 && currentVersion < _targetVersion;
+  }
+
   /// Run all pending migrations and update [AppSettings.schemaVersion].
   ///
   /// Called by [IsarService.open] before returning the [Isar] instance.

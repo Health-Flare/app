@@ -6,6 +6,7 @@ import 'package:path_provider/path_provider.dart';
 
 import 'package:health_flare/data/database/backup_encryption.dart';
 import 'package:health_flare/data/database/import_service.dart';
+import 'package:health_flare/data/database/pre_migration_snapshot.dart';
 
 /// Handles hot-backup export and staged restore for the Isar database.
 ///
@@ -133,5 +134,8 @@ class BackupService {
       await lockFile.delete();
     }
     await pendingFile.rename(mainFile.path);
+    // The restored database is not the one any unfinished upgrade took its
+    // safety copy of. Forget that copy so the next upgrade copies this one.
+    await PreMigrationSnapshot.clearPendingMarker(docsDir);
   }
 }
