@@ -27,8 +27,8 @@ Feature: Linux and Windows Desktop Applications
 
   Scenario: Linux and Windows builds are gated on the same quality checks as other platforms
     Given the CI pipeline runs
-    Then the Linux build job requires flutter-analyze, dart-format, url-scan, flutter-pub-audit, and flutter-test to pass first
-    And the Windows build job requires the same set of upstream jobs to pass first
+    Then the Linux build job requires the "CI gates" job to pass first
+    And the Windows build job requires the same
 
   # ---------------------------------------------------------------------------
   # App icon: Linux
