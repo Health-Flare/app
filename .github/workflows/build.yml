@@ -43,12 +43,14 @@ jobs:
     if: inputs.platforms == 'all' || inputs.platforms == 'apk'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-java@v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
         with:
           distribution: temurin
           java-version: "17"
-      - uses: subosito/flutter-action@v2
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: true
@@ -56,7 +58,7 @@ jobs:
       - name: Build debug APK
         run: flutter build apk --debug
       - name: Archive APK
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: app-debug.apk
           path: build/app/outputs/flutter-apk/app-debug.apk
@@ -67,8 +69,10 @@ jobs:
     if: inputs.platforms == 'all' || inputs.platforms == 'macos'
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v7
-      - uses: subosito/flutter-action@v2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: true
@@ -82,7 +86,7 @@ jobs:
           cd build/macos/Build/Products/Debug
           zip -r healthflare-macos-debug.zip "Health Flare.app"
       - name: Archive macOS app
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: healthflare-macos-debug.zip
           path: build/macos/Build/Products/Debug/healthflare-macos-debug.zip
@@ -93,8 +97,10 @@ jobs:
     if: inputs.platforms == 'all' || inputs.platforms == 'windows'
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v7
-      - uses: subosito/flutter-action@v2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: true
@@ -107,7 +113,7 @@ jobs:
             -DestinationPath healthflare-windows-debug.zip
         shell: pwsh
       - name: Upload Windows artifact
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: healthflare-windows-debug.zip
           path: healthflare-windows-debug.zip

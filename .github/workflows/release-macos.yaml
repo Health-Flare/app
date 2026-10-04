@@ -7,6 +7,11 @@ on:
       - "v*.*.*"
 
 # Flutter version kept in sync with ci.yml: update both together.
+# Least privilege (#107): the token can only read the repo unless a job
+# below asks for more.
+permissions:
+  contents: read
+
 env:
   FLUTTER_VERSION: "3.47.2"
 
@@ -20,9 +25,10 @@ jobs:
       contents: write
 
     steps:
-      - uses: actions/checkout@v7
-
-      - uses: subosito/flutter-action@v2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: true
@@ -65,9 +71,9 @@ jobs:
       - name: Create DMG
         run: |
           APP=build/macos/Build/Products/Release/Health\ Flare.app
-          DMG=healthflare-${{ github.ref_name }}.dmg
+          DMG="healthflare-${GITHUB_REF_NAME}.dmg"
           # Create a simple DMG with hdiutil: no extra tooling required.
-          hdiutil create -volname "Health Flare ${{ github.ref_name }}" \
+          hdiutil create -volname "Health Flare ${GITHUB_REF_NAME}" \
             -srcfolder "$APP" \
             -ov -format UDZO \
             "$DMG"
@@ -80,28 +86,28 @@ jobs:
           MACOS_NOTARIZE_PASSWORD: ${{ secrets.MACOS_NOTARIZE_PASSWORD }}
           MACOS_NOTARIZE_TEAM_ID: ${{ secrets.MACOS_NOTARIZE_TEAM_ID }}
         run: |
-          xcrun notarytool submit healthflare-${{ github.ref_name }}.dmg \
+          xcrun notarytool submit "healthflare-${GITHUB_REF_NAME}.dmg" \
             --apple-id "$MACOS_NOTARIZE_APPLE_ID" \
             --password "$MACOS_NOTARIZE_PASSWORD" \
             --team-id "$MACOS_NOTARIZE_TEAM_ID" \
             --wait
-          xcrun stapler staple healthflare-${{ github.ref_name }}.dmg
+          xcrun stapler staple "healthflare-${GITHUB_REF_NAME}.dmg"
 
       # ── Publish ──────────────────────────────────────────────────────────────
       - name: Create or get release
         run: |
           HTTP_CODE=$(curl -s -o release.json -w "%{http_code}" \
             -H "Authorization: token ${{ github.token }}" \
-            "${{ github.api_url }}/repos/${{ github.repository }}/releases/tags/${{ github.ref_name }}")
+            "${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/releases/tags/${GITHUB_REF_NAME}")
           if [ "$HTTP_CODE" != "200" ]; then
             curl -sf -X POST \
               -H "Authorization: token ${{ github.token }}" \
               -H "Content-Type: application/json" \
-              "${{ github.api_url }}/repos/${{ github.repository }}/releases" \
+              "${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/releases" \
               -d "{
-                \"tag_name\": \"${{ github.ref_name }}\",
-                \"name\": \"Health Flare ${{ github.ref_name }}\",
-                \"body\": \"Release ${{ github.ref_name }}\",
+                \"tag_name\": \"${GITHUB_REF_NAME}\",
+                \"name\": \"Health Flare ${GITHUB_REF_NAME}\",
+                \"body\": \"Release ${GITHUB_REF_NAME}\",
                 \"draft\": false,
                 \"prerelease\": false
               }" \
@@ -112,7 +118,7 @@ jobs:
       - name: Upload DMG to release
         run: |
           UPLOAD_URL=$(jq -r '.upload_url' release.json | sed 's/{?name,label}//')
-          DMG=healthflare-${{ github.ref_name }}.dmg
+          DMG="healthflare-${GITHUB_REF_NAME}.dmg"
           curl -sf -X POST \
             -H "Authorization: token ${{ github.token }}" \
             -H "Content-Type: application/x-apple-diskimage" \
