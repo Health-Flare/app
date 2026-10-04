@@ -5,6 +5,7 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:cryptography/cryptography.dart';
+import 'package:health_flare/data/database/backup_limits.dart';
 
 /// File extension for password-encrypted Health Flare backups (see
 /// docs/features/encrypted-backup.feature). Distinct from the plain ".isar"
@@ -139,6 +140,8 @@ class EncryptedBackupCodec {
     required String outPath,
     required String password,
   }) async {
+    // The whole file is read into memory below: refuse oversized ones (#104).
+    await BackupLimits.check(encryptedPath);
     final bytes = await File(encryptedPath).readAsBytes();
     if (bytes.length < _headerLength ||
         !_bytesEqual(bytes.sublist(0, _magicBytes.length), _magicBytes)) {

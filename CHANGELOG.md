@@ -45,6 +45,7 @@ How to use this file
 - The Android APK on GitHub Releases is now checked against Health Flare's signing key before it's published, and a release can no longer be built with Android's public debug key by mistake. The README lists the key's fingerprint so you can check a downloaded APK yourself. Every APK published so far was signed with the right key.
 - Notes and other text in a CSV export can no longer run as spreadsheet formulas. Text starting with =, +, -, @ now opens in Excel, Sheets or LibreOffice exactly as you typed it, instead of being run, so whoever opens your export is safe from formulas hidden in the data.
 - Backups, reports and decrypted backup copies are no longer left in the phone's or computer's temporary folder. On phones, a shared file is deleted as soon as the share sheet closes. Anything left behind, for example if the app was closed during an import, is deleted the next time Health Flare opens.
+- Import and restore refuse a file over 256 MB with "This file is too big to be a Health Flare backup." before reading any of it. A very large file could crash the app before. Real backups are far smaller.
 
 ## [1.9.1] - 2026-09-24
 

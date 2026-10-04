@@ -240,6 +240,22 @@ Feature: Persistent local datastore
       | Add missing data      |
       | Choose what to import |
 
+  # A real backup is a few MB; the heaviest measured is about 30 MB (#111).
+  Scenario Outline: A file too big to be a backup is refused before it is read
+    Given the user has existing profiles and entries
+    When the user opens Settings > Import / restore and chooses "<mode>"
+    And selects a file larger than 256 MB, encrypted or not
+    Then the error "This file is too big to be a Health Flare backup." is shown
+    And the user is not asked for a password
+    And nothing is staged for restore and nothing is merged
+    And all existing data is intact
+
+    Examples:
+      | mode                  |
+      | Replace everything    |
+      | Add missing data      |
+      | Choose what to import |
+
   Scenario: A non-backup file staged by an older app version is discarded on launch
     Given an older app version (1.8.0 or earlier) staged a file that is not a Health Flare backup for "Replace everything"
     And the app has since been updated to a version that validates restores
