@@ -7,6 +7,11 @@ on:
       - "v*.*.*"
 
 # Flutter version kept in sync with ci.yaml: update both together.
+# Least privilege (#107): the token can only read the repo unless a job
+# below asks for more.
+permissions:
+  contents: read
+
 env:
   FLUTTER_VERSION: "3.47.2"
 
@@ -20,9 +25,10 @@ jobs:
       contents: write
 
     steps:
-      - uses: actions/checkout@v7
-
-      - uses: actions/setup-java@v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
         with:
           distribution: temurin
           java-version: "17"
@@ -82,12 +88,12 @@ jobs:
       - name: Rename APK with version tag
         run: |
           cp build/app/outputs/flutter-apk/app-release.apk \
-            build/app/outputs/flutter-apk/healthflare-${{ github.ref_name }}.apk
+            "build/app/outputs/flutter-apk/healthflare-${GITHUB_REF_NAME}.apk"
 
       # Refuse to publish anything not signed with the release key (#106).
       # Expected fingerprint: android/release-signing.sha256.
       - name: Verify release signature
-        run: scripts/release/verify_android_signature.sh build/app/outputs/flutter-apk/healthflare-${{ github.ref_name }}.apk
+        run: scripts/release/verify_android_signature.sh "build/app/outputs/flutter-apk/healthflare-${GITHUB_REF_NAME}.apk"
 
       # ── Publish ──────────────────────────────────────────────────────────────
       # github.api_url resolves to https://api.github.com; github.token is
@@ -97,16 +103,16 @@ jobs:
           # If the release was already created (e.g. via the GitHub UI), reuse it.
           HTTP_CODE=$(curl -s -o release.json -w "%{http_code}" \
             -H "Authorization: token ${{ github.token }}" \
-            "${{ github.api_url }}/repos/${{ github.repository }}/releases/tags/${{ github.ref_name }}")
+            "${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/releases/tags/${GITHUB_REF_NAME}")
           if [ "$HTTP_CODE" != "200" ]; then
             curl -sf -X POST \
               -H "Authorization: token ${{ github.token }}" \
               -H "Content-Type: application/json" \
-              "${{ github.api_url }}/repos/${{ github.repository }}/releases" \
+              "${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/releases" \
               -d "{
-                \"tag_name\": \"${{ github.ref_name }}\",
-                \"name\": \"Health Flare ${{ github.ref_name }}\",
-                \"body\": \"Release ${{ github.ref_name }}\",
+                \"tag_name\": \"${GITHUB_REF_NAME}\",
+                \"name\": \"Health Flare ${GITHUB_REF_NAME}\",
+                \"body\": \"Release ${GITHUB_REF_NAME}\",
                 \"draft\": false,
                 \"prerelease\": false
               }" \
@@ -121,9 +127,9 @@ jobs:
         run: |
           # Strip the URI template suffix {?name,label} before appending our params
           UPLOAD_URL=$(jq -r '.upload_url' release.json | sed 's/{?name,label}//')
-          APK=build/app/outputs/flutter-apk/healthflare-${{ github.ref_name }}.apk
+          APK="build/app/outputs/flutter-apk/healthflare-${GITHUB_REF_NAME}.apk"
           curl -sf -X POST \
             -H "Authorization: token ${{ github.token }}" \
             -H "Content-Type: application/vnd.android.package-archive" \
-            "${UPLOAD_URL}?name=healthflare-${{ github.ref_name }}.apk" \
+            "${UPLOAD_URL}?name=healthflare-${GITHUB_REF_NAME}.apk" \
             --data-binary "@${APK}"
