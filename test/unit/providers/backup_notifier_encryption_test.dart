@@ -12,6 +12,7 @@ import 'package:health_flare/core/providers/backup_provider.dart';
 import 'package:health_flare/core/providers/database_provider.dart';
 import 'package:health_flare/data/database/app_settings.dart';
 import 'package:health_flare/data/database/backup_encryption.dart';
+import 'package:health_flare/data/database/backup_limits.dart';
 import 'package:health_flare/data/database/backup_service.dart';
 import 'package:health_flare/data/database/import_service.dart';
 import 'package:health_flare/data/models/activity_entry_isar.dart';
@@ -569,6 +570,46 @@ void main() {
           expect(await mainProfileNames(), ['Existing']);
           // The picked file itself is left exactly as it was.
           expect(File(path).readAsBytesSync(), originalBytes);
+        });
+      }
+    }
+
+    // Issue #104: a file over the size limit is refused in every mode
+    // before it is read, and an encrypted one never reaches the password
+    // prompt. Sparse, so it takes no real disk space.
+    for (final (kind, header) in [
+      ('plain', const <int>[]),
+      ('encrypted', utf8.encode('HFBKUP01')),
+    ]) {
+      for (final (modeLabel, start) in [
+        ('Replace everything', (BackupNotifier n) => n.stageRestore()),
+        ('Add missing data', (BackupNotifier n) => n.mergeRestore()),
+        (
+          'Choose what to import',
+          (BackupNotifier n) => n.startSelectiveImport(),
+        ),
+      ]) {
+        test('$modeLabel with an oversized $kind file: refused before it is '
+            'read', () async {
+          final picked = Directory('${tempRoot.path}/picked')
+            ..createSync(recursive: true);
+          final f = File('${picked.path}/huge_$kind.hfbackup');
+          final raf = f.openSync(mode: FileMode.write)..writeFromSync(header);
+          raf
+            ..setPositionSync(BackupLimits.maxBytes)
+            ..writeByteSync(0)
+            ..closeSync();
+          notifier.pickedPath = f.path;
+
+          await start(notifier);
+
+          expect(state(), isA<BackupError>());
+          expect(
+            (state() as BackupError).message,
+            'This file is too big to be a Health Flare backup.',
+          );
+          expect(await BackupService.hasPendingRestore(), isFalse);
+          expect(await mainProfileNames(), ['Existing']);
         });
       }
     }

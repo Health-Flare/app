@@ -11,6 +11,7 @@ import 'package:health_flare/data/database/backup_encryption.dart';
 import 'package:health_flare/data/database/backup_service.dart';
 import 'package:health_flare/data/database/import_service.dart';
 import 'package:health_flare/core/files/scratch_files.dart';
+import 'package:health_flare/data/database/backup_limits.dart';
 
 /// The result of a backup or restore operation.
 sealed class BackupResult {
@@ -299,11 +300,16 @@ class BackupNotifier extends Notifier<BackupResult> {
     }
 
     try {
+      // Before anything else, including the password prompt (#104).
+      await BackupLimits.check(path);
       if (await EncryptedBackupCodec.isEncrypted(path)) {
         // Nothing else happens until a password is submitted.
         _emit(ImportPasswordRequired(filePath: path, action: action));
         return;
       }
+    } on InvalidBackupException catch (e) {
+      _emit(BackupError(e.message));
+      return;
     } catch (e) {
       _emit(BackupError('${_failurePrefix(action)}$e'));
       return;

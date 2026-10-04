@@ -23,6 +23,7 @@ import 'package:health_flare/data/models/vital_entry_isar.dart';
 import 'package:health_flare/data/database/app_settings.dart';
 import 'package:health_flare/data/database/profile_ids.dart';
 import 'package:health_flare/core/files/scratch_files.dart';
+import 'package:health_flare/data/database/backup_limits.dart';
 
 /// A single importable data category shown in the selective-import UI.
 class ImportCategoryInfo {
@@ -134,6 +135,8 @@ class ImportService {
   /// real app database has the [AppSettings] singleton (id 1), written by
   /// [MigrationRunner] on first launch, so its absence is the tell.
   static Future<Isar> _openBackup(String backupFilePath) async {
+    // Size first: nothing is read from a file over the limit (#104).
+    await BackupLimits.check(backupFilePath);
     if (!await _hasIsarHeader(backupFilePath)) {
       throw const InvalidBackupException();
     }
