@@ -113,93 +113,151 @@
 
     <p class="app-label">Health Flare</p>
     <h1>Privacy Policy</h1>
-    <p class="meta">Last updated: 24 September 2026</p>
+    <p class="meta">Last updated: 3 October 2026</p>
 
     <div class="summary">
-      Health Flare does not collect, transmit, or share any of your data.
-      Everything you enter stays on your device. There are no accounts, no
-      servers, no analytics, and no third parties involved in any way.
+
+    <p>
+      Health Flare has no servers, no accounts, no analytics and no advertising. We never receive your data. Your records are stored on your device.
+    </p>
+
+    <p>
+      Two things can take a copy off your device:
+    </p>
+
+    <ul>
+      <li><strong>Your phone's own backup.</strong> If iCloud Backup or Google backup is turned on, your records are included in it, the same as other apps' data. See Phone backups below.</li>
+      <li><strong>Optional weather tracking.</strong> If you turn it on, your approximate location is sent to Open-Meteo, a weather service, to look up the current conditions. Your health records are never sent. See Weather below.</li>
+    </ul>
+
+    <p>
+      Anything else leaves your device only when you export or share it yourself.
+    </p>
+
     </div>
 
     <h2>Who we are</h2>
+
     <p>
-      Health Flare is developed and maintained by Automated Bytes Incorporated.
-      References to "we", "us", or "our" in this policy refer to Automated
-      Bytes Incorporated as the developer of Health Flare.
+      Health Flare is developed and maintained by Automated Bytes Incorporated. References to "we", "us", or "our" in this policy refer to Automated Bytes Incorporated as the developer of Health Flare.
     </p>
 
     <h2>What data Health Flare stores</h2>
+
     <p>
-      Health Flare stores the following data <strong>locally on your device
-      only</strong>:
+      Health Flare stores the following data on your device:
     </p>
+
     <ul>
       <li>Health entries you create: symptoms, vitals, medications, doses, meals, sleep, flares, daily check-ins, appointments, activity logs, and journal entries</li>
       <li>Profile information you enter: names, dates of birth, and optional profile photos</li>
+      <li>Weather conditions saved with an entry, if you turn on weather tracking</li>
       <li>App preferences and settings</li>
     </ul>
+
     <p>
-      This data is stored in a private, sandboxed database on your device. It
-      is not accessible to other apps, and it never leaves your device unless
-      you explicitly choose to export it (see Backups below).
+      This data is stored in a private, sandboxed database on your device. Other apps can't read it. Health Flare does not send it to us or to anyone else. It is included in your phone's own backup (see Phone backups below), and it leaves your device in any other way only when you export or share it.
     </p>
 
     <h2>What data Health Flare does NOT collect</h2>
+
+    <p>
+      We, the developer, receive nothing from the app:
+    </p>
+
     <ul>
       <li>We do not collect any personal information</li>
       <li>We do not collect any health or medical data</li>
       <li>We do not use analytics or crash reporting tools</li>
       <li>We do not use advertising networks or tracking tools</li>
-      <li>We do not collect device identifiers, IP addresses, or location data</li>
+      <li>We do not collect device identifiers or IP addresses</li>
+      <li>We do not collect your location. If you turn on weather tracking, your approximate location goes to Open-Meteo, not to us (see Weather below)</li>
       <li>We do not have any servers that receive data from the app</li>
       <li>We do not require an account or login of any kind</li>
     </ul>
 
-    <h2>Backups</h2>
+    <h2>Phone backups</h2>
+
     <p>
-      Health Flare includes an optional backup feature that lets you export a
-      copy of your data as a file. This export happens <strong>only when you
-      explicitly request it</strong>, and the resulting file goes only where
-      you choose to send it: for example, saving it to your Files app, sending
-      it to yourself via AirDrop, or attaching it to an email.
+      Your Health Flare records are part of the app's data on your phone, so they are included in your phone's own backup if you use one. That is how most people keep their records when a phone breaks, is lost, or is replaced. These backups are run by Apple, Google, or your computer's backup system, not by Health Flare, and we cannot see them.
     </p>
+
     <p>
-      You can optionally lock a backup with a password. The file is then
-      encrypted on your device (AES-256-GCM, with a key derived from your
-      password using Argon2id) before it is shared, so only someone who knows
-      the password can read it. Your password is never stored or sent
-      anywhere, which also means a lost password cannot be recovered and the
-      backup cannot be opened without it. A backup exported without a
-      password is not encrypted, and anyone who has a copy of the file can
-      read it.
+      How they are protected depends on the platform:
     </p>
+
+    <ul>
+      <li><strong>Android (9 and later):</strong> your backup is stored by Google and locked with your phone's screen lock PIN, pattern, or password, as long as you have one set, so Google cannot read it. Without a screen lock, it is encrypted, but not with a secret only you know.</li>
+      <li><strong>iPhone:</strong> iCloud Backup is encrypted. Under Apple's standard data protection, Apple holds the encryption keys, so Apple can decrypt your backup, for example to restore it, or if required by law. If you turn on Advanced Data Protection for iCloud, only your own devices hold the keys, and Apple cannot read your backup.</li>
+      <li><strong>Computers:</strong> backups made by your computer (for example Time Machine on a Mac) follow that system's own settings.</li>
+    </ul>
+
+    <p>
+      To leave Health Flare out of iCloud Backup on iPhone: open Settings, tap your name, then iCloud, Manage Account Storage, Backups, choose this iPhone, and turn off Health Flare. Android does not offer a per-app setting; backup can only be turned off for the whole phone, in your phone's backup settings. If you turn phone backups off, use Export backup in Health Flare's settings so you still have a copy.
+    </p>
+
+    <p>
+      The database itself is not encrypted by Health Flare. It is protected by your phone's own storage encryption and app sandbox. We are working on encrypting it in a way that still lets you move to a new phone.
+    </p>
+
+    <h2>Exported backups</h2>
+
+    <p>
+      Health Flare also lets you export a copy of your data as a file. This export happens <strong>only when you explicitly request it</strong>, and the resulting file goes only where you choose to send it: for example, saving it to your Files app, sending it to yourself via AirDrop, or attaching it to an email.
+    </p>
+
+    <p>
+      You can optionally lock an exported backup with a password. The file is then encrypted on your device (AES-256-GCM, with a key derived from your password using Argon2id) before it is shared, so only someone who knows the password can read it. Your password is never stored or sent anywhere, which also means a lost password cannot be recovered and the backup cannot be opened without it. A backup exported without a password is not encrypted, and anyone who has a copy of the file can read it.
+    </p>
+
     <p>
       We never receive, process, or have access to any backup files you create.
     </p>
 
-    <h2>Camera and photo library access</h2>
+    <h2>Weather (optional)</h2>
+
     <p>
-      Health Flare may request access to your camera and photo library to allow
-      you to set a profile photo. Any photo you select or capture is stored
-      locally on your device as part of the app's private data. Photos are
-      never uploaded, transmitted, or shared with anyone.
+      Weather tracking is off unless you turn it on, for each profile separately. If it is on, then when you start a new entry Health Flare:
+    </p>
+
+    <ul>
+      <li>Asks your device for a low-accuracy location reading</li>
+      <li>Rounds it to about 1 kilometre and sends only that latitude and longitude to <a href="https://open-meteo.com">Open-Meteo</a>, a weather service, to fetch the temperature, humidity, pressure, wind speed and general conditions</li>
+      <li>Saves the weather with your entry, in the same on-device database as the rest of your data</li>
+    </ul>
+
+    <p>
+      Health Flare does not save your location, and sends nothing else with it: no account, no device identifier, no health information. A weather lookup is reused for up to 30 minutes, so logging several entries close together sends one request.
+    </p>
+
+    <p>
+      Open-Meteo is a separate service with its own privacy policy, which we don't control. Like any web service, it receives your IP address with the request. Its policy says it may keep web server logs, which can include the coordinates, for up to 90 days, does not share them, and does not link them to a person.
+    </p>
+
+    <p>
+      You can turn weather tracking off at any time in the profile's settings, and you can deny or revoke location permission in your device's settings.
+    </p>
+
+    <h2>Camera and photo library access</h2>
+
+    <p>
+      Health Flare may request access to your camera and photo library to allow you to set a profile photo or add a photo to a meal. Any photo you select or capture is stored on your device as part of the app's private data. Health Flare never uploads or sends photos anywhere. Like the rest of the app's data, they can be included in your phone's own backup.
     </p>
 
     <h2>Children's privacy</h2>
+
     <p>
-      Health Flare does not knowingly collect any information from anyone,
-      including children under 13. Because the app collects no data whatsoever,
-      it presents no special risk to children.
+      Health Flare does not knowingly collect any information from anyone, including children under 13. A parent may keep a profile for a child; that profile's records are stored on the device like everyone else's, covered by the same phone backup and weather rules above.
     </p>
 
     <h2>Changes to this policy</h2>
+
     <p>
-      If we make material changes to this policy, we will update the "Last
-      updated" date at the top of this page. Because the app collects no data,
-      any changes are unlikely to affect your privacy in any meaningful way.
+      If we make material changes to this policy, we will update the "Last updated" date at the top of this page.
     </p>
 
     <h2>Contact</h2>
+
     <div class="contact">
       <strong>Automated Bytes Incorporated</strong><br>
       <a href="mailto:privacy@healthflare.org">privacy@healthflare.org</a>

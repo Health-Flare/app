@@ -1,6 +1,6 @@
 # Claude Code Project Guide: Health Flare
 
-Health Flare is a chronic illness tracking companion app for iOS and Android. It's built with Flutter, uses Riverpod for state management, Isar Community for local storage, and follows a feature-first architecture. The app is **offline-first**: no accounts, no cloud sync, all data stays on device. The one exception is opt-in weather capture, which sends coordinates to the Open-Meteo API to fetch conditions at the time of a log entry (coordinates are never stored; only the resulting weather summary is saved).
+Health Flare is a chronic illness tracking companion app for iOS and Android. It's built with Flutter, uses Riverpod for state management, Isar Community for local storage, and follows a feature-first architecture. The app is **offline-first**: no accounts, no cloud sync, no server of ours. The database is included in the OS's own backup (iCloud/Google), which is deliberate (see #97, #98). The one network exception is opt-in weather capture, which sends an approximate location (rounded to ~1 km) to the Open-Meteo API to fetch conditions at the time of a log entry (the location is never stored; only the resulting weather summary is saved). Privacy copy must never say data "never leaves the device": `test/unit/privacy_claims_test.dart` enforces this.
 
 ## Quick Start Commands
 

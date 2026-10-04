@@ -14,6 +14,11 @@ void main() {
     testWidgets('shows a descriptive title', (tester) async {
       await tester.pumpWidget(_buildSheet(onResult: (_) {}));
       expect(find.text('Track weather with every log'), findsOneWidget);
+      expect(
+        find.textContaining('approximate location is sent to Open-Meteo'),
+        findsOneWidget,
+      );
+      expect(find.textContaining('never shared'), findsNothing);
     });
 
     testWidgets('shows an explanation mentioning barometric pressure', (

@@ -341,7 +341,8 @@ class _AddProfileSheetState extends ConsumerState<AddProfileSheet> {
                     contentPadding: EdgeInsets.zero,
                     title: const Text('Weather tracking'),
                     subtitle: const Text(
-                      'Log local conditions alongside health data',
+                      'Sends your approximate location to Open-Meteo to log '
+                      'local conditions with each entry',
                     ),
                     value: _weatherEnabled,
                     onChanged: (value) =>

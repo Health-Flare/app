@@ -52,7 +52,7 @@ chronic illness,symptom tracker,health journal,flare,fibromyalgia,lupus,ME,CFS,m
 ```
 Health Flare is a private, offline-first health companion designed for people living with chronic illness.
 
-Track your health story (symptoms, vitals, medications, meals, sleep, flares, activity, and daily check-ins) all in one place, all on your device. There are no accounts, no servers, and no cloud. Your data never leaves your phone unless you choose to export it.
+Track your health story (symptoms, vitals, medications, meals, sleep, flares, activity, and daily check-ins) all in one place, all on your device. There are no accounts and no servers of ours. Your records are stored on your device and are included in your phone's own backup if you use one. Weather tracking is optional; if you turn it on, your approximate location is sent to a weather service to look up the conditions.
 
 ──────────────────────────────
 WHAT YOU CAN TRACK
@@ -127,7 +127,7 @@ Private offline health tracker for chronic illness: no account needed.
 ```
 Health Flare is a private, offline-first health companion designed for people living with chronic illness.
 
-Track your health story (symptoms, vitals, medications, meals, sleep, flares, activity, and daily check-ins) all in one place, all on your device. There are no accounts, no servers, and no cloud. Your data never leaves your phone unless you choose to export it.
+Track your health story (symptoms, vitals, medications, meals, sleep, flares, activity, and daily check-ins) all in one place, all on your device. There are no accounts and no servers of ours. Your records are stored on your device and are included in your phone's own backup if you use one. Weather tracking is optional; if you turn it on, your approximate location is sent to a weather service to look up the conditions.
 
 WHAT YOU CAN TRACK
 
@@ -195,7 +195,7 @@ These are short captions to display alongside screenshots. Adapt to your actual 
 | Medication tracker | Track what you take and when |
 | Daily check-in | A quick daily pulse: wellbeing, stress, and more |
 | Journal | Long-form entries with mood and energy |
-| Privacy / onboarding | Your data stays on your device. No account. No cloud. |
+| Privacy / onboarding | Your records live on your device. No account. No server. |
 
 ---
 
@@ -203,20 +203,22 @@ These are short captions to display alongside screenshots. Adapt to your actual 
 
 | Question | Answer |
 |---|---|
-| Does your app collect or share any of the required user data types? | No |
-| Is all of the user data collected by your app encrypted in transit? | N/A: no data leaves the device |
+| Does your app collect or share any of the required user data types? | Yes |
+| Is all of the user data collected by your app encrypted in transit? | Yes: the weather request uses HTTPS |
 | Do you provide a way for users to request that their data is deleted? | Yes: users can delete profiles and all associated data from within the app |
 
-**Data types collected:** None.
-**Data shared with third parties:** None.
+**Data types collected:** Location > Approximate location. Optional (weather tracking is off by default). Processed ephemerally: not stored by the app. Purpose: App functionality (looking up the weather).
+**Data shared with third parties:** Approximate location is sent to Open-Meteo to fetch weather. Play treats a service provider acting on the app's behalf as "collected", not "shared"; Open-Meteo is used only to answer the request. Re-check Play's current definitions when submitting.
+
+Health records are not collected: they never leave the device through the app. The OS backup (Google) is a platform service the user controls and is not declared as collection by the app.
 
 ---
 
 ## App privacy (App Store Connect: Privacy nutrition label)
 
-Select **"No"** for every data type category. The app does not collect, share, or link any data to the user's identity.
+Declare **Location > Coarse Location**: used for App Functionality, **not** linked to the user's identity, **not** used for tracking. Every other data type: **No**.
 
-Justification: all data is stored locally in a sandboxed Isar database. No network calls are made by the app. No analytics, crash reporting, or advertising SDKs are included.
+Justification: health records are stored locally in a sandboxed Isar database and are never sent by the app. The one network call is the opt-in weather lookup, which sends a location rounded to about 1 km to Open-Meteo over HTTPS, with no identifier attached. Apple counts data as collected when it is sent off the device and kept longer than needed to answer the request; Open-Meteo's own policy keeps server logs (which may include coordinates) for up to 90 days, so declare it rather than rely on the optional-disclosure exemption. No analytics, crash reporting, or advertising SDKs are included.
 
 ---
 

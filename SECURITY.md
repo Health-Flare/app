@@ -28,9 +28,13 @@ filing a report: the issue may already be fixed.
 ## What is in scope
 
 Health Flare is an **offline-first** mobile and desktop application. It does
-not run any servers, does not have user accounts, and does not transmit data
-over the network. The threat model is therefore focused on the application,
-its on-device data store, and its build/release pipeline.
+not run any servers and does not have user accounts. It makes one kind of
+network request: if a user turns on weather tracking, it sends an approximate
+location (rounded to about 1 km) to the Open-Meteo weather API. The app's
+database is included in the operating system's own backup (iCloud, Google, or
+a desktop backup), which is run by the platform, not by us. The threat model
+is therefore focused on the application, its on-device data store, the weather
+request, and its build/release pipeline.
 
 In-scope examples:
 
@@ -42,8 +46,10 @@ In-scope examples:
   documented export flow.
 - Issues in how exports (PDF/CSV/backup files) are generated, named, or
   shared that could leak data unintentionally.
-- Issues that cause Health Flare to make unexpected outbound network requests
-  (this would violate our offline-first guarantee: see `README.md`).
+- Issues that cause Health Flare to make any outbound network request other
+  than the opt-in weather lookup, or that send more than an approximate
+  location with it (this would violate our offline-first guarantee: see
+  `README.md`).
 - Vulnerabilities in our build, signing, or release tooling that could let an
   attacker ship a tampered binary.
 - Supply-chain issues in pinned dependencies (`pubspec.lock`) that materially
