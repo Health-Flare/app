@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:intl/intl.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 import 'package:health_flare/core/providers/database_provider.dart';
@@ -12,6 +11,7 @@ import 'package:health_flare/features/reports/models/report_config.dart';
 import 'package:health_flare/features/reports/services/csv_report_service.dart';
 import 'package:health_flare/features/reports/services/pdf_report_service.dart';
 import 'package:health_flare/features/reports/services/report_query_service.dart';
+import 'package:health_flare/core/files/scratch_files.dart';
 
 enum ReportFormat { pdf, csv }
 
@@ -56,7 +56,7 @@ class _ReportGenerator {
         config: config,
       );
 
-      final dir = await getTemporaryDirectory();
+      final dir = await ScratchFiles.directory();
       final safeName = profile.name.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '_');
       final dateStr = _fileFmt.format(DateTime.now());
 
@@ -64,20 +64,26 @@ class _ReportGenerator {
         final bytes = await PdfReportService.generate(data);
         final file = File('${dir.path}/${safeName}_$dateStr.pdf');
         await file.writeAsBytes(bytes);
-        await SharePlus.instance.share(
-          ShareParams(
-            files: [XFile(file.path, mimeType: 'application/pdf')],
-            subject: 'Health report for ${profile.name}',
+        await ScratchFiles.shareThenDelete(
+          file.path,
+          () => SharePlus.instance.share(
+            ShareParams(
+              files: [XFile(file.path, mimeType: 'application/pdf')],
+              subject: 'Health report for ${profile.name}',
+            ),
           ),
         );
       } else {
         final csv = CsvReportService.generate(data);
         final file = File('${dir.path}/${safeName}_$dateStr.csv');
         await file.writeAsString(csv);
-        await SharePlus.instance.share(
-          ShareParams(
-            files: [XFile(file.path, mimeType: 'text/csv')],
-            subject: 'Health data for ${profile.name}',
+        await ScratchFiles.shareThenDelete(
+          file.path,
+          () => SharePlus.instance.share(
+            ShareParams(
+              files: [XFile(file.path, mimeType: 'text/csv')],
+              subject: 'Health data for ${profile.name}',
+            ),
           ),
         );
       }

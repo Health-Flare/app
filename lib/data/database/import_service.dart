@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:isar_community/isar.dart';
-import 'package:path_provider/path_provider.dart';
 
 import 'package:health_flare/data/models/activity_entry_isar.dart';
 import 'package:health_flare/data/models/appointment_isar.dart';
@@ -23,6 +22,7 @@ import 'package:health_flare/data/models/user_symptom_isar.dart';
 import 'package:health_flare/data/models/vital_entry_isar.dart';
 import 'package:health_flare/data/database/app_settings.dart';
 import 'package:health_flare/data/database/profile_ids.dart';
+import 'package:health_flare/core/files/scratch_files.dart';
 
 /// A single importable data category shown in the selective-import UI.
 class ImportCategoryInfo {
@@ -137,7 +137,7 @@ class ImportService {
     if (!await _hasIsarHeader(backupFilePath)) {
       throw const InvalidBackupException();
     }
-    final tmp = await getTemporaryDirectory();
+    final tmp = await ScratchFiles.directory();
     final importPath = '${tmp.path}/$_importDbName.isar';
     // Always start from a fresh copy so we never corrupt the user's backup.
     await File(backupFilePath).copy(importPath);
@@ -210,7 +210,7 @@ class ImportService {
   }
 
   static Future<void> _deleteImportCopy() async {
-    final tmp = await getTemporaryDirectory();
+    final tmp = await ScratchFiles.directory();
     final importPath = '${tmp.path}/$_importDbName.isar';
     final f = File(importPath);
     if (f.existsSync()) await f.delete();

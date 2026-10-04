@@ -345,3 +345,24 @@ Feature: Persistent local datastore
   Scenario: The path_provider package is present for resolving the documents directory
     Given the pubspec.yaml is checked
     Then "path_provider" appears under dependencies
+
+  # ---------------------------------------------------------------------------
+  # Temporary copies of my data (#102)
+  # ---------------------------------------------------------------------------
+
+  Scenario: A shared report or backup is not left on the phone
+    Given I share a PDF report, a CSV export or a backup from my phone
+    When the share sheet closes
+    Then the file Health Flare made for it is deleted
+
+  Scenario: Temporary copies are removed the next time the app opens
+    Given a previous run left a backup, report or decrypted backup copy behind
+    # e.g. the app was closed during an import, or this is a desktop computer
+    When I open Health Flare
+    Then those files are deleted before anything else happens
+
+  Scenario: On a shared computer, other programs' files are left alone
+    Given Health Flare runs on Windows or Linux, where the temp folder is shared
+    When the app clears its temporary copies
+    Then it deletes only files it made itself
+
