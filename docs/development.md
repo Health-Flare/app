@@ -78,14 +78,30 @@ chore(deps): upgrade go_router to v17
 
 ## CI
 
-Every push and PR runs these via GitHub Actions:
+Every push and PR runs these gates via GitHub Actions (`.github/workflows/ci.yml`):
 
 - `flutter-pub-get`: resolves dependencies, fails on discontinued packages
-- `flutter-pub-audit`: scans for known security advisories
 - `url-scan`: no hardcoded URLs or network packages in source
 - `dart-format`: enforces `dart format` on `lib/` and `test/`
 - `flutter-analyze`: static analysis with `--fatal-infos`
-- `flutter-build-apk`: builds a debug APK and archives it
+- `flutter-test`: the full test suite, goldens included
+
+`CI gates` passes when all of them do, and it is the one required check for
+merging into main.
+
+Debug builds (APK, macOS, Windows) live in `.github/workflows/build.yml`. They
+are not required to merge. They run:
+
+- on every push to main
+- on PRs that change `android/`, `ios/`, `macos/`, `windows/`, `linux/`,
+  `pubspec.yaml`, `pubspec.lock` or the CI workflows
+- by hand, on any branch or tag:
+
+```bash
+gh workflow run build.yml -R Health-Flare/app --ref my-branch -f platforms=apk
+# platforms: all | apk | macos | windows
+gh run list -R Health-Flare/app -w "Debug builds" -L 1   # then gh run download <id>
+```
 
 Run the same checks locally before pushing:
 

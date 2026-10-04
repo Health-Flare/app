@@ -116,11 +116,25 @@ Feature: Developer Experience
   # Build integrity
   # ---------------------------------------------------------------------------
 
-  Scenario: Debug APK builds successfully on every PR
-    Given a pull request is opened or updated against main
+  Scenario: Debug builds run on every push to main
+    Given a commit lands on main
     When the CI pipeline runs
-    Then `flutter build apk --debug` completes with exit code 0
-    And the built APK artefact is archived for inspection
+    Then debug builds run for Android (APK), macOS and Windows
+    And each built artefact is archived for 7 days
+
+  Scenario: Debug builds run on a PR only when native code or dependencies change
+    Given a pull request against main
+    When it changes anything under android/, ios/, macos/, windows/ or linux/,
+    or pubspec.yaml, pubspec.lock, or the CI build workflows
+    Then the debug builds run after the gates pass
+    But they are not required for merge
+    And a PR that only changes Dart code, tests or docs runs no debug builds
+
+  Scenario: A debug build can be made on demand for any branch or tag
+    Given a branch or tag in the repository
+    When I run the "Debug builds" workflow by hand on it and pick the platforms
+    Then only the chosen debug builds run against that branch or tag
+    And their artefacts can be downloaded from the run
 
   Scenario: No generated files are out of date
     Given the Riverpod generated files (*.g.dart from riverpod_generator)
@@ -138,16 +152,17 @@ Feature: Developer Experience
   # Branch and PR hygiene
   # ---------------------------------------------------------------------------
 
-  Scenario: All CI checks must pass before a PR can be merged
+  Scenario: All CI gates must pass before a PR can be merged
     Given a pull request targeting main
-    Then the following checks are required to pass before merge is permitted:
-      | Check                  |
-      | flutter-analyze        |
-      | dart-format            |
-      | flutter-pub-get        |
-      | flutter-pub-audit      |
-      | url-scan               |
-      | flutter-build-apk      |
+    Then the "CI gates" check is required to pass before merge is permitted
+    And "CI gates" passes only when all of these jobs pass:
+      | Job             |
+      | flutter-pub-get |
+      | url-scan        |
+      | dart-format     |
+      | flutter-analyze |
+      | flutter-test    |
+    And debug builds are not part of the required checks
     And no force-push to main is permitted
     And direct commits to main without a PR are blocked
 

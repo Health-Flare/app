@@ -13,7 +13,7 @@ Derived from the Marcus / Developer-Spouse persona review on 2026-03-23.
 
 - [ ] **Database backup (restore)**: implement a "Restore from backup" flow that replaces the current database with a previously exported file. The recovery path after a bad migration depends on this.
 
-- [ ] **`flutter test` in CI**: add `flutter test` to the required CI check list in `.github/workflows/ci.yml`. Currently the pipeline runs: analyze, format, pub-get, pub-audit, url-scan, build-apk, but no test run. A commit that breaks profile isolation or data persistence can pass all CI checks and merge to main undetected.
+- [x] **`flutter test` in CI**: `flutter-test` runs on every PR and is one of the jobs behind the required `CI gates` check (see `docs/development.md`).
 
 ---
 

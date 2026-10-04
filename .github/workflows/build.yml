@@ -1,0 +1,114 @@
+name: Debug builds
+
+# Debug builds for Android, macOS and Windows.
+#
+# Two ways in:
+#   - Ad hoc: Actions tab -> "Debug builds" -> pick a branch -> Run workflow, or
+#       gh workflow run build.yml --ref my-branch -f platforms=apk
+#   - Called from ci.yml on every push to main, and on PRs that touch native
+#     platform code or dependencies (see the `changes` job there).
+#
+# Artifacts are kept for 7 days.
+#
+# There is deliberately no free-form `ref` input: checking out an arbitrary
+# ref (e.g. a fork PR head) from a run on main would let untrusted code write
+# to main's Flutter cache, which the release workflows restore (CodeQL
+# actions/cache-poisoning). Builds use the branch or tag the run was started
+# on.
+on:
+  workflow_dispatch:
+    inputs:
+      platforms:
+        description: Which builds to run
+        type: choice
+        options: [all, apk, macos, windows]
+        default: all
+  workflow_call:
+    inputs:
+      platforms:
+        type: string
+        required: false
+        default: all
+
+permissions:
+  contents: read
+
+# Flutter version kept in sync with ci.yml: update both together.
+env:
+  FLUTTER_VERSION: "3.47.2"
+
+jobs:
+  apk:
+    name: Build APK
+    if: inputs.platforms == 'all' || inputs.platforms == 'apk'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+      - run: flutter pub get
+      - name: Build debug APK
+        run: flutter build apk --debug
+      - name: Archive APK
+        uses: actions/upload-artifact@v7
+        with:
+          name: app-debug.apk
+          path: build/app/outputs/flutter-apk/app-debug.apk
+          retention-days: 7
+
+  macos:
+    name: Build macOS app
+    if: inputs.platforms == 'all' || inputs.platforms == 'macos'
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+      - run: flutter pub get
+      - name: Validate macOS app icon set
+        run: bash scripts/check_macos_icon.sh
+      - name: Build macOS app (debug)
+        run: flutter build macos --debug
+      - name: Zip .app bundle
+        run: |
+          cd build/macos/Build/Products/Debug
+          zip -r healthflare-macos-debug.zip "Health Flare.app"
+      - name: Archive macOS app
+        uses: actions/upload-artifact@v7
+        with:
+          name: healthflare-macos-debug.zip
+          path: build/macos/Build/Products/Debug/healthflare-macos-debug.zip
+          retention-days: 7
+
+  windows:
+    name: Build Windows app
+    if: inputs.platforms == 'all' || inputs.platforms == 'windows'
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+      - run: flutter pub get
+      - name: Build Windows app (debug)
+        run: flutter build windows --debug
+      - name: Zip Windows bundle
+        run: |
+          Compress-Archive -Path build/windows/x64/runner/Debug/* `
+            -DestinationPath healthflare-windows-debug.zip
+        shell: pwsh
+      - name: Upload Windows artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: healthflare-windows-debug.zip
+          path: healthflare-windows-debug.zip
+          retention-days: 7
