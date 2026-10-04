@@ -73,6 +73,7 @@ class FirstLogPromptNotifier extends Notifier<bool> {
   Future<void> _syncFromProfile(int profileId) async {
     final isar = ref.read(isarProvider);
     final row = await isar.profileIsars.get(profileId);
+    if (!ref.mounted) return;
     state = !(row?.firstLogShown ?? false);
   }
 
@@ -142,6 +143,7 @@ class WeatherOptInNotifier extends Notifier<bool> {
   Future<void> _syncFromProfile(int profileId) async {
     final isar = ref.read(isarProvider);
     final row = await isar.profileIsars.get(profileId);
+    if (!ref.mounted) return;
     state = !(row?.weatherOptInShown ?? false);
   }
 

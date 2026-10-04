@@ -40,6 +40,7 @@ class SymptomEntryListNotifier extends Notifier<List<SymptomEntry>> {
 
   Future<void> _reload(Isar isar) async {
     final rows = await isar.symptomEntryIsars.where().findAll();
+    if (!ref.mounted) return;
     state = rows.map((r) => r.toDomain()).toList();
   }
 

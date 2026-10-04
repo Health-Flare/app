@@ -39,6 +39,7 @@ class MedicationListNotifier extends Notifier<List<Medication>> {
 
   Future<void> _reload(Isar isar) async {
     final rows = await isar.medicationIsars.where().findAll();
+    if (!ref.mounted) return;
     state = rows.map((r) => r.toDomain()).toList();
   }
 

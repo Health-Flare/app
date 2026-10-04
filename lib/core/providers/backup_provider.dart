@@ -117,9 +117,9 @@ class BackupNotifier extends Notifier<BackupResult> {
       await SharePlus.instance.share(
         ShareParams(files: [XFile(backupPath)], subject: 'Health Flare backup'),
       );
-      state = const BackupExportDone();
+      _emit(const BackupExportDone());
     } catch (e) {
-      state = BackupError('Export failed: $e');
+      _emit(BackupError('Export failed: $e'));
     }
   }
 
@@ -135,9 +135,9 @@ class BackupNotifier extends Notifier<BackupResult> {
       await SharePlus.instance.share(
         ShareParams(files: [XFile(backupPath)], subject: 'Health Flare backup'),
       );
-      state = const BackupExportDone();
+      _emit(const BackupExportDone());
     } catch (e) {
-      state = BackupError('Export failed: $e');
+      _emit(BackupError('Export failed: $e'));
     }
   }
 
@@ -175,9 +175,9 @@ class BackupNotifier extends Notifier<BackupResult> {
         isar,
         selectedCategoryIds,
       );
-      state = ImportComplete(added);
+      _emit(ImportComplete(added));
     } catch (e) {
-      state = BackupError('Import failed: $e');
+      _emit(BackupError('Import failed: $e'));
     } finally {
       await _discardDecryptedCopy();
     }
@@ -210,14 +210,16 @@ class BackupNotifier extends Notifier<BackupResult> {
         password: password,
       );
     } on BackupEncryptionException catch (e) {
-      state = ImportPasswordRequired(
-        filePath: current.filePath,
-        action: current.action,
-        errorMessage: e.message,
+      _emit(
+        ImportPasswordRequired(
+          filePath: current.filePath,
+          action: current.action,
+          errorMessage: e.message,
+        ),
       );
       return;
     } catch (e) {
-      state = BackupError('Could not unlock the backup: $e');
+      _emit(BackupError('Could not unlock the backup: $e'));
       return;
     }
 
@@ -253,6 +255,13 @@ class BackupNotifier extends Notifier<BackupResult> {
 
   // ── Internals ─────────────────────────────────────────────────────────────
 
+  /// Sets [state] unless the provider was disposed while an export, picker
+  /// or import was in flight (#87). Every result written after an await
+  /// goes through here.
+  void _emit(BackupResult result) {
+    if (ref.mounted) state = result;
+  }
+
   /// Path of a decrypted working copy that still exists on disk, if any.
   /// Only a selective import keeps one past [submitImportPassword] (its
   /// commit step still needs it); every other path deletes it immediately.
@@ -266,25 +275,25 @@ class BackupNotifier extends Notifier<BackupResult> {
     try {
       path = await pickBackupFile();
     } on FileSystemException catch (e) {
-      state = BackupError(e.message);
+      _emit(BackupError(e.message));
       return;
     } catch (e) {
-      state = BackupError('${_failurePrefix(action)}$e');
+      _emit(BackupError('${_failurePrefix(action)}$e'));
       return;
     }
     if (path == null) {
-      state = const BackupCancelled();
+      _emit(const BackupCancelled());
       return;
     }
 
     try {
       if (await EncryptedBackupCodec.isEncrypted(path)) {
         // Nothing else happens until a password is submitted.
-        state = ImportPasswordRequired(filePath: path, action: action);
+        _emit(ImportPasswordRequired(filePath: path, action: action));
         return;
       }
     } catch (e) {
-      state = BackupError('${_failurePrefix(action)}$e');
+      _emit(BackupError('${_failurePrefix(action)}$e'));
       return;
     }
 
@@ -299,27 +308,29 @@ class BackupNotifier extends Notifier<BackupResult> {
       switch (action) {
         case PendingImportAction.overwrite:
           await BackupService.stagePendingRestore(path);
-          state = const BackupRestoreStaged();
+          _emit(const BackupRestoreStaged());
         case PendingImportAction.merge:
           final added = await ImportService.mergeAll(path, isar);
-          state = ImportComplete(added);
+          _emit(ImportComplete(added));
         case PendingImportAction.selective:
           final categories = await ImportService.preview(path, isar);
           if (categories.isEmpty) {
             // Nothing new to import: treat as done with 0 records.
-            state = const ImportComplete(0);
+            _emit(const ImportComplete(0));
           } else {
             keepDecryptedCopy = true;
-            state = ImportPreviewReady(filePath: path, categories: categories);
+            _emit(ImportPreviewReady(filePath: path, categories: categories));
           }
       }
     } on InvalidBackupException catch (e) {
       // Nothing was staged or merged: every mode validates before writing.
-      state = BackupError(e.message);
+      _emit(BackupError(e.message));
     } catch (e) {
-      state = BackupError('${_failurePrefix(action)}$e');
+      _emit(BackupError('${_failurePrefix(action)}$e'));
     } finally {
-      if (!keepDecryptedCopy) await _discardDecryptedCopy();
+      // A disposed notifier can't show the preview, so don't keep its
+      // decrypted copy of the user's data around either.
+      if (!keepDecryptedCopy || !ref.mounted) await _discardDecryptedCopy();
     }
   }
 

@@ -41,6 +41,7 @@ class JournalEntryListNotifier extends Notifier<List<JournalEntry>> {
 
   Future<void> _reload(Isar isar) async {
     final rows = await isar.journalEntryIsars.where().findAll();
+    if (!ref.mounted) return;
     state = rows.map((r) => r.toDomain()).toList();
   }
 

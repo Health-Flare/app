@@ -36,6 +36,7 @@ class ConditionCatalogNotifier extends Notifier<List<Condition>> {
 
   Future<void> _reload(Isar isar) async {
     final rows = await isar.conditionIsars.where().sortByName().findAll();
+    if (!ref.mounted) return;
     state = rows.map((r) => r.toDomain()).toList();
   }
 
@@ -77,6 +78,7 @@ class SymptomCatalogNotifier extends Notifier<List<Symptom>> {
 
   Future<void> _reload(Isar isar) async {
     final rows = await isar.symptomIsars.where().sortByName().findAll();
+    if (!ref.mounted) return;
     state = rows.map((r) => r.toDomain()).toList();
   }
 
@@ -131,6 +133,7 @@ class UserConditionListNotifier extends Notifier<List<UserCondition>> {
         .profileIdEqualTo(profileId)
         .sortByConditionName()
         .findAll();
+    if (!ref.mounted) return;
     state = rows.map((r) => r.toDomain()).toList();
   }
 
@@ -229,6 +232,7 @@ class UserSymptomListNotifier extends Notifier<List<UserSymptom>> {
         .profileIdEqualTo(profileId)
         .sortBySymptomName()
         .findAll();
+    if (!ref.mounted) return;
     state = rows.map((r) => r.toDomain()).toList();
   }
 

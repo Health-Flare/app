@@ -40,6 +40,7 @@ class DoseLogListNotifier extends Notifier<List<DoseLog>> {
 
   Future<void> _reload(Isar isar) async {
     final rows = await isar.doseLogIsars.where().findAll();
+    if (!ref.mounted) return;
     state = rows.map((r) => r.toDomain()).toList();
   }
 
