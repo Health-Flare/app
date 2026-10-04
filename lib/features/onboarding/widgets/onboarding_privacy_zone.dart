@@ -88,7 +88,7 @@ class _OnboardingPrivacyZoneState extends State<OnboardingPrivacyZone>
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  'Everything stays on this device.',
+                  'Your records live on this device.',
                   style: tt.headlineSmall?.copyWith(color: cs.onSurface),
                 ),
               ),
@@ -162,12 +162,13 @@ class _OnboardingPrivacyZoneState extends State<OnboardingPrivacyZone>
       ),
       (
         icon: Icons.cloud_off_outlined,
-        text: 'Nothing is uploaded to any server or cloud.',
+        text: 'Health Flare has no server. Nothing is sent to us.',
       ),
       (
         icon: Icons.share_outlined,
         text:
-            'Your data only leaves this device when you choose to export or share it.',
+            "Your records are included in your phone's own backup. Otherwise they "
+            'leave this device only when you export or share them.',
       ),
       (
         icon: Icons.visibility_off_outlined,
@@ -218,25 +219,32 @@ class _ExpandedPrivacyDetail extends StatelessWidget {
 
     final paragraphs = [
       'All of your health records (symptoms, vitals, medications, meals, and '
-          'reports) are stored in a local database on this device only. This is '
-          'not a backup. This is the only copy.',
-      'No network connection is required to use Health Flare. No data is sent '
-          'anywhere in the background. There are no analytics trackers, no usage '
-          'reports, and no third-party services with access to your records.',
+          'reports) are stored in a database on this device. Health Flare does '
+          'not keep a copy anywhere else.',
+      'No network connection is required to use Health Flare. There are no '
+          'analytics trackers, no usage reports, and no third-party services '
+          'with access to your records. The one exception is optional weather '
+          'tracking: if you turn it on, your approximate location is sent to '
+          'Open-Meteo, a weather service, to look up the current conditions. '
+          'Your records are never sent.',
       'When you export a report as a PDF or CSV, that file is created on your '
           'device. You decide where it goes, whether that\'s an email to your '
           'doctor, a message to a family member, or a folder on your computer. '
           "Health Flare doesn't know what you did with it.",
-      'If you delete a profile, it is removed from the main views of the '
-          'application. You can restore a profile as long as the data exists on '
-          'your device. From the profile manager, you can choose to delete these '
-          'profiles from your device permanently. There is no cloud backup to recover.',
-      'A note on backups: because your data lives only on this device, it will be '
-          'included in your device\'s standard backup (iCloud Backup on iOS, Google '
-          'Backup on Android, or your desktop\'s backup system). Those backups are '
-          'managed by your device, not by Health Flare. We recommend keeping device '
-          "backups enabled so you don't lose your records if something happens to "
-          'your device.',
+      'If you delete a profile, it and all of its records are removed from '
+          'this device. This cannot be undone.',
+      "Phone backups: your records are included in your phone's own backup "
+          '(iCloud Backup on iPhone, Google backup on Android, or your '
+          "computer's backup system). That is how most people keep their records "
+          'when a phone breaks or is replaced. Those backups are run by Apple, '
+          'Google or your computer, not by Health Flare.',
+      'On Android 9 and later, Google encrypts the backup with your screen '
+          'lock PIN, pattern or password, if you have one set. On iPhone, iCloud '
+          'Backup is encrypted, but Apple holds the keys unless you turn on '
+          'Advanced Data Protection. To leave Health Flare out of iCloud, go to '
+          'Settings, your name, iCloud, Manage Account Storage, Backups. Android '
+          'can only turn backup off for the whole phone. If you turn backups '
+          'off, export a backup from Settings so you have a copy.',
       'There is no "Health Flare account". There are no subscription services tied '
           'to your data. Your records belong to you.',
     ];

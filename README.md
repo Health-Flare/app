@@ -45,8 +45,8 @@ Not sure it fits? These walk through real situations:
 - No account. No login. Ever.
 - No cloud sync. Everything is stored on your device.
 - No analytics, no telemetry, no ads.
-- Data leaves your device only when you export or share it. Backups can be password-locked (AES-256-GCM, encrypted on-device).
-- One opt-in exception: if you turn on weather capture, your coordinates are sent to [Open-Meteo](https://open-meteo.com) to look up conditions. Nothing identifying is sent, and the coordinates are never stored.
+- No server of ours. Your records are included in your phone's own backup (iCloud or Google) if you use one; otherwise they leave your device only when you export or share them. Exports can be password-locked (AES-256-GCM, encrypted on-device).
+- One opt-in exception: if you turn on weather capture, your approximate location (rounded to about 1 km) is sent to [Open-Meteo](https://open-meteo.com) to look up conditions. Your records are never sent, and the location is never stored.
 
 Full policy: [healthflare.org/privacy](https://healthflare.org/privacy). Why it's built this way: [Free, offline, and not for sale](https://healthflare.org/blog/free-offline-and-not-for-sale/).
 
