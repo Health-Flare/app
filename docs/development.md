@@ -112,6 +112,14 @@ bash scripts/check_urls.sh   # offline integrity scan
 bash scripts/check_deps.sh   # dependency health
 ```
 
+## Android release signing
+
+Release builds must be signed with the release key. `android/app/build.gradle.kts` refuses to build a release when `android/key.properties` or the keystore it names is missing, empty or incomplete. It used to fall back to the debug key silently (#106).
+
+- **Local release build without the key** (testing only, never publish it): `HEALTHFLARE_ALLOW_DEBUG_SIGNING=true flutter build apk --release`.
+- **CI:** both Android release workflows check the four signing secrets are set, then run `scripts/release/verify_android_signature.sh` on the APK/AAB before upload. It compares the certificate's SHA-256 with `android/release-signing.sha256` and refuses to publish on a mismatch.
+- **Changing the signing key** means existing sideloaded installs can't update. Do it only on purpose: update `android/release-signing.sha256` and the fingerprint in the README in the same PR.
+
 ## Offline-first rule
 
 Health Flare makes no outbound network requests at runtime, with one opt-in exception: weather capture sends an approximate location (rounded to about 1 km) to the Open-Meteo API (see `.url-scan-ignore` for the allowed domains and why). No accounts, no sync, no analytics. The database is included in the OS's own backup (iCloud, Google); privacy copy must say so rather than claim data never leaves the device. `test/unit/privacy_claims_test.dart` fails on the old wording. Before opening a PR:
