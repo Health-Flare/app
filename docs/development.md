@@ -112,6 +112,21 @@ bash scripts/check_urls.sh   # offline integrity scan
 bash scripts/check_deps.sh   # dependency health
 ```
 
+### Workflow security rules (#107)
+
+- **Pin every action to a full commit SHA** with the version as a comment:
+  `uses: actions/checkout@3d3c42e5... # v7.0.1`. A tag like `@v7` can be
+  moved to new code by whoever controls that repo. Renovate updates the
+  SHA and the comment together; those PRs never auto-merge.
+- **Least privilege:** each workflow starts with `permissions: contents:
+  read`. A job that needs more (the release jobs create GitHub Releases)
+  asks for it on the job.
+- **`persist-credentials: false`** on every checkout, so the token isn't
+  left in `.git/config` for later steps.
+- **No `${{ }}` inside `run:`** scripts. Use the runner's env vars
+  (`$GITHUB_REF_NAME`, `$GITHUB_REPOSITORY`) or pass values through `env:`.
+- Check with `uvx zizmor --offline .github/workflows` and `actionlint`.
+
 ## Android release signing
 
 Release builds must be signed with the release key. `android/app/build.gradle.kts` refuses to build a release when `android/key.properties` or the keystore it names is missing, empty or incomplete. It used to fall back to the debug key silently (#106).

@@ -45,14 +45,16 @@
       automerge: false,
     },
 
-    // GitHub Actions patch/minor bumps (actions/checkout,
-    // subosito/flutter-action, etc.) don't touch app code and are low-risk.
+    // GitHub Actions (#107). Workflows are pinned to full commit SHAs with
+    // the version in a trailing comment; Renovate keeps both current.
+    // Never auto-merge: the release workflows run with the signing keys and
+    // the Play/App Store credentials, so a compromised action release would
+    // reach them. Grouped weekly so it's one PR to read, not six.
     {
-      groupName: 'github actions (non-major)',
+      groupName: 'github actions',
       matchManagers: ['github-actions'],
-      matchUpdateTypes: ['patch', 'minor'],
-      automerge: true,
-      automergeType: 'pr',
+      pinDigests: true,
+      automerge: false,
     },
   ],
 }
