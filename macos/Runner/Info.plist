@@ -27,7 +27,7 @@
 	<key>NSHumanReadableCopyright</key>
 	<string>$(PRODUCT_COPYRIGHT)</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Health Flare uses your location to log local weather conditions alongside your health data.</string>
+	<string>Health Flare sends your approximate location to Open-Meteo, a weather service, to look up the weather for each new entry. Your location is not saved. Only the weather is saved, with your entry.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Health Flare uses the camera so you can take a profile photo.</string>
 	<key>NSMainNibFile</key>

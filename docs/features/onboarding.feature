@@ -106,17 +106,20 @@ Feature: Onboarding
 
   Scenario: Primary privacy promise is prominently displayed
     Given I am on the "Your privacy" step
-    Then I see a prominent headline stating that all data stays on this device
+    Then I see a prominent headline stating that my records live on this device
     And I see 3 to 4 concise supporting privacy statements
     And one statement confirms no account or login is required
-    And one statement confirms no data is uploaded to any cloud or server
-    And one statement confirms data only leaves the device when the user explicitly exports or shares it
+    And one statement confirms Health Flare has no server and nothing is sent to it
+    And one statement says my records are included in my phone's own backup, and otherwise leave the device only when I export or share them
+    And no statement claims my data never leaves this device
 
   Scenario: "Learn more" expands a plain-English privacy detail section
     Given I am on the "Your privacy" step
     When I tap "Learn more"
     Then an expanded privacy explanation is shown inline without leaving the step
     And the expanded content explains in plain English exactly where data is stored, what is collected, and what is never collected
+    And it explains that phone backups include my records, how iCloud and Google protect them, and how to leave Health Flare out
+    And it explains that optional weather tracking sends my approximate location to Open-Meteo
 
   Scenario: "Learn more" section can be collapsed again
     Given I have expanded the "Your privacy" step's detail section

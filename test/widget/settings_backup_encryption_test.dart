@@ -105,6 +105,10 @@ void main() {
 
       // Ownership notice; always present, regardless of the toggle.
       expect(find.byKey(const Key('export_ownership_notice')), findsOneWidget);
+      expect(
+        find.textContaining("also in your phone's own backup"),
+        findsOneWidget,
+      );
       expect(find.textContaining('we value your privacy'), findsNothing);
 
       // Off by default, no password fields shown.

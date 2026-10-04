@@ -12,8 +12,9 @@ Feature: Weather context on log entries
     Given I have just created a new profile
     When onboarding completes
     Then the weather opt-in sheet is shown
-    And it explains that weather data is fetched from Open-Meteo using my device location
-    And it explains that no data ever leaves my device
+    And it explains that my approximate location is sent to Open-Meteo, a weather service, when I start a new entry
+    And it explains that my health records are never sent
+    And it explains that my location is not saved, only the weather
 
   Scenario: Accepting weather opt-in enables tracking
     Given the weather opt-in sheet is shown
@@ -25,6 +26,17 @@ Feature: Weather context on log entries
     Given the weather opt-in sheet is shown
     When I tap "No thanks"
     Then weather tracking remains disabled on my profile
+
+  Scenario: Only an approximate location is sent
+    Given my device reports a location of 43.651070, -79.347015
+    When weather is looked up for a new entry
+    Then the request to Open-Meteo uses latitude 43.65 and longitude -79.35
+    And nothing else about me or my records is sent
+
+  Scenario: The location prompt says what is sent and where
+    When the system asks me for location permission
+    Then the prompt says my approximate location is sent to Open-Meteo to look up the weather
+    And it does not say that my location is never transmitted
 
   # ── Shared snapshot window ────────────────────────────────────────────────
 

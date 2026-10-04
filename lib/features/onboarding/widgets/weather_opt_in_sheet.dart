@@ -67,7 +67,10 @@ class WeatherTrackingOptInSheet extends StatelessWidget {
           const SizedBox(height: 8),
 
           Text(
-            'Weather data is stored only on this device and never shared.',
+            'To look up the weather, your approximate location is sent to '
+            'Open-Meteo, a weather service, when you start a new entry. Only '
+            'the location is sent, never your health records. The weather is '
+            'saved with your entry; the location is not.',
             style: tt.bodySmall?.copyWith(
               color: cs.onSurfaceVariant,
               fontStyle: FontStyle.italic,
