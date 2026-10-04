@@ -130,10 +130,10 @@ Feature: Developer Experience
     But they are not required for merge
     And a PR that only changes Dart code, tests or docs runs no debug builds
 
-  Scenario: A debug build can be made on demand for any ref
-    Given a branch, tag or commit SHA
-    When I run the "Debug builds" workflow by hand and pick the platforms
-    Then only the chosen debug builds run against that ref
+  Scenario: A debug build can be made on demand for any branch or tag
+    Given a branch or tag in the repository
+    When I run the "Debug builds" workflow by hand on it and pick the platforms
+    Then only the chosen debug builds run against that branch or tag
     And their artefacts can be downloaded from the run
 
   Scenario: No generated files are out of date

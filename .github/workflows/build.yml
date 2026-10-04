@@ -3,19 +3,21 @@ name: Debug builds
 # Debug builds for Android, macOS and Windows.
 #
 # Two ways in:
-#   - Ad hoc: Actions tab -> "Debug builds" -> Run workflow, or
-#       gh workflow run build.yml -f ref=my-branch -f platforms=apk
+#   - Ad hoc: Actions tab -> "Debug builds" -> pick a branch -> Run workflow, or
+#       gh workflow run build.yml --ref my-branch -f platforms=apk
 #   - Called from ci.yml on every push to main, and on PRs that touch native
 #     platform code or dependencies (see the `changes` job there).
 #
 # Artifacts are kept for 7 days.
+#
+# There is deliberately no free-form `ref` input: checking out an arbitrary
+# ref (e.g. a fork PR head) from a run on main would let untrusted code write
+# to main's Flutter cache, which the release workflows restore (CodeQL
+# actions/cache-poisoning). Builds use the branch or tag the run was started
+# on.
 on:
   workflow_dispatch:
     inputs:
-      ref:
-        description: Branch, tag or SHA to build (blank = the branch picked above)
-        required: false
-        default: ""
       platforms:
         description: Which builds to run
         type: choice
@@ -23,10 +25,6 @@ on:
         default: all
   workflow_call:
     inputs:
-      ref:
-        type: string
-        required: false
-        default: ""
       platforms:
         type: string
         required: false
@@ -46,8 +44,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-        with:
-          ref: ${{ inputs.ref }}
       - uses: actions/setup-java@v6
         with:
           distribution: temurin
@@ -72,8 +68,6 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v7
-        with:
-          ref: ${{ inputs.ref }}
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
@@ -100,8 +94,6 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v7
-        with:
-          ref: ${{ inputs.ref }}
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}

@@ -95,10 +95,10 @@ are not required to merge. They run:
 - on every push to main
 - on PRs that change `android/`, `ios/`, `macos/`, `windows/`, `linux/`,
   `pubspec.yaml`, `pubspec.lock` or the CI workflows
-- by hand, on any ref:
+- by hand, on any branch or tag:
 
 ```bash
-gh workflow run build.yml -R Health-Flare/app -f ref=my-branch -f platforms=apk
+gh workflow run build.yml -R Health-Flare/app --ref my-branch -f platforms=apk
 # platforms: all | apk | macos | windows
 gh run list -R Health-Flare/app -w "Debug builds" -L 1   # then gh run download <id>
 ```
