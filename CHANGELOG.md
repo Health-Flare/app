@@ -11,7 +11,36 @@ Dates use ISO-8601 (`YYYY-MM-DD`) in UTC.
 How to use this file
 ====================
 
-1. While working on `main`, add entries under `## [Unreleased]
+1. Don't edit Unreleased in a PR. Add a file under `changes/` instead (see
+   `changes/README.md`): one file per PR can't conflict with other PRs,
+   one shared list did on every merge.
+
+2. Use the past tense and a user-facing voice. Avoid commit hashes and PR
+   numbers in the entry text.
+
+3. When cutting a release:
+     - `dart run tool/rollup_changes.dart --write` moves every fragment into
+       Unreleased below and deletes the fragment files. Read the result.
+     - Bump `version:` in `pubspec.yaml`.
+     - Rename `## [Unreleased]` to `## [X.Y.Z] - YYYY-MM-DD`.
+     - Add a fresh, empty `## [Unreleased]` block above it.
+     - Commit, then tag `vX.Y.Z` and push the tag: the release workflows
+       take it from there.
+
+4. Writing notes for a range that spans several past releases?
+   `scripts/release/generate_release_notes.sh` drafts the same shape from
+   PR history. See `docs/release-kit.md`.
+
+Subsection meanings (from Keep a Changelog):
+  Added: for new features.
+  Changed: for changes in existing functionality.
+  Deprecated: for soon-to-be-removed features.
+  Removed: for now-removed features.
+  Fixed: for any bug fixes.
+  Security: for vulnerabilities.
+-->
+
+## [Unreleased]
 
 ### Added
 - Settings > About shows the installed app version, e.g. "1.9.1 (build 13)".

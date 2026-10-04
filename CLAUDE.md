@@ -92,6 +92,14 @@ gh pr merge <number>
 gh pr view <number>
 ```
 
+### Changelog
+
+A PR with a user-visible change adds one file under `changes/`, named
+`<issue>-<slug>.<section>.md` (see `changes/README.md`). Do **not** edit
+`CHANGELOG.md` in a feature PR: every PR adding to the same Unreleased list
+conflicted with every other open PR after each merge. Fragments are rolled
+up at release time with `dart run tool/rollup_changes.dart --write`.
+
 ## Project Architecture
 
 ```

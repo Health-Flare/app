@@ -9,6 +9,7 @@
 ## Checklist
 
 - [ ] Relevant `docs/features/*.feature` file added/updated
+- [ ] User-visible change? Added a file under `changes/` (see `changes/README.md`), not an edit to `CHANGELOG.md`
 - [ ] `flutter analyze` passes with zero issues
 - [ ] `dart format --output=none --set-exit-if-changed lib/ test/` passes
 - [ ] `flutter test` passes
