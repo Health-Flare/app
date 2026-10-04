@@ -22,6 +22,7 @@ import 'package:health_flare/data/models/user_condition_isar.dart';
 import 'package:health_flare/data/models/user_symptom_isar.dart';
 import 'package:health_flare/data/models/vital_entry_isar.dart';
 import 'package:health_flare/data/database/app_settings.dart';
+import 'package:health_flare/data/database/profile_ids.dart';
 
 /// A single importable data category shown in the selective-import UI.
 class ImportCategoryInfo {
@@ -643,6 +644,7 @@ class _Ctx {
         ..bowelTrackingEnabled = bp.bowelTrackingEnabled
         ..temperatureUnit = bp.temperatureUnit;
       await main.writeTxn(() async {
+        newProfile.id = await nextProfileId(main);
         final newId = await main.profileIsars.put(newProfile);
         profileMap[bp.id] = newId;
       });

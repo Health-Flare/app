@@ -17,4 +17,8 @@ class AppSettings {
   /// Schema version used by [MigrationRunner] for data migrations.
   /// v1 = initial Isar schema (this release).
   int schemaVersion = 1;
+
+  /// Highest profile id ever handed out on this device. New profiles get
+  /// the next one, so a deleted profile's id is never reused (#117).
+  int lastProfileId = 0;
 }

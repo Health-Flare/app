@@ -7,4 +7,5 @@ class AppSettings {
   Id id = 1;
   int? activeProfileId;
   int schemaVersion = 1;
+  int lastProfileId = 0;
 }

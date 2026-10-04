@@ -174,6 +174,18 @@ Feature: Profile Management
     Then the entries that belong to no profile are removed
     And every remaining profile's entries are unchanged
 
+  Scenario: A new profile starts empty even after a profile was deleted
+    Given I deleted my newest profile, "Dad"
+    And an earlier version left some of "Dad"'s entries on this device
+    And I have closed and reopened the app
+    When I add a profile named "Sam"
+    Then "Sam" has no entries
+
+  Scenario: A profile added from a backup starts with only its own data
+    Given I deleted a profile and some of its entries are still on this device
+    When I add missing data from a backup that has a profile named "Sam"
+    Then "Sam" has only the entries from the backup
+
   Scenario: Cancel profile deletion
     Given a profile named "Dad" exists
     When I open the profile settings for "Dad"

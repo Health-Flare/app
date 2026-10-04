@@ -77,30 +77,32 @@ Future<int> deleteOrphanedProfileData(Isar isar) async {
       .toSet();
   if (liveIds.isEmpty) return 0;
 
-  final orphanIds = <int>{};
-  void collect(List<int> ids) =>
-      orphanIds.addAll(ids.where((id) => !liveIds.contains(id)));
-
-  collect(await isar.journalEntryIsars.where().profileIdProperty().findAll());
-  collect(await isar.userConditionIsars.where().profileIdProperty().findAll());
-  collect(await isar.userSymptomIsars.where().profileIdProperty().findAll());
-  collect(await isar.sleepEntryIsars.where().profileIdProperty().findAll());
-  collect(await isar.symptomEntryIsars.where().profileIdProperty().findAll());
-  collect(await isar.vitalEntryIsars.where().profileIdProperty().findAll());
-  collect(await isar.doseLogIsars.where().profileIdProperty().findAll());
-  collect(await isar.medicationIsars.where().profileIdProperty().findAll());
-  collect(await isar.mealEntryIsars.where().profileIdProperty().findAll());
-  collect(await isar.flareIsars.where().profileIdProperty().findAll());
-  collect(await isar.dailyCheckinIsars.where().profileIdProperty().findAll());
-  collect(await isar.appointmentIsars.where().profileIdProperty().findAll());
-  collect(await isar.activityEntryIsars.where().profileIdProperty().findAll());
-  collect(await isar.fluidIntakeIsars.where().profileIdProperty().findAll());
-  collect(
-    await isar.eliminationEntryIsars.where().profileIdProperty().findAll(),
-  );
+  final orphanIds = (await referencedProfileIds(
+    isar,
+  )).where((id) => !liveIds.contains(id)).toSet();
 
   for (final id in orphanIds) {
     await deleteProfileData(isar, id);
   }
   return orphanIds.length;
 }
+
+/// Every profile id that any profile-scoped row points at, whether or not
+/// that profile still exists.
+Future<Set<int>> referencedProfileIds(Isar isar) async => {
+  ...await isar.journalEntryIsars.where().profileIdProperty().findAll(),
+  ...await isar.userConditionIsars.where().profileIdProperty().findAll(),
+  ...await isar.userSymptomIsars.where().profileIdProperty().findAll(),
+  ...await isar.sleepEntryIsars.where().profileIdProperty().findAll(),
+  ...await isar.symptomEntryIsars.where().profileIdProperty().findAll(),
+  ...await isar.vitalEntryIsars.where().profileIdProperty().findAll(),
+  ...await isar.doseLogIsars.where().profileIdProperty().findAll(),
+  ...await isar.medicationIsars.where().profileIdProperty().findAll(),
+  ...await isar.mealEntryIsars.where().profileIdProperty().findAll(),
+  ...await isar.flareIsars.where().profileIdProperty().findAll(),
+  ...await isar.dailyCheckinIsars.where().profileIdProperty().findAll(),
+  ...await isar.appointmentIsars.where().profileIdProperty().findAll(),
+  ...await isar.activityEntryIsars.where().profileIdProperty().findAll(),
+  ...await isar.fluidIntakeIsars.where().profileIdProperty().findAll(),
+  ...await isar.eliminationEntryIsars.where().profileIdProperty().findAll(),
+};

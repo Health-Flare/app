@@ -210,7 +210,7 @@ void main() {
 
       await MigrationRunner.run(isar);
 
-      expect((await isar.appSettings.get(1))!.schemaVersion, 18);
+      expect((await isar.appSettings.get(1))!.schemaVersion, 19);
     });
 
     test('v16 → v17 keeps existing profiles at "As logged"', () async {
