@@ -1,7 +1,7 @@
 # Privacy Policy
 
 **Health Flare**
-Last updated: 24 September 2026
+Last updated: 3 October 2026
 
 ---
 
@@ -48,6 +48,8 @@ Health Flare includes an optional backup feature that lets you export a copy of 
 You can optionally lock a backup with a password. The file is then encrypted on your device (AES-256-GCM, with a key derived from your password using Argon2id) before it is shared, so only someone who knows the password can read it. Your password is never stored or sent anywhere, which also means a lost password cannot be recovered and the backup cannot be opened without it. A backup exported without a password is not encrypted, and anyone who has a copy of the file can read it.
 
 We never receive, process, or have access to any backup files you create.
+
+Health Flare's data is kept out of your phone's automatic cloud backups (iCloud on iPhone, Google backup on Android). Your phone may still offer to copy apps and their data straight to a new phone during setup; that copy goes from your old phone to your new one and never through a server. To keep your data in any other case, such as a lost or broken phone, export a backup.
 
 ---
 

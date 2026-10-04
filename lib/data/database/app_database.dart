@@ -2,6 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:isar_community/isar.dart';
 import 'package:path_provider/path_provider.dart';
 
+import 'package:health_flare/core/security/backup_exclusion.dart';
+
 import 'package:health_flare/models/profile.dart';
 import 'package:health_flare/data/models/condition_isar.dart';
 import 'package:health_flare/data/models/journal_entry_isar.dart';
@@ -82,6 +84,15 @@ class IsarService {
       directory: directory ?? '',
       name: 'healthflare',
     );
+
+    // Keep the database out of iCloud backup. Applied to the whole documents
+    // directory so the .isar file, its lock file, a staged restore and
+    // anything else written there are covered. Re-applied on every launch:
+    // the flag is cheap and restore replaces files. Android is handled in
+    // the manifest.
+    if (directory != null) {
+      await excludeFromBackup(directory);
+    }
 
     await MigrationRunner.run(isar);
 

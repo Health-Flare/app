@@ -463,7 +463,10 @@ class _ExportSheetState extends State<_ExportSheet> {
                       'Flare has no server or account that receives a copy. '
                       'Health Flare never sees, stores, or has access to '
                       'the file. Whoever has the file can read it, unless '
-                      'you lock it with a password below.',
+                      'you lock it with a password below.\n\n'
+                      'Your data is not in your phone\'s iCloud or Google '
+                      'backup. If you lose this phone, an exported backup '
+                      'is the only copy.',
                       style: tt.bodySmall?.copyWith(color: cs.onSurfaceVariant),
                     ),
                   ],

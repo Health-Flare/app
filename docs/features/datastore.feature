@@ -23,6 +23,27 @@ Feature: Persistent local datastore
     And the schema version is recorded as 1
     And the database is empty (no profiles, no entries)
 
+  # The database is not encrypted at rest, so an OS cloud backup would be a
+  # readable copy held by Apple or Google. Data leaves the device only through
+  # the explicit export in Settings. Direct phone-to-phone transfer during
+  # setup is left on: it never goes through a server.
+  Scenario: The database is not included in cloud backups
+    Given I have health data in Health Flare
+    When my phone backs up to iCloud or Google
+    Then the Health Flare database is not part of that backup
+    And a staged restore file is not part of that backup either
+
+  Scenario: Excluding from backup never blocks the app
+    Given the phone refuses to mark the database as excluded from backup
+    When the app starts up
+    Then the app opens normally with all my data
+    And it tries again on the next launch
+
+  Scenario: The export screen says data does not go to cloud backups
+    Given I open "Export backup" in Settings
+    Then I read that Health Flare data is not in my phone's iCloud or Google backup
+    And that exporting a backup is how to keep it if the phone is lost
+
   Scenario: Datastore reopens correctly on subsequent launches
     Given the app has been launched and data was saved in a previous session
     When the app starts up again
