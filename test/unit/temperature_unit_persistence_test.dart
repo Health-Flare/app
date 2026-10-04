@@ -12,6 +12,17 @@ import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/data/database/app_settings.dart';
 import 'package:health_flare/data/database/migration_runner.dart';
 import 'package:health_flare/data/models/daily_checkin_isar.dart';
+import 'package:health_flare/data/models/activity_entry_isar.dart';
+import 'package:health_flare/data/models/appointment_isar.dart';
+import 'package:health_flare/data/models/condition_isar.dart';
+import 'package:health_flare/data/models/dose_log_isar.dart';
+import 'package:health_flare/data/models/elimination_entry_isar.dart';
+import 'package:health_flare/data/models/fluid_intake_isar.dart';
+import 'package:health_flare/data/models/journal_entry_isar.dart';
+import 'package:health_flare/data/models/medication_isar.dart';
+import 'package:health_flare/data/models/symptom_isar.dart';
+import 'package:health_flare/data/models/user_condition_isar.dart';
+import 'package:health_flare/data/models/user_symptom_isar.dart';
 import 'package:health_flare/data/models/flare_isar.dart';
 import 'package:health_flare/data/models/meal_entry_isar.dart';
 import 'package:health_flare/data/models/profile_isar.dart';
@@ -37,6 +48,19 @@ Future<Isar> _openIsar({String directory = '', String? name}) => Isar.open(
     SleepEntryIsarSchema,
     FlareIsarSchema,
     VitalEntryIsarSchema,
+    // The rest of the app's schemas: MigrationRunner works on the whole
+    // database (v18 clears orphaned rows in every profile-scoped collection).
+    JournalEntryIsarSchema,
+    ConditionIsarSchema,
+    UserConditionIsarSchema,
+    SymptomIsarSchema,
+    UserSymptomIsarSchema,
+    MedicationIsarSchema,
+    DoseLogIsarSchema,
+    AppointmentIsarSchema,
+    ActivityEntryIsarSchema,
+    FluidIntakeIsarSchema,
+    EliminationEntryIsarSchema,
   ],
   directory: directory,
   name: name ?? 'temp_unit_${_uid()}',
@@ -173,7 +197,7 @@ void main() {
   });
 
   group('MigrationRunner', () {
-    test('schema version moves to v17 for the temperature unit', () async {
+    test('schema version moves past v17 for the temperature unit', () async {
       final isar = await _openIsar();
       addTearDown(() => isar.close(deleteFromDisk: true));
       await isar.writeTxn(
@@ -186,7 +210,7 @@ void main() {
 
       await MigrationRunner.run(isar);
 
-      expect((await isar.appSettings.get(1))!.schemaVersion, 17);
+      expect((await isar.appSettings.get(1))!.schemaVersion, 18);
     });
 
     test('v16 → v17 keeps existing profiles at "As logged"', () async {

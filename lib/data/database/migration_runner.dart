@@ -1,6 +1,7 @@
 import 'package:isar_community/isar.dart';
 
 import 'package:health_flare/data/database/app_settings.dart';
+import 'package:health_flare/data/database/profile_deletion.dart';
 import 'package:health_flare/data/models/condition_isar.dart';
 import 'package:health_flare/data/models/symptom_isar.dart';
 import 'package:health_flare/data/seed_data.dart';
@@ -26,6 +27,8 @@ import 'package:health_flare/data/seed_data.dart';
 ///              Profile.bowelTrackingEnabled; FluidIntakeIsar and
 ///              EliminationEntryIsar collections.
 /// Schema v17 = Profile.temperatureUnit (nullable, display preference).
+/// Schema v18 = no schema change; removes health data left behind by
+///              profile deletes before this version (see profile_deletion.dart).
 ///
 /// How to add a future migration:
 ///   1. Increment [_targetVersion].
@@ -39,7 +42,7 @@ import 'package:health_flare/data/seed_data.dart';
 class MigrationRunner {
   MigrationRunner._();
 
-  static const int _targetVersion = 17;
+  static const int _targetVersion = 18;
 
   /// Run all pending migrations and update [AppSettings.schemaVersion].
   ///
@@ -248,6 +251,18 @@ class MigrationRunner {
       await isar.writeTxn(() async {
         final s = await isar.appSettings.get(1) ?? (AppSettings()..id = 1);
         s.schemaVersion = 17;
+        await isar.appSettings.put(s);
+      });
+    }
+
+    // ── v17 → v18: clear data left behind by old profile deletes ──────────
+    // Before v18, deleting a profile removed only its journal entries. Rows in
+    // every other collection stayed, invisible but included in backups.
+    if (currentVersion < 18) {
+      await isar.writeTxn(() async {
+        await deleteOrphanedProfileData(isar);
+        final s = await isar.appSettings.get(1) ?? (AppSettings()..id = 1);
+        s.schemaVersion = 18;
         await isar.appSettings.put(s);
       });
     }

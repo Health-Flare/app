@@ -2,7 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar_community/isar.dart';
 
 import 'package:health_flare/data/database/app_settings.dart';
-import 'package:health_flare/data/models/journal_entry_isar.dart';
+import 'package:health_flare/data/database/profile_deletion.dart';
 import 'package:health_flare/data/models/profile_isar.dart';
 import 'package:health_flare/models/profile.dart';
 import 'package:health_flare/core/providers/database_provider.dart';
@@ -133,21 +133,16 @@ class ProfileListNotifier extends Notifier<List<Profile>> {
     });
   }
 
-  /// Remove a profile by id. Cascades to delete all its journal entries.
+  /// Remove a profile by id, with every row of health data that belongs to
+  /// it (see [deleteProfileData]). One transaction: if anything fails,
+  /// nothing is deleted.
   ///
   /// If the removed profile was active, switches to the first remaining
   /// profile, or clears the active id if none remain.
   Future<void> remove(int id) async {
     final isar = ref.read(isarProvider);
     await isar.writeTxn(() async {
-      // Cascade-delete all journal entries belonging to this profile.
-      final entryIds = await isar.journalEntryIsars
-          .where()
-          .profileIdEqualTo(id)
-          .idProperty()
-          .findAll();
-      await isar.journalEntryIsars.deleteAll(entryIds);
-
+      await deleteProfileData(isar, id);
       await isar.profileIsars.delete(id);
     });
 
