@@ -11,45 +11,20 @@ Dates use ISO-8601 (`YYYY-MM-DD`) in UTC.
 How to use this file
 ====================
 
-1. While working on `main`, add entries under `## [Unreleased]` in the matching
-   subsection (`Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`).
-
-2. Use the past tense and a user-facing voice. Avoid commit hashes and PR
-   numbers in the entry text: link to PRs/issues at the bottom of the file
-   or inline only when it adds context for users.
-
-3. When cutting a release:
-     - Bump `version:` in `pubspec.yaml`.
-     - Rename `## [Unreleased]` to `## [X.Y.Z] - YYYY-MM-DD`.
-     - Add a fresh, empty `## [Unreleased]` block above it.
-     - Update the comparison links at the bottom of the file.
-     - Commit the change, then tag `vX.Y.Z` and push the tag: the release
-       workflow takes it from there (see `.github/workflows/release.yaml`).
-
-4. Forgot to keep Unreleased up to date, or writing notes for a range that
-   spans several past releases? `scripts/release/generate_release_notes.sh`
-   drafts this same Keep-a-Changelog shape (plus store-blurb prose) from
-   actual PR/issue history for any `--since`/`--until` range: a starting
-   point to edit, not a replacement for writing entries as you go. See
-   `docs/release-kit.md` for the full release-notes/screenshots/videos
-   workflow.
-
-Subsection meanings (from Keep a Changelog):
-  Added: for new features.
-  Changed: for changes in existing functionality.
-  Deprecated: for soon-to-be-removed features.
-  Removed: for now-removed features.
-  Fixed: for any bug fixes.
-  Security: for vulnerabilities.
--->
-
-## [Unreleased]
+1. While working on `main`, add entries under `## [Unreleased]
 
 ### Added
-- _Nothing yet._
+- Settings > About shows the installed app version, e.g. "1.9.1 (build 13)".
+- Pressure and humidity now show alongside the weather on single-entry views: meal and journal details, and the symptom, meal, activity and check-in forms when editing a saved entry.
+- Insights has a Vitals card. It charts every vital type with readings in the selected window, plots each reading at its logged time, draws blood pressure as systolic and diastolic lines, and shades flare periods behind the chart.
+- Each profile has a temperature unit setting (°C, °F, or As logged). It changes how temperatures are shown; readings are stored as entered, and edit forms and exports show them as logged.
+- Medication doses and appointments can be moved to another profile. If the other profile doesn't have the medication yet, it is added for them as part of the move.
 
 ### Changed
-- _Nothing yet._
+- Moving any entry to another profile now asks first, and names anything that won't carry over, such as a flare link.
+- Unsaved edits are saved before an entry is moved. An edit that fails validation stops the move.
+- Privacy copy says plainly where data goes: your records are in your phone's own iCloud or Google backup, and weather capture sends an approximate location to Open-Meteo. This replaces "Everything stays on this device" and "never shared" wording, which wasn't accurate.
+- Weather capture rounds your location to about 1 km before sending it.
 
 ### Deprecated
 - _Nothing yet._
@@ -58,10 +33,11 @@ Subsection meanings (from Keep a Changelog):
 - _Nothing yet._
 
 ### Fixed
-- _Nothing yet._
+- Vitals, including temperature, now appear on Insights. A profile with only vitals in the window no longer shows "Not enough data yet".
+- Moving an entry from an edit screen no longer discards changes you hadn't saved yet.
 
 ### Security
-- _Nothing yet._
+- Deleting a profile now removes all of its health data. Before, only its journal entries were removed; symptoms, vitals, medications, doses, meals, sleep, activity, fluids, bowel entries, flares, check-ins, appointments, tracked conditions and tracked symptoms stayed in the database and in backups. A one-time cleanup on upgrade removes data left behind by profiles deleted on 1.9.1 and earlier.
 
 ## [1.9.1] - 2026-09-24
 
