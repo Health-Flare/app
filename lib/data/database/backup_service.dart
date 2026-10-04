@@ -7,6 +7,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:health_flare/data/database/backup_encryption.dart';
 import 'package:health_flare/data/database/import_service.dart';
 import 'package:health_flare/data/database/pre_migration_snapshot.dart';
+import 'package:health_flare/core/files/scratch_files.dart';
 
 /// Handles hot-backup export and staged restore for the Isar database.
 ///
@@ -50,7 +51,7 @@ class BackupService {
   /// `healthflare_backup_YYYYMMDD_HHmm.isar`. It is safe to call while the
   /// database is open and being written to.
   static Future<String> export(Isar isar) async {
-    final tmp = await getTemporaryDirectory();
+    final tmp = await ScratchFiles.directory();
     final now = DateTime.now();
     final stamp =
         '${now.year}'

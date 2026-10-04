@@ -25,6 +25,7 @@ import 'package:health_flare/data/database/app_settings.dart';
 import 'package:health_flare/data/database/backup_service.dart';
 import 'package:health_flare/data/database/migration_runner.dart';
 import 'package:health_flare/data/database/pre_migration_snapshot.dart';
+import 'package:health_flare/core/files/scratch_files.dart';
 
 /// Startup data read before [runApp] so providers have real values on
 /// the first frame: avoids blank-frame flashes from async loads.
@@ -59,6 +60,9 @@ class IsarService {
     } else {
       final dir = await getApplicationDocumentsDirectory();
       directory = dir.path;
+      // Remove backups, reports and decrypted copies a previous run left in
+      // temp (#102). Nothing can be using them yet.
+      await ScratchFiles.sweep();
       // Apply any pending restore before opening: replaces the database file
       // while Isar is still closed, so no live instance juggling is required.
       await BackupService.applyPendingRestoreIfNeeded(directory);

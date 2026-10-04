@@ -4,13 +4,13 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 import 'package:health_flare/core/providers/database_provider.dart';
 import 'package:health_flare/data/database/backup_encryption.dart';
 import 'package:health_flare/data/database/backup_service.dart';
 import 'package:health_flare/data/database/import_service.dart';
+import 'package:health_flare/core/files/scratch_files.dart';
 
 /// The result of a backup or restore operation.
 sealed class BackupResult {
@@ -114,8 +114,14 @@ class BackupNotifier extends Notifier<BackupResult> {
     try {
       final isar = ref.read(isarProvider);
       final backupPath = await BackupService.export(isar);
-      await SharePlus.instance.share(
-        ShareParams(files: [XFile(backupPath)], subject: 'Health Flare backup'),
+      await ScratchFiles.shareThenDelete(
+        backupPath,
+        () => SharePlus.instance.share(
+          ShareParams(
+            files: [XFile(backupPath)],
+            subject: 'Health Flare backup',
+          ),
+        ),
       );
       _emit(const BackupExportDone());
     } catch (e) {
@@ -132,8 +138,14 @@ class BackupNotifier extends Notifier<BackupResult> {
     try {
       final isar = ref.read(isarProvider);
       final backupPath = await BackupService.exportEncrypted(isar, password);
-      await SharePlus.instance.share(
-        ShareParams(files: [XFile(backupPath)], subject: 'Health Flare backup'),
+      await ScratchFiles.shareThenDelete(
+        backupPath,
+        () => SharePlus.instance.share(
+          ShareParams(
+            files: [XFile(backupPath)],
+            subject: 'Health Flare backup',
+          ),
+        ),
       );
       _emit(const BackupExportDone());
     } catch (e) {
@@ -341,7 +353,7 @@ class BackupNotifier extends Notifier<BackupResult> {
   };
 
   static Future<String> _decryptedCopyPath() async {
-    final tempDir = await getTemporaryDirectory();
+    final tempDir = await ScratchFiles.directory();
     return '${tempDir.path}/healthflare_decrypted_'
         '${DateTime.now().microsecondsSinceEpoch}.isar';
   }

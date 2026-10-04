@@ -44,6 +44,7 @@ How to use this file
 - Deleting a profile now removes all of its health data. Before, only its journal entries were removed; symptoms, vitals, medications, doses, meals, sleep, activity, fluids, bowel entries, flares, check-ins, appointments, tracked conditions and tracked symptoms stayed in the database and in backups. A one-time cleanup on upgrade removes data left behind by profiles deleted on 1.9.1 and earlier.
 - The Android APK on GitHub Releases is now checked against Health Flare's signing key before it's published, and a release can no longer be built with Android's public debug key by mistake. The README lists the key's fingerprint so you can check a downloaded APK yourself. Every APK published so far was signed with the right key.
 - Notes and other text in a CSV export can no longer run as spreadsheet formulas. Text starting with =, +, -, @ now opens in Excel, Sheets or LibreOffice exactly as you typed it, instead of being run, so whoever opens your export is safe from formulas hidden in the data.
+- Backups, reports and decrypted backup copies are no longer left in the phone's or computer's temporary folder. On phones, a shared file is deleted as soon as the share sheet closes. Anything left behind, for example if the app was closed during an import, is deleted the next time Health Flare opens.
 
 ## [1.9.1] - 2026-09-24
 
