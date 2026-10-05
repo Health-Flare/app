@@ -71,12 +71,16 @@ class _FakeSymptomList extends SymptomEntryListNotifier {
     int? userConditionIsarId,
     int? flareIsarId,
     WeatherSnapshot? weatherSnapshot,
+    int? interference,
+    String? impact,
   }) async {
     symptomSaveCalls.add({
       'profileId': profileId,
       'name': name,
       'severity': severity,
       'notes': notes,
+      'interference': interference,
+      'impact': impact,
     });
     return 1;
   }
@@ -172,6 +176,7 @@ class _RecordingSleepList extends SleepEntryListNotifier {
     required DateTime bedtime,
     required DateTime wakeTime,
     int? qualityRating,
+    int? wokeRested,
     String? notes,
     bool? isNap,
   }) async {

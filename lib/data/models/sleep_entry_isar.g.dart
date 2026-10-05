@@ -44,6 +44,11 @@ const SleepEntryIsarSchema = CollectionSchema(
       name: r'wakeTime',
       type: IsarType.dateTime,
     ),
+    r'wokeRested': PropertySchema(
+      id: 7,
+      name: r'wokeRested',
+      type: IsarType.long,
+    ),
   },
   estimateSize: _sleepEntryIsarEstimateSize,
   serialize: _sleepEntryIsarSerialize,
@@ -114,6 +119,7 @@ void _sleepEntryIsarSerialize(
   writer.writeLong(offsets[4], object.profileId);
   writer.writeLong(offsets[5], object.qualityRating);
   writer.writeDateTime(offsets[6], object.wakeTime);
+  writer.writeLong(offsets[7], object.wokeRested);
 }
 
 SleepEntryIsar _sleepEntryIsarDeserialize(
@@ -131,6 +137,7 @@ SleepEntryIsar _sleepEntryIsarDeserialize(
   object.profileId = reader.readLong(offsets[4]);
   object.qualityRating = reader.readLongOrNull(offsets[5]);
   object.wakeTime = reader.readDateTime(offsets[6]);
+  object.wokeRested = reader.readLongOrNull(offsets[7]);
   return object;
 }
 
@@ -155,6 +162,8 @@ P _sleepEntryIsarDeserializeProp<P>(
       return (reader.readLongOrNull(offset)) as P;
     case 6:
       return (reader.readDateTime(offset)) as P;
+    case 7:
+      return (reader.readLongOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -993,6 +1002,79 @@ extension SleepEntryIsarQueryFilter
       );
     });
   }
+
+  QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterFilterCondition>
+  wokeRestedIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'wokeRested'),
+      );
+    });
+  }
+
+  QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterFilterCondition>
+  wokeRestedIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'wokeRested'),
+      );
+    });
+  }
+
+  QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterFilterCondition>
+  wokeRestedEqualTo(int? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'wokeRested', value: value),
+      );
+    });
+  }
+
+  QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterFilterCondition>
+  wokeRestedGreaterThan(int? value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'wokeRested',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterFilterCondition>
+  wokeRestedLessThan(int? value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'wokeRested',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterFilterCondition>
+  wokeRestedBetween(
+    int? lower,
+    int? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'wokeRested',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
+    });
+  }
 }
 
 extension SleepEntryIsarQueryObject
@@ -1090,6 +1172,20 @@ extension SleepEntryIsarQuerySortBy
   sortByWakeTimeDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'wakeTime', Sort.desc);
+    });
+  }
+
+  QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterSortBy>
+  sortByWokeRested() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'wokeRested', Sort.asc);
+    });
+  }
+
+  QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterSortBy>
+  sortByWokeRestedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'wokeRested', Sort.desc);
     });
   }
 }
@@ -1197,6 +1293,20 @@ extension SleepEntryIsarQuerySortThenBy
       return query.addSortBy(r'wakeTime', Sort.desc);
     });
   }
+
+  QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterSortBy>
+  thenByWokeRested() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'wokeRested', Sort.asc);
+    });
+  }
+
+  QueryBuilder<SleepEntryIsar, SleepEntryIsar, QAfterSortBy>
+  thenByWokeRestedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'wokeRested', Sort.desc);
+    });
+  }
 }
 
 extension SleepEntryIsarQueryWhereDistinct
@@ -1245,6 +1355,13 @@ extension SleepEntryIsarQueryWhereDistinct
   QueryBuilder<SleepEntryIsar, SleepEntryIsar, QDistinct> distinctByWakeTime() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'wakeTime');
+    });
+  }
+
+  QueryBuilder<SleepEntryIsar, SleepEntryIsar, QDistinct>
+  distinctByWokeRested() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'wokeRested');
     });
   }
 }
@@ -1296,6 +1413,12 @@ extension SleepEntryIsarQueryProperty
   QueryBuilder<SleepEntryIsar, DateTime, QQueryOperations> wakeTimeProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'wakeTime');
+    });
+  }
+
+  QueryBuilder<SleepEntryIsar, int?, QQueryOperations> wokeRestedProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'wokeRested');
     });
   }
 }

@@ -32,6 +32,8 @@ import 'package:health_flare/data/seed_data.dart';
 ///              profile deletes before this version (see profile_deletion.dart).
 /// Schema v19 = AppSettings.lastProfileId, seeded from the highest profile
 ///              id in use so deleted profiles' ids are never reused (#117).
+/// Schema v20 = SymptomEntry.interference, SymptomEntry.impact and
+///              SleepEntry.wokeRested (all nullable).
 ///
 /// How to add a future migration:
 ///   1. Increment [_targetVersion].
@@ -45,7 +47,7 @@ import 'package:health_flare/data/seed_data.dart';
 class MigrationRunner {
   MigrationRunner._();
 
-  static const int _targetVersion = 19;
+  static const int _targetVersion = 20;
 
   /// Whether existing data is waiting for a data migration: the database
   /// has been initialised before (schema version above 0) and is behind the
@@ -290,6 +292,18 @@ class MigrationRunner {
         final s = await isar.appSettings.get(1) ?? (AppSettings()..id = 1);
         if (highest > s.lastProfileId) s.lastProfileId = highest;
         s.schemaVersion = 19;
+        await isar.appSettings.put(s);
+      });
+    }
+
+    // ── v19 → v20: PROMIS-informed inputs ─────────────────────────────────
+    // SymptomEntryIsar gains interference and impact; SleepEntryIsar gains
+    // wokeRested. All nullable; null means "not recorded". Existing entries
+    // keep their values and get no guessed ones.
+    if (currentVersion < 20) {
+      await isar.writeTxn(() async {
+        final s = await isar.appSettings.get(1) ?? (AppSettings()..id = 1);
+        s.schemaVersion = 20;
         await isar.appSettings.put(s);
       });
     }

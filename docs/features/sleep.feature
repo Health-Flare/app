@@ -171,3 +171,36 @@ Feature: Sleep Logging
   Scenario: Sleep is included in exported reports
     When I generate a report including sleep data
     Then the report contains a row for each sleep entry with date, duration, quality, and notes
+
+  # ---------------------------------------------------------------------------
+  # Woke up rested (PROMIS-informed)
+  # ---------------------------------------------------------------------------
+
+  # Credit: Dr Cat Hicks pointed us to PROMIS research, which treats how
+  # restoring sleep felt as part of sleep disturbance, alongside quality.
+  # Sleeping long and "well" and still waking unrefreshed is common in
+  # chronic illness and worth a clinician seeing. Our wording, not a PROMIS
+  # item. Sources: lib/core/citations/symptom_sources.dart.
+
+  Scenario: Record whether I woke up rested
+    When I open the new sleep entry screen
+    And I choose "Partly" for "Did you wake up rested?"
+    And I save the entry
+    Then the sleep entry is saved with woke rested "Partly"
+
+  Scenario: Woke rested is optional with nothing pre-selected
+    When I open the new sleep entry screen
+    Then "Did you wake up rested?" offers "No", "Partly", and "Yes"
+    And none is selected
+    And I can clear my choice by tapping it again
+
+  Scenario: Sleep entries logged before this change are unchanged
+    Given "Sarah" has a sleep entry saved before this update
+    When the app is updated and opened
+    Then the entry has no woke rested answer
+    And its quality rating is unchanged
+
+  Scenario: Woke rested appears in exported reports
+    Given "Sarah" logged a sleep entry with quality 4 and woke rested "No"
+    When I export a report as CSV including sleep
+    Then the sleep row reads "Quality 4/5  ·  Woke rested: No"

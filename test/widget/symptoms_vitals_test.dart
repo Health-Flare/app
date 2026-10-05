@@ -367,7 +367,9 @@ void main() {
       expect(find.text('Symptom name is required'), findsOneWidget);
     });
 
-    testWidgets('shows validation error when severity not set', (tester) async {
+    testWidgets('shows validation error when intensity not set', (
+      tester,
+    ) async {
       await tester.pumpWidget(_buildSymptomForm());
       await tester.pump();
 
@@ -382,7 +384,7 @@ void main() {
       await tester.tap(find.text('Add to profile'));
       await tester.pump();
 
-      expect(find.text('Severity is required'), findsOneWidget);
+      expect(find.text('Intensity is required'), findsOneWidget);
     });
 
     testWidgets('accepts notes input', (tester) async {
@@ -633,6 +635,141 @@ void main() {
         createdAt: DateTime(2026, 2, 15),
       );
       expect(entry.displayValue, '120/80 mmHg');
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // PROMIS-informed inputs (#90). Credit: Dr Cat Hicks, Informed Patient.
+  // -------------------------------------------------------------------------
+  group('SymptomEntryFormScreen: intensity, interference, impact', () {
+    Future<void> pumpTall(WidgetTester tester, Widget w) async {
+      tester.view.physicalSize = const Size(800, 2400);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+      await tester.pumpWidget(w);
+      await tester.pump();
+    }
+
+    testWidgets('asks what happened before asking for numbers', (tester) async {
+      await pumpTall(tester, _buildSymptomForm());
+      final labels = [
+        'Symptom name',
+        'Where',
+        'How intense was it?',
+        'How much did it get in the way?',
+        'What did it stop you doing, or make harder?',
+        'Date and time',
+        "Anything else we didn't ask about? (optional)",
+      ];
+      final ys = [for (final l in labels) tester.getTopLeft(find.text(l)).dy];
+      expect(ys, [...ys]..sort());
+    });
+
+    testWidgets('intensity is anchored at both ends', (tester) async {
+      await pumpTall(tester, _buildSymptomForm());
+      expect(find.text('1  Barely noticeable'), findsOneWidget);
+      expect(find.text('Worst you can imagine  10'), findsOneWidget);
+    });
+
+    testWidgets('interference offers five steps, none selected', (
+      tester,
+    ) async {
+      await pumpTall(tester, _buildSymptomForm());
+      final chips = tester.widgetList<ChoiceChip>(
+        find.descendant(
+          of: find.byKey(const Key('interference_selector')),
+          matching: find.byType(ChoiceChip),
+        ),
+      );
+      expect(chips.map((c) => (c.label as Text).data), [
+        'Not at all',
+        'A little',
+        'Somewhat',
+        'Quite a bit',
+        'Very much',
+      ]);
+      expect(chips.where((c) => c.selected), isEmpty);
+    });
+
+    testWidgets('an interference choice can be cleared', (tester) async {
+      await pumpTall(tester, _buildSymptomForm());
+      bool selected() => tester
+          .widget<ChoiceChip>(find.widgetWithText(ChoiceChip, 'Quite a bit'))
+          .selected;
+      await tester.tap(find.text('Quite a bit'));
+      await tester.pump();
+      expect(selected(), isTrue);
+      await tester.tap(find.text('Quite a bit'));
+      await tester.pump();
+      expect(selected(), isFalse);
+    });
+
+    testWidgets('impact hint gives a concrete example', (tester) async {
+      await pumpTall(tester, _buildSymptomForm());
+      expect(
+        find.text(
+          "e.g. Missed work, couldn't climb the stairs, cancelled plans",
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('edit mode loads saved interference and impact', (
+      tester,
+    ) async {
+      final entry = SymptomEntry(
+        id: 9,
+        profileId: 1,
+        name: 'Fatigue',
+        severity: 5,
+        loggedAt: DateTime(2026, 9, 10, 9),
+        createdAt: DateTime(2026, 9, 10, 9),
+        interference: 4,
+        impact: 'Skipped my walk',
+      );
+      await pumpTall(tester, _buildSymptomForm(entry: entry));
+      expect(
+        tester
+            .widget<ChoiceChip>(find.widgetWithText(ChoiceChip, 'Quite a bit'))
+            .selected,
+        isTrue,
+      );
+      expect(find.text('Skipped my walk'), findsOneWidget);
+    });
+  });
+
+  group('SymptomsVitalsScreen: interference in the list', () {
+    testWidgets('shows interference only when recorded', (tester) async {
+      final t = DateTime(2026, 9, 10, 9);
+      await tester.pumpWidget(
+        _buildListScreen(
+          symptoms: [
+            SymptomEntry(
+              id: 1,
+              profileId: 1,
+              name: 'Headache',
+              severity: 4,
+              loggedAt: t,
+              createdAt: t,
+            ),
+            SymptomEntry(
+              id: 2,
+              profileId: 1,
+              name: 'Fatigue',
+              severity: 5,
+              loggedAt: t.add(const Duration(hours: 1)),
+              createdAt: t,
+              interference: 4,
+            ),
+          ],
+        ),
+      );
+      await tester.pump();
+      expect(
+        find.textContaining('Got in the way: Quite a bit'),
+        findsOneWidget,
+      );
+      expect(find.textContaining('Not at all'), findsNothing);
     });
   });
 }

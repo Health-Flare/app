@@ -34,6 +34,12 @@ class SymptomEntryIsar {
 
   WeatherSnapshotIsar? weatherSnapshot;
 
+  /// 1 (Not at all) to 5 (Very much). Null = not recorded.
+  int? interference;
+
+  /// What the symptom stopped the person doing, verbatim. Null = not recorded.
+  String? impact;
+
   SymptomEntry toDomain() => SymptomEntry(
     id: id,
     profileId: profileId,
@@ -47,6 +53,8 @@ class SymptomEntryIsar {
     createdAt: createdAt,
     flareIsarId: flareIsarId,
     weatherSnapshot: weatherSnapshot?.toDomain(),
+    interference: interference,
+    impact: impact,
   );
 
   static SymptomEntryIsar fromDomain(SymptomEntry e) => SymptomEntryIsar()
@@ -63,5 +71,7 @@ class SymptomEntryIsar {
     ..flareIsarId = e.flareIsarId
     ..weatherSnapshot = e.weatherSnapshot != null
         ? WeatherSnapshotIsar.fromDomain(e.weatherSnapshot!)
-        : null;
+        : null
+    ..interference = e.interference
+    ..impact = e.impact;
 }

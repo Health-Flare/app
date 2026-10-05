@@ -887,6 +887,7 @@ class _Ctx {
           ..bedtime = be.bedtime
           ..wakeTime = be.wakeTime
           ..qualityRating = be.qualityRating
+          ..wokeRested = be.wokeRested
           ..notes = be.notes
           ..isNap = be.isNap
           ..createdAt = be.createdAt,
@@ -1140,6 +1141,8 @@ class _Ctx {
           ..profileId = pid
           ..name = be.name
           ..severity = be.severity
+          ..interference = be.interference
+          ..impact = be.impact
           ..locations = be.locations
           ..notes = be.notes
           ..loggedAt = be.loggedAt

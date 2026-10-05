@@ -24,6 +24,9 @@ class SleepEntryIsar {
   /// 1–5 quality rating. Null when not rated.
   int? qualityRating;
 
+  /// 1 No, 2 Partly, 3 Yes. Null when not answered.
+  int? wokeRested;
+
   String? notes;
 
   late bool isNap;
@@ -38,6 +41,7 @@ class SleepEntryIsar {
     bedtime: bedtime,
     wakeTime: wakeTime,
     qualityRating: qualityRating,
+    wokeRested: wokeRested,
     notes: notes,
     isNap: isNap,
     createdAt: createdAt,
@@ -49,6 +53,7 @@ class SleepEntryIsar {
     ..bedtime = e.bedtime
     ..wakeTime = e.wakeTime
     ..qualityRating = e.qualityRating
+    ..wokeRested = e.wokeRested
     ..notes = e.notes
     ..isNap = e.isNap
     ..createdAt = e.createdAt;

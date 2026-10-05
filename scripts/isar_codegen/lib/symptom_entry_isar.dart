@@ -31,4 +31,10 @@ class SymptomEntryIsar {
   int? flareIsarId;
 
   WeatherSnapshotIsar? weatherSnapshot;
+
+  /// 1 (Not at all) to 5 (Very much). Null = not recorded.
+  int? interference;
+
+  /// What the symptom stopped the person doing, verbatim. Null = not recorded.
+  String? impact;
 }

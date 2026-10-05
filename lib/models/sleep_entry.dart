@@ -13,6 +13,7 @@ class SleepEntry {
     required this.bedtime,
     required this.wakeTime,
     this.qualityRating,
+    this.wokeRested,
     this.notes,
     this.isNap = false,
     required this.createdAt,
@@ -31,6 +32,13 @@ class SleepEntry {
 
   /// Subjective quality: 1 (Very poor) to 5 (Restful). Null if not rated.
   final int? qualityRating;
+
+  /// "Did you wake up rested?": 1 No, 2 Partly, 3 Yes. Null = not answered.
+  /// Restoration is its own part of sleep, separate from overall quality
+  /// (informed by PROMIS sleep research; see symptom_sources.dart).
+  final int? wokeRested;
+
+  static const List<String> wokeRestedLabels = ['No', 'Partly', 'Yes'];
 
   final String? notes;
 
@@ -69,6 +77,8 @@ class SleepEntry {
     DateTime? wakeTime,
     int? qualityRating,
     bool clearQuality = false,
+    int? wokeRested,
+    bool clearWokeRested = false,
     String? notes,
     bool clearNotes = false,
     bool? isNap,
@@ -82,6 +92,7 @@ class SleepEntry {
       qualityRating: clearQuality
           ? null
           : (qualityRating ?? this.qualityRating),
+      wokeRested: clearWokeRested ? null : (wokeRested ?? this.wokeRested),
       notes: clearNotes ? null : (notes ?? this.notes),
       isNap: isNap ?? this.isNap,
       createdAt: createdAt ?? this.createdAt,

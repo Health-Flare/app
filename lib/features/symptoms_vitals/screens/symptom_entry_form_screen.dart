@@ -9,6 +9,7 @@ import 'package:health_flare/core/providers/weather_provider.dart';
 import 'package:health_flare/features/quick_log/quick_log_parser.dart';
 import 'package:health_flare/features/shared/widgets/move_entry_action.dart';
 import 'package:health_flare/features/shared/widgets/weather_chip.dart';
+import 'package:health_flare/features/symptoms_vitals/widgets/interference_selector.dart';
 import 'package:health_flare/models/symptom_entry.dart';
 import 'package:health_flare/models/weather_snapshot.dart';
 import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
@@ -32,8 +33,10 @@ class _SymptomEntryFormScreenState
     extends ConsumerState<SymptomEntryFormScreen> {
   late TextEditingController _nameController;
   late TextEditingController _notesController;
+  late TextEditingController _impactController;
   late FocusNode _nameFocusNode;
   int? _severity;
+  int? _interference;
   late List<String> _locations;
   late DateTime _loggedAt;
   bool _submitting = false;
@@ -51,12 +54,15 @@ class _SymptomEntryFormScreenState
       final e = widget.entry!;
       _nameController = TextEditingController(text: e.name);
       _notesController = TextEditingController(text: e.notes ?? '');
+      _impactController = TextEditingController(text: e.impact ?? '');
       _severity = e.severity;
+      _interference = e.interference;
       _locations = List.of(e.locations);
       _loggedAt = e.loggedAt;
     } else {
       _nameController = TextEditingController(text: widget.prefillText ?? '');
       _notesController = TextEditingController();
+      _impactController = TextEditingController();
       _locations = QuickLogParser.parseLocations(widget.prefillText ?? '');
       _loggedAt = DateTime.now();
     }
@@ -67,6 +73,7 @@ class _SymptomEntryFormScreenState
     _nameFocusNode.dispose();
     _nameController.dispose();
     _notesController.dispose();
+    _impactController.dispose();
     super.dispose();
   }
 
@@ -119,6 +126,10 @@ class _SymptomEntryFormScreenState
     final notes = _notesController.text.trim().isEmpty
         ? null
         : _notesController.text.trim();
+    // Impact is kept exactly as typed, apart from surrounding whitespace.
+    final impact = _impactController.text.trim().isEmpty
+        ? null
+        : _impactController.text.trim();
 
     if (widget.entry == null) {
       final profileId = ref.read(activeProfileProvider)!;
@@ -132,6 +143,8 @@ class _SymptomEntryFormScreenState
             loggedAt: _loggedAt,
             notes: notes,
             weatherSnapshot: _capturedWeather,
+            interference: _interference,
+            impact: impact,
           );
     } else {
       await ref
@@ -144,6 +157,10 @@ class _SymptomEntryFormScreenState
               loggedAt: _loggedAt,
               notes: notes,
               clearNotes: notes == null,
+              interference: _interference,
+              clearInterference: _interference == null,
+              impact: impact,
+              clearImpact: impact == null,
             ),
           );
     }
@@ -345,8 +362,12 @@ class _SymptomEntryFormScreenState
 
             const SizedBox(height: 24),
 
-            // ── Severity ──────────────────────────────────────────────────
-            const _SectionLabel(label: 'Severity (1 = mild, 10 = severe)'),
+            // ── Intensity ─────────────────────────────────────────────────
+            // Stored as `severity`; shown as intensity. Kept separate from
+            // interference below: how bad a symptom is and how much it gets
+            // in the way are different things (Dr Cat Hicks, Informed
+            // Patient; PROMIS research). Our wording, not PROMIS items.
+            const _SectionLabel(label: 'How intense was it?'),
             const SizedBox(height: 8),
             _SeveritySelector(
               value: _severity,
@@ -355,14 +376,56 @@ class _SymptomEntryFormScreenState
                 _severityError = false;
               }),
             ),
+            const SizedBox(height: 4),
+            const _ScaleAnchors(
+              low: '1  Barely noticeable',
+              high: 'Worst you can imagine  10',
+            ),
             if (_severityError)
               Padding(
                 padding: const EdgeInsets.only(top: 4),
                 child: Text(
-                  'Severity is required',
+                  'Intensity is required',
                   style: tt.bodySmall?.copyWith(color: cs.error),
                 ),
               ),
+
+            const SizedBox(height: 24),
+
+            // ── Interference ──────────────────────────────────────────────
+            const _SectionLabel(label: 'How much did it get in the way?'),
+            const SizedBox(height: 2),
+            const _SectionHint(text: 'Optional. Tap again to clear.'),
+            const SizedBox(height: 8),
+            InterferenceSelector(
+              value: _interference,
+              onChanged: (v) => setState(() => _interference = v),
+            ),
+
+            const SizedBox(height: 24),
+
+            // ── Impact in your own words ──────────────────────────────────
+            const _SectionLabel(
+              label: 'What did it stop you doing, or make harder?',
+            ),
+            const SizedBox(height: 2),
+            const _SectionHint(
+              text: 'Optional. A clinician can act on this more than a number.',
+            ),
+            const SizedBox(height: 8),
+            TextFormField(
+              key: const Key('symptom_impact_field'),
+              controller: _impactController,
+              maxLines: 2,
+              textCapitalization: TextCapitalization.sentences,
+              decoration: InputDecoration(
+                hintText:
+                    "e.g. Missed work, couldn't climb the stairs, cancelled plans",
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            ),
 
             const SizedBox(height: 24),
 
@@ -373,8 +436,11 @@ class _SymptomEntryFormScreenState
 
             const SizedBox(height: 24),
 
-            // ── Notes ─────────────────────────────────────────────────────
-            const _SectionLabel(label: 'Notes (optional)'),
+            // ── Anything else ─────────────────────────────────────────────
+            // A closing open question catches what our fields missed.
+            const _SectionLabel(
+              label: "Anything else we didn't ask about? (optional)",
+            ),
             const SizedBox(height: 8),
             TextFormField(
               key: const Key('symptom_notes_field'),
@@ -469,6 +535,44 @@ class _SectionLabel extends StatelessWidget {
       style: Theme.of(context).textTheme.labelLarge?.copyWith(
         color: Theme.of(context).colorScheme.onSurfaceVariant,
       ),
+    );
+  }
+}
+
+class _SectionHint extends StatelessWidget {
+  const _SectionHint({required this.text});
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      text,
+      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
+      ),
+    );
+  }
+}
+
+class _ScaleAnchors extends StatelessWidget {
+  const _ScaleAnchors({required this.low, required this.high});
+  final String low;
+  final String high;
+
+  @override
+  Widget build(BuildContext context) {
+    final style = Theme.of(context).textTheme.labelSmall?.copyWith(
+      color: Theme.of(context).colorScheme.onSurfaceVariant,
+    );
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(child: Text(low, style: style)),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(high, style: style, textAlign: TextAlign.end),
+        ),
+      ],
     );
   }
 }

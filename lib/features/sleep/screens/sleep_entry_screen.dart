@@ -81,6 +81,7 @@ class _SleepEntryScreenState extends ConsumerState<SleepEntryScreen> {
   late DateTime _bedtime;
   late DateTime _wakeTime;
   int? _qualityRating;
+  int? _wokeRested;
   late bool _isNap;
   late TextEditingController _notesController;
   bool _submitting = false;
@@ -93,6 +94,7 @@ class _SleepEntryScreenState extends ConsumerState<SleepEntryScreen> {
       _bedtime = e.bedtime;
       _wakeTime = e.wakeTime;
       _qualityRating = e.qualityRating;
+      _wokeRested = e.wokeRested;
       _isNap = e.isNap;
       _notesController = TextEditingController(text: e.notes ?? '');
     } else {
@@ -235,6 +237,7 @@ class _SleepEntryScreenState extends ConsumerState<SleepEntryScreen> {
             bedtime: _bedtime,
             wakeTime: _wakeTime,
             qualityRating: _qualityRating,
+            wokeRested: _wokeRested,
             notes: notes,
             isNap: _isNap,
           );
@@ -247,6 +250,8 @@ class _SleepEntryScreenState extends ConsumerState<SleepEntryScreen> {
               wakeTime: _wakeTime,
               qualityRating: _qualityRating,
               clearQuality: _qualityRating == null,
+              wokeRested: _wokeRested,
+              clearWokeRested: _wokeRested == null,
               notes: notes,
               clearNotes: notes == null,
               isNap: _isNap,
@@ -370,6 +375,28 @@ class _SleepEntryScreenState extends ConsumerState<SleepEntryScreen> {
             SleepQualitySelector(
               value: _qualityRating,
               onChanged: (v) => setState(() => _qualityRating = v),
+            ),
+
+            const SizedBox(height: 24),
+
+            // ── Woke up rested ───────────────────────────────────────────
+            // Restoration is separate from overall quality: you can sleep
+            // long and well and still wake unrefreshed.
+            const _SectionLabel(label: 'Did you wake up rested? (optional)'),
+            const SizedBox(height: 8),
+            Wrap(
+              key: const Key('sleep_woke_rested'),
+              spacing: 8,
+              children: [
+                for (var i = 0; i < SleepEntry.wokeRestedLabels.length; i++)
+                  ChoiceChip(
+                    label: Text(SleepEntry.wokeRestedLabels[i]),
+                    selected: _wokeRested == i + 1,
+                    onSelected: (_) => setState(
+                      () => _wokeRested = _wokeRested == i + 1 ? null : i + 1,
+                    ),
+                  ),
+              ],
             ),
 
             const SizedBox(height: 24),

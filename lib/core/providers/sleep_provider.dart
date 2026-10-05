@@ -52,6 +52,7 @@ class SleepEntryListNotifier extends Notifier<List<SleepEntry>> {
     required DateTime bedtime,
     required DateTime wakeTime,
     int? qualityRating,
+    int? wokeRested,
     String? notes,
     bool? isNap,
   }) async {
@@ -65,6 +66,7 @@ class SleepEntryListNotifier extends Notifier<List<SleepEntry>> {
       ..bedtime = bedtime
       ..wakeTime = wakeTime
       ..qualityRating = qualityRating
+      ..wokeRested = wokeRested
       ..notes = notes
       ..isNap = nap
       ..createdAt = DateTime.now();

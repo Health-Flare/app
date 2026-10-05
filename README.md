@@ -80,6 +80,10 @@ Built with Flutter, Riverpod, and Isar.
 
 [Inner Flare](https://github.com/Health-Flare/InnerFlare) is a cycle tracker built on the same privacy rules.
 
+## Acknowledgements
+
+The way Health Flare asks about symptoms comes from [Dr Cat Hicks](https://www.drcathicks.com). She pointed us to PROMIS and the research behind it, and her [Informed Patient](https://github.com/DrCatHicks/informed-patient) skill (CC BY 4.0) showed how to turn that research into questions a person can answer: how intense a symptom was and how much it got in the way are recorded separately, you can say what it stopped you doing in your own words, and the form ends with "anything else?". Thank you, Cat. Sources are in the app under **Settings → Where our questions come from**.
+
 ## License
 
 Health Flare is free software under the [GNU GPL v3.0](LICENSE.md) or later. Third-party licenses are in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and in the app under **Settings → Open source licenses**.

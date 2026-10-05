@@ -46,12 +46,13 @@ Feature: Symptom and Vitals Logging
     Then I see a validation error indicating the symptom name is required
     And no entry is saved
 
-  Scenario: Cannot save a symptom entry without a severity
+  Scenario: Cannot save a symptom entry without an intensity
+    # Intensity is the UI name for the stored severity value.
     When I open the new symptom entry screen
     And I enter "Dizziness" as the symptom name
-    And I do not set a severity
+    And I do not set an intensity
     And I attempt to save the entry
-    Then I see a validation error indicating severity is required
+    Then I see the validation error "Intensity is required"
     And no entry is saved
 
   Scenario: Use a saved symptom shortcut

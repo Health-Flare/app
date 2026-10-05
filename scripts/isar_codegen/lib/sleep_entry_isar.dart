@@ -18,6 +18,9 @@ class SleepEntryIsar {
   /// 1–5 quality rating. Null when not rated.
   int? qualityRating;
 
+  /// 1 No, 2 Partly, 3 Yes. Null when not answered.
+  int? wokeRested;
+
   String? notes;
 
   late bool isNap;

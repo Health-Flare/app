@@ -27,48 +27,58 @@ const SymptomEntryIsarSchema = CollectionSchema(
       name: r'flareIsarId',
       type: IsarType.long,
     ),
-    r'locations': PropertySchema(
+    r'impact': PropertySchema(
       id: 2,
+      name: r'impact',
+      type: IsarType.string,
+    ),
+    r'interference': PropertySchema(
+      id: 3,
+      name: r'interference',
+      type: IsarType.long,
+    ),
+    r'locations': PropertySchema(
+      id: 4,
       name: r'locations',
       type: IsarType.stringList,
     ),
     r'loggedAt': PropertySchema(
-      id: 3,
+      id: 5,
       name: r'loggedAt',
       type: IsarType.dateTime,
     ),
     r'name': PropertySchema(
-      id: 4,
+      id: 6,
       name: r'name',
       type: IsarType.string,
     ),
     r'notes': PropertySchema(
-      id: 5,
+      id: 7,
       name: r'notes',
       type: IsarType.string,
     ),
     r'profileId': PropertySchema(
-      id: 6,
+      id: 8,
       name: r'profileId',
       type: IsarType.long,
     ),
     r'severity': PropertySchema(
-      id: 7,
+      id: 9,
       name: r'severity',
       type: IsarType.long,
     ),
     r'userConditionIsarId': PropertySchema(
-      id: 8,
+      id: 10,
       name: r'userConditionIsarId',
       type: IsarType.long,
     ),
     r'userSymptomIsarId': PropertySchema(
-      id: 9,
+      id: 11,
       name: r'userSymptomIsarId',
       type: IsarType.long,
     ),
     r'weatherSnapshot': PropertySchema(
-      id: 10,
+      id: 12,
       name: r'weatherSnapshot',
       type: IsarType.object,
       target: r'WeatherSnapshotIsar',
@@ -121,6 +131,12 @@ int _symptomEntryIsarEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
+  {
+    final value = object.impact;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
   bytesCount += 3 + object.locations.length * 3;
   {
     for (var i = 0; i < object.locations.length; i++) {
@@ -154,16 +170,18 @@ void _symptomEntryIsarSerialize(
 ) {
   writer.writeDateTime(offsets[0], object.createdAt);
   writer.writeLong(offsets[1], object.flareIsarId);
-  writer.writeStringList(offsets[2], object.locations);
-  writer.writeDateTime(offsets[3], object.loggedAt);
-  writer.writeString(offsets[4], object.name);
-  writer.writeString(offsets[5], object.notes);
-  writer.writeLong(offsets[6], object.profileId);
-  writer.writeLong(offsets[7], object.severity);
-  writer.writeLong(offsets[8], object.userConditionIsarId);
-  writer.writeLong(offsets[9], object.userSymptomIsarId);
+  writer.writeString(offsets[2], object.impact);
+  writer.writeLong(offsets[3], object.interference);
+  writer.writeStringList(offsets[4], object.locations);
+  writer.writeDateTime(offsets[5], object.loggedAt);
+  writer.writeString(offsets[6], object.name);
+  writer.writeString(offsets[7], object.notes);
+  writer.writeLong(offsets[8], object.profileId);
+  writer.writeLong(offsets[9], object.severity);
+  writer.writeLong(offsets[10], object.userConditionIsarId);
+  writer.writeLong(offsets[11], object.userSymptomIsarId);
   writer.writeObject<WeatherSnapshotIsar>(
-    offsets[10],
+    offsets[12],
     allOffsets,
     WeatherSnapshotIsarSchema.serialize,
     object.weatherSnapshot,
@@ -180,16 +198,18 @@ SymptomEntryIsar _symptomEntryIsarDeserialize(
   object.createdAt = reader.readDateTime(offsets[0]);
   object.flareIsarId = reader.readLongOrNull(offsets[1]);
   object.id = id;
-  object.locations = reader.readStringList(offsets[2]) ?? [];
-  object.loggedAt = reader.readDateTime(offsets[3]);
-  object.name = reader.readString(offsets[4]);
-  object.notes = reader.readStringOrNull(offsets[5]);
-  object.profileId = reader.readLong(offsets[6]);
-  object.severity = reader.readLong(offsets[7]);
-  object.userConditionIsarId = reader.readLongOrNull(offsets[8]);
-  object.userSymptomIsarId = reader.readLongOrNull(offsets[9]);
+  object.impact = reader.readStringOrNull(offsets[2]);
+  object.interference = reader.readLongOrNull(offsets[3]);
+  object.locations = reader.readStringList(offsets[4]) ?? [];
+  object.loggedAt = reader.readDateTime(offsets[5]);
+  object.name = reader.readString(offsets[6]);
+  object.notes = reader.readStringOrNull(offsets[7]);
+  object.profileId = reader.readLong(offsets[8]);
+  object.severity = reader.readLong(offsets[9]);
+  object.userConditionIsarId = reader.readLongOrNull(offsets[10]);
+  object.userSymptomIsarId = reader.readLongOrNull(offsets[11]);
   object.weatherSnapshot = reader.readObjectOrNull<WeatherSnapshotIsar>(
-    offsets[10],
+    offsets[12],
     WeatherSnapshotIsarSchema.deserialize,
     allOffsets,
   );
@@ -208,22 +228,26 @@ P _symptomEntryIsarDeserializeProp<P>(
     case 1:
       return (reader.readLongOrNull(offset)) as P;
     case 2:
-      return (reader.readStringList(offset) ?? []) as P;
-    case 3:
-      return (reader.readDateTime(offset)) as P;
-    case 4:
-      return (reader.readString(offset)) as P;
-    case 5:
       return (reader.readStringOrNull(offset)) as P;
+    case 3:
+      return (reader.readLongOrNull(offset)) as P;
+    case 4:
+      return (reader.readStringList(offset) ?? []) as P;
+    case 5:
+      return (reader.readDateTime(offset)) as P;
     case 6:
-      return (reader.readLong(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 7:
-      return (reader.readLong(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 8:
-      return (reader.readLongOrNull(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 9:
-      return (reader.readLongOrNull(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 10:
+      return (reader.readLongOrNull(offset)) as P;
+    case 11:
+      return (reader.readLongOrNull(offset)) as P;
+    case 12:
       return (reader.readObjectOrNull<WeatherSnapshotIsar>(
         offset,
         WeatherSnapshotIsarSchema.deserialize,
@@ -708,6 +732,234 @@ extension SymptomEntryIsarQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'id',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
+      impactIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'impact',
+      ));
+    });
+  }
+
+  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
+      impactIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'impact',
+      ));
+    });
+  }
+
+  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
+      impactEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'impact',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
+      impactGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'impact',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
+      impactLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'impact',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
+      impactBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'impact',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
+      impactStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'impact',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
+      impactEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'impact',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
+      impactContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'impact',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
+      impactMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'impact',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
+      impactIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'impact',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
+      impactIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'impact',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
+      interferenceIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'interference',
+      ));
+    });
+  }
+
+  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
+      interferenceIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'interference',
+      ));
+    });
+  }
+
+  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
+      interferenceEqualTo(int? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'interference',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
+      interferenceGreaterThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'interference',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
+      interferenceLessThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'interference',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
+      interferenceBetween(
+    int? lower,
+    int? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'interference',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -1610,6 +1862,34 @@ extension SymptomEntryIsarQuerySortBy
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
+      sortByImpact() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'impact', Sort.asc);
+    });
+  }
+
+  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
+      sortByImpactDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'impact', Sort.desc);
+    });
+  }
+
+  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
+      sortByInterference() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'interference', Sort.asc);
+    });
+  }
+
+  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
+      sortByInterferenceDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'interference', Sort.desc);
+    });
+  }
+
+  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
       sortByLoggedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'loggedAt', Sort.asc);
@@ -1750,6 +2030,34 @@ extension SymptomEntryIsarQuerySortThenBy
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
+      thenByImpact() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'impact', Sort.asc);
+    });
+  }
+
+  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
+      thenByImpactDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'impact', Sort.desc);
+    });
+  }
+
+  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
+      thenByInterference() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'interference', Sort.asc);
+    });
+  }
+
+  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
+      thenByInterferenceDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'interference', Sort.desc);
+    });
+  }
+
+  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
       thenByLoggedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'loggedAt', Sort.asc);
@@ -1862,6 +2170,20 @@ extension SymptomEntryIsarQueryWhereDistinct
     });
   }
 
+  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QDistinct> distinctByImpact(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'impact', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QDistinct>
+      distinctByInterference() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'interference');
+    });
+  }
+
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QDistinct>
       distinctByLocations() {
     return QueryBuilder.apply(this, (query) {
@@ -1937,6 +2259,19 @@ extension SymptomEntryIsarQueryProperty
   QueryBuilder<SymptomEntryIsar, int?, QQueryOperations> flareIsarIdProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'flareIsarId');
+    });
+  }
+
+  QueryBuilder<SymptomEntryIsar, String?, QQueryOperations> impactProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'impact');
+    });
+  }
+
+  QueryBuilder<SymptomEntryIsar, int?, QQueryOperations>
+      interferenceProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'interference');
     });
   }
 
