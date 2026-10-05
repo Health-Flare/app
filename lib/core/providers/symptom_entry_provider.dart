@@ -56,6 +56,8 @@ class SymptomEntryListNotifier extends Notifier<List<SymptomEntry>> {
     int? userConditionIsarId,
     int? flareIsarId,
     WeatherSnapshot? weatherSnapshot,
+    int? interference,
+    String? impact,
   }) async {
     final isar = ref.read(isarProvider);
     final row = SymptomEntryIsar()
@@ -72,6 +74,8 @@ class SymptomEntryListNotifier extends Notifier<List<SymptomEntry>> {
       ..weatherSnapshot = weatherSnapshot != null
           ? WeatherSnapshotIsar.fromDomain(weatherSnapshot)
           : null
+      ..interference = interference
+      ..impact = impact
       ..createdAt = DateTime.now();
     await isar.writeTxn(() async {
       await isar.symptomEntryIsars.put(row);

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:health_flare/core/providers/backup_provider.dart';
 import 'package:health_flare/core/providers/database_provider.dart';
+import 'package:health_flare/core/router/app_router.dart';
 import 'package:health_flare/data/database/app_settings.dart';
 import 'package:health_flare/data/database/import_service.dart';
 import 'package:health_flare/features/settings/widgets/app_version_tile.dart';
@@ -876,6 +878,18 @@ class _AboutTiles extends ConsumerWidget {
               }
             }
           },
+        ),
+
+        // Credit and sources for the symptom questions
+        ListTile(
+          key: const Key('symptom_sources_tile'),
+          leading: const Icon(Icons.menu_book_outlined),
+          title: const Text('Where our questions come from'),
+          subtitle: const Text(
+            'Credit to Dr Cat Hicks and Informed Patient, and our sources',
+          ),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: () => context.push(AppRoutes.settingsSources),
         ),
 
         // App version

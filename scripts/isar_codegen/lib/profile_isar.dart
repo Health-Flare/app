@@ -36,4 +36,10 @@ class ProfileIsar {
 
   /// Unit temperatures are shown in: '°C', '°F', or null for "As logged".
   String? temperatureUnit;
+
+  /// Keep every symptom add-on showing, even unused ones. Default off.
+  bool showAllSymptomOptions = false;
+
+  /// Whether the one-time symptom folding note has been shown.
+  bool symptomFoldNoteShown = false;
 }

@@ -17,6 +17,8 @@ class SymptomEntry {
     required this.createdAt,
     this.flareIsarId,
     this.weatherSnapshot,
+    this.interference,
+    this.impact,
   });
 
   final int id;
@@ -24,6 +26,9 @@ class SymptomEntry {
   final String name;
   final int? userSymptomIsarId;
   final int? userConditionIsarId;
+
+  /// How intense the symptom was, 1 to 10. Stored as `severity` for
+  /// backwards compatibility; the UI calls it intensity.
   final int severity; // 1–10
 
   /// Canonical body regions, optionally qualified by side ("left hip").
@@ -35,6 +40,18 @@ class SymptomEntry {
   final int? flareIsarId;
   final WeatherSnapshot? weatherSnapshot;
 
+  /// How much the symptom got in the way, 1 (Not at all) to 5 (Very much).
+  /// Null means "not recorded", never "Not at all". See [Interference].
+  ///
+  /// Recording intensity and interference separately follows Dr Cat Hicks's
+  /// Informed Patient method, which draws on PROMIS research (see
+  /// `lib/core/citations/symptom_sources.dart`).
+  final int? interference;
+
+  /// What the symptom stopped the person doing, or made harder, in their own
+  /// words. Stored verbatim; never summarised or rephrased.
+  final String? impact;
+
   SymptomEntry copyWith({
     String? name,
     int? userSymptomIsarId,
@@ -44,7 +61,11 @@ class SymptomEntry {
     String? notes,
     DateTime? loggedAt,
     WeatherSnapshot? weatherSnapshot,
+    int? interference,
+    String? impact,
     bool clearNotes = false,
+    bool clearInterference = false,
+    bool clearImpact = false,
     bool clearUserSymptomIsarId = false,
   }) {
     return SymptomEntry(
@@ -62,6 +83,10 @@ class SymptomEntry {
       createdAt: createdAt,
       flareIsarId: flareIsarId,
       weatherSnapshot: weatherSnapshot ?? this.weatherSnapshot,
+      interference: clearInterference
+          ? null
+          : (interference ?? this.interference),
+      impact: clearImpact ? null : (impact ?? this.impact),
     );
   }
 

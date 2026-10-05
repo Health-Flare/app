@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:health_flare/features/illness/screens/illness_screen.dart';
 import 'package:health_flare/features/settings/screens/settings_screen.dart';
+import 'package:health_flare/features/settings/screens/symptom_sources_screen.dart';
 import 'package:health_flare/features/journal/screens/journal_composer_screen.dart';
 import 'package:health_flare/features/journal/screens/journal_detail_screen.dart';
 import 'package:health_flare/features/journal/screens/journal_list_screen.dart';
@@ -100,6 +101,7 @@ abstract final class AppRoutes {
   static const activityNew = '/activity/new';
   static String activityEdit(int id) => '/activity/$id/edit';
   static const settings = '/settings';
+  static const settingsSources = '/settings/sources';
 }
 
 // ---------------------------------------------------------------------------
@@ -155,6 +157,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.settings,
         name: 'settings',
         builder: (context, state) => const SettingsScreen(),
+        routes: [
+          GoRoute(
+            path: 'sources',
+            name: 'settings-sources',
+            builder: (context, state) => const SymptomSourcesScreen(),
+          ),
+        ],
       ),
 
       // Main app shell: wraps all tab destinations

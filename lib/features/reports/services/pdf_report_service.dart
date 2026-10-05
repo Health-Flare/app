@@ -6,7 +6,9 @@ import 'package:pdf/widgets.dart' as pw;
 
 import 'package:health_flare/features/reports/models/report_data.dart';
 import 'package:health_flare/models/appointment.dart';
+import 'package:health_flare/models/interference.dart';
 import 'package:health_flare/models/medication.dart';
+import 'package:health_flare/models/sleep_entry.dart';
 
 /// Generates a PDF [Uint8List] from [ReportData].
 abstract final class PdfReportService {
@@ -123,9 +125,25 @@ abstract final class PdfReportService {
     out.add(_sectionTitle('Symptoms (${data.symptoms.length})'));
     for (final e in data.symptoms) {
       final label = '${_fmt.format(e.loggedAt)} ${_timeFmt.format(e.loggedAt)}';
-      final value = StringBuffer('${e.name}  ·  severity ${e.severity}/10');
+      final value = StringBuffer('${e.name}  ·  intensity ${e.severity}/10');
+      final interference = Interference.label(e.interference);
+      if (interference != null) {
+        value.write('  ·  got in the way: $interference');
+      }
       if (e.notes != null) value.write('\n${e.notes}');
       out.add(_row(label, value.toString()));
+    }
+
+    // What it stopped me doing: quoted exactly as written, with date and
+    // symptom. Never summarised or merged. Left out when there are none.
+    final impacts = [
+      for (final e in data.symptoms)
+        if (e.impact != null && e.impact!.trim().isNotEmpty) e,
+    ]..sort((a, b) => a.loggedAt.compareTo(b.loggedAt));
+    if (impacts.isEmpty) return;
+    out.add(_sectionTitle('What it stopped me doing'));
+    for (final e in impacts) {
+      out.add(_row('${_fmt.format(e.loggedAt)}  ${e.name}', '"${e.impact}"'));
     }
   }
 
@@ -186,6 +204,11 @@ abstract final class PdfReportService {
       final value = StringBuffer('${h}h ${m}m');
       if (e.qualityRating != null) {
         value.write('  ·  quality ${e.qualityRating}/5');
+      }
+      if (e.wokeRested != null) {
+        value.write(
+          '  ·  woke rested: ${SleepEntry.wokeRestedLabels[e.wokeRested! - 1]}',
+        );
       }
       if (e.isNap) value.write('  (nap)');
       if (e.notes != null) value.write('\n${e.notes}');

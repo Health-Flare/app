@@ -11,6 +11,25 @@ all are compatible with GPL-3.0 distribution.
 
 ---
 
+## Methods and research
+
+Health Flare's symptom questions (intensity and interference recorded
+separately, what a symptom stopped you doing in your own words, and a closing
+"anything else?") are adapted from **Informed Patient** by
+**Dr Cat Hicks**: https://github.com/DrCatHicks/informed-patient, in particular
+its symptom-inventory methodology. Informed Patient is licensed
+[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). We adapted its ideas
+into app questions written in our own words; no Informed Patient text ships in
+the app. Cat also pointed us to PROMIS and the measurement research behind it.
+
+Our questions are *informed by* PROMIS research. They are not PROMIS
+instruments, contain no PROMIS item wording, produce no PROMIS score, and are
+not reviewed or endorsed by the PROMIS Health Organization. PROMIS® is a
+registered trademark of the US Department of Health and Human Services.
+
+Full citations (with PMIDs) live in `lib/core/citations/symptom_sources.dart`
+and in the app under **Settings → Where our questions come from**.
+
 ## Fonts
 
 Bundled locally under `assets/fonts/`; full license text ships alongside each family.

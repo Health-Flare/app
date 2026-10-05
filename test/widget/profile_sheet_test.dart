@@ -79,4 +79,32 @@ void main() {
       );
     });
   });
+
+  // Show all symptom options (profiles.feature). Credit for the symptom
+  // add-ons: Dr Cat Hicks, Informed Patient.
+  group('AddProfileSheet: Show all symptom options', () {
+    Future<void> pumpTall(WidgetTester tester, Widget w) async {
+      tester.view.physicalSize = const Size(800, 2400);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+      await tester.pumpWidget(w);
+      await tester.pump();
+    }
+
+    SwitchListTile tile(WidgetTester tester) => tester.widget<SwitchListTile>(
+      find.widgetWithText(SwitchListTile, 'Show all symptom options'),
+    );
+
+    testWidgets('off by default', (tester) async {
+      final sarah = Profile(id: 1, name: 'Sarah');
+      await pumpTall(tester, buildEditSheet(sarah, [sarah]));
+      expect(tile(tester).value, isFalse);
+    });
+
+    testWidgets('shows the saved value', (tester) async {
+      final sarah = Profile(id: 1, name: 'Sarah', showAllSymptomOptions: true);
+      await pumpTall(tester, buildEditSheet(sarah, [sarah]));
+      expect(tile(tester).value, isTrue);
+    });
+  });
 }

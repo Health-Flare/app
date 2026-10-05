@@ -46,6 +46,12 @@ class ProfileIsar {
   /// Display only: vital readings keep the unit they were saved in.
   String? temperatureUnit;
 
+  /// Keep every symptom add-on showing, even unused ones. Default off.
+  bool showAllSymptomOptions = false;
+
+  /// Whether the one-time symptom folding note has been shown.
+  bool symptomFoldNoteShown = false;
+
   // ── Conversion ────────────────────────────────────────────────────────────
 
   /// Convert to the immutable domain class used by the UI.
@@ -59,6 +65,8 @@ class ProfileIsar {
     cycleTrackingEnabled: cycleTrackingEnabled,
     bowelTrackingEnabled: bowelTrackingEnabled,
     temperatureUnit: temperatureUnit,
+    showAllSymptomOptions: showAllSymptomOptions,
+    symptomFoldNoteShown: symptomFoldNoteShown,
   );
 
   /// Construct from a domain [Profile] for writing to Isar.
@@ -76,5 +84,7 @@ class ProfileIsar {
     ..colorSeed = p.colorSeed
     ..cycleTrackingEnabled = p.cycleTrackingEnabled
     ..bowelTrackingEnabled = p.bowelTrackingEnabled
-    ..temperatureUnit = p.temperatureUnit;
+    ..temperatureUnit = p.temperatureUnit
+    ..showAllSymptomOptions = p.showAllSymptomOptions
+    ..symptomFoldNoteShown = p.symptomFoldNoteShown;
 }

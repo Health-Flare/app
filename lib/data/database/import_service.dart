@@ -645,7 +645,9 @@ class _Ctx {
         ..colorSeed = bp.colorSeed
         ..cycleTrackingEnabled = bp.cycleTrackingEnabled
         ..bowelTrackingEnabled = bp.bowelTrackingEnabled
-        ..temperatureUnit = bp.temperatureUnit;
+        ..temperatureUnit = bp.temperatureUnit
+        ..showAllSymptomOptions = bp.showAllSymptomOptions
+        ..symptomFoldNoteShown = bp.symptomFoldNoteShown;
       await main.writeTxn(() async {
         newProfile.id = await nextProfileId(main);
         final newId = await main.profileIsars.put(newProfile);
@@ -887,6 +889,7 @@ class _Ctx {
           ..bedtime = be.bedtime
           ..wakeTime = be.wakeTime
           ..qualityRating = be.qualityRating
+          ..wokeRested = be.wokeRested
           ..notes = be.notes
           ..isNap = be.isNap
           ..createdAt = be.createdAt,
@@ -1140,6 +1143,8 @@ class _Ctx {
           ..profileId = pid
           ..name = be.name
           ..severity = be.severity
+          ..interference = be.interference
+          ..impact = be.impact
           ..locations = be.locations
           ..notes = be.notes
           ..loggedAt = be.loggedAt

@@ -142,6 +142,8 @@ void main() {
           profileId: 1,
           name: 'Joint pain',
           severity: 5,
+          // Has notes, so "Anything else" is open when editing.
+          notes: 'Stiff in the morning',
           loggedAt: _t,
           createdAt: _t,
         ),

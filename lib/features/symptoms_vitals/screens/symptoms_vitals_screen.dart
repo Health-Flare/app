@@ -7,6 +7,7 @@ import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/core/providers/symptom_entry_provider.dart';
 import 'package:health_flare/core/providers/vital_entry_provider.dart';
 import 'package:health_flare/core/router/app_router.dart';
+import 'package:health_flare/models/interference.dart';
 import 'package:health_flare/models/symptom_entry.dart';
 import 'package:health_flare/models/vital_entry.dart';
 import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
@@ -125,6 +126,10 @@ class _SymptomEntryTile extends StatelessWidget {
     final fmt = DateFormat('d MMM yyyy, HH:mm');
 
     final subtitleParts = <String>[fmt.format(entry.loggedAt)];
+    final interference = Interference.label(entry.interference);
+    if (interference != null) {
+      subtitleParts.add('Got in the way: $interference');
+    }
     if (entry.weatherSnapshot != null) {
       subtitleParts.add(entry.weatherSnapshot!.displayString);
     }

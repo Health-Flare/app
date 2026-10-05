@@ -3,18 +3,32 @@ import 'package:intl/intl.dart';
 
 import 'package:health_flare/features/reports/models/report_data.dart';
 import 'package:health_flare/models/appointment.dart';
+import 'package:health_flare/models/interference.dart';
 import 'package:health_flare/models/medication.dart';
+import 'package:health_flare/models/sleep_entry.dart';
 
 /// Generates a flat CSV string from [ReportData].
 ///
-/// Columns: Date, Type, Title / Name, Detail, Notes
+/// Columns: Date, Type, Title / Name, Detail, Notes, Got in the way, Impact
+///
+/// The last two columns are filled for symptoms only. They are appended at
+/// the end so spreadsheets built on the first five columns keep working.
+/// Unrecorded interference is an empty cell, never "Not at all".
 abstract final class CsvReportService {
   static final _fmt = DateFormat('yyyy-MM-dd HH:mm');
   static final _dateFmt = DateFormat('yyyy-MM-dd');
 
   static String generate(ReportData data) {
     final rows = <List<dynamic>>[
-      ['Date', 'Type', 'Name / Title', 'Detail', 'Notes'],
+      [
+        'Date',
+        'Type',
+        'Name / Title',
+        'Detail',
+        'Notes',
+        'Got in the way',
+        'Impact',
+      ],
     ];
 
     // Build a medication lookup map.
@@ -27,6 +41,8 @@ abstract final class CsvReportService {
         _text(e.name),
         'Severity ${e.severity}/10',
         _text(e.notes),
+        Interference.label(e.interference) ?? '',
+        _text(e.impact),
       ]);
     }
 
@@ -69,7 +85,11 @@ abstract final class CsvReportService {
         _fmt.format(e.wakeTime),
         'Sleep',
         '${h}h ${m}m',
-        e.qualityRating != null ? 'Quality ${e.qualityRating}/5' : '',
+        [
+          if (e.qualityRating != null) 'Quality ${e.qualityRating}/5',
+          if (e.wokeRested != null)
+            'Woke rested: ${SleepEntry.wokeRestedLabels[e.wokeRested! - 1]}',
+        ].join('  ·  '),
         _text(e.notes),
       ]);
     }
@@ -118,6 +138,13 @@ abstract final class CsvReportService {
         parts.join('  ·  '),
         _text(e.notes),
       ]);
+    }
+
+    // Pad non-symptom rows to the full width.
+    for (final row in rows) {
+      while (row.length < rows.first.length) {
+        row.add('');
+      }
     }
 
     // Sort data rows by date (column 0) ascending.

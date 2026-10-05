@@ -129,8 +129,31 @@ class ProfileListNotifier extends Notifier<List<Profile>> {
         ..colorSeed = updated.colorSeed ?? existing.colorSeed
         ..cycleTrackingEnabled = updated.cycleTrackingEnabled
         ..bowelTrackingEnabled = updated.bowelTrackingEnabled
-        ..temperatureUnit = updated.temperatureUnit;
+        ..temperatureUnit = updated.temperatureUnit
+        ..showAllSymptomOptions = updated.showAllSymptomOptions
+        // Never cleared by an edit: the note is shown once.
+        ..symptomFoldNoteShown =
+            existing.symptomFoldNoteShown || updated.symptomFoldNoteShown;
       await isar.profileIsars.put(existing);
+    });
+  }
+
+  /// Turn "Show all symptom options" on or off for [id].
+  Future<void> setShowAllSymptomOptions(int id, bool value) =>
+      _patch(id, (row) => row.showAllSymptomOptions = value);
+
+  /// Record that [id] has seen the one-time folding note.
+  Future<void> markSymptomFoldNoteShown(int id) =>
+      _patch(id, (row) => row.symptomFoldNoteShown = true);
+
+  /// Read-modify-write one profile row, then refresh state.
+  Future<void> _patch(int id, void Function(ProfileIsar row) change) async {
+    final isar = ref.read(isarProvider);
+    await isar.writeTxn(() async {
+      final row = await isar.profileIsars.get(id);
+      if (row == null) return;
+      change(row);
+      await isar.profileIsars.put(row);
     });
   }
 
