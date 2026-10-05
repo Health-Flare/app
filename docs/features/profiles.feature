@@ -494,3 +494,32 @@ Feature: Profile Management
     And I save the profile
     Then Sarah's profile has bowel tracking enabled
     And Quick Log may suggest a Bowel chip when the text is about a bowel or bladder event
+
+  # Show all symptom options. Symptom add-ons that go unused fold away by
+  # default (see symptoms_and_vitals.feature, "Quieting"). This switch keeps
+  # them all showing. Per profile, because profiles are often different
+  # people.
+
+  Scenario: Symptom options fold away by default
+    Given I have created a profile named "Sarah"
+    When I edit the profile "Sarah"
+    Then "Show all symptom options" is off
+
+  Scenario: Keep all symptom options showing for a profile
+    When I edit the profile "Sarah"
+    And I turn on "Show all symptom options"
+    And I save the changes
+    Then the symptom form for "Sarah" offers every add-on, whatever she has used lately
+    And the setting is still on after restarting the app
+
+  Scenario: Each profile has its own symptom options setting
+    Given "Sarah" has "Show all symptom options" on
+    And "Dad" has it off
+    When I switch to "Dad"
+    Then his unused symptom options can fold away
+
+  Scenario: The symptom options setting carries over in a backup
+    Given "Sarah" has "Show all symptom options" on and has seen the folding note
+    When I export a backup and import it on another device
+    Then "Sarah" still has "Show all symptom options" on
+    And she does not see the folding note again
