@@ -645,7 +645,9 @@ class _Ctx {
         ..colorSeed = bp.colorSeed
         ..cycleTrackingEnabled = bp.cycleTrackingEnabled
         ..bowelTrackingEnabled = bp.bowelTrackingEnabled
-        ..temperatureUnit = bp.temperatureUnit;
+        ..temperatureUnit = bp.temperatureUnit
+        ..showAllSymptomOptions = bp.showAllSymptomOptions
+        ..symptomFoldNoteShown = bp.symptomFoldNoteShown;
       await main.writeTxn(() async {
         newProfile.id = await nextProfileId(main);
         final newId = await main.profileIsars.put(newProfile);

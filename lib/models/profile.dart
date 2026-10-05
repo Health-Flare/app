@@ -121,6 +121,9 @@ class Profile {
       temperatureUnit: clearTemperatureUnit
           ? null
           : (temperatureUnit ?? this.temperatureUnit),
+      showAllSymptomOptions:
+          showAllSymptomOptions ?? this.showAllSymptomOptions,
+      symptomFoldNoteShown: symptomFoldNoteShown ?? this.symptomFoldNoteShown,
     );
   }
 

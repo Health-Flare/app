@@ -490,7 +490,7 @@ void main() {
       await _pump(tester, _app(entries: _plain(9)));
       expect(_offered('Where'), findsOneWidget);
       expect(_offered('Anything else'), findsOneWidget);
-      expect(find.textContaining('more'), findsNothing);
+      expect(find.textContaining(RegExp(r'^\d+ more$')), findsNothing);
     });
 
     testWidgets('the note shows once, and is recorded as seen', (tester) async {

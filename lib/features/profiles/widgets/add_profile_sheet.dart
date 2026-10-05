@@ -42,6 +42,8 @@ class _AddProfileSheetState extends ConsumerState<AddProfileSheet> {
   /// '°C', '°F', or null for "As logged".
   String? _temperatureUnit;
 
+  bool _showAllSymptomOptions = false;
+
   final _picker = ImagePicker();
 
   bool get _isEditMode => widget.existing != null;
@@ -60,6 +62,7 @@ class _AddProfileSheetState extends ConsumerState<AddProfileSheet> {
     _cycleEnabled = existing?.cycleTrackingEnabled ?? false;
     _bowelEnabled = existing?.bowelTrackingEnabled ?? false;
     _temperatureUnit = existing?.temperatureUnit;
+    _showAllSymptomOptions = existing?.showAllSymptomOptions ?? false;
   }
 
   @override
@@ -131,6 +134,7 @@ class _AddProfileSheetState extends ConsumerState<AddProfileSheet> {
         bowelTrackingEnabled: _bowelEnabled,
         temperatureUnit: _temperatureUnit,
         clearTemperatureUnit: _temperatureUnit == null,
+        showAllSymptomOptions: _showAllSymptomOptions,
       );
       await listNotifier.update(updated);
     } else {
@@ -384,6 +388,17 @@ class _AddProfileSheetState extends ConsumerState<AddProfileSheet> {
                     ),
                     value: _bowelEnabled,
                     onChanged: (value) => setState(() => _bowelEnabled = value),
+                  ),
+                  SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text('Show all symptom options'),
+                    subtitle: const Text(
+                      'Keep every optional detail on the symptom form, even '
+                      "ones you haven't used lately",
+                    ),
+                    value: _showAllSymptomOptions,
+                    onChanged: (value) =>
+                        setState(() => _showAllSymptomOptions = value),
                   ),
                   const SizedBox(height: 8),
                   const ListTile(
