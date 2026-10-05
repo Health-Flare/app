@@ -33,7 +33,9 @@ import 'package:health_flare/data/seed_data.dart';
 /// Schema v19 = AppSettings.lastProfileId, seeded from the highest profile
 ///              id in use so deleted profiles' ids are never reused (#117).
 /// Schema v20 = SymptomEntry.interference, SymptomEntry.impact and
-///              SleepEntry.wokeRested (all nullable).
+///              SleepEntry.wokeRested (all nullable);
+///              Profile.showAllSymptomOptions and symptomFoldNoteShown
+///              (default false).
 ///
 /// How to add a future migration:
 ///   1. Increment [_targetVersion].
@@ -299,7 +301,8 @@ class MigrationRunner {
     // ── v19 → v20: PROMIS-informed inputs ─────────────────────────────────
     // SymptomEntryIsar gains interference and impact; SleepEntryIsar gains
     // wokeRested. All nullable; null means "not recorded". Existing entries
-    // keep their values and get no guessed ones.
+    // keep their values and get no guessed ones. ProfileIsar gains
+    // showAllSymptomOptions and symptomFoldNoteShown, both false.
     if (currentVersion < 20) {
       await isar.writeTxn(() async {
         final s = await isar.appSettings.get(1) ?? (AppSettings()..id = 1);

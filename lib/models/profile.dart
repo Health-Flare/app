@@ -19,6 +19,8 @@ class Profile {
     this.cycleTrackingEnabled = false,
     this.bowelTrackingEnabled = false,
     this.temperatureUnit,
+    this.showAllSymptomOptions = false,
+    this.symptomFoldNoteShown = false,
   });
 
   /// Stable local identifier. In the in-memory MVP this is a simple
@@ -54,6 +56,13 @@ class Profile {
   /// Unit temperatures are shown in for this profile: '°C', '°F', or null
   /// for "As logged". Display only: readings keep the unit they were saved in.
   final String? temperatureUnit;
+
+  /// Keep every symptom add-on showing, even ones that have gone unused.
+  /// Off by default: unused "Where" and "Anything else" fold away.
+  final bool showAllSymptomOptions;
+
+  /// Whether the one-time "we tucked away..." note has been shown.
+  final bool symptomFoldNoteShown;
 
   /// Returns true if this profile has a real photo rather than a generated one.
   bool get hasAvatar => avatarPath != null;
@@ -93,6 +102,8 @@ class Profile {
     bool? cycleTrackingEnabled,
     bool? bowelTrackingEnabled,
     String? temperatureUnit,
+    bool? showAllSymptomOptions,
+    bool? symptomFoldNoteShown,
     bool clearTemperatureUnit = false,
     bool clearDateOfBirth = false,
     bool clearAvatar = false,

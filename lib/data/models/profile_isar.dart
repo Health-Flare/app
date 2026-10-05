@@ -46,6 +46,12 @@ class ProfileIsar {
   /// Display only: vital readings keep the unit they were saved in.
   String? temperatureUnit;
 
+  /// Keep every symptom add-on showing, even unused ones. Default off.
+  bool showAllSymptomOptions = false;
+
+  /// Whether the one-time symptom folding note has been shown.
+  bool symptomFoldNoteShown = false;
+
   // ── Conversion ────────────────────────────────────────────────────────────
 
   /// Convert to the immutable domain class used by the UI.

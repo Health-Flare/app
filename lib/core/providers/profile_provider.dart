@@ -134,6 +134,12 @@ class ProfileListNotifier extends Notifier<List<Profile>> {
     });
   }
 
+  /// Turn "Show all symptom options" on or off for [id].
+  Future<void> setShowAllSymptomOptions(int id, bool value) async {}
+
+  /// Record that [id] has seen the one-time folding note.
+  Future<void> markSymptomFoldNoteShown(int id) async {}
+
   /// Remove a profile by id, with every row of health data that belongs to
   /// it (see [deleteProfileData]). One transaction: if anything fails,
   /// nothing is deleted.

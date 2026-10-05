@@ -48,18 +48,28 @@ const ProfileIsarSchema = CollectionSchema(
       type: IsarType.bool,
     ),
     r'name': PropertySchema(id: 6, name: r'name', type: IsarType.string),
-    r'temperatureUnit': PropertySchema(
+    r'showAllSymptomOptions': PropertySchema(
       id: 7,
+      name: r'showAllSymptomOptions',
+      type: IsarType.bool,
+    ),
+    r'symptomFoldNoteShown': PropertySchema(
+      id: 8,
+      name: r'symptomFoldNoteShown',
+      type: IsarType.bool,
+    ),
+    r'temperatureUnit': PropertySchema(
+      id: 9,
       name: r'temperatureUnit',
       type: IsarType.string,
     ),
     r'weatherOptInShown': PropertySchema(
-      id: 8,
+      id: 10,
       name: r'weatherOptInShown',
       type: IsarType.bool,
     ),
     r'weatherTrackingEnabled': PropertySchema(
-      id: 9,
+      id: 11,
       name: r'weatherTrackingEnabled',
       type: IsarType.bool,
     ),
@@ -113,9 +123,11 @@ void _profileIsarSerialize(
   writer.writeDateTime(offsets[4], object.dateOfBirth);
   writer.writeBool(offsets[5], object.firstLogShown);
   writer.writeString(offsets[6], object.name);
-  writer.writeString(offsets[7], object.temperatureUnit);
-  writer.writeBool(offsets[8], object.weatherOptInShown);
-  writer.writeBool(offsets[9], object.weatherTrackingEnabled);
+  writer.writeBool(offsets[7], object.showAllSymptomOptions);
+  writer.writeBool(offsets[8], object.symptomFoldNoteShown);
+  writer.writeString(offsets[9], object.temperatureUnit);
+  writer.writeBool(offsets[10], object.weatherOptInShown);
+  writer.writeBool(offsets[11], object.weatherTrackingEnabled);
 }
 
 ProfileIsar _profileIsarDeserialize(
@@ -133,9 +145,11 @@ ProfileIsar _profileIsarDeserialize(
   object.firstLogShown = reader.readBool(offsets[5]);
   object.id = id;
   object.name = reader.readString(offsets[6]);
-  object.temperatureUnit = reader.readStringOrNull(offsets[7]);
-  object.weatherOptInShown = reader.readBool(offsets[8]);
-  object.weatherTrackingEnabled = reader.readBool(offsets[9]);
+  object.showAllSymptomOptions = reader.readBool(offsets[7]);
+  object.symptomFoldNoteShown = reader.readBool(offsets[8]);
+  object.temperatureUnit = reader.readStringOrNull(offsets[9]);
+  object.weatherOptInShown = reader.readBool(offsets[10]);
+  object.weatherTrackingEnabled = reader.readBool(offsets[11]);
   return object;
 }
 
@@ -161,10 +175,14 @@ P _profileIsarDeserializeProp<P>(
     case 6:
       return (reader.readString(offset)) as P;
     case 7:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 8:
       return (reader.readBool(offset)) as P;
     case 9:
+      return (reader.readStringOrNull(offset)) as P;
+    case 10:
+      return (reader.readBool(offset)) as P;
+    case 11:
       return (reader.readBool(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -816,6 +834,30 @@ extension ProfileIsarQueryFilter
   }
 
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
+  showAllSymptomOptionsEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'showAllSymptomOptions',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
+  symptomFoldNoteShownEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'symptomFoldNoteShown',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
   temperatureUnitIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
@@ -1093,6 +1135,34 @@ extension ProfileIsarQuerySortBy
     });
   }
 
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy>
+  sortByShowAllSymptomOptions() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'showAllSymptomOptions', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy>
+  sortByShowAllSymptomOptionsDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'showAllSymptomOptions', Sort.desc);
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy>
+  sortBySymptomFoldNoteShown() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'symptomFoldNoteShown', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy>
+  sortBySymptomFoldNoteShownDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'symptomFoldNoteShown', Sort.desc);
+    });
+  }
+
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy> sortByTemperatureUnit() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'temperatureUnit', Sort.asc);
@@ -1238,6 +1308,34 @@ extension ProfileIsarQuerySortThenBy
     });
   }
 
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy>
+  thenByShowAllSymptomOptions() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'showAllSymptomOptions', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy>
+  thenByShowAllSymptomOptionsDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'showAllSymptomOptions', Sort.desc);
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy>
+  thenBySymptomFoldNoteShown() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'symptomFoldNoteShown', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy>
+  thenBySymptomFoldNoteShownDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'symptomFoldNoteShown', Sort.desc);
+    });
+  }
+
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy> thenByTemperatureUnit() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'temperatureUnit', Sort.asc);
@@ -1330,6 +1428,20 @@ extension ProfileIsarQueryWhereDistinct
     });
   }
 
+  QueryBuilder<ProfileIsar, ProfileIsar, QDistinct>
+  distinctByShowAllSymptomOptions() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'showAllSymptomOptions');
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QDistinct>
+  distinctBySymptomFoldNoteShown() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'symptomFoldNoteShown');
+    });
+  }
+
   QueryBuilder<ProfileIsar, ProfileIsar, QDistinct> distinctByTemperatureUnit({
     bool caseSensitive = true,
   }) {
@@ -1405,6 +1517,20 @@ extension ProfileIsarQueryProperty
   QueryBuilder<ProfileIsar, String, QQueryOperations> nameProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'name');
+    });
+  }
+
+  QueryBuilder<ProfileIsar, bool, QQueryOperations>
+  showAllSymptomOptionsProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'showAllSymptomOptions');
+    });
+  }
+
+  QueryBuilder<ProfileIsar, bool, QQueryOperations>
+  symptomFoldNoteShownProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'symptomFoldNoteShown');
     });
   }
 

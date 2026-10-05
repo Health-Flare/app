@@ -391,6 +391,9 @@ void main() {
       await tester.pumpWidget(_buildSymptomForm());
       await tester.pump();
 
+      await tester.ensureVisible(find.text('Anything else'));
+      await tester.tap(find.text('Anything else'));
+      await tester.pump();
       await tester.enterText(
         find.byKey(const Key('symptom_notes_field')),
         'Worse after eating',
@@ -653,17 +656,18 @@ void main() {
     testWidgets('asks what happened before asking for numbers', (tester) async {
       await pumpTall(tester, _buildSymptomForm());
       final labels = [
-        'Symptom name',
-        'Where',
+        'What are you feeling?',
         'How intense was it?',
-        'How much did it get in the way?',
-        'What did it stop you doing, or make harder?',
-        'Date and time',
-        "Anything else we didn't ask about? (optional)",
+        'Add if it helps',
       ];
       final ys = [for (final l in labels) tester.getTopLeft(find.text(l)).dy];
       expect(ys, [...ys]..sort());
     });
+
+    Future<void> openAddOn(WidgetTester tester, String label) async {
+      await tester.tap(find.text(label));
+      await tester.pump();
+    }
 
     testWidgets('intensity is anchored at both ends', (tester) async {
       await pumpTall(tester, _buildSymptomForm());
@@ -675,6 +679,7 @@ void main() {
       tester,
     ) async {
       await pumpTall(tester, _buildSymptomForm());
+      await openAddOn(tester, 'How much it got in the way');
       final chips = tester.widgetList<ChoiceChip>(
         find.descendant(
           of: find.byKey(const Key('interference_selector')),
@@ -693,6 +698,7 @@ void main() {
 
     testWidgets('an interference choice can be cleared', (tester) async {
       await pumpTall(tester, _buildSymptomForm());
+      await openAddOn(tester, 'How much it got in the way');
       bool selected() => tester
           .widget<ChoiceChip>(find.widgetWithText(ChoiceChip, 'Quite a bit'))
           .selected;
@@ -706,6 +712,7 @@ void main() {
 
     testWidgets('impact hint gives a concrete example', (tester) async {
       await pumpTall(tester, _buildSymptomForm());
+      await openAddOn(tester, 'What it stopped you doing');
       expect(
         find.text(
           "e.g. Missed work, couldn't climb the stairs, cancelled plans",

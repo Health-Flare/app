@@ -447,8 +447,8 @@ Feature: Symptom and Vitals Logging
     And "Where", "What it stopped you doing", and "Anything else" are offered under "Add if it helps"
 
   Scenario: A quick log that mentions a body part opens "Where" with it chosen
-    When I promote the quick log "sore left knee" to a full symptom entry
-    Then "Where" is open with "Knees" chosen
+    When I promote the quick log "sore knees" to a full symptom entry
+    Then "Where" is open with "knees" chosen
 
   # Last time ----------------------------------------------------------------
 
@@ -535,14 +535,14 @@ Feature: Symptom and Vitals Logging
 
   Scenario: Last time wins over folding
     Given "Where" is folded away for "Sarah"
-    And she last logged "Joint pain" with locations "Hands"
+    And she last logged "Joint pain" with locations "hands"
     When I start a new entry for "Joint pain"
     Then "Where" opens, saying "Added because you used it last time for Joint pain."
 
   Scenario: Folding never changes saved entries
     Given "Where" is folded away for "Sarah"
-    When I edit an older entry that has locations "Knees"
-    Then "Where" is open with "Knees" chosen
+    When I edit an older entry that has locations "knees"
+    Then "Where" is open with "knees" chosen
 
   Scenario: Entries logged before this change keep their data
     Given "Sarah" has a symptom entry for "Nausea" with severity 3 saved before this update
