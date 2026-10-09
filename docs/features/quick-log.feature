@@ -21,20 +21,20 @@ Feature: Quick Log
 
   Scenario: Typed screens keep an add button for that screen
     Given "Sarah" is the active profile
-    When I am on the Track screen with the Symptoms tab selected
+    When I am on the Tracking screen with the Symptoms tab selected
     Then the add button opens the symptom form
     And the quick log sheet does not open
     When I switch to the Vitals tab
     Then the add button opens the vital form
-    When I open Care and select the Conditions tab
+    When I switch to the Conditions tab
     Then the add button opens the condition screen
-    When I select the Medications tab in Care
+    When I am on the Medications screen
     Then the add button opens the new medication form
-    When I select the Meals tab in Track
+    When I am on the Meals screen
     Then the add button opens the meal form
-    When I select the Entries tab in Journal
+    When I am on the Journal screen
     Then the add button opens the journal composer
-    When I select the Sleep tab in Track
+    When I am on the Sleep screen
     Then the add button opens the sleep form
     When I am on the Reports screen
     Then no quick log button is shown
