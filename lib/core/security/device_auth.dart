@@ -1,7 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:local_auth/local_auth.dart';
+import 'package:local_auth_android/local_auth_android.dart';
+import 'package:local_auth_darwin/local_auth_darwin.dart';
+import 'package:local_auth_platform_interface/local_auth_platform_interface.dart';
 
 /// Outcome of asking for the phone's own security.
 enum DeviceAuthResult {
@@ -27,17 +29,19 @@ abstract interface class DeviceAuth {
   Future<DeviceAuthResult> authenticate({required String reason});
 }
 
-/// [DeviceAuth] backed by `local_auth`.
+/// [DeviceAuth] backed by local_auth's Android and iOS implementations
+/// (see pubspec.yaml for why not the umbrella package).
 class LocalDeviceAuth implements DeviceAuth {
-  LocalDeviceAuth([LocalAuthentication? auth])
-    : _auth = auth ?? LocalAuthentication();
+  LocalDeviceAuth([LocalAuthPlatform? auth]) : _auth = auth;
 
-  final LocalAuthentication _auth;
+  final LocalAuthPlatform? _auth;
+
+  LocalAuthPlatform get _platform => _auth ?? LocalAuthPlatform.instance;
 
   @override
   Future<bool> hasScreenLock() async {
     try {
-      return await _auth.isDeviceSupported();
+      return await _platform.isDeviceSupported();
     } on LocalAuthException {
       return false;
     } on PlatformException {
@@ -51,12 +55,17 @@ class LocalDeviceAuth implements DeviceAuth {
   @override
   Future<DeviceAuthResult> authenticate({required String reason}) async {
     try {
-      final ok = await _auth.authenticate(
+      final ok = await _platform.authenticate(
         localizedReason: reason,
-        // Passcode fallback: a failed sensor or re-enrolled face must never
-        // lock someone out of their own records (there is no account to
-        // recover through).
-        biometricOnly: false,
+        authMessages: const [IOSAuthMessages(), AndroidAuthMessages()],
+        options: const AuthenticationOptions(
+          // Passcode fallback: a failed sensor or re-enrolled face must
+          // never lock someone out of their own records (there is no account
+          // to recover through).
+          biometricOnly: false,
+          // Legacy option; local_auth 3.x always passes false.
+          useErrorDialogs: false,
+        ),
       );
       return ok ? DeviceAuthResult.success : DeviceAuthResult.cancelled;
     } on LocalAuthException catch (e) {
