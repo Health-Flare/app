@@ -56,5 +56,48 @@
       pinDigests: true,
       automerge: false,
     },
+
+    // ── Coupled updates ──────────────────────────────────────────────────
+    // Packages below can't move on their own: each half has a hard version
+    // window against the other, so single-package PRs either break the build
+    // or pass CI while leaving a broken combination one merge away. Each
+    // group arrives as one PR. `separateMajorMinor: false` keeps a major
+    // bump in the same PR as its partners' minors (by default Renovate
+    // splits it into a `major-<group>` branch, which is how java-jdk 25
+    // ended up alone in #128).
+
+    // Android toolchain: Gradle wrapper, AGP and the Kotlin Gradle plugin
+    // have min/max versions against each other (AGP 9 needs Gradle >= 9.6;
+    // AGP 8.x breaks on Gradle >= 9.6), and the Gradle version caps which
+    // JDK can run it. The JDK is set by `java-version` in the workflows,
+    // which Renovate's github-actions manager reports as `java-jdk`; this
+    // rule comes after the actions rule so it wins the group name.
+    {
+      groupName: 'android toolchain',
+      matchManagers: ['gradle-wrapper', 'gradle'],
+      separateMajorMinor: false,
+      automerge: false,
+    },
+    {
+      groupName: 'android toolchain',
+      matchManagers: ['github-actions'],
+      matchDepNames: ['java-jdk'],
+      separateMajorMinor: false,
+      automerge: false,
+    },
+
+    // Isar: the runtime, the native libs and the generator must be the same
+    // version. Generated .g.dart files embed the generator version and
+    // isar_community >= 3.3.2 refuses older generated code at compile time.
+    // Spans pubspec.yaml, scripts/isar_codegen/ and tools/csv_import/ (the
+    // latter pins an exact version and carries its own generated copies, so
+    // a bump there also means regenerating them).
+    {
+      groupName: 'isar',
+      matchManagers: ['pub'],
+      matchPackageNames: ['/^isar_community/'],
+      separateMajorMinor: false,
+      automerge: false,
+    },
   ],
 }
