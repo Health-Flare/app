@@ -103,6 +103,10 @@ class Appointment {
   final DateTime createdAt;
   final DateTime? updatedAt;
 
+  /// True when the stored status is Upcoming. This ignores the time: an
+  /// appointment whose time has passed can still be Upcoming here. To ask
+  /// "is this still ahead?", use `isUpcomingAt` in appointment_timing.dart
+  /// (#138).
   bool get isUpcoming => status == AppointmentStatus.upcoming;
   bool get isCompleted => status == AppointmentStatus.completed;
 

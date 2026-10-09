@@ -101,14 +101,140 @@ Feature: Doctor Visit and Appointment Tracking
     And it no longer appears as an upcoming event on the dashboard
 
   # ---------------------------------------------------------------------------
-  # Appointment history and dashboard
+  # Dashboard appointments card (#138)
   # ---------------------------------------------------------------------------
+  #
+  # The card is the way into the appointments list until Track and Care
+  # (#135) gives appointments a tab, so it shows whenever the profile has
+  # any appointment at all, and as a one-line prompt when it has none.
+  #
+  # One rule, used everywhere an appointment is called upcoming (dashboard
+  # card, appointments list, detail screen, PDF and CSV exports):
+  #
+  # - Upcoming: status is Upcoming AND the scheduled time is still ahead.
+  # - Outcome not recorded: status is Upcoming AND the scheduled time has
+  #   passed. Status is never changed automatically.
+  # - Needs an outcome (card only): outcome not recorded, and the scheduled
+  #   time was less than 7 days ago.
+  #
+  # Recording an outcome, or marking it Completed, Missed or Cancelled,
+  # clears "Needs an outcome".
 
   Scenario: Upcoming appointments are shown on the dashboard
     Given "Sarah" has an upcoming appointment with "Dr. Chen" in 5 days
     When I am on the dashboard
-    Then the appointment is visible in the upcoming section
-    And it shows the provider name, appointment title, and date
+    Then the appointments card shows the appointment title, provider name, and date
+    And it shows "In 5 days"
+    And the card has an "All appointments" link
+
+  Scenario: The card links to all appointments with only one upcoming
+    Given "Sarah" has exactly one appointment, upcoming in 2 days
+    When I am on the dashboard
+    And I tap "All appointments" on the appointments card
+    Then the appointments list for "Sarah" opens
+
+  Scenario: The card shows the next three, soonest first
+    Given "Sarah" has upcoming appointments in 2, 9, 20 and 40 days
+    When I am on the dashboard
+    Then the appointments card lists the appointments in 2, 9 and 20 days, in that order
+    And the appointment in 40 days is not on the card
+    And "All appointments" is shown
+
+  Scenario: Tapping an appointment on the card opens its detail
+    Given "Sarah" has an upcoming appointment titled "Rheumatology follow-up"
+    When I tap "Rheumatology follow-up" on the appointments card
+    Then the detail for "Rheumatology follow-up" opens
+
+  Scenario: An appointment that just happened asks how it went
+    Given "Sarah" had an appointment titled "GP check-in" 2 days ago
+    And its status is still Upcoming
+    When I am on the dashboard
+    Then the appointments card shows "GP check-in" with "How did it go?"
+    And it is listed above any upcoming appointments
+    When I tap "GP check-in" on the card
+    Then the detail for "GP check-in" opens with the outcome notes field in view
+
+  Scenario: An appointment earlier today asks how it went once its time has passed
+    Given "Sarah" has an appointment titled "Bloods" at 09:00 today
+    And its status is still Upcoming
+    When I am on the dashboard at 11:00
+    Then the appointments card shows "Bloods" with "How did it go?"
+
+  Scenario Outline: Recording what happened clears "How did it go?"
+    Given "Sarah" had an appointment titled "GP check-in" 2 days ago
+    And it shows "How did it go?" on the appointments card
+    When I <action>
+    Then "GP check-in" is no longer on the appointments card
+
+    Examples:
+      | action                                         |
+      | save an outcome for it                         |
+      | mark it as "Completed"                         |
+      | mark it as "Missed"                            |
+      | mark it as "Cancelled"                         |
+
+  Scenario: "How did it go?" stops after 7 days
+    Given "Sarah" had an appointment titled "GP check-in" 8 days ago
+    And its status is still Upcoming
+    When I am on the dashboard
+    Then "GP check-in" is not on the appointments card
+    And it is in the Past section of the appointments list, labelled "Outcome not recorded"
+
+  Scenario: Appointments needing an outcome count toward the three shown
+    Given "Sarah" had appointments 1 and 3 days ago with no outcome recorded
+    And she has upcoming appointments in 2 and 9 days
+    When I am on the dashboard
+    Then the appointments card lists, in order:
+      | Appointment  | Shows          |
+      | 1 day ago    | How did it go? |
+      | 3 days ago   | How did it go? |
+      | in 2 days    | In 2 days      |
+    And "All appointments" is shown
+
+  Scenario: Only past appointments: the card offers to add one
+    Given "Sarah" has completed appointments but none upcoming or needing an outcome
+    When I am on the dashboard
+    Then the appointments card reads "No appointments coming up."
+    And it offers "Add appointment" and "All appointments"
+
+  Scenario: No appointments at all: a one-line prompt
+    Given "Sarah" has never added an appointment
+    When I am on the dashboard
+    Then I see "Got an appointment coming up? Tap to add it."
+    And it has no "All appointments" link
+    And it has no close button
+    When I tap it
+    Then the new appointment form opens for "Sarah"
+    # Turning this off comes with Features in use (#142). Until then it
+    # can't be dismissed, same as the flare prompt.
+
+  Scenario: The prompt shows on an otherwise empty dashboard
+    Given "Sarah" has nothing logged and no appointments
+    When I am on the dashboard
+    Then "Got an appointment coming up? Tap to add it." is shown above the empty state
+
+  Scenario: The card follows the active profile
+    Given "Sarah" has an upcoming appointment titled "Physio assessment"
+    And "Dad" has no appointments
+    When I switch the active profile to "Dad"
+    Then the dashboard shows "Got an appointment coming up? Tap to add it."
+    And "Physio assessment" is not shown
+
+  Scenario: The card's links work with a screen reader
+    Given a screen reader is active
+    When I move through the appointments card
+    Then "All appointments" and "Add appointment" are each announced as buttons
+    And each is at least 48 by 48 dp
+
+  Scenario: The card's links work with a keyboard on desktop
+    Given I am using Health Flare on macOS, Linux or Windows
+    When I press Tab through the appointments card
+    Then each appointment row, "All appointments" and "Add appointment" take focus in reading order
+    And Enter on a focused item does the same as tapping it
+
+  # ---------------------------------------------------------------------------
+  # Appointment history
+  # ---------------------------------------------------------------------------
 
   Scenario: View appointment history in reverse chronological order
     Given "Sarah" has the following appointments:
@@ -120,6 +246,29 @@ Feature: Doctor Visit and Appointment Tracking
     Then I see all three appointments listed
     And "Physio assessment" appears in an upcoming section
     And the two past appointments are listed below in reverse date order
+
+  Scenario: A passed appointment with no outcome is listed under Past
+    Given "Sarah" had an appointment titled "GP check-in" 2 days ago
+    And its status is still Upcoming
+    When I navigate to the appointments screen
+    Then "GP check-in" is in the Past section, not the Upcoming section
+    And it is labelled "Outcome not recorded"
+    And its date order among past appointments is by scheduled date
+
+  Scenario: The detail screen doesn't call a passed appointment upcoming
+    Given "Sarah" had an appointment titled "GP check-in" 2 days ago
+    And its status is still Upcoming
+    When I open the detail for "GP check-in"
+    Then the title reads "Appointment detail", not "Upcoming appointment"
+    And the status reads "Outcome not recorded"
+    And "Mark completed", "Cancel" and "Missed" are still offered
+
+  Scenario: Exports don't call a passed appointment upcoming
+    Given "Sarah" had an appointment titled "GP check-in" 2 days ago
+    And its status is still Upcoming
+    When I export a report including appointments as PDF or CSV
+    Then the status for "GP check-in" reads "Outcome not recorded"
+    And an appointment still ahead with status Upcoming reads "Upcoming"
 
   Scenario: View full detail of a past appointment
     Given "Sarah" has a completed appointment with an outcome and medication change recorded
@@ -154,6 +303,12 @@ Feature: Doctor Visit and Appointment Tracking
     And "Sarah" has an upcoming appointment titled "Rheumatology follow-up"
     When I navigate to the dashboard
     Then the screen reader announces "Rheumatology follow-up, upcoming appointment, 2026-03-20"
+
+  Scenario: An appointment asking how it went has its own screen reader label
+    Given a screen reader is active
+    And "Sarah" had an appointment titled "GP check-in" 2 days ago with no outcome recorded
+    When I navigate to the dashboard
+    Then the screen reader announces "GP check-in, appointment 2 days ago, how did it go?"
 
   Scenario: Appointment data is included in exported reports
     When I generate a report including appointments

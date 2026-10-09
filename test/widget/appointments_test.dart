@@ -5,7 +5,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:health_flare/core/providers/appointment_provider.dart';
+import 'package:health_flare/core/providers/clock_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
+import 'package:health_flare/core/router/app_router.dart';
 import 'package:health_flare/features/appointments/screens/appointment_detail_screen.dart';
 import 'package:health_flare/features/appointments/screens/appointment_form_screen.dart';
 import 'package:health_flare/features/appointments/screens/appointment_list_screen.dart';
@@ -106,18 +108,7 @@ List<Override> _baseOverrides({
         appointments.where((a) => a.profileId == 1).toList()
           ..sort((a, b) => b.scheduledAt.compareTo(a.scheduledAt)),
   ),
-  upcomingAppointmentsProvider.overrideWith(
-    (ref) =>
-        appointments
-            .where(
-              (a) =>
-                  a.profileId == 1 &&
-                  a.status == AppointmentStatus.upcoming &&
-                  a.scheduledAt.isAfter(DateTime.now()),
-            )
-            .toList()
-          ..sort((a, b) => a.scheduledAt.compareTo(b.scheduledAt)),
-  ),
+  clockProvider.overrideWithValue(() => _now),
   activeProfileProvider.overrideWith(_FakeActiveProfile.new),
   profileListProvider.overrideWith(() => _FakeProfileList(profiles)),
   activeProfileDataProvider.overrideWith(
@@ -147,11 +138,15 @@ Widget _buildFormScreen({Appointment? appointment, String? prefillProvider}) {
 Widget _buildDetailScreen({
   required Appointment appointment,
   List<Profile>? profiles,
+  bool scrollToOutcome = false,
 }) {
   return ProviderScope(
     overrides: _baseOverrides(appointments: [appointment], profiles: profiles),
     child: MaterialApp(
-      home: AppointmentDetailScreen(appointmentId: appointment.id),
+      home: AppointmentDetailScreen(
+        appointmentId: appointment.id,
+        scrollToOutcome: scrollToOutcome,
+      ),
     ),
   );
 }
@@ -494,11 +489,18 @@ void main() {
   // ---------------------------------------------------------------------------
 
   group('UpcomingAppointmentsCard', () {
-    testWidgets('hidden when no upcoming appointments', (tester) async {
+    // Was "hidden when no upcoming appointments". #138 replaced that rule:
+    // with no appointments the card is a one-line prompt.
+    testWidgets('shows the add prompt when there are no appointments', (
+      tester,
+    ) async {
       await tester.pumpWidget(_buildCard());
       await tester.pump();
 
-      expect(find.byType(Card), findsNothing);
+      expect(
+        find.text('Got an appointment coming up? Tap to add it.'),
+        findsOneWidget,
+      );
     });
 
     testWidgets('shows appointment title when upcoming', (tester) async {
@@ -510,6 +512,139 @@ void main() {
       await tester.pump();
 
       expect(find.text('Rheumatology follow-up'), findsOneWidget);
+    });
+  });
+
+  // ---------------------------------------------------------------------------
+  // One rule for "upcoming" (#138)
+  // ---------------------------------------------------------------------------
+
+  group('Upcoming means status and time (#138)', () {
+    testWidgets('A passed appointment with no outcome is listed under Past', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _buildListScreen(
+          appointments: [
+            makeAppointment(
+              id: 1,
+              title: 'GP check-in',
+              scheduledAt: _now.subtract(const Duration(days: 2)),
+            ),
+            makeAppointment(
+              id: 2,
+              title: 'Bloods',
+              status: AppointmentStatus.completed,
+              scheduledAt: _now.subtract(const Duration(days: 5)),
+            ),
+            makeAppointment(
+              id: 3,
+              title: 'Physio intake',
+              status: AppointmentStatus.completed,
+              scheduledAt: _now.subtract(const Duration(days: 1)),
+            ),
+          ],
+        ),
+      );
+      await tester.pump();
+
+      expect(find.textContaining('Upcoming ('), findsNothing);
+      expect(find.text('Past (3)'), findsOneWidget);
+      expect(find.text('Outcome not recorded'), findsOneWidget);
+      final y = {
+        for (final t in ['Physio intake', 'GP check-in', 'Bloods'])
+          t: tester.getTopLeft(find.text(t)).dy,
+      };
+      expect(y['Physio intake']!, lessThan(y['GP check-in']!));
+      expect(y['GP check-in']!, lessThan(y['Bloods']!));
+    });
+
+    testWidgets('"How did it go?" stops after 7 days (list keeps the label)', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _buildListScreen(
+          appointments: [
+            makeAppointment(
+              title: 'GP check-in',
+              scheduledAt: _now.subtract(const Duration(days: 8)),
+            ),
+          ],
+        ),
+      );
+      await tester.pump();
+
+      expect(find.text('Past (1)'), findsOneWidget);
+      expect(find.text('Outcome not recorded'), findsOneWidget);
+    });
+
+    testWidgets('an appointment still ahead stays in Upcoming', (tester) async {
+      await tester.pumpWidget(
+        _buildListScreen(
+          appointments: [
+            makeAppointment(scheduledAt: _now.add(const Duration(hours: 2))),
+          ],
+        ),
+      );
+      await tester.pump();
+
+      expect(find.text('Upcoming (1)'), findsOneWidget);
+      expect(find.text('Outcome not recorded'), findsNothing);
+    });
+
+    testWidgets(
+      "The detail screen doesn't call a passed appointment upcoming",
+      (tester) async {
+        await tester.pumpWidget(
+          _buildDetailScreen(
+            appointment: makeAppointment(
+              title: 'GP check-in',
+              scheduledAt: _now.subtract(const Duration(days: 2)),
+            ),
+          ),
+        );
+        await tester.pump();
+
+        expect(find.text('Upcoming appointment'), findsNothing);
+        expect(find.text('Appointment detail'), findsOneWidget);
+        expect(find.text('Outcome not recorded'), findsOneWidget);
+        expect(find.text('Upcoming'), findsNothing);
+        expect(find.text('Mark completed'), findsOneWidget);
+        expect(find.text('Cancel'), findsOneWidget);
+        expect(find.text('Missed'), findsOneWidget);
+      },
+    );
+
+    testWidgets('detail opened from "How did it go?" shows the outcome field', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(800, 1000);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+
+      // Enough questions to push the outcome field well below the fold.
+      final appt = makeAppointment(
+        title: 'GP check-in',
+        scheduledAt: _now.subtract(const Duration(days: 2)),
+        questions: [
+          for (var i = 0; i < 20; i++)
+            AppointmentQuestion(questionId: 'q$i', question: 'Question $i'),
+        ],
+      );
+      await tester.pumpWidget(
+        _buildDetailScreen(appointment: appt, scrollToOutcome: true),
+      );
+      await tester.pumpAndSettle();
+
+      final field = find.byKey(const Key('appointment_outcome_field'));
+      expect(field, findsOneWidget);
+      final rect = tester.getRect(field);
+      expect(rect.top, greaterThanOrEqualTo(0));
+      expect(rect.bottom, lessThanOrEqualTo(1000));
+    });
+
+    test('the outcome link carries the focus parameter', () {
+      expect(AppRoutes.appointmentOutcome(5), '/appointments/5?focus=outcome');
     });
   });
 

@@ -96,6 +96,9 @@ abstract final class AppRoutes {
   static const appointmentNew = '/appointments/new';
   static String appointmentEdit(int id) => '/appointments/$id/edit';
   static String appointmentDetail(int id) => '/appointments/$id';
+
+  /// Detail screen scrolled to the outcome notes field (#138).
+  static String appointmentOutcome(int id) => '/appointments/$id?focus=outcome';
   static const activity = '/activity';
   static const activityNew = '/activity/new';
   static String activityEdit(int id) => '/activity/$id/edit';
@@ -386,6 +389,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 name: 'appointment-detail',
                 builder: (context, state) => AppointmentDetailScreen(
                   appointmentId: int.parse(state.pathParameters['aid']!),
+                  scrollToOutcome:
+                      state.uri.queryParameters['focus'] == 'outcome',
                 ),
               ),
             ],
