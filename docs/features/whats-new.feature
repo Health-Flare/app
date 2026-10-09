@@ -146,15 +146,16 @@ Feature: What's new and release guides
     And the Medications tab in Care opens
     And the Care section in the bottom bar is outlined for two pulses
 
-  Scenario: The guide offers to keep the old shortcuts
+  Scenario: The guide offers to keep it like before
     Given I am on the "Keep it or change it" step
     Then I can choose one of:
-      | Choice               | What happens                                                    |
-      | Use the new layout   | The default bar is kept                                         |
-      | Keep Meds in the bar | Medications is pinned to the bar (navigation-customization.feature) |
-      | Pin something else   | Opens Settings > Navigation > Bottom bar after the guide        |
+      | Choice              | What happens                                                        |
+      | Use the new layout  | The default bar is kept                                             |
+      | Keep it like before | The "Like before" bar preset is applied (navigation-customization.feature) |
+      | Set it up myself    | Settings > Your layout opens after the guide                        |
     And "Use the new layout" is selected by default
-    And the step says this can be changed any time in Settings > Navigation
+    And the step says features I don't use can be turned off in Settings > Your layout
+    And it says all of this can be changed any time
 
   Scenario: The last step says where to find the guide again
     Given I am on the "Finding this again" step
@@ -188,12 +189,17 @@ Feature: What's new and release guides
     Then no release card is shown on the dashboard after later updates
     And What's new history and "Replay guide" still work
 
-  Scenario: Turning off highlights still tells me when something moved
+  Scenario: Turning off highlights turns off guide cards too
     Given "Show update highlights" is off
     When Health Flare is updated to a version with a guide
-    Then the guide card is shown once
-    And it can be dismissed like any other card
-    # A layout change with no notice at all reads as a broken app.
+    Then no card is shown
+    And the guide is in Settings > What's new
+    # Off means off.
+
+  Scenario: The setting says what turning it off means
+    When I turn off "Show update highlights"
+    Then I see "You won't be told when screens move. Guides stay in What's new."
+    And there is no "Are you sure?"
 
   # ---------------------------------------------------------------------------
   # Customized layouts
@@ -256,3 +262,14 @@ Feature: What's new and release guides
     When I dismiss the guide card while "Sarah" is active
     And I switch to "Dad"
     Then the guide card is not shown for "Dad"
+
+  Scenario: "Show update highlights" is part of backups
+    Given a backup was made with "Show update highlights" off
+    When I restore it with "Replace everything"
+    Then "Show update highlights" is off
+
+  Scenario: Restoring onto a newer version still shows that version's card
+    Given a backup was made on 1.10.0 after its card was dismissed
+    When I restore it onto 1.12.0, which has highlights
+    Then the 1.12.0 card is shown
+    And the 1.10.0 card is not shown again

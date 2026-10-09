@@ -30,11 +30,18 @@ yesterday would look for it in the old place, it's a move.
 3. **Dismissed means dismissed.** One gesture, no confirmation, never shown
    again for that release. Everything stays in Settings > What's new.
 4. **Customizations survive updates.** An update never rearranges a bar
-   the user changed. It tells them the default changed and theirs was kept.
-5. **Ids are forever.** Sections and tabs are referenced by stable id. A
+   the user changed, and never turns a feature back on that they turned
+   off. It tells them the default changed and theirs was kept.
+5. **Off means off.** Anything a user can turn off (a feature, update
+   highlights, a guide) stays off. Turning a feature off never touches its
+   data.
+6. **Settings travel with backups.** Layout, features in use and update
+   preferences restore with "Replace everything". "Add missing data" never
+   overwrites a choice made on this device.
+7. **Ids are forever.** Sections and tabs are referenced by stable id. A
    retired id gets an entry in the replacement map, in the same PR that
    retires it, with a test.
-6. **Offline.** Highlights and guides are bundled. Nothing is fetched,
+8. **Offline.** Highlights and guides are bundled. Nothing is fetched,
    nothing reports whether it was read.
 
 ## Release checklist additions
@@ -42,7 +49,8 @@ yesterday would look for it in the old place, it's a move.
 - [ ] Each fragment in `changes/` is tagged fix, addition or move
 - [ ] Every move has a guide entry and its build flag is on
 - [ ] Highlights written for the release (2 to 4, plain language, grade 6 to 8, no dashes)
-- [ ] Any retired section or tab id is in the replacement map
+- [ ] Any retired section, tab or feature id is in the replacement map
+- [ ] Backup round trip checked with a customized bar and a feature turned off
 - [ ] Guide checked with a screen reader, Reduce Motion and 200% text
 - [ ] CI check: the `pubspec.yaml` version has a What's new entry (may be empty for fix-only releases)
 
@@ -50,11 +58,15 @@ yesterday would look for it in the old place, it's a move.
 
 These merge to main separately, behind one flag, and ship together:
 
-1. Stable ids for sections and tabs, old-route redirects (no visible change)
+1. Stable ids for sections, tabs and features, old-route redirects (no visible change)
 2. What's new history and release card (#75), usable on its own
 3. Track and Care layout, flagged off
-4. Bar customization, flagged off
+4. Your layout: features in use and bottom bar, with backup support, flagged off
 5. The Track and Care guide, then the flag comes on in the release that ships it
+
+Steps 3 and 4 are built in that order, but they ship together. The
+guide's "Keep it like before" choice is a bottom bar preset, so the layout
+can't ship without it.
 
 Accessibility work comes next and will use the same path: its settings
 changes are moves, so they get a guide.
