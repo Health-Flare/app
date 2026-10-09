@@ -149,6 +149,73 @@ Feature: Developer Experience
     regeneration by running scripts/generate_isar.sh and diffing the output
 
   # ---------------------------------------------------------------------------
+  # Release notes and What's new (#140, docs/feature-releases.md)
+  # ---------------------------------------------------------------------------
+
+  Scenario: Every changelog fragment says what kind of change it is
+    Given a file in changes/
+    Then its name is <issue>-<slug>.<section>.<kind>.md
+    And <kind> is one of fix, addition or move
+    And `dart run tool/rollup_changes.dart --check` fails, naming the file, when the kind is missing or unknown
+
+  Scenario: Rolling up a release drafts its What's new entry
+    Given fragments in changes/ that include an addition
+    When `dart run tool/rollup_changes.dart --write --version 1.10.0` runs
+    Then assets/whats_new/releases.json has an entry for 1.10.0 at the top, dated today
+    And its changes list every bullet in CHANGELOG.md's Unreleased section, one line each
+    And its highlights hold one "TODO" placeholder for a person to write
+
+  Scenario: Rolling up drafts into the release being written
+    Given releases.json's newest entry is for 1.10.0 with no date
+    When `dart run tool/rollup_changes.dart --write` runs without --version
+    Then that entry is the one drafted
+    And highlights and changes already written in it are kept
+
+  Scenario: A fix-only release drafts no highlights
+    Given every fragment in changes/ is a fix
+    And Unreleased has no entries outside Fixed and Security
+    When the release is rolled up
+    Then the drafted entry has no highlights, so it never gets a dashboard card
+
+  Scenario: A release with a move drafts a guide placeholder
+    Given a fragment in changes/ is a move
+    And the release being written names no guide
+    When the release is rolled up
+    Then the drafted entry's guideId is "TODO"
+
+  Scenario: CI fails when the app version has no What's new entry
+    Given pubspec.yaml's version is 1.10.0
+    And releases.json has no entry for 1.10.0
+    When the tests run
+    Then they fail, naming the version and releases.json
+
+  Scenario: A fix-only release may have an empty What's new entry
+    Given pubspec.yaml's version is 1.9.2
+    And releases.json has an entry for 1.9.2 with no highlights
+    When the tests run
+    Then the What's new check passes
+
+  Scenario: CI fails when a released entry still has a TODO
+    Given releases.json's entry for the pubspec.yaml version, or any dated entry, has a "TODO" highlight or guideId
+    When the tests run
+    Then they fail, naming the version
+
+  Scenario: CI fails when a move has no guide
+    Given a fragment in changes/ is a move
+    And the release being written (the newest entry, with no date) names no guide, or there is no such entry
+    When the tests run
+    Then they fail, naming the fragment
+
+  Scenario: The release script refuses an unfinished What's new entry
+    Given fragments are still in changes/, or the new version's What's new entry is missing or has a TODO
+    When `bash scripts/release.sh` runs
+    Then it stops before changing anything, and says what to fix
+
+  Scenario: The release checklist points to the feature release rules
+    Given docs/release-kit.md
+    Then its release checklist links to docs/feature-releases.md
+
+  # ---------------------------------------------------------------------------
   # Branch and PR hygiene
   # ---------------------------------------------------------------------------
 
