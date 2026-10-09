@@ -1,0 +1,3 @@
+- Settings > What's new lists every version of Health Flare, newest first, with the highlights up top and the full list under "All changes".
+- After an update with something worth knowing, a short card waits at the top of the dashboard. It never covers a screen or a log form, has no badge or count, holds off during an active flare, and goes away for good when dismissed, opened, or ignored for five app opens.
+- "Show update highlights" in Settings turns the card off. What's new stays in Settings either way.

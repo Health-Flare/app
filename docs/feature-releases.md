@@ -44,6 +44,39 @@ yesterday would look for it in the old place, it's a move.
 8. **Offline.** Highlights and guides are bundled. Nothing is fetched,
    nothing reports whether it was read.
 
+## Writing What's new
+
+Release content lives in `assets/whats_new/releases.json`, bundled with
+the app. One entry per version, newest first:
+
+```json
+{
+  "version": "1.10.0",
+  "date": "2026-10-20",
+  "highlights": [{ "title": "Naps in Quick Log", "body": "You can log a nap from Quick Log." }],
+  "changes": ["One line per change, from the changelog fragments."],
+  "guideId": null
+}
+```
+
+- `highlights`: 0 to 4. Leave empty for a fix-only release: it's listed
+  in history and never gets a card. A release only gets a dashboard card
+  when it has highlights.
+- `changes`: the full list, shown collapsed under "All changes".
+- `date`: `null` while the release is being written. The app only lists
+  versions up to the one installed, so an entry for the next version can
+  sit on main before release.
+- `guideId`: the release guide for a move (#145). Null otherwise.
+
+How the card behaves (all in `lib/features/whats_new/whats_new_rules.dart`):
+
+- A fresh install never sees a card. Someone updating sees one card for
+  every release with highlights since the last one they saw.
+- Dismissing, opening What's new, or ignoring the card for 5 opens ends it
+  for every release up to the installed one.
+- With "Show update highlights" off, updates count as seen, so turning it
+  back on never brings back an old card.
+
 ## Release checklist additions
 
 - [ ] Each fragment in `changes/` is tagged fix, addition or move

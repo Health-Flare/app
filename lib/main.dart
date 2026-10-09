@@ -14,6 +14,7 @@ import 'package:health_flare/core/theme/app_theme.dart';
 import 'package:health_flare/core/widgets/startup_notice.dart';
 import 'package:health_flare/data/database/app_database.dart';
 import 'package:health_flare/features/app_lock/app_lock_gate.dart';
+import 'package:health_flare/features/whats_new/whats_new_provider.dart';
 
 void main() async {
   // Required before any async work that touches Flutter bindings.
@@ -39,6 +40,19 @@ void main() async {
       : true;
   if (lockSupported && appLock.hideInAppSwitcher) {
     await const PlatformSecureWindow().setHidden(true);
+  }
+
+  // What's new: record where this device starts before onboarding can
+  // create a profile, so a fresh install is never shown a card (#139).
+  // Never blocks startup: on failure the dashboard simply shows no card.
+  try {
+    await WhatsNewStore.settle(
+      isar,
+      releases: await loadBundledReleaseNotes(),
+      installed: await readInstalledVersion(),
+    );
+  } catch (e) {
+    debugPrint("What's new: couldn't settle release state: $e");
   }
 
   runApp(

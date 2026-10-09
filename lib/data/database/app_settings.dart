@@ -36,4 +36,21 @@ class AppSettings {
   /// Hide the app in the app switcher (#101). On Android this also blocks
   /// screenshots and screen recording (FLAG_SECURE).
   bool hideInAppSwitcher = false;
+
+  /// What's new (#139): newest release whose card was dismissed, opened,
+  /// expired or skipped on this device. Null until the first launch that
+  /// has What's new (see settleLaunch in whats_new_rules.dart).
+  String? lastSeenWhatsNewVersion;
+
+  /// "Show update highlights" turned off. Stored as the off state because
+  /// Isar reads a bool missing from an older row as false, so existing
+  /// installs get the default (on) without a data migration.
+  bool updateHighlightsOff = false;
+
+  /// Newest release the pending What's new card covers.
+  String? whatsNewCardVersion;
+
+  /// App opens on which the pending card was shown. Nullable: Isar reads an
+  /// int missing from an older row as -2^63, not 0. Null means 0.
+  int? whatsNewCardShownCount;
 }

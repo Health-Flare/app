@@ -42,10 +42,30 @@ const AppSettingsSchema = CollectionSchema(
       name: r'lastProfileId',
       type: IsarType.long,
     ),
-    r'schemaVersion': PropertySchema(
+    r'lastSeenWhatsNewVersion': PropertySchema(
       id: 5,
+      name: r'lastSeenWhatsNewVersion',
+      type: IsarType.string,
+    ),
+    r'schemaVersion': PropertySchema(
+      id: 6,
       name: r'schemaVersion',
       type: IsarType.long,
+    ),
+    r'updateHighlightsOff': PropertySchema(
+      id: 7,
+      name: r'updateHighlightsOff',
+      type: IsarType.bool,
+    ),
+    r'whatsNewCardShownCount': PropertySchema(
+      id: 8,
+      name: r'whatsNewCardShownCount',
+      type: IsarType.long,
+    ),
+    r'whatsNewCardVersion': PropertySchema(
+      id: 9,
+      name: r'whatsNewCardVersion',
+      type: IsarType.string,
     ),
   },
   estimateSize: _appSettingsEstimateSize,
@@ -68,6 +88,18 @@ int _appSettingsEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
+  {
+    final value = object.lastSeenWhatsNewVersion;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  {
+    final value = object.whatsNewCardVersion;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
   return bytesCount;
 }
 
@@ -82,7 +114,11 @@ void _appSettingsSerialize(
   writer.writeLong(offsets[2], object.appLockRelockSeconds);
   writer.writeBool(offsets[3], object.hideInAppSwitcher);
   writer.writeLong(offsets[4], object.lastProfileId);
-  writer.writeLong(offsets[5], object.schemaVersion);
+  writer.writeString(offsets[5], object.lastSeenWhatsNewVersion);
+  writer.writeLong(offsets[6], object.schemaVersion);
+  writer.writeBool(offsets[7], object.updateHighlightsOff);
+  writer.writeLong(offsets[8], object.whatsNewCardShownCount);
+  writer.writeString(offsets[9], object.whatsNewCardVersion);
 }
 
 AppSettings _appSettingsDeserialize(
@@ -98,7 +134,11 @@ AppSettings _appSettingsDeserialize(
   object.hideInAppSwitcher = reader.readBool(offsets[3]);
   object.id = id;
   object.lastProfileId = reader.readLong(offsets[4]);
-  object.schemaVersion = reader.readLong(offsets[5]);
+  object.lastSeenWhatsNewVersion = reader.readStringOrNull(offsets[5]);
+  object.schemaVersion = reader.readLong(offsets[6]);
+  object.updateHighlightsOff = reader.readBool(offsets[7]);
+  object.whatsNewCardShownCount = reader.readLongOrNull(offsets[8]);
+  object.whatsNewCardVersion = reader.readStringOrNull(offsets[9]);
   return object;
 }
 
@@ -120,7 +160,15 @@ P _appSettingsDeserializeProp<P>(
     case 4:
       return (reader.readLong(offset)) as P;
     case 5:
+      return (reader.readStringOrNull(offset)) as P;
+    case 6:
       return (reader.readLong(offset)) as P;
+    case 7:
+      return (reader.readBool(offset)) as P;
+    case 8:
+      return (reader.readLongOrNull(offset)) as P;
+    case 9:
+      return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -508,6 +556,171 @@ extension AppSettingsQueryFilter
   }
 
   QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+  lastSeenWhatsNewVersionIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'lastSeenWhatsNewVersion'),
+      );
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+  lastSeenWhatsNewVersionIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'lastSeenWhatsNewVersion'),
+      );
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+  lastSeenWhatsNewVersionEqualTo(String? value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'lastSeenWhatsNewVersion',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+  lastSeenWhatsNewVersionGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'lastSeenWhatsNewVersion',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+  lastSeenWhatsNewVersionLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'lastSeenWhatsNewVersion',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+  lastSeenWhatsNewVersionBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'lastSeenWhatsNewVersion',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+  lastSeenWhatsNewVersionStartsWith(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'lastSeenWhatsNewVersion',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+  lastSeenWhatsNewVersionEndsWith(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'lastSeenWhatsNewVersion',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+  lastSeenWhatsNewVersionContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'lastSeenWhatsNewVersion',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+  lastSeenWhatsNewVersionMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'lastSeenWhatsNewVersion',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+  lastSeenWhatsNewVersionIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'lastSeenWhatsNewVersion',
+          value: '',
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+  lastSeenWhatsNewVersionIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          property: r'lastSeenWhatsNewVersion',
+          value: '',
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
   schemaVersionEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
@@ -557,6 +770,253 @@ extension AppSettingsQueryFilter
           includeLower: includeLower,
           upper: upper,
           includeUpper: includeUpper,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+  updateHighlightsOffEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'updateHighlightsOff', value: value),
+      );
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+  whatsNewCardShownCountIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'whatsNewCardShownCount'),
+      );
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+  whatsNewCardShownCountIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'whatsNewCardShownCount'),
+      );
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+  whatsNewCardShownCountEqualTo(int? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'whatsNewCardShownCount',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+  whatsNewCardShownCountGreaterThan(int? value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'whatsNewCardShownCount',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+  whatsNewCardShownCountLessThan(int? value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'whatsNewCardShownCount',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+  whatsNewCardShownCountBetween(
+    int? lower,
+    int? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'whatsNewCardShownCount',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+  whatsNewCardVersionIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'whatsNewCardVersion'),
+      );
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+  whatsNewCardVersionIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'whatsNewCardVersion'),
+      );
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+  whatsNewCardVersionEqualTo(String? value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'whatsNewCardVersion',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+  whatsNewCardVersionGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'whatsNewCardVersion',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+  whatsNewCardVersionLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'whatsNewCardVersion',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+  whatsNewCardVersionBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'whatsNewCardVersion',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+  whatsNewCardVersionStartsWith(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'whatsNewCardVersion',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+  whatsNewCardVersionEndsWith(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'whatsNewCardVersion',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+  whatsNewCardVersionContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'whatsNewCardVersion',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+  whatsNewCardVersionMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'whatsNewCardVersion',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+  whatsNewCardVersionIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'whatsNewCardVersion', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+  whatsNewCardVersionIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          property: r'whatsNewCardVersion',
+          value: '',
         ),
       );
     });
@@ -638,6 +1098,20 @@ extension AppSettingsQuerySortBy
     });
   }
 
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+  sortByLastSeenWhatsNewVersion() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastSeenWhatsNewVersion', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+  sortByLastSeenWhatsNewVersionDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastSeenWhatsNewVersion', Sort.desc);
+    });
+  }
+
   QueryBuilder<AppSettings, AppSettings, QAfterSortBy> sortBySchemaVersion() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'schemaVersion', Sort.asc);
@@ -648,6 +1122,48 @@ extension AppSettingsQuerySortBy
   sortBySchemaVersionDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'schemaVersion', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+  sortByUpdateHighlightsOff() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'updateHighlightsOff', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+  sortByUpdateHighlightsOffDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'updateHighlightsOff', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+  sortByWhatsNewCardShownCount() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'whatsNewCardShownCount', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+  sortByWhatsNewCardShownCountDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'whatsNewCardShownCount', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+  sortByWhatsNewCardVersion() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'whatsNewCardVersion', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+  sortByWhatsNewCardVersionDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'whatsNewCardVersion', Sort.desc);
     });
   }
 }
@@ -733,6 +1249,20 @@ extension AppSettingsQuerySortThenBy
     });
   }
 
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+  thenByLastSeenWhatsNewVersion() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastSeenWhatsNewVersion', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+  thenByLastSeenWhatsNewVersionDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastSeenWhatsNewVersion', Sort.desc);
+    });
+  }
+
   QueryBuilder<AppSettings, AppSettings, QAfterSortBy> thenBySchemaVersion() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'schemaVersion', Sort.asc);
@@ -743,6 +1273,48 @@ extension AppSettingsQuerySortThenBy
   thenBySchemaVersionDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'schemaVersion', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+  thenByUpdateHighlightsOff() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'updateHighlightsOff', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+  thenByUpdateHighlightsOffDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'updateHighlightsOff', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+  thenByWhatsNewCardShownCount() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'whatsNewCardShownCount', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+  thenByWhatsNewCardShownCountDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'whatsNewCardShownCount', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+  thenByWhatsNewCardVersion() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'whatsNewCardVersion', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+  thenByWhatsNewCardVersionDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'whatsNewCardVersion', Sort.desc);
     });
   }
 }
@@ -782,9 +1354,43 @@ extension AppSettingsQueryWhereDistinct
     });
   }
 
+  QueryBuilder<AppSettings, AppSettings, QDistinct>
+  distinctByLastSeenWhatsNewVersion({bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(
+        r'lastSeenWhatsNewVersion',
+        caseSensitive: caseSensitive,
+      );
+    });
+  }
+
   QueryBuilder<AppSettings, AppSettings, QDistinct> distinctBySchemaVersion() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'schemaVersion');
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QDistinct>
+  distinctByUpdateHighlightsOff() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'updateHighlightsOff');
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QDistinct>
+  distinctByWhatsNewCardShownCount() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'whatsNewCardShownCount');
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QDistinct>
+  distinctByWhatsNewCardVersion({bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(
+        r'whatsNewCardVersion',
+        caseSensitive: caseSensitive,
+      );
     });
   }
 }
@@ -829,9 +1435,37 @@ extension AppSettingsQueryProperty
     });
   }
 
+  QueryBuilder<AppSettings, String?, QQueryOperations>
+  lastSeenWhatsNewVersionProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'lastSeenWhatsNewVersion');
+    });
+  }
+
   QueryBuilder<AppSettings, int, QQueryOperations> schemaVersionProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'schemaVersion');
+    });
+  }
+
+  QueryBuilder<AppSettings, bool, QQueryOperations>
+  updateHighlightsOffProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'updateHighlightsOff');
+    });
+  }
+
+  QueryBuilder<AppSettings, int?, QQueryOperations>
+  whatsNewCardShownCountProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'whatsNewCardShownCount');
+    });
+  }
+
+  QueryBuilder<AppSettings, String?, QQueryOperations>
+  whatsNewCardVersionProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'whatsNewCardVersion');
     });
   }
 }

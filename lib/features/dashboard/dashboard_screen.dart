@@ -13,6 +13,7 @@ import 'package:health_flare/features/flare/widgets/active_flare_banner.dart';
 import 'package:health_flare/features/daily_checkin/widgets/daily_checkin_card.dart';
 import 'package:health_flare/features/appointments/widgets/upcoming_appointments_card.dart';
 import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
+import 'package:health_flare/features/whats_new/widgets/whats_new_card.dart';
 
 /// Dashboard: the home tab.
 ///
@@ -128,6 +129,7 @@ class _DashboardBody extends ConsumerWidget {
       return Column(
         children: [
           const ActiveFlareBanner(),
+          const WhatsNewCard(),
           const DailyCheckinCard(),
           const UpcomingAppointmentsCard(),
           Expanded(
@@ -170,6 +172,7 @@ class _DashboardBody extends ConsumerWidget {
     return ListView(
       children: [
         const ActiveFlareBanner(),
+        const WhatsNewCard(),
         const DailyCheckinCard(),
         const UpcomingAppointmentsCard(),
         DashboardActivityFeed(items: items, temperatureUnit: temperatureUnit),

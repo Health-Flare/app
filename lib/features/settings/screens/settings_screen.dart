@@ -9,6 +9,7 @@ import 'package:health_flare/core/providers/database_provider.dart';
 import 'package:health_flare/data/database/app_settings.dart';
 import 'package:health_flare/data/database/import_service.dart';
 import 'package:health_flare/features/settings/widgets/app_version_tile.dart';
+import 'package:health_flare/features/whats_new/widgets/whats_new_settings_tiles.dart';
 import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 
 // ---------------------------------------------------------------------------
@@ -43,6 +44,10 @@ class SettingsScreen extends ConsumerWidget {
           // ── Data & backup ─────────────────────────────────────────────────
           const SettingsSectionHeader(label: 'Data & backup'),
           _BackupTiles(),
+
+          // ── Updates ───────────────────────────────────────────────────────
+          const _SectionHeader(label: 'Updates'),
+          const WhatsNewSettingsTiles(),
 
           // ── About ─────────────────────────────────────────────────────────
           const SettingsSectionHeader(label: 'About'),
