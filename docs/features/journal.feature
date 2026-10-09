@@ -290,10 +290,10 @@ Feature: Journaling
   # Navigation
   # ---------------------------------------------------------------------------
 
-  Scenario: Journal tab is accessible from the bottom navigation bar
-    When I am on any tab in the main app
+  Scenario: Journal is accessible from the bottom navigation bar
+    When I am on any section in the main app
     And I tap "Journal" in the bottom navigation bar
-    Then I navigate to the journal list for the active profile
+    Then the "Entries" tab of Journal shows the journal list for the active profile
 
   Scenario: Reports is accessible from the Dashboard app bar
     When I am on the Dashboard

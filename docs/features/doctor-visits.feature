@@ -242,7 +242,7 @@ Feature: Doctor Visit and Appointment Tracking
       | Rheumatology       | Dr. Chen   | 2026-01-15 | Completed |
       | GP check-in        | Dr. Patel  | 2026-02-03 | Completed |
       | Physio assessment  | Emma W.    | 2026-03-20 | Upcoming  |
-    When I navigate to the appointments screen
+    When I open Care and tap the "Appointments" tab
     Then I see all three appointments listed
     And "Physio assessment" appears in an upcoming section
     And the two past appointments are listed below in reverse date order
