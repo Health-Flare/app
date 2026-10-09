@@ -20,9 +20,11 @@ Feature: Navigation and General UX
   # It now has four sections, and every list screen lives in exactly one
   # of them as a tab. Each section and tab has a stable id
   # (see navigation-customization.feature); labels can change, ids cannot.
+  # Sections and tabs below are the defaults. People can turn features off
+  # and change the bar in Settings > Your layout.
   #
   # Release rule: layout v2 ships only together with its release guide
-  # (release-guides.feature) and the layout setting
+  # (whats-new.feature) and Your layout
   # (navigation-customization.feature). Until all three are done it stays
   # behind a build flag, so the pieces can merge to main separately.
 
