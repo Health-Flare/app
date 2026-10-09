@@ -58,6 +58,19 @@ Feature: What's new and release guides
     Then one card is shown covering both versions
     And "See what's new" opens the history at 1.12.0 with 1.10.0 below it
 
+  Scenario: The first release with What's new tells existing users about it
+    Given I have used Health Flare since before What's new existed
+    And Health Flare was updated to the first version that has What's new
+    When I open the dashboard
+    Then one card is shown for that version's highlights
+    And earlier versions are listed in What's new history with no card for them
+
+  Scenario: Opening What's new from the card counts as seen
+    Given a release card is showing
+    When I tap "See what's new"
+    Then What's new opens at the newest release
+    And when I come back to the dashboard the card is gone for good
+
   # ---------------------------------------------------------------------------
   # Updates that move things: the guide card
   # ---------------------------------------------------------------------------
@@ -92,9 +105,9 @@ Feature: What's new and release guides
 
   Scenario: The card holds off during an active flare
     Given "Sarah" has an active flare
-    And Health Flare was updated to a version with a guide
+    And Health Flare was updated to a version with highlights or a guide
     When I open the dashboard
-    Then the guide card is not shown
+    Then no release card is shown
     And it appears the first time I open the dashboard after the flare ends
     And the 5-open limit only counts opens where it was shown
 
@@ -189,6 +202,12 @@ Feature: What's new and release guides
     Then no release card is shown on the dashboard after later updates
     And What's new history and "Replay guide" still work
 
+  Scenario: Turning highlights back on doesn't bring back missed cards
+    Given "Show update highlights" was off while Health Flare updated to 1.11.0
+    When I turn "Show update highlights" back on
+    Then no card is shown for 1.11.0
+    And the next update with highlights shows its card
+
   Scenario: Turning off highlights turns off guide cards too
     Given "Show update highlights" is off
     When Health Flare is updated to a version with a guide
@@ -256,6 +275,12 @@ Feature: What's new and release guides
     When What's new or a guide is shown
     Then no network request is made
     And nothing is recorded about whether it was read beyond the settings on this device
+
+  Scenario: Going back to an older version shows nothing
+    Given I have seen the card for 1.12.0
+    When Health Flare 1.11.0 is installed over it
+    Then no release card is shown
+    And What's new history lists nothing newer than 1.11.0
 
   Scenario: Release state is per device, not per profile
     Given profiles "Sarah" and "Dad" exist
