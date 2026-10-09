@@ -2,7 +2,7 @@ import 'package:csv/csv.dart';
 import 'package:intl/intl.dart';
 
 import 'package:health_flare/features/reports/models/report_data.dart';
-import 'package:health_flare/models/appointment.dart';
+import 'package:health_flare/models/appointment_timing.dart';
 import 'package:health_flare/models/medication.dart';
 
 /// Generates a flat CSV string from [ReportData].
@@ -12,8 +12,10 @@ abstract final class CsvReportService {
   static final _fmt = DateFormat('yyyy-MM-dd HH:mm');
   static final _dateFmt = DateFormat('yyyy-MM-dd');
 
-  // TODO(#138): use [now] for the appointment status label.
+  /// [now] decides whether an appointment still marked Upcoming has
+  /// passed (#138). Defaults to the current time.
   static String generate(ReportData data, {DateTime? now}) {
+    final at = now ?? DateTime.now();
     final rows = <List<dynamic>>[
       ['Date', 'Type', 'Name / Title', 'Detail', 'Notes'],
     ];
@@ -92,7 +94,7 @@ abstract final class CsvReportService {
         _fmt.format(e.scheduledAt),
         'Appointment',
         _text(e.title),
-        _apptStatus(e.status),
+        appointmentStatusLabel(e, at),
         _text(e.outcomeNotes),
       ]);
     }
@@ -146,12 +148,4 @@ abstract final class CsvReportService {
     if (value == null || value.isEmpty) return '';
     return _formulaLeads.contains(value[0]) ? "'$value" : value;
   }
-
-  static String _apptStatus(String status) => switch (status) {
-    AppointmentStatus.upcoming => 'Upcoming',
-    AppointmentStatus.completed => 'Completed',
-    AppointmentStatus.cancelled => 'Cancelled',
-    AppointmentStatus.missed => 'Missed',
-    _ => status,
-  };
 }

@@ -389,6 +389,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 name: 'appointment-detail',
                 builder: (context, state) => AppointmentDetailScreen(
                   appointmentId: int.parse(state.pathParameters['aid']!),
+                  scrollToOutcome:
+                      state.uri.queryParameters['focus'] == 'outcome',
                 ),
               ),
             ],

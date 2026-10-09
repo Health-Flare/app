@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/legacy.dart';
 import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
 
+import 'package:health_flare/core/providers/clock_provider.dart';
 import 'package:health_flare/core/providers/database_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/features/reports/models/report_config.dart';
@@ -61,7 +62,10 @@ class _ReportGenerator {
       final dateStr = _fileFmt.format(DateTime.now());
 
       if (format == ReportFormat.pdf) {
-        final bytes = await PdfReportService.generate(data);
+        final bytes = await PdfReportService.generate(
+          data,
+          now: _ref.read(clockProvider)(),
+        );
         final file = File('${dir.path}/${safeName}_$dateStr.pdf');
         await file.writeAsBytes(bytes);
         await ScratchFiles.shareThenDelete(
@@ -74,7 +78,10 @@ class _ReportGenerator {
           ),
         );
       } else {
-        final csv = CsvReportService.generate(data);
+        final csv = CsvReportService.generate(
+          data,
+          now: _ref.read(clockProvider)(),
+        );
         final file = File('${dir.path}/${safeName}_$dateStr.csv');
         await file.writeAsString(csv);
         await ScratchFiles.shareThenDelete(

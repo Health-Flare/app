@@ -25,39 +25,51 @@ const needsOutcomeWindow = Duration(days: 7);
 /// Most appointments the dashboard card lists before "All appointments".
 const dashboardCardLimit = 3;
 
-// TODO(#138): stub. Ignores [now]; implement the rule above.
 AppointmentTiming appointmentTiming(Appointment a, DateTime now) =>
     switch (a.status) {
       AppointmentStatus.completed => AppointmentTiming.completed,
       AppointmentStatus.cancelled => AppointmentTiming.cancelled,
       AppointmentStatus.missed => AppointmentTiming.missed,
-      _ => AppointmentTiming.upcoming,
+      _ =>
+        a.scheduledAt.isAfter(now)
+            ? AppointmentTiming.upcoming
+            : AppointmentTiming.outcomeNotRecorded,
     };
 
 /// True when [a] is upcoming at [now].
 bool isUpcomingAt(Appointment a, DateTime now) =>
     appointmentTiming(a, now) == AppointmentTiming.upcoming;
 
-// TODO(#138): stub.
 /// True when [a] passed less than [needsOutcomeWindow] ago and still has
 /// no outcome recorded.
-bool needsOutcome(Appointment a, DateTime now) => false;
+bool needsOutcome(Appointment a, DateTime now) =>
+    appointmentTiming(a, now) == AppointmentTiming.outcomeNotRecorded &&
+    (a.outcomeNotes?.trim().isEmpty ?? true) &&
+    now.difference(a.scheduledAt) < needsOutcomeWindow;
 
 /// Status text shown in the app and in PDF and CSV exports.
 String appointmentStatusLabel(Appointment a, DateTime now) =>
-    switch (appointmentTiming(a, now)) {
-      AppointmentTiming.upcoming => 'Upcoming',
-      AppointmentTiming.outcomeNotRecorded => 'Outcome not recorded',
-      AppointmentTiming.completed => 'Completed',
-      AppointmentTiming.cancelled => 'Cancelled',
-      AppointmentTiming.missed => 'Missed',
-    };
+    appointmentTimingLabel(appointmentTiming(a, now));
 
-// TODO(#138): stub.
+/// Status text for a [AppointmentTiming].
+String appointmentTimingLabel(AppointmentTiming timing) => switch (timing) {
+  AppointmentTiming.upcoming => 'Upcoming',
+  AppointmentTiming.outcomeNotRecorded => 'Outcome not recorded',
+  AppointmentTiming.completed => 'Completed',
+  AppointmentTiming.cancelled => 'Cancelled',
+  AppointmentTiming.missed => 'Missed',
+};
+
 /// The rows for the dashboard card: appointments needing an outcome
 /// (most recent first), then upcoming (soonest first), capped at
 /// [dashboardCardLimit]. [appointments] is one profile's appointments.
 List<Appointment> dashboardCardAppointments(
   List<Appointment> appointments,
   DateTime now,
-) => const [];
+) {
+  final asking = appointments.where((a) => needsOutcome(a, now)).toList()
+    ..sort((a, b) => b.scheduledAt.compareTo(a.scheduledAt));
+  final upcoming = appointments.where((a) => isUpcomingAt(a, now)).toList()
+    ..sort((a, b) => a.scheduledAt.compareTo(b.scheduledAt));
+  return [...asking, ...upcoming].take(dashboardCardLimit).toList();
+}
