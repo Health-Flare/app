@@ -294,6 +294,29 @@ void main() {
         );
       });
 
+      testWidgets('The empty dashboard scrolls at 200% text instead of '
+          'overflowing', (tester) async {
+        // Found by integration_test/whats_new_test.dart: with large text the
+        // cards above the empty state filled the screen and the fixed
+        // Column overflowed.
+        tester.view.physicalSize = const Size(402, 874);
+        tester.view.devicePixelRatio = 1.0;
+        tester.platformDispatcher.textScaleFactorTestValue = 2.0;
+        addTearDown(tester.view.reset);
+        addTearDown(tester.platformDispatcher.clearAllTestValues);
+
+        await tester.pumpWidget(_buildDashboard());
+        await tester.pump();
+
+        expect(tester.takeException(), isNull);
+        await tester.scrollUntilVisible(
+          find.text('Nothing logged yet.'),
+          200,
+          scrollable: find.byType(Scrollable).first,
+        );
+        expect(find.text('Nothing logged yet.'), findsOneWidget);
+      });
+
       testWidgets('FAB is visible in the empty state', (tester) async {
         await tester.pumpWidget(_buildDashboard());
         await tester.pump();

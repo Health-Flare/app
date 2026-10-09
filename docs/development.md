@@ -153,5 +153,6 @@ Every feature is specified as a Gherkin `.feature` file in [`docs/features/`](fe
 
 - **Release notes:** a user-facing PR adds a fragment file under `changes/` (see `changes/README.md`), not a line in `CHANGELOG.md`. Separate files don't conflict; a shared list did after every merge. At release time `dart run tool/rollup_changes.dart --write` rolls them into Unreleased. To backfill a range: `scripts/release/generate_release_notes.sh --since <tag|date>`.
 - **Screenshots:** `scripts/take_screenshots.sh` (iOS) and `scripts/take_screenshots_android.sh` (Android).
+- **What's new cards:** `bash scripts/whats_new.sh` tests, previews and screenshots every card state. Guide: `docs/testing/whats-new.md`.
 - **Videos:** `scripts/take_video.sh` (iOS) and `scripts/take_video_android.sh` (Android).
 - **All three:** `scripts/release/build_release_kit.sh --since <tag>` assembles everything into `release-kit/<version>/`.

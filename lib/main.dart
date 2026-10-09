@@ -14,6 +14,7 @@ import 'package:health_flare/core/theme/app_theme.dart';
 import 'package:health_flare/core/widgets/startup_notice.dart';
 import 'package:health_flare/data/database/app_database.dart';
 import 'package:health_flare/features/app_lock/app_lock_gate.dart';
+import 'package:health_flare/features/whats_new/debug/whats_new_preview.dart';
 import 'package:health_flare/features/whats_new/whats_new_provider.dart';
 
 void main() async {
@@ -26,9 +27,31 @@ void main() async {
   final isar = await IsarService.open();
   final startupNotice = IsarService.lastMigration.startupNotice;
 
+  // What's new: record where this device starts before onboarding can
+  // create a profile, so a fresh install is never shown a card (#139).
+  // Never blocks startup: on failure the dashboard simply shows no card.
+  // Debug builds only: --dart-define=WHATS_NEW_PREVIEW=<scenario> puts the
+  // app straight into a What's new state (docs/testing/whats-new.md).
+  final preview = previewScenarioFromEnvironment();
+  try {
+    if (preview != null) {
+      debugPrint("What's new preview: ${preview.name}: ${preview.description}");
+      await applyPreviewScenario(isar, preview);
+    }
+    final fixture = preview?.usesFixture ?? false;
+    await WhatsNewStore.settle(
+      isar,
+      releases: fixture ? previewReleases : await loadBundledReleaseNotes(),
+      installed: preview?.installed ?? await readInstalledVersion(),
+    );
+  } catch (e) {
+    debugPrint("What's new: couldn't settle release state: $e");
+  }
+
   // Pre-load startup data before runApp so providers have real values on the
   // first frame. This eliminates the async race where activeProfileProvider
   // starts as null and the journal list filters to empty.
+  // Read after What's new: a preview scenario may add a demo profile.
   final startup = await IsarService.readStartupData(isar);
 
   // App lock (#100) and hide in app switcher (#101) apply before the first
@@ -40,19 +63,6 @@ void main() async {
       : true;
   if (lockSupported && appLock.hideInAppSwitcher) {
     await const PlatformSecureWindow().setHidden(true);
-  }
-
-  // What's new: record where this device starts before onboarding can
-  // create a profile, so a fresh install is never shown a card (#139).
-  // Never blocks startup: on failure the dashboard simply shows no card.
-  try {
-    await WhatsNewStore.settle(
-      isar,
-      releases: await loadBundledReleaseNotes(),
-      installed: await readInstalledVersion(),
-    );
-  } catch (e) {
-    debugPrint("What's new: couldn't settle release state: $e");
   }
 
   runApp(
@@ -73,6 +83,7 @@ void main() async {
               hasScreenLock: hasScreenLock,
             ),
         ),
+        if (preview != null) ...previewOverrides(preview),
       ],
       child: HealthFlareApp(startupNotice: startupNotice),
     ),

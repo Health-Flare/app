@@ -46,7 +46,7 @@ class SettingsScreen extends ConsumerWidget {
           _BackupTiles(),
 
           // ── Updates ───────────────────────────────────────────────────────
-          const _SectionHeader(label: 'Updates'),
+          const SettingsSectionHeader(label: 'Updates'),
           const WhatsNewSettingsTiles(),
 
           // ── About ─────────────────────────────────────────────────────────

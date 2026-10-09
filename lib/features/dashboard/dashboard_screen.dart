@@ -126,46 +126,63 @@ class _DashboardBody extends ConsumerWidget {
     );
 
     if (!hasActivity) {
-      return Column(
-        children: [
-          const ActiveFlareBanner(),
-          const WhatsNewCard(),
-          const DailyCheckinCard(),
-          const UpcomingAppointmentsCard(),
-          Expanded(
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 40),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.favorite_outline_rounded,
-                      size: 64,
-                      color: cs.primary,
-                    ),
-                    const SizedBox(height: 24),
-                    Text(
-                      'Nothing logged yet.',
-                      style: tt.titleMedium?.copyWith(color: cs.onSurface),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Tap the + button to record a symptom, vital, meal, '
-                      'or medication. The more you log, the clearer your '
-                      'health picture becomes.',
-                      style: tt.bodyMedium?.copyWith(
-                        color: cs.onSurfaceVariant,
+      // Scrolls when the cards and large text don't fit (200% text filled
+      // the screen and overflowed); otherwise the message sits centred in
+      // the space left below the cards.
+      return LayoutBuilder(
+        builder: (context, constraints) => SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: constraints.maxHeight),
+            child: IntrinsicHeight(
+              child: Column(
+                children: [
+                  const ActiveFlareBanner(),
+                  const WhatsNewCard(),
+                  const DailyCheckinCard(),
+                  const UpcomingAppointmentsCard(),
+                  Expanded(
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 40,
+                          vertical: 24,
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.favorite_outline_rounded,
+                              size: 64,
+                              color: cs.primary,
+                            ),
+                            const SizedBox(height: 24),
+                            Text(
+                              'Nothing logged yet.',
+                              style: tt.titleMedium?.copyWith(
+                                color: cs.onSurface,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Tap the + button to record a symptom, vital, '
+                              'meal, or medication. The more you log, the '
+                              'clearer your health picture becomes.',
+                              style: tt.bodyMedium?.copyWith(
+                                color: cs.onSurfaceVariant,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
                       ),
-                      textAlign: TextAlign.center,
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
-        ],
+        ),
       );
     }
 

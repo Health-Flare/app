@@ -78,6 +78,9 @@ How the card behaves (all in `lib/features/whats_new/whats_new_rules.dart`):
 - With "Show update highlights" off, updates count as seen, so turning it
   back on never brings back an old card.
 
+To see your entry in the app before release, and to test or screenshot
+the card: `bash scripts/whats_new.sh` (guide: `docs/testing/whats-new.md`).
+
 ## Release checklist additions
 
 - [ ] Each fragment in `changes/` is tagged fix, addition or move
@@ -85,6 +88,7 @@ How the card behaves (all in `lib/features/whats_new/whats_new_rules.dart`):
 - [ ] Highlights written for the release (2 to 4, plain language, grade 6 to 8, no dashes)
 - [ ] Any retired section, tab or feature id is in the replacement map
 - [ ] Backup round trip checked with a customized bar and a feature turned off
+- [ ] `bash scripts/whats_new.sh check` passes and `shots` looks right
 - [ ] Guide checked with a screen reader, Reduce Motion and 200% text
 - [ ] CI check: the `pubspec.yaml` version has a What's new entry (may be empty for fix-only releases)
 
