@@ -47,6 +47,7 @@ Bundled locally under `assets/fonts/`; full license text ships alongside each fa
 | `file_picker` | MIT | Miguel Ruivo |
 | `url_launcher` | BSD-3-Clause | The Flutter Authors |
 | `geolocator` | MIT | Baseflow |
+| `local_auth` | BSD-3-Clause | The Flutter Authors |
 | `cupertino_icons` | MIT | Vladimir Kharlampidi |
 
 ## Data & formatting
