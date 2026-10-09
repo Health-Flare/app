@@ -4,12 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:health_flare/core/providers/app_lock_provider.dart';
 import 'package:health_flare/core/providers/database_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/core/router/app_router.dart';
+import 'package:health_flare/core/security/device_auth.dart';
+import 'package:health_flare/core/security/secure_window.dart';
 import 'package:health_flare/core/theme/app_theme.dart';
 import 'package:health_flare/core/widgets/startup_notice.dart';
 import 'package:health_flare/data/database/app_database.dart';
+import 'package:health_flare/features/app_lock/app_lock_gate.dart';
 
 void main() async {
   // Required before any async work that touches Flutter bindings.
@@ -26,6 +30,17 @@ void main() async {
   // starts as null and the journal list filters to empty.
   final startup = await IsarService.readStartupData(isar);
 
+  // App lock (#100) and hide in app switcher (#101) apply before the first
+  // frame: a locked app never shows a health screen, even for one frame.
+  final appLock = await IsarAppLockStore(isar).read();
+  final lockSupported = appLockSupported();
+  final hasScreenLock = lockSupported && appLock.enabled
+      ? await LocalDeviceAuth().hasScreenLock()
+      : true;
+  if (lockSupported && appLock.hideInAppSwitcher) {
+    await const PlatformSecureWindow().setHidden(true);
+  }
+
   runApp(
     ProviderScope(
       overrides: [
@@ -36,6 +51,13 @@ void main() async {
         ),
         activeProfileProvider.overrideWith(
           () => ActiveProfileNotifier()..preload(startup.activeProfileId),
+        ),
+        appLockProvider.overrideWith(
+          () => AppLockNotifier()
+            ..preload(
+              lockSupported ? appLock : const AppLockSettings(),
+              hasScreenLock: hasScreenLock,
+            ),
         ),
       ],
       child: HealthFlareApp(startupNotice: startupNotice),
@@ -96,6 +118,9 @@ class _HealthFlareAppState extends ConsumerState<HealthFlareApp> {
         routerConfig: router,
         scaffoldMessengerKey: _messengerKey,
         debugShowCheckedModeBanner: false,
+        // Above the router so the lock keeps every screen's state (#100).
+        builder: (context, child) =>
+            AppLockGate(child: child ?? const SizedBox.shrink()),
       ),
     );
   }

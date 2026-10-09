@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:health_flare/core/providers/backup_provider.dart';
+import 'package:health_flare/features/settings/widgets/privacy_settings_section.dart';
+import 'package:health_flare/features/settings/widgets/settings_section_header.dart';
 import 'package:health_flare/core/providers/database_provider.dart';
 import 'package:health_flare/data/database/app_settings.dart';
 import 'package:health_flare/data/database/import_service.dart';
@@ -35,42 +37,19 @@ class SettingsScreen extends ConsumerWidget {
       ),
       body: ListView(
         children: [
+          // ── Privacy (#100, #101): renders nothing on desktop and web ──────
+          const PrivacySettingsSection(),
+
           // ── Data & backup ─────────────────────────────────────────────────
-          const _SectionHeader(label: 'Data & backup'),
+          const SettingsSectionHeader(label: 'Data & backup'),
           _BackupTiles(),
 
           // ── About ─────────────────────────────────────────────────────────
-          const _SectionHeader(label: 'About'),
+          const SettingsSectionHeader(label: 'About'),
           _AboutTiles(),
 
           const SizedBox(height: 32),
         ],
-      ),
-    );
-  }
-}
-
-// ---------------------------------------------------------------------------
-// Section header
-// ---------------------------------------------------------------------------
-
-class _SectionHeader extends StatelessWidget {
-  const _SectionHeader({required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    final tt = Theme.of(context).textTheme;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 24, 16, 4),
-      child: Text(
-        label,
-        style: tt.labelSmall?.copyWith(
-          color: cs.onSurfaceVariant,
-          letterSpacing: 0.8,
-        ),
       ),
     );
   }

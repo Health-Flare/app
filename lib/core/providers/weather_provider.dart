@@ -1,6 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 
+import 'package:geolocator/geolocator.dart';
+import 'package:health_flare/core/providers/app_lock_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/data/services/weather_service.dart';
 import 'package:health_flare/models/weather_snapshot.dart';
@@ -29,7 +31,10 @@ final currentWeatherProvider = FutureProvider.autoDispose<WeatherSnapshot?>((
     if (age.inMinutes < 30) return cached.$1;
   }
 
-  final snapshot = await WeatherService.fetch();
+  final lock = ref.read(appLockProvider.notifier);
+  final snapshot = await WeatherService.fetch(
+    requestPermission: () => lock.whileAway(Geolocator.requestPermission),
+  );
   if (snapshot != null) {
     ref.read(_weatherCacheProvider.notifier).state = (snapshot, DateTime.now());
   }

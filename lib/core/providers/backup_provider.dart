@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
 
+import 'package:health_flare/core/providers/app_lock_provider.dart';
 import 'package:health_flare/core/providers/database_provider.dart';
 import 'package:health_flare/data/database/backup_encryption.dart';
 import 'package:health_flare/data/database/backup_service.dart';
@@ -117,12 +118,16 @@ class BackupNotifier extends Notifier<BackupResult> {
       final backupPath = await BackupService.export(isar);
       await ScratchFiles.shareThenDelete(
         backupPath,
-        () => SharePlus.instance.share(
-          ShareParams(
-            files: [XFile(backupPath)],
-            subject: 'Health Flare backup',
-          ),
-        ),
+        () => ref
+            .read(appLockProvider.notifier)
+            .whileAway(
+              () => SharePlus.instance.share(
+                ShareParams(
+                  files: [XFile(backupPath)],
+                  subject: 'Health Flare backup',
+                ),
+              ),
+            ),
       );
       _emit(const BackupExportDone());
     } catch (e) {
@@ -141,12 +146,16 @@ class BackupNotifier extends Notifier<BackupResult> {
       final backupPath = await BackupService.exportEncrypted(isar, password);
       await ScratchFiles.shareThenDelete(
         backupPath,
-        () => SharePlus.instance.share(
-          ShareParams(
-            files: [XFile(backupPath)],
-            subject: 'Health Flare backup',
-          ),
-        ),
+        () => ref
+            .read(appLockProvider.notifier)
+            .whileAway(
+              () => SharePlus.instance.share(
+                ShareParams(
+                  files: [XFile(backupPath)],
+                  subject: 'Health Flare backup',
+                ),
+              ),
+            ),
       );
       _emit(const BackupExportDone());
     } catch (e) {
@@ -257,7 +266,9 @@ class BackupNotifier extends Notifier<BackupResult> {
   Future<String?> pickBackupFile() async {
     // FileType.any: accepts both plain ".isar" and encrypted ".hfbackup"
     // files. Which one it is gets decided from content, not extension.
-    final result = await FilePicker.pickFile(type: FileType.any);
+    final result = await ref
+        .read(appLockProvider.notifier)
+        .whileAway(() => FilePicker.pickFile(type: FileType.any));
     if (result == null) return null;
     final path = result.path;
     if (path == null) {

@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:local_auth/local_auth.dart';
 
@@ -39,6 +40,11 @@ class LocalDeviceAuth implements DeviceAuth {
       return await _auth.isDeviceSupported();
     } on LocalAuthException {
       return false;
+    } on PlatformException {
+      return false;
+    } on MissingPluginException {
+      // Desktop, tests, or an embedding without the plugin.
+      return false;
     }
   }
 
@@ -63,6 +69,10 @@ class LocalDeviceAuth implements DeviceAuth {
           DeviceAuthResult.noScreenLock,
         _ => DeviceAuthResult.cancelled,
       };
+    } on PlatformException {
+      return DeviceAuthResult.cancelled;
+    } on MissingPluginException {
+      return DeviceAuthResult.noScreenLock;
     }
   }
 }
@@ -72,9 +82,9 @@ final deviceAuthProvider = Provider<DeviceAuth>((ref) => LocalDeviceAuth());
 /// Whether this build offers the app lock and hide-in-app-switcher settings:
 /// iOS and Android only (see docs/features/app-lock.feature). Overridden in
 /// tests.
-final appLockSupportedProvider = Provider<bool>(
-  (ref) =>
-      !kIsWeb &&
-      (defaultTargetPlatform == TargetPlatform.iOS ||
-          defaultTargetPlatform == TargetPlatform.android),
-);
+final appLockSupportedProvider = Provider<bool>((ref) => appLockSupported());
+
+bool appLockSupported() =>
+    !kIsWeb &&
+    (defaultTargetPlatform == TargetPlatform.iOS ||
+        defaultTargetPlatform == TargetPlatform.android);

@@ -132,9 +132,14 @@ class IsarAppLockStore implements AppLockStore {
       fromRow(await _isar.appSettings.get(1));
 
   @override
-  Future<void> write(AppLockSettings settings) async {
-    throw UnimplementedError('#100');
-  }
+  Future<void> write(AppLockSettings settings) => _isar.writeTxn(() async {
+    final row = await _isar.appSettings.get(1) ?? (AppSettings()..id = 1);
+    row
+      ..appLockEnabled = settings.enabled
+      ..appLockRelockSeconds = settings.relockAfter.duration.inSeconds
+      ..hideInAppSwitcher = settings.hideInAppSwitcher;
+    await _isar.appSettings.put(row);
+  });
 }
 
 final appLockStoreProvider = Provider<AppLockStore>(
@@ -151,53 +156,164 @@ abstract final class AppLockReasons {
 }
 
 class AppLockNotifier extends Notifier<AppLockState> {
+  AppLockSettings? _preloaded;
+  bool _preloadedScreenLock = true;
+
+  /// When the app last left the screen, or null while it's on screen (or
+  /// left only for something the app opened itself).
+  DateTime? _backgroundedAt;
+
+  /// Trips out of the app that the app started on purpose ([whileAway]),
+  /// including the OS unlock prompt itself.
+  int _away = 0;
+
   /// Called from [main] before [runApp]: a locked app must be locked on its
   /// very first frame.
   void preload(AppLockSettings settings, {required bool hasScreenLock}) {
-    throw UnimplementedError('#100');
+    _preloaded = settings;
+    _preloadedScreenLock = hasScreenLock;
   }
 
+  DeviceAuth get _auth => ref.read(deviceAuthProvider);
+
   @override
-  AppLockState build() => const AppLockState();
+  AppLockState build() {
+    final settings = _preloaded;
+    // main() always preloads, hot restart included (it re-runs main). Only
+    // tests and tools that build the app without main() get the defaults.
+    if (settings == null) return const AppLockState();
+    _preloaded = null;
+    if (settings.hideInAppSwitcher) {
+      ref.read(secureWindowProvider).setHidden(true);
+    }
+    return AppLockState(
+      settings: settings,
+      locked: settings.enabled && _preloadedScreenLock,
+      paused: settings.enabled && !_preloadedScreenLock,
+    );
+  }
+
+  Future<void> _save(AppLockSettings settings) async {
+    await ref.read(appLockStoreProvider).write(settings);
+    if (!ref.mounted) return;
+    state = state.copyWith(settings: settings);
+  }
+
+  /// Shows the OS prompt without the prompt itself counting as leaving the
+  /// app (Android's passcode screen sends the app to the background).
+  Future<DeviceAuthResult> _ask(String reason) =>
+      whileAway(() => _auth.authenticate(reason: reason));
 
   /// Turns the lock on after the person confirms with the phone's security.
-  Future<LockChange> enable() async => throw UnimplementedError('#100');
+  Future<LockChange> enable() async {
+    if (!await _auth.hasScreenLock()) return LockChange.noScreenLock;
+    switch (await _ask(AppLockReasons.turnOn)) {
+      case DeviceAuthResult.success:
+        break;
+      case DeviceAuthResult.cancelled:
+        return LockChange.cancelled;
+      case DeviceAuthResult.noScreenLock:
+        return LockChange.noScreenLock;
+    }
+    await _save(state.settings.copyWith(enabled: true));
+    state = state.copyWith(locked: false, paused: false);
+    return LockChange.done;
+  }
 
   /// Turns the lock off after the person confirms with the phone's security.
-  Future<LockChange> disable() async => throw UnimplementedError('#100');
+  ///
+  /// While the lock is paused (the phone has no screen lock to ask for) it
+  /// turns off without a prompt: the app is already open to whoever holds
+  /// the phone.
+  Future<LockChange> disable() async {
+    final result = await _ask(AppLockReasons.turnOff);
+    if (result == DeviceAuthResult.cancelled) return LockChange.cancelled;
+    if (result == DeviceAuthResult.noScreenLock && !state.paused) {
+      return LockChange.noScreenLock;
+    }
+    await _save(state.settings.copyWith(enabled: false));
+    state = state.copyWith(locked: false, paused: false);
+    return LockChange.done;
+  }
 
   /// A longer time asks for the phone's security first; a shorter one
   /// doesn't.
-  Future<LockChange> setRelockAfter(RelockAfter value) async =>
-      throw UnimplementedError('#100');
+  Future<LockChange> setRelockAfter(RelockAfter value) async {
+    final current = state.settings.relockAfter;
+    if (value == current) return LockChange.done;
+    if (value.duration > current.duration && !state.paused) {
+      final result = await _ask(AppLockReasons.relockLonger);
+      if (result == DeviceAuthResult.cancelled) return LockChange.cancelled;
+      if (result == DeviceAuthResult.noScreenLock) {
+        return LockChange.noScreenLock;
+      }
+    }
+    await _save(state.settings.copyWith(relockAfter: value));
+    return LockChange.done;
+  }
 
-  Future<void> setHideInAppSwitcher(bool hidden) async =>
-      throw UnimplementedError('#100');
+  Future<void> setHideInAppSwitcher(bool hidden) async {
+    await ref.read(secureWindowProvider).setHidden(hidden);
+    await _save(state.settings.copyWith(hideInAppSwitcher: hidden));
+  }
 
   /// The app left the screen.
-  void backgrounded() => throw UnimplementedError('#100');
+  void backgrounded() {
+    if (_away > 0) return;
+    _backgroundedAt ??= ref.read(clockProvider)();
+  }
 
   /// The app came back to the screen.
-  void resumed() => throw UnimplementedError('#100');
+  void resumed() {
+    final leftAt = _backgroundedAt;
+    _backgroundedAt = null;
+    if (leftAt == null || !state.settings.enabled || state.locked) return;
+    if (state.paused) {
+      _checkPauseLifted();
+      return;
+    }
+    final away = ref.read(clockProvider)().difference(leftAt);
+    if (away >= state.settings.relockAfter.duration) {
+      state = state.copyWith(locked: true);
+    }
+  }
+
+  /// A paused lock comes back once the phone has a screen lock again. It
+  /// locks next time the app is away, not under the person's hands.
+  Future<void> _checkPauseLifted() async {
+    if (!await _auth.hasScreenLock()) return;
+    if (!ref.mounted) return;
+    state = state.copyWith(paused: false);
+  }
 
   /// Asks for the phone's security and unlocks on success. If the phone no
   /// longer has a screen lock, the lock is paused instead.
-  Future<void> unlock() async => throw UnimplementedError('#100');
+  Future<void> unlock() async {
+    if (!state.locked || _away > 0) return;
+    final result = await _ask(AppLockReasons.unlock);
+    if (!ref.mounted) return;
+    switch (result) {
+      case DeviceAuthResult.success:
+        state = state.copyWith(locked: false);
+      case DeviceAuthResult.noScreenLock:
+        state = state.copyWith(locked: false, paused: true);
+      case DeviceAuthResult.cancelled:
+        break;
+    }
+  }
 
   /// Runs [action], which takes the person out of the app on purpose (camera,
   /// file picker, share sheet, permission prompt), without locking on return.
-  Future<T> whileAway<T>(Future<T> Function() action) =>
-      throw UnimplementedError('#100');
-
-  // Referenced so the stub compiles with the dependencies the real
-  // implementation uses.
-  // ignore: unused_element
-  void _deps() => (
-    ref.read(clockProvider),
-    ref.read(deviceAuthProvider),
-    ref.read(secureWindowProvider),
-    ref.read(appLockStoreProvider),
-  );
+  Future<T> whileAway<T>(Future<T> Function() action) async {
+    _away++;
+    try {
+      return await action();
+    } finally {
+      _away--;
+      // Leaving during the trip doesn't count; leaving after it does.
+      if (_away == 0) _backgroundedAt = null;
+    }
+  }
 }
 
 final appLockProvider = NotifierProvider<AppLockNotifier, AppLockState>(

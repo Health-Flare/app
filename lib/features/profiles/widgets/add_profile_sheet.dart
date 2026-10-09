@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
+import 'package:health_flare/core/providers/app_lock_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/models/profile.dart';
 import 'package:health_flare/features/profiles/widgets/profile_avatar.dart';
@@ -94,15 +95,22 @@ class _AddProfileSheetState extends ConsumerState<AddProfileSheet> {
   Future<void> _pickAvatar(ImageSource source) async {
     String? path;
     if (Platform.isMacOS) {
-      final result = await FilePicker.pickFile(type: FileType.image);
+      final result = await ref
+          .read(appLockProvider.notifier)
+          .whileAway(() => FilePicker.pickFile(type: FileType.image));
       path = result?.path;
     } else {
-      final file = await _picker.pickImage(
-        source: source,
-        maxWidth: 512,
-        maxHeight: 512,
-        imageQuality: 85,
-      );
+      // Camera or photo library: coming back must not lock the app.
+      final file = await ref
+          .read(appLockProvider.notifier)
+          .whileAway(
+            () => _picker.pickImage(
+              source: source,
+              maxWidth: 512,
+              maxHeight: 512,
+              imageQuality: 85,
+            ),
+          );
       path = file?.path;
     }
     if (path == null || !mounted) return;

@@ -1,6 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:health_flare/core/providers/app_lock_provider.dart';
 import 'package:health_flare/core/security/device_auth.dart';
@@ -39,6 +43,37 @@ class _Setup {
   final MemoryAppLockStore store;
   final window = FakeSecureWindow();
   final clock = FakeClock();
+
+  /// The app's real arrangement: the gate in a router app's builder. Back
+  /// goes through the router there, not through WidgetsApp.
+  Future<GoRouter> pumpRouter(WidgetTester tester) async {
+    final router = GoRouter(
+      routes: [
+        GoRoute(path: '/', builder: (_, _) => const _JournalDraft()),
+        GoRoute(
+          path: '/detail',
+          builder: (_, _) => const Scaffold(body: Text('Entry detail')),
+        ),
+      ],
+    );
+    addTearDown(router.dispose);
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: appLockOverrides(
+          auth: auth,
+          store: store,
+          window: window,
+          clock: clock,
+        ),
+        child: MaterialApp.router(
+          routerConfig: router,
+          builder: (context, child) => AppLockGate(child: child!),
+        ),
+      ),
+    );
+    await tester.pump();
+    return router;
+  }
 
   Future<void> pump(WidgetTester tester) async {
     await tester.pumpWidget(
@@ -156,6 +191,7 @@ void main() {
     await s.pump(tester);
     await tester.pump(); // auto-unlock on start
     await tester.enterText(find.byKey(const Key('draft')), 'Rough morning');
+    expect(tester.testTextInput.isVisible, isTrue);
 
     s.auth.next = DeviceAuthResult.cancelled;
     await _background(tester);
@@ -163,6 +199,8 @@ void main() {
     await tester.pump();
     expect(find.text('Unlock'), findsOneWidget);
     expect(find.text('Rough morning'), findsNothing);
+    // The keyboard goes away: typing can't reach the hidden draft.
+    expect(tester.testTextInput.isVisible, isFalse);
 
     s.auth.next = DeviceAuthResult.success;
     await tester.tap(find.text('Unlock'));
@@ -197,6 +235,51 @@ void main() {
     await tester.pump();
     expect(find.text('Sarah'), findsNothing);
     expect(find.text('Unlock'), findsOneWidget);
+  });
+
+  testWidgets('back on the lock screen doesn\'t pop the hidden screen', (
+    tester,
+  ) async {
+    final s = _Setup(
+      settings: const AppLockSettings(
+        enabled: true,
+        relockAfter: RelockAfter.immediately,
+      ),
+    );
+    final router = await s.pumpRouter(tester);
+    await tester.pump();
+    unawaited(router.push('/detail'));
+    await tester.pumpAndSettle();
+
+    s.auth.next = DeviceAuthResult.cancelled;
+    await _background(tester);
+    await _foreground(tester);
+    await tester.pump();
+    expect(find.text('Unlock'), findsOneWidget);
+
+    final popped = <MethodCall>[];
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      SystemChannels.platform,
+      (call) async {
+        if (call.method == 'SystemNavigator.pop') popped.add(call);
+        return null;
+      },
+    );
+    addTearDown(
+      () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        SystemChannels.platform,
+        null,
+      ),
+    );
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+
+    // The app is sent away instead.
+    expect(popped, hasLength(1));
+    s.auth.next = DeviceAuthResult.success;
+    await tester.tap(find.text('Unlock'));
+    await tester.pumpAndSettle();
+    expect(find.text('Entry detail'), findsOneWidget);
   });
 
   testWidgets('a paused lock opens the app and says why', (tester) async {

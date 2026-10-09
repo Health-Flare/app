@@ -70,9 +70,9 @@ void main() {
     });
 
     test('the window is covered when the app stops being active', () {
-      final scene = File('ios/Runner/SceneDelegate.swift').readAsStringSync();
-      expect(scene, contains('sceneWillResignActive'));
-      expect(scene, contains('sceneDidBecomeActive'));
+      final delegate = File('ios/Runner/AppDelegate.swift').readAsStringSync();
+      expect(delegate, contains('UIScene.willDeactivateNotification'));
+      expect(delegate, contains('UIScene.didActivateNotification'));
     });
   });
 }
