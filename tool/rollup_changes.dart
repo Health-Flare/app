@@ -133,6 +133,18 @@ String rollUp(String changelog, List<Fragment> fragments) {
   return [...lines.sublist(0, start), ...out, ...lines.sublist(end)].join('\n');
 }
 
+/// The `## [Unreleased]` section of [changelog], up to the next release
+/// heading. Matches whole lines, so a mention of the heading inside the
+/// header comment isn't mistaken for the section itself.
+String unreleasedSection(String changelog) {
+  final lines = changelog.split('\n');
+  final start = lines.indexWhere((l) => l.trim() == '## [Unreleased]');
+  if (start < 0) return '';
+  var end = lines.indexWhere((l) => l.startsWith('## ['), start + 1);
+  if (end < 0) end = lines.length;
+  return lines.sublist(start, end).join('\n').trimRight();
+}
+
 /// Loads and validates every fragment in [dir], ignoring README.md.
 List<Fragment> loadFragments(Directory dir) {
   if (!dir.existsSync()) return [];
@@ -177,9 +189,7 @@ void main(List<String> args) {
 
   final updated = rollUp(changelogFile.readAsStringSync(), fragments);
   if (!write) {
-    final start = updated.indexOf('## [Unreleased]');
-    final end = updated.indexOf('\n## [', start + 1);
-    stdout.writeln(updated.substring(start, end < 0 ? updated.length : end));
+    stdout.writeln(unreleasedSection(updated));
     stdout.writeln('(preview: run with --write to apply)');
     return;
   }

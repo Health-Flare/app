@@ -1,3 +1,5 @@
-- Appointments whose time has passed are no longer listed as upcoming. The
-  appointments list, the appointment screen, and PDF and CSV reports show
-  them as "Outcome not recorded" until an outcome or status is saved.
+- Appointments whose time had passed were still listed as upcoming. They
+  now show as "Outcome not recorded" in the appointments list, on the
+  appointment screen, and in PDF and CSV reports, until an outcome is saved
+  or the appointment is marked completed, missed or cancelled. Nothing is
+  changed in the stored appointment.

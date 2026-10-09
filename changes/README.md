@@ -35,6 +35,32 @@ One or more Markdown bullets, written for the person using the app:
 - Name the screen and quote the UI text when it helps.
 - Lines that don't start with `- ` continue the bullet above.
 
+## Features that ship over several PRs
+
+A feature built across several PRs before one release (Track and Care,
+#135, is the first) gets one set of fragments, not one per PR. The first
+PR writes them; later PRs **edit or replace** those files so the release
+notes describe what shipped, not each step on the way. Don't add a bullet
+that contradicts an earlier one ("The dashboard links to appointments",
+then "Appointments moved to Care").
+
+Say so at the top of the fragment with a one-line comment naming the
+issues that will change it. Each comment line must start with `<!--`;
+the rollup skips those lines and keeps only the bullets:
+
+```markdown
+<!-- Track and Care (#141) moves this. Edit this bullet then. -->
+- The dashboard has an "All appointments" link.
+```
+
+The same goes for any fragment whose feature changes again before
+release: fix the fragment in the later PR rather than stacking a
+correction under it.
+
+When cutting a release, put the headline changes first in each
+subsection of `CHANGELOG.md`. Fragments roll up in file-name order, which
+is not the order of importance.
+
 ## Checking
 
 `dart run tool/rollup_changes.dart --check` validates every fragment, and
