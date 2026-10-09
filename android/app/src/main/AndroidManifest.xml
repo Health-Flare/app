@@ -5,6 +5,8 @@
     <!-- Coarse location for weather fetch: coordinates are used only to call the weather API and never stored -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- App lock (#100): face/fingerprint prompt, with passcode fallback. -->
+    <uses-permission android:name="android.permission.USE_BIOMETRIC"/>
     <application
         android:label="Health Flare"
         android:name="${applicationName}"

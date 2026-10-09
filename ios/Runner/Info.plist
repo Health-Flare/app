@@ -30,6 +30,8 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>Health Flare uses the camera so you can take a profile photo.</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Health Flare uses Face ID to unlock the app when you turn on the app lock.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>Health Flare sends your approximate location to Open-Meteo, a weather service, to look up the weather for each new entry. Your location is not saved. Only the weather is saved, with your entry.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
