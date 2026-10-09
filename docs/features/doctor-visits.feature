@@ -109,6 +109,19 @@ Feature: Doctor Visit and Appointment Tracking
     When I am on the dashboard
     Then the appointment is visible in the upcoming section
     And it shows the provider name, appointment title, and date
+    And the card has an "All appointments" link to the Appointments tab in Care
+
+  Scenario: The dashboard card links to appointments even with one upcoming
+    Given "Sarah" has exactly one upcoming appointment
+    When I am on the dashboard
+    Then the upcoming card shows that appointment
+    And the "All appointments" link is shown
+
+  Scenario: The dashboard card offers to add one when nothing is upcoming
+    Given "Sarah" has past appointments but none upcoming
+    When I am on the dashboard
+    Then the upcoming card says no appointments are coming up
+    And it offers "Add appointment" and "All appointments"
 
   Scenario: View appointment history in reverse chronological order
     Given "Sarah" has the following appointments:
@@ -116,7 +129,7 @@ Feature: Doctor Visit and Appointment Tracking
       | Rheumatology       | Dr. Chen   | 2026-01-15 | Completed |
       | GP check-in        | Dr. Patel  | 2026-02-03 | Completed |
       | Physio assessment  | Emma W.    | 2026-03-20 | Upcoming  |
-    When I navigate to the appointments screen
+    When I open Care and tap the "Appointments" tab
     Then I see all three appointments listed
     And "Physio assessment" appears in an upcoming section
     And the two past appointments are listed below in reverse date order
