@@ -280,6 +280,20 @@ void main() {
         expect(find.text('Nothing logged yet.'), findsOneWidget);
       });
 
+      testWidgets('The prompt shows on an otherwise empty dashboard (#138)', (
+        tester,
+      ) async {
+        await tester.pumpWidget(_buildDashboard());
+        await tester.pump();
+
+        const prompt = 'Got an appointment coming up? Tap to add it.';
+        expect(find.text(prompt), findsOneWidget);
+        expect(
+          tester.getTopLeft(find.text(prompt)).dy,
+          lessThan(tester.getTopLeft(find.text('Nothing logged yet.')).dy),
+        );
+      });
+
       testWidgets('FAB is visible in the empty state', (tester) async {
         await tester.pumpWidget(_buildDashboard());
         await tester.pump();

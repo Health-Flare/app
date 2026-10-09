@@ -16,9 +16,16 @@ import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 /// Shows header info, question checklist, outcome notes, medication changes,
 /// and status actions (complete / cancel / missed / follow-up).
 class AppointmentDetailScreen extends ConsumerWidget {
-  const AppointmentDetailScreen({super.key, required this.appointmentId});
+  const AppointmentDetailScreen({
+    super.key,
+    required this.appointmentId,
+    this.scrollToOutcome = false,
+  });
 
   final int appointmentId;
+
+  /// Open with the outcome notes field in view (#138). Not implemented yet.
+  final bool scrollToOutcome;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -330,6 +337,7 @@ class _AppointmentDetailViewState
           // ── Outcome notes ─────────────────────────────────────────────────
           _SectionTitle(title: 'Outcome notes', cs: cs, tt: tt),
           TextField(
+            key: const Key('appointment_outcome_field'),
             controller: _outcomeController,
             decoration: const InputDecoration(
               hintText: 'What did the doctor say?',

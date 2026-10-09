@@ -108,10 +108,17 @@ Feature: Doctor Visit and Appointment Tracking
   # (#135) gives appointments a tab, so it shows whenever the profile has
   # any appointment at all, and as a one-line prompt when it has none.
   #
-  # "Needs an outcome" means: status is still Upcoming, the scheduled time
-  # has passed, and it was less than 7 days ago. Recording an outcome, or
-  # marking it Completed, Missed or Cancelled, clears it. After 7 days it
-  # stays in the list's Past section and leaves the card.
+  # One rule, used everywhere an appointment is called upcoming (dashboard
+  # card, appointments list, detail screen, PDF and CSV exports):
+  #
+  # - Upcoming: status is Upcoming AND the scheduled time is still ahead.
+  # - Outcome not recorded: status is Upcoming AND the scheduled time has
+  #   passed. Status is never changed automatically.
+  # - Needs an outcome (card only): outcome not recorded, and the scheduled
+  #   time was less than 7 days ago.
+  #
+  # Recording an outcome, or marking it Completed, Missed or Cancelled,
+  # clears "Needs an outcome".
 
   Scenario: Upcoming appointments are shown on the dashboard
     Given "Sarah" has an upcoming appointment with "Dr. Chen" in 5 days
@@ -247,6 +254,21 @@ Feature: Doctor Visit and Appointment Tracking
     Then "GP check-in" is in the Past section, not the Upcoming section
     And it is labelled "Outcome not recorded"
     And its date order among past appointments is by scheduled date
+
+  Scenario: The detail screen doesn't call a passed appointment upcoming
+    Given "Sarah" had an appointment titled "GP check-in" 2 days ago
+    And its status is still Upcoming
+    When I open the detail for "GP check-in"
+    Then the title reads "Appointment detail", not "Upcoming appointment"
+    And the status reads "Outcome not recorded"
+    And "Mark completed", "Cancel" and "Missed" are still offered
+
+  Scenario: Exports don't call a passed appointment upcoming
+    Given "Sarah" had an appointment titled "GP check-in" 2 days ago
+    And its status is still Upcoming
+    When I export a report including appointments as PDF or CSV
+    Then the status for "GP check-in" reads "Outcome not recorded"
+    And an appointment still ahead with status Upcoming reads "Upcoming"
 
   Scenario: View full detail of a past appointment
     Given "Sarah" has a completed appointment with an outcome and medication change recorded

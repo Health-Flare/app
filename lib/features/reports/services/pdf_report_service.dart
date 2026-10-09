@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:intl/intl.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -220,11 +221,7 @@ abstract final class PdfReportService {
     for (final e in data.appointments) {
       final label =
           '${_fmt.format(e.scheduledAt)} ${_timeFmt.format(e.scheduledAt)}';
-      final value = StringBuffer(e.title);
-      if (e.providerName != null) value.write('  ·  ${e.providerName}');
-      value.write('  ·  ${_apptStatus(e.status)}');
-      if (e.outcomeNotes != null) value.write('\n${e.outcomeNotes}');
-      out.add(_row(label, value.toString()));
+      out.add(_row(label, appointmentRowValue(e, DateTime.now())));
     }
   }
 
@@ -260,6 +257,17 @@ abstract final class PdfReportService {
       final value = e.title != null ? '${e.title}\n$body' : body;
       out.add(_row(label, value));
     }
+  }
+
+  /// The text of one appointment row in the PDF.
+  // TODO(#138): use [now] for the status label.
+  @visibleForTesting
+  static String appointmentRowValue(Appointment e, DateTime now) {
+    final value = StringBuffer(e.title);
+    if (e.providerName != null) value.write('  ·  ${e.providerName}');
+    value.write('  ·  ${_apptStatus(e.status)}');
+    if (e.outcomeNotes != null) value.write('\n${e.outcomeNotes}');
+    return value.toString();
   }
 
   static String _apptStatus(String status) => switch (status) {

@@ -12,7 +12,8 @@ abstract final class CsvReportService {
   static final _fmt = DateFormat('yyyy-MM-dd HH:mm');
   static final _dateFmt = DateFormat('yyyy-MM-dd');
 
-  static String generate(ReportData data) {
+  // TODO(#138): use [now] for the appointment status label.
+  static String generate(ReportData data, {DateTime? now}) {
     final rows = <List<dynamic>>[
       ['Date', 'Type', 'Name / Title', 'Detail', 'Notes'],
     ];
