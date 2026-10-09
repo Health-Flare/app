@@ -10,17 +10,29 @@ Docs, CI, dependency and test-only PRs don't need one.
 
 ## File name
 
-`<issue>-<short-slug>.<section>.md`
+`<issue>-<short-slug>.<section>.<kind>.md`
 
 - `<issue>`: the issue number (or the PR number if there's no issue)
 - `<short-slug>`: a few lowercase words, hyphens between
 - `<section>`: one of `added`, `changed`, `deprecated`, `removed`,
   `fixed`, `security`
+- `<kind>`: what the change means for someone who used the app yesterday,
+  one of `fix`, `addition` or `move` (definitions in
+  `docs/feature-releases.md`)
 
-Examples: `115-profile-sheet-spinner.fixed.md`,
-`104-backup-size-cap.security.md`.
+Examples: `115-profile-sheet-spinner.fixed.fix.md`,
+`104-backup-size-cap.security.fix.md`,
+`141-track-and-care.changed.move.md`.
 
-A PR that belongs in two sections adds two files.
+The section is where the line goes in `CHANGELOG.md`. The kind decides
+what ships with it: a fix needs nothing more, an addition may earn a
+What's new highlight, and a **move** needs a guide. CI fails on a move
+fragment until the release being written in
+`assets/whats_new/releases.json` names its `guideId`, so a move stays
+behind its build flag, with no fragment, until the guide is ready.
+
+A PR that belongs in two sections, or has two kinds of change, adds two
+files.
 
 ## Content
 
@@ -63,7 +75,10 @@ is not the order of importance.
 
 ## Checking
 
-`dart run tool/rollup_changes.dart --check` validates every fragment, and
-the unit tests run the same check, so a malformed file fails CI in the PR
-that adds it. `dart run tool/rollup_changes.dart` (no flag) previews the
-rolled-up Unreleased section without changing anything.
+`dart run tool/rollup_changes.dart --check` validates every fragment and
+the What's new content, and the unit tests run the same check, so a
+malformed file fails CI in the PR that adds it.
+`dart run tool/rollup_changes.dart` (no flag) previews the rolled-up
+Unreleased section and the release's What's new entry without changing
+anything. `--write` applies both: see the release checklist in
+`docs/release-kit.md`.

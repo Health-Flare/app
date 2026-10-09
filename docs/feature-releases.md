@@ -21,6 +21,10 @@ A **move** is anything that changes where an existing screen, control or
 default is, or what it does when tapped. If someone who used the app
 yesterday would look for it in the old place, it's a move.
 
+The kind is the last part of the changelog fragment's file name, after
+its section: `141-track-and-care.changed.move.md`. See
+`changes/README.md`.
+
 ## Rules
 
 1. **No move ships without a guide.** The guide says what moved, where it
@@ -69,6 +73,27 @@ the app. One entry per version, newest first:
   sit on main before release.
 - `guideId`: the release guide for a move (#145). Null otherwise.
 
+You don't start the entry by hand. At release time
+`dart run tool/rollup_changes.dart --write` drafts it: dated today, "All
+changes" filled from `CHANGELOG.md`'s Unreleased section, and a `TODO`
+highlight for a person to write. A fix-only release (only `fix`
+fragments, and nothing in Unreleased outside Fixed and Security) gets no
+highlights. A release with a `move` fragment gets `"guideId": "TODO"`.
+Anything already written in the entry is kept. The full sequence is the
+release checklist in `docs/release-kit.md`.
+
+CI (through `test/unit/rollup_changes_test.dart`) fails when:
+
+- `pubspec.yaml`'s version has no entry. An entry with no highlights is
+  fine for a fix-only release.
+- The `pubspec.yaml` version's entry, or any dated entry, still has a
+  `TODO`.
+- A `move` fragment is in `changes/` and the release being written (the
+  newest entry, with `"date": null`) names no guide.
+
+`scripts/release.sh` runs the same check for the new version before it
+bumps anything, since the tag goes out before CI runs on it.
+
 How the card behaves (all in `lib/features/whats_new/whats_new_rules.dart`):
 
 - A fresh install never sees a card. Someone updating sees one card for
@@ -83,14 +108,14 @@ the card: `bash scripts/whats_new.sh` (guide: `docs/testing/whats-new.md`).
 
 ## Release checklist additions
 
-- [ ] Each fragment in `changes/` is tagged fix, addition or move
-- [ ] Every move has a guide entry and its build flag is on
+- [ ] Each fragment in `changes/` is tagged fix, addition or move (the tool refuses one that isn't)
+- [ ] Every move has a guide entry and its build flag is on (CI checks the guide is named, not that it's right)
 - [ ] Highlights written for the release (2 to 4, plain language, grade 6 to 8, no dashes)
 - [ ] Any retired section, tab or feature id is in the replacement map
 - [ ] Backup round trip checked with a customized bar and a feature turned off
 - [ ] `bash scripts/whats_new.sh check` passes and `shots` looks right
 - [ ] Guide checked with a screen reader, Reduce Motion and 200% text
-- [ ] CI check: the `pubspec.yaml` version has a What's new entry (may be empty for fix-only releases)
+- [ ] No `TODO` left in the release's What's new entry (CI and `scripts/release.sh` check this, and that the `pubspec.yaml` version has an entry)
 
 ## Ordering for Track and Care
 

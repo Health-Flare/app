@@ -18,14 +18,15 @@ How to use this file
 2. Use the past tense and a user-facing voice. Avoid commit hashes and PR
    numbers in the entry text.
 
-3. When cutting a release:
-     - `dart run tool/rollup_changes.dart --write` moves every fragment into
-       Unreleased below and deletes the fragment files. Read the result.
-     - Bump `version:` in `pubspec.yaml`.
-     - Rename `## [Unreleased]` to `## [X.Y.Z] - YYYY-MM-DD`.
-     - Add a fresh, empty `## [Unreleased]` block above it.
-     - Commit, then tag `vX.Y.Z` and push the tag: the release workflows
-       take it from there.
+3. When cutting a release (full checklist in `docs/release-kit.md`):
+     - `dart run tool/rollup_changes.dart --write --version X.Y.Z` moves
+       every fragment into Unreleased below, drafts What's new for X.Y.Z
+       in `assets/whats_new/releases.json`, and deletes the fragment
+       files. Read the result and replace every TODO in What's new.
+     - `bash scripts/release.sh X.Y.Z` bumps `version:` in `pubspec.yaml`,
+       renames `## [Unreleased]` to `## [X.Y.Z] - YYYY-MM-DD` under a
+       fresh Unreleased block, commits, tags `vX.Y.Z` and pushes: the
+       release workflows take it from there.
 
 4. Writing notes for a range that spans several past releases?
    `scripts/release/generate_release_notes.sh` drafts the same shape from

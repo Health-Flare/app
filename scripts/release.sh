@@ -4,6 +4,8 @@
 # Cut a new Health Flare release.
 #
 # Automates every step described in CHANGELOG.md's release checklist:
+#   0. Refuse if fragments in changes/ aren't rolled up, or What's new for
+#      the new version is missing or has a TODO (docs/feature-releases.md).
 #   1. Bump `version:` in pubspec.yaml (versionName + versionCode).
 #   2. Promote the ## [Unreleased] section in CHANGELOG.md.
 #   3. Commit the changes and create an annotated git tag.
@@ -141,6 +143,22 @@ fi
 
 if git rev-parse "$NEW_TAG" >/dev/null 2>&1; then
   echo "error: tag $NEW_TAG already exists." >&2
+  exit 1
+fi
+
+# ── Check changelog fragments and What's new ───────────────────────────
+# Fragments must be rolled up first (`dart run tool/rollup_changes.dart
+# --write`), and the new version's What's new entry must exist with nothing
+# left as TODO. CI checks the same once pubspec.yaml is bumped, but the tag
+# is pushed before CI runs on it. See docs/feature-releases.md.
+FRAGMENTS=$(find "${REPO_ROOT}/changes" -maxdepth 1 -name '*.md' ! -name README.md 2>/dev/null || true)
+if [[ -n "$FRAGMENTS" ]]; then
+  echo "error: changelog fragments are still in changes/. Roll them up first:" >&2
+  echo "       dart run tool/rollup_changes.dart --write --version ${NEW_VERSION}" >&2
+  exit 1
+fi
+if ! (cd "$REPO_ROOT" && dart run tool/rollup_changes.dart --check --version "$NEW_VERSION"); then
+  echo "error: What's new for ${NEW_VERSION} isn't ready (see above)." >&2
   exit 1
 fi
 

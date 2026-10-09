@@ -11,7 +11,7 @@ retroactive release-notes generation and preview video capture.
 
 | Output | Primary source | Tooling |
 |---|---|---|
-| Release notes | `CHANGELOG.md`'s `[Unreleased]` section, hand-written as you merge: see its own "How to use this file" header | `scripts/release/generate_release_notes.sh` for retroactive/aggregate drafts |
+| Release notes | `changes/` fragments, one per PR, rolled into `CHANGELOG.md` and What's new at release: see `changes/README.md` | `scripts/release/generate_release_notes.sh` for retroactive/aggregate drafts |
 | Screenshots | Fresh capture per release | `scripts/take_screenshots.sh` (iOS), `scripts/take_screenshots_android.sh` (Android) |
 | Preview video | Fresh capture per release | `scripts/take_video.sh` (iOS), `scripts/take_video_android.sh` (Android) |
 
@@ -22,13 +22,14 @@ All three can be produced individually, or together via the orchestrator
 
 ### The normal path: write them as you merge
 
-`CHANGELOG.md`'s `[Unreleased]` section is the source of truth. Add an
-entry in the right subsection (`Added`/`Changed`/`Fixed`/etc.) as part of
-the PR that makes the change, in past tense, user-facing voice. This
-produces better prose than any script: a human who just made the change
-knows why it matters to a user in a way a title-parsing tool never will.
-`scripts/release.sh` promotes `[Unreleased]` into a dated version section
-when you cut a release.
+Each PR with a user-visible change adds a fragment under `changes/`, named
+for its Keep a Changelog section and its kind (fix, addition or move): see
+`changes/README.md`. This produces better prose than any script: a human
+who just made the change knows why it matters to a user in a way a
+title-parsing tool never will. At release time
+`dart run tool/rollup_changes.dart --write` rolls the fragments into
+`CHANGELOG.md` and drafts the release's What's new entry, and
+`scripts/release.sh` promotes `[Unreleased]` into a dated version section.
 
 ### The gap this fills: retroactive or aggregate notes
 
@@ -134,6 +135,29 @@ Play doesn't accept an uploaded file directly.
 To change what the video shows, edit the scenes in
 `integration_test/video_walkthrough_test.dart`: the capture scripts just
 start/stop recording around whatever that file drives.
+
+## Release checklist
+
+Fragment kinds, highlights and guides follow
+[`docs/feature-releases.md`](feature-releases.md), which has the rest of
+the checklist for releases that add or move things.
+
+1. `dart run tool/rollup_changes.dart` previews the rolled-up changelog and
+   What's new entry. Put the headline changes first in each `CHANGELOG.md`
+   subsection afterwards.
+2. `dart run tool/rollup_changes.dart --write --version X.Y.Z` rolls the
+   fragments into `CHANGELOG.md` and drafts What's new for X.Y.Z in
+   `assets/whats_new/releases.json` (without `--version` it drafts the
+   newest entry with `"date": null`).
+3. Replace every `TODO` in that entry: write 2 to 4 highlights, or delete
+   the placeholder for a fix-only release (a fix-only release gets no
+   placeholder). A move needs its `guideId`. Trim "All changes" to one
+   plain line each.
+4. Merge that as a PR. CI fails while any dated entry still has a `TODO`.
+5. `bash scripts/release.sh X.Y.Z` bumps `pubspec.yaml`, promotes
+   `[Unreleased]`, tags and pushes. It refuses while fragments remain or
+   What's new for X.Y.Z isn't ready. From then on CI fails if the
+   `pubspec.yaml` version has no What's new entry.
 
 ## Putting it together: the orchestrator
 
