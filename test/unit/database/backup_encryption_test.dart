@@ -679,6 +679,30 @@ void main() {
       expect(profiles.single.temperatureUnit, '°F');
     });
 
+    // Issue #137: features turned off for a profile stay off when it's
+    // merged in. (Merge rules for the device-wide bar are #144.)
+    test('merge: a profile keeps the features it turned off', () async {
+      final source = await _openIsar('import_features_source_${_uid()}');
+      await source.writeTxn(
+        () => source.profileIsars.put(
+          ProfileIsar()
+            ..name = 'Dad'
+            ..disabledFeatureIds = ['track.meals', 'care.flares'],
+        ),
+      );
+      final path = await BackupService.export(source);
+      await source.close();
+
+      final main = await _openIsar('import_features_main_${_uid()}');
+      expect(await ImportService.mergeAll(path, main), 1);
+
+      final profiles = await main.profileIsars.where().findAll();
+      expect(profiles.single.disabledFeatureIds, [
+        'track.meals',
+        'care.flares',
+      ]);
+    });
+
     // Issue #117: a profile merged in from a backup must not take the id of
     // a deleted profile whose entries are still on the device.
     test(

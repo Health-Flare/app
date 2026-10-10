@@ -53,4 +53,11 @@ class AppSettings {
   /// App opens on which the pending card was shown. Nullable: Isar reads an
   /// int missing from an older row as -2^63, not 0. Null means 0.
   int? whatsNewCardShownCount;
+
+  // TODO(#137): persist (remove @ignore, run scripts/generate_isar.sh).
+  @ignore
+  List<String>? bottomBarIds;
+
+  @ignore
+  int? bottomBarLayoutVersion;
 }

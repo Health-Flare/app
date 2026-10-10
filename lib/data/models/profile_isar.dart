@@ -46,6 +46,10 @@ class ProfileIsar {
   /// Display only: vital readings keep the unit they were saved in.
   String? temperatureUnit;
 
+  // TODO(#137): persist (remove @ignore, run scripts/generate_isar.sh).
+  @ignore
+  List<String> disabledFeatureIds = [];
+
   // ── Conversion ────────────────────────────────────────────────────────────
 
   /// Convert to the immutable domain class used by the UI.
