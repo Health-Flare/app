@@ -93,6 +93,16 @@ Feature: Illness Tracking
     And no existing condition exactly matches "Myalgic encephalomyelitis"
     Then I see an option to add "Myalgic encephalomyelitis" as a custom illness
 
+  Scenario: A partial match still offers "Add custom"
+    Given the illness entry screen is open
+    And the catalogue has "Ulcerative colitis" and "Microscopic colitis" but no "Colitis"
+    When I type "Colitis" in the search bar
+    Then "Ulcerative colitis" and "Microscopic colitis" are listed
+    And I also see an option to add "Colitis" as a custom illness
+    # The catalogue is never a gate on what someone can record. Only an
+    # exact name already in it (any case, any surrounding spaces), whether
+    # global, custom or already tracked, hides the option.
+
   Scenario: Tapping "Add custom" creates and selects the custom condition
     Given no condition matches my search text on the illness entry screen
     When I tap the "Add custom" option for my search text
