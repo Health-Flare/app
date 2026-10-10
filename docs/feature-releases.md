@@ -2,9 +2,9 @@
 
 How a user-facing change gets from merged to in someone's hands without
 surprising them. Applies to every release from the Track and Care layout
-onward. Specs: `docs/features/whats-new.feature`; the layout specs
-(`navigation-customization.feature`) are on the `feature/navigation-track-care`
-branch (#135) until they're ready.
+onward. Specs: `docs/features/whats-new.feature`,
+`docs/features/release-guides.feature`,
+`docs/features/navigation-customization.feature`.
 
 ## Sort the change first
 

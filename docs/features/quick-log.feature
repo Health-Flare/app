@@ -4,6 +4,11 @@ Feature: Quick Log
   So that I can capture anything relevant to my health in one motion,
   without deciding in advance what type of entry I am making
 
+  # UNVERIFIED (TODO): scenarios tagged @unverified were written by an agent
+  # and haven't been checked by a person. Read each one, fix it or agree it,
+  # then delete its tag. Tracked on #135. List them all:
+  #   bash scripts/unverified_specs.sh
+
   Background:
     Given a profile named "Sarah" exists and is active
     And I am on the Dashboard screen
@@ -19,22 +24,23 @@ Feature: Quick Log
     And it is positioned in the bottom-right corner of the screen
     And it does not obscure dashboard content beneath it
 
+  @unverified
   Scenario: Typed screens keep an add button for that screen
     Given "Sarah" is the active profile
-    When I am on the Tracking screen with the Symptoms tab selected
+    When I am on the Track screen with the Symptoms tab selected
     Then the add button opens the symptom form
     And the quick log sheet does not open
     When I switch to the Vitals tab
     Then the add button opens the vital form
-    When I switch to the Conditions tab
+    When I open Care and select the Conditions tab
     Then the add button opens the condition screen
-    When I am on the Medications screen
+    When I select the Medications tab in Care
     Then the add button opens the new medication form
-    When I am on the Meals screen
+    When I select the Meals tab in Track
     Then the add button opens the meal form
-    When I am on the Journal screen
+    When I select the Entries tab in Journal
     Then the add button opens the journal composer
-    When I am on the Sleep screen
+    When I select the Sleep tab in Track
     Then the add button opens the sleep form
     When I am on the Reports screen
     Then no quick log button is shown

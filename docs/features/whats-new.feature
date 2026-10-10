@@ -9,8 +9,7 @@ Feature: What's new
   # note was read.
   #
   # Release guides (a stepped walkthrough for changes that move something
-  # people already use, #145) build on this. Their scenarios are on the
-  # feature/navigation-track-care branch (#135) until that work is ready.
+  # people already use, #145) build on this: release-guides.feature.
   # The one guide rule here, "Turning off highlights turns off guide cards
   # too", is the setting's promise and ships with it.
   #
