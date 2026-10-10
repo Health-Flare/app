@@ -7,7 +7,7 @@
 #   bash scripts/whats_new.sh e2e              # end-to-end on a simulator, no screenshots kept
 #   bash scripts/whats_new.sh run <scenario>   # open the app in a card state to poke at
 #   bash scripts/whats_new.sh scenarios        # list scenarios
-#   bash scripts/whats_new.sh check            # validate assets/whats_new/releases.json
+#   bash scripts/whats_new.sh check            # validate changes/ and releases.json, like CI
 #   bash scripts/whats_new.sh goldens          # re-render golden images on Linux CI, copy them in
 #
 # Options (put before the command):
@@ -183,8 +183,11 @@ cmd_goldens() {
 }
 
 cmd_check() {
-  flutter test test/unit/whats_new_store_test.dart --plain-name "Release content is bundled"
-  ok "assets/whats_new/releases.json is valid."
+  # Same checks as CI: fragment kinds, releases.json, and the pubspec
+  # version ready to ship. Then that the app itself can load the file.
+  dart run tool/rollup_changes.dart --check
+  flutter test test/unit/whats_new_store_test.dart --plain-name "Release content is bundled" >/dev/null
+  ok "changes/ and assets/whats_new/releases.json are valid."
 }
 
 while getopts ":d:h" opt; do
