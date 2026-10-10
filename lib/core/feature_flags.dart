@@ -12,7 +12,8 @@ class FeatureFlags {
   const FeatureFlags({this.trackAndCare = false});
 
   /// From the build's `--dart-define`s.
-  factory FeatureFlags.fromEnvironment() => throw UnimplementedError();
+  factory FeatureFlags.fromEnvironment() =>
+      const FeatureFlags(trackAndCare: bool.fromEnvironment('TRACK_AND_CARE'));
 
   /// Layout v2: Track and Care sections with tabs, Your layout, and the
   /// release guide (#135). Ships when #145 turns it on.
@@ -20,5 +21,5 @@ class FeatureFlags {
 }
 
 final featureFlagsProvider = Provider<FeatureFlags>(
-  (ref) => throw UnimplementedError(),
+  (ref) => FeatureFlags.fromEnvironment(),
 );

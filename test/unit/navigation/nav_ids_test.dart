@@ -148,15 +148,23 @@ void main() {
 
   group('the registry', () {
     test('ids are lowercase, dot-separated, and unique', () {
-      final all = [
-        for (final f in navFeatures) f.id,
+      final features = [for (final f in navFeatures) f.id];
+      final places = [
         for (final s in navSections) ...[s.id, for (final t in s.tabs) t.id],
       ];
-      for (final id in all) {
+      for (final id in [...features, ...places]) {
         expect(_idFormat.hasMatch(id), isTrue, reason: id);
       }
-      expect(all.toSet(), hasLength(all.length));
-      expect(knownNavIds, all.toSet());
+      expect(features.toSet(), hasLength(features.length));
+      expect(places.toSet(), hasLength(places.length));
+      expect(knownNavIds, {...features, ...places});
+    });
+
+    test('a feature and its tab share one id', () {
+      final tabs = {
+        for (final s in navSections) ...[for (final t in s.tabs) t.id],
+      };
+      expect({for (final f in navFeatures) f.id}, tabs);
     });
 
     test('The primary navigation has four sections, in order', () {

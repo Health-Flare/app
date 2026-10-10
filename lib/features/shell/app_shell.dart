@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:health_flare/core/router/app_router.dart';
+import 'package:health_flare/core/navigation/nav_registry.dart';
 
 /// Persistent shell wrapping all tab destinations.
 ///
@@ -13,44 +13,9 @@ class AppShell extends StatelessWidget {
 
   final Widget child;
 
-  static const _destinations = [
-    (
-      route: AppRoutes.dashboard,
-      label: 'Dashboard',
-      icon: Icons.grid_view_rounded,
-      selectedIcon: Icons.grid_view_rounded,
-    ),
-    (
-      route: AppRoutes.tracking,
-      label: 'Tracking',
-      icon: Icons.monitor_heart_outlined,
-      selectedIcon: Icons.monitor_heart_rounded,
-    ),
-    (
-      route: AppRoutes.medications,
-      label: 'Meds',
-      icon: Icons.medication_outlined,
-      selectedIcon: Icons.medication_rounded,
-    ),
-    (
-      route: AppRoutes.meals,
-      label: 'Meals',
-      icon: Icons.restaurant_outlined,
-      selectedIcon: Icons.restaurant_rounded,
-    ),
-    (
-      route: AppRoutes.journal,
-      label: 'Journal',
-      icon: Icons.book_outlined,
-      selectedIcon: Icons.book_rounded,
-    ),
-    (
-      route: AppRoutes.sleep,
-      label: 'Sleep',
-      icon: Icons.bedtime_outlined,
-      selectedIcon: Icons.bedtime_rounded,
-    ),
-  ];
+  /// From the navigation registry (#136). Track and Care (#141) swaps
+  /// this for the layout v2 bar behind the trackAndCare flag.
+  static const _destinations = legacyBar;
 
   int _currentIndex(BuildContext context) {
     final location = GoRouterState.of(context).matchedLocation;
