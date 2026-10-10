@@ -141,7 +141,7 @@ class _IllnessScreenState extends ConsumerState<IllnessScreen> {
     }
   }
 
-  // ── "Add custom" when search has no matches ────────────────────────────────
+  // ── "Add custom" when the search isn't an exact catalogue name ─────────────
 
   Future<void> _addCustomCondition(String name) async {
     final notifier = ref.read(conditionCatalogProvider.notifier);
@@ -175,6 +175,13 @@ class _IllnessScreenState extends ConsumerState<IllnessScreen> {
       trackedIds: trackedConditionIds,
     );
     final filteredSymptoms = _filteredSymptoms(allSymptoms);
+
+    // Checked against the whole catalogue, tracked and custom conditions
+    // included: an exact name that's already there must not be added twice.
+    final queryKey = _query.toLowerCase();
+    final showAddCustom =
+        _query.isNotEmpty &&
+        !allConditions.any((c) => c.name.trim().toLowerCase() == queryKey);
 
     final showSymptomsSection =
         _pendingConditionIds.isNotEmpty || trackedConditionIds.isNotEmpty;
@@ -303,35 +310,40 @@ class _IllnessScreenState extends ConsumerState<IllnessScreen> {
                   ),
                 ),
 
-                // Condition rows
-                if (filteredConditions.isEmpty && _query.isNotEmpty)
+                // "Add custom": offered for any typed text that isn't
+                // exactly a condition already in the catalogue (#26). A
+                // partial match lists the matches and still offers it, so
+                // the catalogue never stops someone saving what they have.
+                // It sits above the matches so it can't scroll out of view.
+                if (showAddCustom)
                   SliverToBoxAdapter(
                     child: _AddCustomTile(
                       name: _query,
                       onTap: () => _addCustomCondition(_query),
                     ),
-                  )
-                else
-                  SliverList.builder(
-                    itemCount: filteredConditions.length,
-                    itemBuilder: (context, i) {
-                      final condition = filteredConditions[i];
-                      final isPending = _pendingConditionIds.contains(
-                        condition.id,
-                      );
-                      return _ConditionTile(
-                        condition: condition,
-                        selected: isPending,
-                        onTap: () => setState(() {
-                          if (isPending) {
-                            _pendingConditionIds.remove(condition.id);
-                          } else {
-                            _pendingConditionIds.add(condition.id);
-                          }
-                        }),
-                      );
-                    },
                   ),
+
+                // Condition rows
+                SliverList.builder(
+                  itemCount: filteredConditions.length,
+                  itemBuilder: (context, i) {
+                    final condition = filteredConditions[i];
+                    final isPending = _pendingConditionIds.contains(
+                      condition.id,
+                    );
+                    return _ConditionTile(
+                      condition: condition,
+                      selected: isPending,
+                      onTap: () => setState(() {
+                        if (isPending) {
+                          _pendingConditionIds.remove(condition.id);
+                        } else {
+                          _pendingConditionIds.add(condition.id);
+                        }
+                      }),
+                    );
+                  },
+                ),
 
                 // Symptoms section (shown when any condition is selected)
                 if (showSymptomsSection) ...[
