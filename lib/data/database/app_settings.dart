@@ -53,4 +53,13 @@ class AppSettings {
   /// App opens on which the pending card was shown. Nullable: Isar reads an
   /// int missing from an older row as -2^63, not 0. Null means 0.
   int? whatsNewCardShownCount;
+
+  /// Bottom bar (#137): nav ids in order, or null for "use the default".
+  /// A copy of the default is never stored, so a default bar follows the
+  /// next default.
+  List<String>? bottomBarIds;
+
+  /// Default-bar version (`defaultBarVersions`) last shown on this device,
+  /// or the one a custom bar was chosen on. Null means 1.9.1 or earlier.
+  int? bottomBarLayoutVersion;
 }

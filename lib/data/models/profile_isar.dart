@@ -46,6 +46,11 @@ class ProfileIsar {
   /// Display only: vital readings keep the unit they were saved in.
   String? temperatureUnit;
 
+  /// Features in use (#137): ids from `navFeatures` turned off for this
+  /// profile. Stores what's off, so a feature added later is on, and a row
+  /// from before v21 reads as empty: everything on.
+  List<String> disabledFeatureIds = [];
+
   // ── Conversion ────────────────────────────────────────────────────────────
 
   /// Convert to the immutable domain class used by the UI.
@@ -59,6 +64,7 @@ class ProfileIsar {
     cycleTrackingEnabled: cycleTrackingEnabled,
     bowelTrackingEnabled: bowelTrackingEnabled,
     temperatureUnit: temperatureUnit,
+    disabledFeatureIds: List.unmodifiable(disabledFeatureIds),
   );
 
   /// Construct from a domain [Profile] for writing to Isar.
@@ -76,5 +82,6 @@ class ProfileIsar {
     ..colorSeed = p.colorSeed
     ..cycleTrackingEnabled = p.cycleTrackingEnabled
     ..bowelTrackingEnabled = p.bowelTrackingEnabled
-    ..temperatureUnit = p.temperatureUnit;
+    ..temperatureUnit = p.temperatureUnit
+    ..disabledFeatureIds = List.of(p.disabledFeatureIds);
 }

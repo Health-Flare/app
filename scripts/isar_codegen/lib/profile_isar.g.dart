@@ -42,28 +42,33 @@ const ProfileIsarSchema = CollectionSchema(
       name: r'dateOfBirth',
       type: IsarType.dateTime,
     ),
-    r'firstLogShown': PropertySchema(
+    r'disabledFeatureIds': PropertySchema(
       id: 5,
+      name: r'disabledFeatureIds',
+      type: IsarType.stringList,
+    ),
+    r'firstLogShown': PropertySchema(
+      id: 6,
       name: r'firstLogShown',
       type: IsarType.bool,
     ),
     r'name': PropertySchema(
-      id: 6,
+      id: 7,
       name: r'name',
       type: IsarType.string,
     ),
     r'temperatureUnit': PropertySchema(
-      id: 7,
+      id: 8,
       name: r'temperatureUnit',
       type: IsarType.string,
     ),
     r'weatherOptInShown': PropertySchema(
-      id: 8,
+      id: 9,
       name: r'weatherOptInShown',
       type: IsarType.bool,
     ),
     r'weatherTrackingEnabled': PropertySchema(
-      id: 9,
+      id: 10,
       name: r'weatherTrackingEnabled',
       type: IsarType.bool,
     )
@@ -94,6 +99,13 @@ int _profileIsarEstimateSize(
       bytesCount += 3 + value.length * 3;
     }
   }
+  bytesCount += 3 + object.disabledFeatureIds.length * 3;
+  {
+    for (var i = 0; i < object.disabledFeatureIds.length; i++) {
+      final value = object.disabledFeatureIds[i];
+      bytesCount += value.length * 3;
+    }
+  }
   bytesCount += 3 + object.name.length * 3;
   {
     final value = object.temperatureUnit;
@@ -115,11 +127,12 @@ void _profileIsarSerialize(
   writer.writeLong(offsets[2], object.colorSeed);
   writer.writeBool(offsets[3], object.cycleTrackingEnabled);
   writer.writeDateTime(offsets[4], object.dateOfBirth);
-  writer.writeBool(offsets[5], object.firstLogShown);
-  writer.writeString(offsets[6], object.name);
-  writer.writeString(offsets[7], object.temperatureUnit);
-  writer.writeBool(offsets[8], object.weatherOptInShown);
-  writer.writeBool(offsets[9], object.weatherTrackingEnabled);
+  writer.writeStringList(offsets[5], object.disabledFeatureIds);
+  writer.writeBool(offsets[6], object.firstLogShown);
+  writer.writeString(offsets[7], object.name);
+  writer.writeString(offsets[8], object.temperatureUnit);
+  writer.writeBool(offsets[9], object.weatherOptInShown);
+  writer.writeBool(offsets[10], object.weatherTrackingEnabled);
 }
 
 ProfileIsar _profileIsarDeserialize(
@@ -134,12 +147,13 @@ ProfileIsar _profileIsarDeserialize(
   object.colorSeed = reader.readLongOrNull(offsets[2]);
   object.cycleTrackingEnabled = reader.readBool(offsets[3]);
   object.dateOfBirth = reader.readDateTimeOrNull(offsets[4]);
-  object.firstLogShown = reader.readBool(offsets[5]);
+  object.disabledFeatureIds = reader.readStringList(offsets[5]) ?? [];
+  object.firstLogShown = reader.readBool(offsets[6]);
   object.id = id;
-  object.name = reader.readString(offsets[6]);
-  object.temperatureUnit = reader.readStringOrNull(offsets[7]);
-  object.weatherOptInShown = reader.readBool(offsets[8]);
-  object.weatherTrackingEnabled = reader.readBool(offsets[9]);
+  object.name = reader.readString(offsets[7]);
+  object.temperatureUnit = reader.readStringOrNull(offsets[8]);
+  object.weatherOptInShown = reader.readBool(offsets[9]);
+  object.weatherTrackingEnabled = reader.readBool(offsets[10]);
   return object;
 }
 
@@ -161,14 +175,16 @@ P _profileIsarDeserializeProp<P>(
     case 4:
       return (reader.readDateTimeOrNull(offset)) as P;
     case 5:
-      return (reader.readBool(offset)) as P;
+      return (reader.readStringList(offset) ?? []) as P;
     case 6:
-      return (reader.readString(offset)) as P;
-    case 7:
-      return (reader.readStringOrNull(offset)) as P;
-    case 8:
       return (reader.readBool(offset)) as P;
+    case 7:
+      return (reader.readString(offset)) as P;
+    case 8:
+      return (reader.readStringOrNull(offset)) as P;
     case 9:
+      return (reader.readBool(offset)) as P;
+    case 10:
       return (reader.readBool(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -587,6 +603,233 @@ extension ProfileIsarQueryFilter
         upper: upper,
         includeUpper: includeUpper,
       ));
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
+      disabledFeatureIdsElementEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'disabledFeatureIds',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
+      disabledFeatureIdsElementGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'disabledFeatureIds',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
+      disabledFeatureIdsElementLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'disabledFeatureIds',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
+      disabledFeatureIdsElementBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'disabledFeatureIds',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
+      disabledFeatureIdsElementStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'disabledFeatureIds',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
+      disabledFeatureIdsElementEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'disabledFeatureIds',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
+      disabledFeatureIdsElementContains(String value,
+          {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'disabledFeatureIds',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
+      disabledFeatureIdsElementMatches(String pattern,
+          {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'disabledFeatureIds',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
+      disabledFeatureIdsElementIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'disabledFeatureIds',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
+      disabledFeatureIdsElementIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'disabledFeatureIds',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
+      disabledFeatureIdsLengthEqualTo(int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'disabledFeatureIds',
+        length,
+        true,
+        length,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
+      disabledFeatureIdsIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'disabledFeatureIds',
+        0,
+        true,
+        0,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
+      disabledFeatureIdsIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'disabledFeatureIds',
+        0,
+        false,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
+      disabledFeatureIdsLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'disabledFeatureIds',
+        0,
+        true,
+        length,
+        include,
+      );
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
+      disabledFeatureIdsLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'disabledFeatureIds',
+        length,
+        include,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
+      disabledFeatureIdsLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'disabledFeatureIds',
+        lower,
+        includeLower,
+        upper,
+        includeUpper,
+      );
     });
   }
 
@@ -1278,6 +1521,13 @@ extension ProfileIsarQueryWhereDistinct
     });
   }
 
+  QueryBuilder<ProfileIsar, ProfileIsar, QDistinct>
+      distinctByDisabledFeatureIds() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'disabledFeatureIds');
+    });
+  }
+
   QueryBuilder<ProfileIsar, ProfileIsar, QDistinct> distinctByFirstLogShown() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'firstLogShown');
@@ -1351,6 +1601,13 @@ extension ProfileIsarQueryProperty
   QueryBuilder<ProfileIsar, DateTime?, QQueryOperations> dateOfBirthProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'dateOfBirth');
+    });
+  }
+
+  QueryBuilder<ProfileIsar, List<String>, QQueryOperations>
+      disabledFeatureIdsProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'disabledFeatureIds');
     });
   }
 

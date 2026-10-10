@@ -86,7 +86,7 @@ void main() {
     await MigrationRunner.run(isar);
 
     final s = (await isar.appSettings.get(1))!;
-    expect(s.schemaVersion, 20);
+    expect(s.schemaVersion, 21);
     expect(await WhatsNewStore.read(isar), const WhatsNewRecord());
   });
 

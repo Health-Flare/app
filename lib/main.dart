@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:health_flare/core/feature_flags.dart';
+import 'package:health_flare/core/navigation/bar_layout.dart';
+import 'package:health_flare/core/navigation/bar_layout_store.dart';
 import 'package:health_flare/core/providers/app_lock_provider.dart';
 import 'package:health_flare/core/providers/database_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
@@ -26,6 +29,18 @@ void main() async {
   // Open the database and run migrations. Completes before any UI is shown.
   final isar = await IsarService.open();
   final startupNotice = IsarService.lastMigration.startupNotice;
+
+  // Bottom bar (#137): record which default bar a fresh install starts on,
+  // before onboarding (or a preview scenario) can create a profile, so a
+  // later change to the default is explained and a fresh install's isn't.
+  try {
+    await BarLayoutStore.settle(
+      isar,
+      current: currentDefaultBarVersion(FeatureFlags.fromEnvironment()),
+    );
+  } catch (e) {
+    debugPrint("Bottom bar: couldn't settle layout version: $e");
+  }
 
   // What's new: record where this device starts before onboarding can
   // create a profile, so a fresh install is never shown a card (#139).

@@ -19,6 +19,7 @@ class Profile {
     this.cycleTrackingEnabled = false,
     this.bowelTrackingEnabled = false,
     this.temperatureUnit,
+    this.disabledFeatureIds = const [],
   });
 
   /// Stable local identifier. In the in-memory MVP this is a simple
@@ -54,6 +55,10 @@ class Profile {
   /// Unit temperatures are shown in for this profile: '°C', '°F', or null
   /// for "As logged". Display only: readings keep the unit they were saved in.
   final String? temperatureUnit;
+
+  /// Features in use (#137): ids from `navFeatures` turned off for this
+  /// profile. Stores what's off, so a feature added later is on.
+  final List<String> disabledFeatureIds;
 
   /// Returns true if this profile has a real photo rather than a generated one.
   bool get hasAvatar => avatarPath != null;
@@ -93,6 +98,7 @@ class Profile {
     bool? cycleTrackingEnabled,
     bool? bowelTrackingEnabled,
     String? temperatureUnit,
+    List<String>? disabledFeatureIds,
     bool clearTemperatureUnit = false,
     bool clearDateOfBirth = false,
     bool clearAvatar = false,
@@ -110,6 +116,7 @@ class Profile {
       temperatureUnit: clearTemperatureUnit
           ? null
           : (temperatureUnit ?? this.temperatureUnit),
+      disabledFeatureIds: disabledFeatureIds ?? this.disabledFeatureIds,
     );
   }
 

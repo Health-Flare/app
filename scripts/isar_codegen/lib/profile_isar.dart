@@ -36,4 +36,7 @@ class ProfileIsar {
 
   /// Unit temperatures are shown in: '°C', '°F', or null for "As logged".
   String? temperatureUnit;
+
+  /// Features in use (#137): ids turned off for this profile.
+  List<String> disabledFeatureIds = [];
 }
