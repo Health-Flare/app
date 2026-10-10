@@ -16,11 +16,20 @@ import 'package:health_flare/models/user_symptom.dart';
 // ---------------------------------------------------------------------------
 
 class _FakeConditionCatalog extends ConditionCatalogNotifier {
-  _FakeConditionCatalog(this.items);
+  _FakeConditionCatalog(this.items, [this.onAddCustom]);
   final List<Condition> items;
+  final void Function(String name)? onAddCustom;
 
   @override
   List<Condition> build() => items;
+
+  @override
+  Future<Condition> addCustom(String name) async {
+    onAddCustom?.call(name);
+    final c = Condition(id: 999, name: name.trim(), global: false);
+    state = [...state, c];
+    return c;
+  }
 }
 
 class _FakeSymptomCatalog extends SymptomCatalogNotifier {
@@ -52,11 +61,12 @@ Widget buildIllnessScreen({
   List<Condition> conditions = const [],
   List<UserCondition> trackedConditions = const [],
   IllnessScreenPrefill? prefill,
+  void Function(String name)? onAddCustom,
 }) {
   return ProviderScope(
     overrides: [
       conditionCatalogProvider.overrideWith(
-        () => _FakeConditionCatalog(conditions),
+        () => _FakeConditionCatalog(conditions, onAddCustom),
       ),
       symptomCatalogProvider.overrideWith(_FakeSymptomCatalog.new),
       userConditionListProvider.overrideWith(
@@ -123,6 +133,130 @@ void main() {
       await tester.pump();
 
       expect(find.textContaining('as a custom illness'), findsOneWidget);
+    });
+  });
+
+  group('IllnessScreen: Add custom only hides on an exact match (#26)', () {
+    // Spec (main): "Searching for an exact catalogue match suppresses the Add
+    // custom option"; "An Add custom option appears when no condition matches
+    // the search ... And no existing condition exactly matches". A partial
+    // match used to hide it, so text sharing a word with a catalogue name
+    // could not be saved at all.
+    const catalogue = [
+      Condition(id: 1, name: "Crohn's disease", global: true),
+      Condition(id: 2, name: 'Ulcerative colitis', global: true),
+    ];
+
+    testWidgets('a partial match still offers Add custom, alongside the '
+        'matches', (tester) async {
+      await tester.pumpWidget(buildIllnessScreen(conditions: catalogue));
+      await tester.pump();
+
+      await tester.enterText(find.byType(TextField), "Crohn's");
+      await tester.pump();
+
+      expect(find.text("Crohn's disease"), findsOneWidget);
+      expect(find.textContaining('as a custom illness'), findsOneWidget);
+    });
+
+    testWidgets('someone with plain "Colitis" can add it, though four '
+        'catalogue names contain the word', (tester) async {
+      // The real catalogue has Ischemic, Microscopic, Pseudomembranous and
+      // Ulcerative colitis, but no "Colitis". Typing it used to list those
+      // four and offer no way to save what was typed.
+      final added = <String>[];
+      await tester.pumpWidget(
+        buildIllnessScreen(
+          conditions: const [
+            Condition(id: 1, name: 'Ischemic colitis', global: true),
+            Condition(id: 2, name: 'Microscopic colitis', global: true),
+            Condition(id: 3, name: 'Ulcerative colitis', global: true),
+          ],
+          onAddCustom: added.add,
+        ),
+      );
+      await tester.pump();
+
+      await tester.enterText(find.byType(TextField), 'Colitis');
+      await tester.pump();
+      expect(find.text('Ulcerative colitis'), findsOneWidget);
+      await tester.tap(find.textContaining('as a custom illness'));
+      await tester.pump();
+
+      expect(added, ['Colitis']);
+    });
+
+    testWidgets("text that matches nothing still offers it (\"Crohn's "
+        'colitis")', (tester) async {
+      final added = <String>[];
+      await tester.pumpWidget(
+        buildIllnessScreen(conditions: catalogue, onAddCustom: added.add),
+      );
+      await tester.pump();
+
+      await tester.enterText(find.byType(TextField), "Crohn's colitis");
+      await tester.pump();
+      await tester.tap(find.textContaining('as a custom illness'));
+      await tester.pump();
+
+      expect(added, ["Crohn's colitis"]);
+    });
+
+    testWidgets('an exact match with different case and spaces still hides '
+        'it', (tester) async {
+      await tester.pumpWidget(buildIllnessScreen(conditions: catalogue));
+      await tester.pump();
+
+      await tester.enterText(find.byType(TextField), "  crohn's DISEASE ");
+      await tester.pump();
+
+      expect(find.text("Crohn's disease"), findsOneWidget);
+      expect(find.textContaining('as a custom illness'), findsNothing);
+    });
+
+    testWidgets('an exact match to a condition already tracked is not offered '
+        'as a duplicate', (tester) async {
+      await tester.pumpWidget(
+        buildIllnessScreen(
+          conditions: catalogue,
+          trackedConditions: [
+            UserCondition(
+              id: 1,
+              profileId: 1,
+              conditionId: 1,
+              conditionName: "Crohn's disease",
+              trackedSince: DateTime(2026),
+            ),
+          ],
+        ),
+      );
+      await tester.pump();
+
+      await tester.enterText(find.byType(TextField), "Crohn's disease");
+      await tester.pump();
+
+      // Tracked conditions are left out of the list, but the name is still
+      // taken: adding it again would make a second catalogue entry.
+      expect(find.textContaining('as a custom illness'), findsNothing);
+    });
+
+    testWidgets('an exact match to an earlier custom condition hides it too', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        buildIllnessScreen(
+          conditions: [
+            ...catalogue,
+            const Condition(id: 3, name: 'Long COVID', global: false),
+          ],
+        ),
+      );
+      await tester.pump();
+
+      await tester.enterText(find.byType(TextField), 'long covid');
+      await tester.pump();
+
+      expect(find.textContaining('as a custom illness'), findsNothing);
     });
   });
 
