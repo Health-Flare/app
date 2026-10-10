@@ -100,3 +100,8 @@ gradle.taskGraph.whenReady {
 flutter {
     source = "../.."
 }
+
+dependencies {
+    // AppCompat themes in res/values*/styles.xml (local_auth, #100).
+    implementation("androidx.appcompat:appcompat:1.7.0")
+}

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
+import 'package:health_flare/core/providers/app_lock_provider.dart';
 import 'package:health_flare/core/providers/condition_provider.dart';
 import 'package:health_flare/models/condition.dart';
 
@@ -347,31 +348,38 @@ class _OnboardingProfileZoneState extends ConsumerState<OnboardingProfileZone> {
 }
 
 /// Inline avatar picker widget.
-class _AvatarPicker extends StatefulWidget {
+class _AvatarPicker extends ConsumerStatefulWidget {
   const _AvatarPicker({required this.onChanged});
 
   final ValueChanged<String?> onChanged;
 
   @override
-  State<_AvatarPicker> createState() => _AvatarPickerState();
+  ConsumerState<_AvatarPicker> createState() => _AvatarPickerState();
 }
 
-class _AvatarPickerState extends State<_AvatarPicker> {
+class _AvatarPickerState extends ConsumerState<_AvatarPicker> {
   final _picker = ImagePicker();
   XFile? _pickedFile;
 
   Future<void> _pick(ImageSource source) async {
     String? path;
     if (Platform.isMacOS) {
-      final result = await FilePicker.pickFile(type: FileType.image);
+      final result = await ref
+          .read(appLockProvider.notifier)
+          .whileAway(() => FilePicker.pickFile(type: FileType.image));
       path = result?.path;
     } else {
-      final file = await _picker.pickImage(
-        source: source,
-        maxWidth: 512,
-        maxHeight: 512,
-        imageQuality: 85,
-      );
+      // Camera or photo library: coming back must not lock the app.
+      final file = await ref
+          .read(appLockProvider.notifier)
+          .whileAway(
+            () => _picker.pickImage(
+              source: source,
+              maxWidth: 512,
+              maxHeight: 512,
+              imageQuality: 85,
+            ),
+          );
       path = file?.path;
     }
     if (path == null) return;

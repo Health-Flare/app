@@ -4,6 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:isar_community/isar.dart';
 import 'package:path_provider/path_provider.dart';
 
+import 'package:health_flare/data/database/app_schemas.dart';
+import 'package:health_flare/data/database/app_settings.dart';
 import 'package:health_flare/data/database/backup_encryption.dart';
 import 'package:health_flare/data/database/import_service.dart';
 import 'package:health_flare/data/database/pre_migration_snapshot.dart';
@@ -32,6 +34,7 @@ class BackupService {
   BackupService._();
 
   static const _pendingRestoreFileName = 'healthflare_pending_restore.isar';
+  static const _mainDbName = 'healthflare';
 
   /// The path used for the pending restore file.
   static Future<String> pendingRestorePath() async {
@@ -124,19 +127,81 @@ class BackupService {
       return;
     }
 
+    // The app lock settings belong to this phone, not to the data (#100):
+    // carry them over so restoring a file from another phone never turns the
+    // lock on or off.
+    final mainFile = File('$docsDir/$_mainDbName.isar');
+    final deviceSettings = mainFile.existsSync()
+        ? await _readDeviceSettings(docsDir)
+        : null;
+
     // Replace the main database file with the backup.
-    final mainFile = File('$docsDir/healthflare.isar');
     if (mainFile.existsSync()) {
       await mainFile.delete();
     }
     // Also remove any leftover lock file so Isar opens cleanly.
-    final lockFile = File('$docsDir/healthflare.isar.lock');
+    final lockFile = File('$docsDir/$_mainDbName.isar.lock');
     if (lockFile.existsSync()) {
       await lockFile.delete();
     }
     await pendingFile.rename(mainFile.path);
+    if (deviceSettings != null) {
+      await _writeDeviceSettings(docsDir, deviceSettings);
+    }
     // The restored database is not the one any unfinished upgrade took its
     // safety copy of. Forget that copy so the next upgrade copies this one.
     await PreMigrationSnapshot.clearPendingMarker(docsDir);
   }
+
+  static Future<Isar> _openMain(String docsDir) =>
+      Isar.open(appSchemas, directory: docsDir, name: _mainDbName);
+
+  /// This phone's app lock settings from the live database, or null if it
+  /// has none (or can't be read: the restore still goes ahead).
+  static Future<_DeviceSettings?> _readDeviceSettings(String docsDir) async {
+    try {
+      final isar = await _openMain(docsDir);
+      try {
+        final row = await isar.appSettings.get(1);
+        return row == null ? null : _DeviceSettings.from(row);
+      } finally {
+        await isar.close();
+      }
+    } on IsarError {
+      return null;
+    }
+  }
+
+  static Future<void> _writeDeviceSettings(
+    String docsDir,
+    _DeviceSettings settings,
+  ) async {
+    final isar = await _openMain(docsDir);
+    try {
+      await isar.writeTxn(() async {
+        final row = await isar.appSettings.get(1) ?? (AppSettings()..id = 1);
+        settings.applyTo(row);
+        await isar.appSettings.put(row);
+      });
+    } finally {
+      await isar.close();
+    }
+  }
+}
+
+/// The [AppSettings] fields that belong to the phone rather than the data.
+class _DeviceSettings {
+  _DeviceSettings.from(AppSettings row)
+    : appLockEnabled = row.appLockEnabled,
+      appLockRelockSeconds = row.appLockRelockSeconds,
+      hideInAppSwitcher = row.hideInAppSwitcher;
+
+  final bool appLockEnabled;
+  final int? appLockRelockSeconds;
+  final bool hideInAppSwitcher;
+
+  void applyTo(AppSettings row) => row
+    ..appLockEnabled = appLockEnabled
+    ..appLockRelockSeconds = appLockRelockSeconds
+    ..hideInAppSwitcher = hideInAppSwitcher;
 }

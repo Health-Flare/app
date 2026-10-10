@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:health_flare/features/onboarding/widgets/app_lock_offer.dart';
+
 /// Step 3: Privacy & data promise.
 ///
 /// Shows a headline commitment, 4 supporting facts, and an expandable
@@ -99,6 +101,9 @@ class _OnboardingPrivacyZoneState extends State<OnboardingPrivacyZone>
 
           // Supporting privacy facts
           ..._privacyFacts(context),
+
+          // Opt-in app lock (#100). Nothing on desktop and web.
+          const AppLockOffer(),
 
           const SizedBox(height: 24),
 

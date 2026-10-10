@@ -22,13 +22,28 @@ const AppSettingsSchema = CollectionSchema(
       name: r'activeProfileId',
       type: IsarType.long,
     ),
-    r'lastProfileId': PropertySchema(
+    r'appLockEnabled': PropertySchema(
       id: 1,
+      name: r'appLockEnabled',
+      type: IsarType.bool,
+    ),
+    r'appLockRelockSeconds': PropertySchema(
+      id: 2,
+      name: r'appLockRelockSeconds',
+      type: IsarType.long,
+    ),
+    r'hideInAppSwitcher': PropertySchema(
+      id: 3,
+      name: r'hideInAppSwitcher',
+      type: IsarType.bool,
+    ),
+    r'lastProfileId': PropertySchema(
+      id: 4,
       name: r'lastProfileId',
       type: IsarType.long,
     ),
     r'schemaVersion': PropertySchema(
-      id: 2,
+      id: 5,
       name: r'schemaVersion',
       type: IsarType.long,
     )
@@ -63,8 +78,11 @@ void _appSettingsSerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeLong(offsets[0], object.activeProfileId);
-  writer.writeLong(offsets[1], object.lastProfileId);
-  writer.writeLong(offsets[2], object.schemaVersion);
+  writer.writeBool(offsets[1], object.appLockEnabled);
+  writer.writeLong(offsets[2], object.appLockRelockSeconds);
+  writer.writeBool(offsets[3], object.hideInAppSwitcher);
+  writer.writeLong(offsets[4], object.lastProfileId);
+  writer.writeLong(offsets[5], object.schemaVersion);
 }
 
 AppSettings _appSettingsDeserialize(
@@ -75,9 +93,12 @@ AppSettings _appSettingsDeserialize(
 ) {
   final object = AppSettings();
   object.activeProfileId = reader.readLongOrNull(offsets[0]);
+  object.appLockEnabled = reader.readBool(offsets[1]);
+  object.appLockRelockSeconds = reader.readLongOrNull(offsets[2]);
+  object.hideInAppSwitcher = reader.readBool(offsets[3]);
   object.id = id;
-  object.lastProfileId = reader.readLong(offsets[1]);
-  object.schemaVersion = reader.readLong(offsets[2]);
+  object.lastProfileId = reader.readLong(offsets[4]);
+  object.schemaVersion = reader.readLong(offsets[5]);
   return object;
 }
 
@@ -91,8 +112,14 @@ P _appSettingsDeserializeProp<P>(
     case 0:
       return (reader.readLongOrNull(offset)) as P;
     case 1:
-      return (reader.readLong(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 2:
+      return (reader.readLongOrNull(offset)) as P;
+    case 3:
+      return (reader.readBool(offset)) as P;
+    case 4:
+      return (reader.readLong(offset)) as P;
+    case 5:
       return (reader.readLong(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -262,6 +289,100 @@ extension AppSettingsQueryFilter
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      appLockEnabledEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'appLockEnabled',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      appLockRelockSecondsIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'appLockRelockSeconds',
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      appLockRelockSecondsIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'appLockRelockSeconds',
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      appLockRelockSecondsEqualTo(int? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'appLockRelockSeconds',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      appLockRelockSecondsGreaterThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'appLockRelockSeconds',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      appLockRelockSecondsLessThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'appLockRelockSeconds',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      appLockRelockSecondsBetween(
+    int? lower,
+    int? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'appLockRelockSeconds',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      hideInAppSwitcherEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'hideInAppSwitcher',
+        value: value,
       ));
     });
   }
@@ -453,6 +574,47 @@ extension AppSettingsQuerySortBy
     });
   }
 
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy> sortByAppLockEnabled() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'appLockEnabled', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+      sortByAppLockEnabledDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'appLockEnabled', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+      sortByAppLockRelockSeconds() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'appLockRelockSeconds', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+      sortByAppLockRelockSecondsDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'appLockRelockSeconds', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+      sortByHideInAppSwitcher() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hideInAppSwitcher', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+      sortByHideInAppSwitcherDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hideInAppSwitcher', Sort.desc);
+    });
+  }
+
   QueryBuilder<AppSettings, AppSettings, QAfterSortBy> sortByLastProfileId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'lastProfileId', Sort.asc);
@@ -492,6 +654,47 @@ extension AppSettingsQuerySortThenBy
       thenByActiveProfileIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'activeProfileId', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy> thenByAppLockEnabled() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'appLockEnabled', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+      thenByAppLockEnabledDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'appLockEnabled', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+      thenByAppLockRelockSeconds() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'appLockRelockSeconds', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+      thenByAppLockRelockSecondsDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'appLockRelockSeconds', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+      thenByHideInAppSwitcher() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hideInAppSwitcher', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+      thenByHideInAppSwitcherDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hideInAppSwitcher', Sort.desc);
     });
   }
 
@@ -543,6 +746,26 @@ extension AppSettingsQueryWhereDistinct
     });
   }
 
+  QueryBuilder<AppSettings, AppSettings, QDistinct> distinctByAppLockEnabled() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'appLockEnabled');
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QDistinct>
+      distinctByAppLockRelockSeconds() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'appLockRelockSeconds');
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QDistinct>
+      distinctByHideInAppSwitcher() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'hideInAppSwitcher');
+    });
+  }
+
   QueryBuilder<AppSettings, AppSettings, QDistinct> distinctByLastProfileId() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'lastProfileId');
@@ -567,6 +790,26 @@ extension AppSettingsQueryProperty
   QueryBuilder<AppSettings, int?, QQueryOperations> activeProfileIdProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'activeProfileId');
+    });
+  }
+
+  QueryBuilder<AppSettings, bool, QQueryOperations> appLockEnabledProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'appLockEnabled');
+    });
+  }
+
+  QueryBuilder<AppSettings, int?, QQueryOperations>
+      appLockRelockSecondsProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'appLockRelockSeconds');
+    });
+  }
+
+  QueryBuilder<AppSettings, bool, QQueryOperations>
+      hideInAppSwitcherProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'hideInAppSwitcher');
     });
   }
 

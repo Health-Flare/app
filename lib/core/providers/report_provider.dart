@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/legacy.dart';
 import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
 
+import 'package:health_flare/core/providers/app_lock_provider.dart';
 import 'package:health_flare/core/providers/clock_provider.dart';
 import 'package:health_flare/core/providers/database_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
@@ -70,12 +71,16 @@ class _ReportGenerator {
         await file.writeAsBytes(bytes);
         await ScratchFiles.shareThenDelete(
           file.path,
-          () => SharePlus.instance.share(
-            ShareParams(
-              files: [XFile(file.path, mimeType: 'application/pdf')],
-              subject: 'Health report for ${profile.name}',
-            ),
-          ),
+          () => _ref
+              .read(appLockProvider.notifier)
+              .whileAway(
+                () => SharePlus.instance.share(
+                  ShareParams(
+                    files: [XFile(file.path, mimeType: 'application/pdf')],
+                    subject: 'Health report for ${profile.name}',
+                  ),
+                ),
+              ),
         );
       } else {
         final csv = CsvReportService.generate(
@@ -86,12 +91,16 @@ class _ReportGenerator {
         await file.writeAsString(csv);
         await ScratchFiles.shareThenDelete(
           file.path,
-          () => SharePlus.instance.share(
-            ShareParams(
-              files: [XFile(file.path, mimeType: 'text/csv')],
-              subject: 'Health data for ${profile.name}',
-            ),
-          ),
+          () => _ref
+              .read(appLockProvider.notifier)
+              .whileAway(
+                () => SharePlus.instance.share(
+                  ShareParams(
+                    files: [XFile(file.path, mimeType: 'text/csv')],
+                    subject: 'Health data for ${profile.name}',
+                  ),
+                ),
+              ),
         );
       }
 
