@@ -36,6 +36,9 @@ import 'package:health_flare/data/seed_data.dart';
 ///              updateHighlightsOff, whatsNewCardVersion,
 ///              whatsNewCardShownCount. No data change: every new field reads
 ///              as its "nothing yet" value on existing rows.
+/// Schema v21 = AppSettings.bottomBarIds and bottomBarLayoutVersion, and
+///              ProfileIsar.disabledFeatureIds (#137). No data change: null
+///              bar = default, null version = 1.9.1's bar, empty = all on.
 ///
 /// How to add a future migration:
 ///   1. Increment [_targetVersion].
@@ -49,7 +52,7 @@ import 'package:health_flare/data/seed_data.dart';
 class MigrationRunner {
   MigrationRunner._();
 
-  static const int _targetVersion = 20;
+  static const int _targetVersion = 21;
 
   /// Whether existing data is waiting for a data migration: the database
   /// has been initialised before (schema version above 0) and is behind the
@@ -305,6 +308,18 @@ class MigrationRunner {
       await isar.writeTxn(() async {
         final s = await isar.appSettings.get(1) ?? (AppSettings()..id = 1);
         s.schemaVersion = 20;
+        await isar.appSettings.put(s);
+      });
+    }
+
+    // ── v20 → v21: bottom bar and features in use (#137) ──────────────────
+    // Fields only. A missing bar reads as "default", a missing version as
+    // 1.9.1's bar, and a missing feature list as everything on, so an
+    // update is told what changed (BarLayoutStore.settle) with no backfill.
+    if (currentVersion < 21) {
+      await isar.writeTxn(() async {
+        final s = await isar.appSettings.get(1) ?? (AppSettings()..id = 1);
+        s.schemaVersion = 21;
         await isar.appSettings.put(s);
       });
     }

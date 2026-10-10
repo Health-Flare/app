@@ -45,6 +45,25 @@ void main() {
     });
   });
 
+  group('Every change to the default bar comes with a guide', () {
+    test('every default bar after 1.9.1 names the guide that explains it', () {
+      for (final v in defaultBarVersions.keys.where((v) => v > 1)) {
+        expect(
+          defaultBarGuideIds[v],
+          isNotNull,
+          reason:
+              'Default bar v$v has no guide. Add its id to defaultBarGuideIds '
+              '(lib/core/navigation/bar_layout.dart): nobody\'s bar changes '
+              'without them being shown what changed.',
+        );
+      }
+    });
+
+    test('Track and Care is explained by its guide', () {
+      expect(defaultBarGuideIds[2], 'track-and-care');
+    });
+  });
+
   group('A default bar follows a new default', () {
     const record = BarRecord(seenVersion: 1);
 

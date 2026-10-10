@@ -15,4 +15,6 @@ class AppSettings {
   bool updateHighlightsOff = false;
   String? whatsNewCardVersion;
   int? whatsNewCardShownCount;
+  List<String>? bottomBarIds;
+  int? bottomBarLayoutVersion;
 }

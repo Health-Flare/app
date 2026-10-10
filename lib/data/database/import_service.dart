@@ -620,7 +620,8 @@ class _Ctx {
         ..colorSeed = bp.colorSeed
         ..cycleTrackingEnabled = bp.cycleTrackingEnabled
         ..bowelTrackingEnabled = bp.bowelTrackingEnabled
-        ..temperatureUnit = bp.temperatureUnit;
+        ..temperatureUnit = bp.temperatureUnit
+        ..disabledFeatureIds = List.of(bp.disabledFeatureIds);
       await main.writeTxn(() async {
         newProfile.id = await nextProfileId(main);
         final newId = await main.profileIsars.put(newProfile);

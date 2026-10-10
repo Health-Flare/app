@@ -129,7 +129,8 @@ class ProfileListNotifier extends Notifier<List<Profile>> {
         ..colorSeed = updated.colorSeed ?? existing.colorSeed
         ..cycleTrackingEnabled = updated.cycleTrackingEnabled
         ..bowelTrackingEnabled = updated.bowelTrackingEnabled
-        ..temperatureUnit = updated.temperatureUnit;
+        ..temperatureUnit = updated.temperatureUnit
+        ..disabledFeatureIds = List.of(updated.disabledFeatureIds);
       await isar.profileIsars.put(existing);
     });
   }
