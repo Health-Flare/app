@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 
 import 'package:health_flare/features/reports/models/report_data.dart';
 import 'package:health_flare/models/appointment_timing.dart';
+import 'package:health_flare/models/dose_log.dart';
 import 'package:health_flare/models/medication.dart';
 
 /// Generates a flat CSV string from [ReportData].
@@ -49,7 +50,7 @@ abstract final class CsvReportService {
         _fmt.format(e.loggedAt),
         'Medication',
         med == null ? 'Unknown' : _text(med.name),
-        _text('${e.amount} ${e.unit}'),
+        _doseDetail(e),
         _text(e.notes),
       ]);
     }
@@ -129,6 +130,23 @@ abstract final class CsvReportService {
     rows.insert(0, header);
 
     return Csv().encode(rows);
+  }
+
+  /// "500 mg · Missed · Forgot · Helped a little": amount, status, then
+  /// the reason and effectiveness when recorded (#130). A missed or
+  /// skipped dose must never read as taken. The cell starts with the
+  /// amount, so the reason inside it can't start a formula; it still goes
+  /// through [_text] in case the order ever changes.
+  static String _doseDetail(DoseLog e) {
+    final reason = e.reason?.trim();
+    return _text(
+      [
+        e.amountDisplay,
+        e.statusDisplay,
+        if (reason != null && reason.isNotEmpty) reason,
+        if (e.effectiveness != null) e.effectivenessDisplay,
+      ].join(' · '),
+    );
   }
 
   /// Characters that make a spreadsheet read a cell as a formula
