@@ -11,4 +11,8 @@ class AppSettings {
   bool appLockEnabled = false;
   int? appLockRelockSeconds;
   bool hideInAppSwitcher = false;
+  String? lastSeenWhatsNewVersion;
+  bool updateHighlightsOff = false;
+  String? whatsNewCardVersion;
+  int? whatsNewCardShownCount;
 }

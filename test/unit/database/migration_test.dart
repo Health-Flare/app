@@ -113,7 +113,7 @@ void main() {
   });
 
   group('MigrationRunner', () {
-    test('fresh install: schemaVersion reaches target (v19)', () async {
+    test('fresh install: schemaVersion reaches target (v20)', () async {
       final isar = await _openIsar();
 
       // No AppSettings doc exists yet → currentVersion = 0.
@@ -121,7 +121,7 @@ void main() {
 
       final settings = await isar.appSettings.get(1);
       expect(settings, isNotNull);
-      expect(settings!.schemaVersion, 19);
+      expect(settings!.schemaVersion, 20);
     });
 
     test('v2 migration seeds condition catalogue', () async {
@@ -173,7 +173,7 @@ void main() {
       expect(countAfter, countBefore);
 
       final settings = await isar.appSettings.get(1);
-      expect(settings!.schemaVersion, 19);
+      expect(settings!.schemaVersion, 20);
     });
 
     test('migration from v1 preserves existing profiles', () async {
@@ -203,7 +203,7 @@ void main() {
       expect(profiles.first.name, 'Test User');
 
       final settings = await isar.appSettings.get(1);
-      expect(settings!.schemaVersion, 19);
+      expect(settings!.schemaVersion, 20);
     });
 
     test(

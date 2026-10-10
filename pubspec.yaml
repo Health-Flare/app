@@ -92,6 +92,7 @@ flutter:
     - assets/fonts/DMSans-OFL.txt
     - assets/fonts/DMMono-OFL.txt
     - assets/fonts/Fraunces-OFL.txt
+    - assets/whats_new/releases.json
 
   fonts:
     - family: Fraunces
