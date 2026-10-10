@@ -1,0 +1,11 @@
+# Every navigation id that has ever shipped (#136). Never delete a line.
+#
+# Ids are stored in user data and backups (bottom bar, features in use).
+# test/unit/navigation/nav_ids_test.dart fails when:
+#   - an id here is gone from lib/core/navigation/nav_registry.dart with no
+#     entry in retiredNavIds, or
+#   - the registry has an id that isn't listed here yet.
+#
+# Adding an id: add it to the registry and here, in the same PR.
+# Retiring an id: remove it from the registry, add old -> new to
+# retiredNavIds, and leave its line here.
