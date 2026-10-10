@@ -190,8 +190,10 @@ void main() {
       // symptom name + notes, medication name + dose notes, meal
       // description + notes, check-in stress + notes, appointment title +
       // outcome, journal title + body, activity description + notes.
-      // (The dose unit follows the amount, "1.0 =1+1", so it can't start a
-      // formula.) If a text column is added without the guard, this fails.
+      // (The dose unit and missed/skipped reason sit inside the Detail
+      // cell after the amount, "1 =1+1 · Taken", so they can't start a
+      // formula: csv_dose_status_test.dart, #130.) If a text column is
+      // added without the guard, this fails.
       final cells = _cells(_everyFreeTextField('=1+1'));
       expect(cells.where((c) => c == "'=1+1").length, 14);
       expect(cells.where((c) => c == '=1+1'), isEmpty);

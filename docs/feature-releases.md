@@ -133,6 +133,30 @@ and has no fragment, so none of this triggers.
 - [ ] Backup round trip checked with a customized bar and a feature turned off
 - [ ] Guide checked with a screen reader, Reduce Motion and 200% text
 
+## Build flags and navigation ids
+
+Unfinished work merges to main switched off behind a build flag
+(`lib/core/feature_flags.dart`), and is switched on for one build with a
+define:
+
+```bash
+flutter run --dart-define=TRACK_AND_CARE=true
+```
+
+Tests override `featureFlagsProvider` instead. A flag and its off path are
+deleted in the release that turns it on for good.
+
+Sections, tabs and features have stable ids in
+`lib/core/navigation/nav_registry.dart` (`track`, `care.medications`).
+They're stored in user data and backups, so:
+
+- Adding an id: add it to the registry and to
+  `test/unit/navigation/known_nav_ids.txt` in the same PR.
+- Retiring an id: remove it from the registry, add `old: new` to
+  `retiredNavIds`, and leave its line in the snapshot. The test fails if
+  you don't.
+- Never reuse or rename an id. Labels can change freely.
+
 ## Ordering for Track and Care
 
 These merge to main separately, behind one flag, and ship together:
