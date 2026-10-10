@@ -131,6 +131,19 @@ Feature: Release guides
   # Customized layouts
   # ---------------------------------------------------------------------------
 
+  Scenario: Every change to the default bar comes with a guide
+    Given a release changes the default bottom bar
+    Then its What's new entry has a guide
+    And the guide shows the old bar beside the new one and where each item went
+    And the release cannot be cut without it
+
+  Scenario: Someone on the default bar is shown what changed
+    Given I never changed the bottom bar
+    And Health Flare was updated to a version that changes the default bar
+    When I open the dashboard
+    Then that release's guide card is showing
+    And "Show me" opens a guide that starts with the bar I had beside the new one
+
   @unverified
   Scenario: Someone with a custom bar is told their bar was kept
     Given I customized the bottom bar in an earlier version

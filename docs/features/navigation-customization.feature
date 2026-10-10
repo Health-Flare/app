@@ -97,7 +97,6 @@ Feature: Your layout: features in use and the bottom bar
     Then the entry saves as a journal note with the text as typed
     And a line under the sheet reads "Meals is turned off for Sarah. Turn it on"
 
-  @unverified
   Scenario: Features in use is per profile
     Given profiles "Sarah" and "Dad" exist
     When I turn off "Meals" for "Dad"
@@ -218,20 +217,38 @@ Feature: Your layout: features in use and the bottom bar
   # Later updates
   # ---------------------------------------------------------------------------
 
-  @unverified
   Scenario: A default bar follows a new default
     Given I never changed the bar
     When an update changes the default bar
     Then my bar becomes the new default
+    And I am shown what changed: my old bar beside the new one, and where
+      each item went (release-guides.feature)
+    # Nobody's bar changes without them being told, customized or not.
 
+  Scenario: Updating from 1.9.1 or earlier counts as using the default bar
+    Given I last used Health Flare 1.9.1 or earlier, where the bar could not
+      be changed
+    When I update to a version whose default bar is different
+    Then my bar becomes the new default
+    And I am shown what changed, the same as anyone on the default bar
+    # 1.9.1 and earlier only had the one fixed bar (Dashboard, Tracking,
+    # Meds, Meals, Journal, Sleep). Every version from 1.10.0 on records
+    # which default bar was last shown, so a later change can be explained.
+
+  # UNVERIFIED (TODO): agent-written, follows from the two scenarios above.
   @unverified
+  Scenario: Skipping versions shows the bar I last had, not one I never saw
+    Given I never changed the bar
+    And I skipped a version that changed the default bar
+    When I update to a version that changes it again
+    Then what changed is shown from the bar I last had to the new one
+
   Scenario: A customized bar is kept as it is
     Given I customized the bar
     When an update changes the default bar
     Then my bar stays exactly as I set it
     And the release guide says the default changed and mine was kept
 
-  @unverified
   Scenario: A new tab in a later version lands in its section, switched on
     Given I customized the bar and turned off some features
     When an update adds a new tab to Track
