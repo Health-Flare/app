@@ -3,11 +3,6 @@ Feature: Navigation and General UX
   I want clear, fast navigation and quick entry throughout the app
   So that logging health data is effortless and the app never feels confusing
 
-  # UNVERIFIED (TODO): scenarios tagged @unverified were written by an agent
-  # and haven't been checked by a person. Read each one, fix it or agree it,
-  # then delete its tag. Tracked on #135. List them all:
-  #   bash scripts/unverified_specs.sh
-
   # ---------------------------------------------------------------------------
   # Background
   # ---------------------------------------------------------------------------
@@ -20,7 +15,6 @@ Feature: Navigation and General UX
   # Primary navigation
   # ---------------------------------------------------------------------------
   #
-  # UNVERIFIED (TODO): this Layout v2 note is agent-written, not yet checked.
   # Layout v2 (Track and Care). The bar had six destinations and still left
   # appointments, activity, check-ins and flare history with no way in.
   # It now has four sections, and every list screen lives in exactly one
@@ -34,7 +28,6 @@ Feature: Navigation and General UX
   # (navigation-customization.feature). Until all three are done it stays
   # behind a build flag, so the pieces can merge to main separately.
 
-  @unverified
   Scenario: The primary navigation has four sections
     When the app is open with "Sarah" as the active profile
     Then the primary navigation contains the following destinations, in order:
@@ -43,9 +36,9 @@ Feature: Navigation and General UX
       | Track       | track     |
       | Care        | care      |
       | Journal     | journal   |
-    And Reports is opened from the Dashboard app bar, not the primary navigation
+    And Reports is opened from a button in the top bar of every section
+      screen, not the primary navigation
 
-  @unverified
   Scenario Outline: Each section opens with its first tab selected
     When I tap "<Section>" in the primary navigation
     Then I see the "<Section>" screen for "Sarah"
@@ -63,39 +56,42 @@ Feature: Navigation and General UX
     Then I am shown the dashboard for "Sarah"
     And the dashboard shows a recent summary of logged data
 
-  @unverified
   Scenario: Every list screen can be reached in two taps or fewer
     Given I am on any screen in the primary navigation
     Then each of these screens is at most two taps away:
-      | Screen               | Path                       |
-      | Symptoms             | Track > Symptoms           |
-      | Vitals               | Track > Vitals             |
-      | Meals                | Track > Meals              |
-      | Sleep                | Track > Sleep              |
-      | Activity             | Track > Activity           |
-      | Medications          | Care > Medications         |
-      | Appointments         | Care > Appointments        |
-      | Conditions           | Care > Conditions          |
-      | Flare history        | Care > Flares              |
-      | Journal entries      | Journal > Entries          |
-      | Check-in history     | Journal > Check-ins        |
-      | Reports              | Dashboard > Reports        |
+      | Screen           | Path                    |
+      | Symptoms         | Track > Symptoms        |
+      | Vitals           | Track > Vitals          |
+      | Meals            | Track > Meals           |
+      | Sleep            | Track > Sleep           |
+      | Activity         | Track > Activity        |
+      | Medications      | Care > Medications      |
+      | Appointments     | Care > Appointments     |
+      | Conditions       | Care > Conditions       |
+      | Flare history    | Care > Flares           |
+      | Journal entries  | Journal > Entries       |
+      | Check-in history | Journal > Check-ins     |
+      | Reports          | Reports button, top bar |
 
-  @unverified
   Scenario: The section remembers the last tab used
     Given I opened the "Appointments" tab in Care
     When I tap "Dashboard" in the primary navigation
     And I tap "Care" in the primary navigation
     Then the "Appointments" tab is selected
 
-  @unverified
+  Scenario: Remembered tabs reset when the app is closed
+    Given I opened the "Appointments" tab in Care
+    When the app is closed and opened again
+    And I tap "Care" in the primary navigation
+    Then the "Medications" tab is selected
+    # Remembered in memory only, never stored.
+
   Scenario: Old links still open the right screen
     Given a link or notification points at an old address such as "/medications" or "/sleep"
     When it is opened
     Then the matching tab is shown inside its section
     And the matching section is selected in the primary navigation
 
-  @unverified
   Scenario: Section tabs stay usable with large text
     Given the system text size is set to 200%
     When I open any section
@@ -107,40 +103,34 @@ Feature: Navigation and General UX
   # Section tabs
   # ---------------------------------------------------------------------------
   #
-  # Schema note (pending): the Conditions tab surfaces UserConditionIsar fields
-  # (status, recoveryDate, relapseDate, conditionHistory) that are not yet in
-  # the schema. The tab structure can be built before those fields land, but
-  # the recovery/relapse UI within the tab requires the schema version bump first.
+  # The Conditions tab is today's Track Conditions screen, moved. Recovery
+  # and relapse (illness.feature, "Recovery and relapse") need new fields
+  # and are built separately, in their own issue.
 
-  @unverified
   Scenario: Conditions tab is in Care
     Given I am on the Care screen
     When I tap the "Conditions" tab
     Then I see the list of conditions tracked for "Sarah"
-    And I can manage diagnosis dates, recovery status, and condition links from this tab
+    And it is the same screen as Tracking > Conditions before, with nothing removed
 
-  @unverified
   Scenario: Appointments tab lists upcoming and past appointments
     Given "Sarah" has one upcoming and one past appointment
     When I open Care and tap the "Appointments" tab
     Then I see an upcoming section and a past section
     And the add button opens the new appointment form
 
-  @unverified
   Scenario: Appointments tab has an empty state
     Given "Sarah" has no appointments
     When I open Care and tap the "Appointments" tab
     Then I see a short message saying no appointments are recorded yet
     And a button to add an appointment
 
-  @unverified
   Scenario: Switching tabs does not lose scroll position
     Given I have scrolled partway down the Symptoms tab on the Track screen
     When I tap the "Vitals" tab
     And I tap the "Symptoms" tab
     Then my scroll position on the Symptoms tab is preserved
 
-  @unverified
   Scenario: Each log screen shows a helpful empty state when no data exists
     Given "Sarah" has no data logged
     When I open each tab in Track, Care and Journal
@@ -157,7 +147,6 @@ Feature: Navigation and General UX
     And I can begin typing immediately
     And tapping Save completes the entry: 2 taps total from the dashboard
 
-  @unverified
   Scenario Outline: A section's add button follows the selected tab
     Given I am on the <Section> screen
     And the "<Tab>" tab is selected
@@ -166,18 +155,18 @@ Feature: Navigation and General UX
     And the quick log sheet stays closed
 
     Examples:
-      | Section | Tab          | Form                      |
-      | Track   | Symptoms     | the symptom form          |
-      | Track   | Vitals       | the vital form            |
-      | Track   | Meals        | the meal form             |
-      | Track   | Sleep        | the sleep form            |
-      | Track   | Activity     | the activity form         |
-      | Care    | Medications  | the medication form       |
-      | Care    | Appointments | the new appointment form  |
-      | Care    | Conditions   | the condition screen      |
-      | Care    | Flares       | the new flare form        |
-      | Journal | Entries      | the journal composer      |
-      | Journal | Check-ins    | today's check-in          |
+      | Section | Tab          | Form                                                   |
+      | Track   | Symptoms     | the symptom form                                       |
+      | Track   | Vitals       | the vital form                                         |
+      | Track   | Meals        | the meal form                                          |
+      | Track   | Sleep        | the sleep form                                         |
+      | Track   | Activity     | the activity form                                      |
+      | Care    | Medications  | the medication form                                    |
+      | Care    | Appointments | the new appointment form                               |
+      | Care    | Conditions   | the condition screen                                   |
+      | Care    | Flares       | the new flare form                                     |
+      | Journal | Entries      | the journal composer                                   |
+      | Journal | Check-ins    | today's check-in, opened to edit if it is already done |
 
   # ---------------------------------------------------------------------------
   # Profile switcher
