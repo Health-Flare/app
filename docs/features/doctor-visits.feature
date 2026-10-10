@@ -4,11 +4,6 @@ Feature: Doctor Visit and Appointment Tracking
   So that I can prepare questions in advance, record outcomes and prescription changes,
   and give my medical team a complete picture when I share my health history
 
-  # UNVERIFIED (TODO): scenarios tagged @unverified were written by an agent
-  # and haven't been checked by a person. Read each one, fix it or agree it,
-  # then delete its tag. Tracked on #135. List them all:
-  #   bash scripts/unverified_specs.sh
-
   Background:
     Given a profile named "Sarah" exists and is active
 
@@ -241,7 +236,6 @@ Feature: Doctor Visit and Appointment Tracking
   # Appointment history
   # ---------------------------------------------------------------------------
 
-  @unverified
   Scenario: View appointment history in reverse chronological order
     Given "Sarah" has the following appointments:
       | Title              | Provider   | Date       | Status    |
@@ -253,7 +247,6 @@ Feature: Doctor Visit and Appointment Tracking
     And "Physio assessment" appears in an upcoming section
     And the two past appointments are listed below in reverse date order
 
-  @unverified
   Scenario: A passed appointment with no outcome is listed under Past
     Given "Sarah" had an appointment titled "GP check-in" 2 days ago
     And its status is still Upcoming
