@@ -93,9 +93,6 @@ Feature: Illness Tracking
     And no existing condition exactly matches "Myalgic encephalomyelitis"
     Then I see an option to add "Myalgic encephalomyelitis" as a custom illness
 
-  # UNVERIFIED (TODO): agent-written for #26, not yet checked by a person.
-  # Delete the tag once it's read and agreed. List: bash scripts/unverified_specs.sh
-  @unverified
   Scenario: A partial match still offers "Add custom"
     Given the illness entry screen is open
     And the catalogue has "Ulcerative colitis" and "Microscopic colitis" but no "Colitis"
