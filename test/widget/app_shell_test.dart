@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:health_flare/core/navigation/nav_registry.dart';
 import 'package:health_flare/core/router/app_router.dart';
 import 'package:health_flare/features/shell/app_shell.dart';
 
@@ -128,6 +129,28 @@ void main() {
       await tester.pump(const Duration(milliseconds: 300));
 
       expect(find.text('Medications screen'), findsOneWidget);
+    });
+
+    // #136: the bar is read from the navigation registry, with no visible
+    // change while the trackAndCare flag is off.
+    testWidgets('the bar shows the registry\'s current layout, in order', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_buildShell());
+      await tester.pump();
+
+      final bar = tester.widget<NavigationBar>(find.byType(NavigationBar));
+      expect(
+        [
+          for (final d in bar.destinations)
+            ((d as NavigationDestination).label),
+        ],
+        [for (final b in legacyBar) b.label],
+      );
+      expect(
+        [for (final b in legacyBar) b.label],
+        ['Dashboard', 'Tracking', 'Meds', 'Meals', 'Journal', 'Sleep'],
+      );
     });
   });
 }

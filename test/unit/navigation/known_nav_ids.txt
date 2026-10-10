@@ -1,0 +1,28 @@
+# Every navigation id that has ever shipped (#136). Never delete a line.
+#
+# Ids are stored in user data and backups (bottom bar, features in use).
+# test/unit/navigation/nav_ids_test.dart fails when:
+#   - an id here is gone from lib/core/navigation/nav_registry.dart with no
+#     entry in retiredNavIds, or
+#   - the registry has an id that isn't listed here yet.
+#
+# Adding an id: add it to the registry and here, in the same PR.
+# Retiring an id: remove it from the registry, add old -> new to
+# retiredNavIds, and leave its line here.
+
+# Layout v2 (Track and Care), added in #136.
+dashboard
+track
+track.symptoms
+track.vitals
+track.meals
+track.sleep
+track.activity
+care
+care.medications
+care.appointments
+care.conditions
+care.flares
+journal
+journal.entries
+journal.checkins
