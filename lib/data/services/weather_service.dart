@@ -9,12 +9,17 @@ import 'package:health_flare/models/weather_snapshot.dart';
 class WeatherService {
   WeatherService._();
 
-  static Future<WeatherSnapshot?> fetch() async {
+  /// [requestPermission] shows the OS location prompt; the app lock wraps
+  /// it so answering the prompt doesn't lock the app (#100).
+  static Future<WeatherSnapshot?> fetch({
+    Future<LocationPermission> Function() requestPermission =
+        Geolocator.requestPermission,
+  }) async {
     try {
       // Check/request location permission.
       var permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
+        permission = await requestPermission();
       }
       if (permission == LocationPermission.denied ||
           permission == LocationPermission.deniedForever) {

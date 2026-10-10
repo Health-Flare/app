@@ -1,0 +1,128 @@
+{
+  "releases": [
+    {
+      "version": "1.10.0",
+      "date": null,
+      "draft": true,
+      "highlights": [
+        {
+          "title": "What's new lives in Settings",
+          "body": "Settings > What's new lists every update. A short card like this one shows after an update with something worth knowing. You can turn these cards off."
+        },
+        {
+          "title": "Vitals on Insights",
+          "body": "Insights charts every vital with readings in the window, including temperature and blood pressure."
+        },
+        {
+          "title": "Temperature in °C or °F",
+          "body": "Each profile can show temperatures in °C, °F, or as logged. Readings are kept exactly as entered."
+        },
+        {
+          "title": "Moving entries is safer",
+          "body": "Doses and appointments can move to another profile. Health Flare asks first and says what won't carry over."
+        }
+      ],
+      "changes": [
+        "Settings > About shows the installed app version.",
+        "Settings > What's new lists every update, with a card on the dashboard after an update that has highlights.",
+        "Insights has a Vitals card.",
+        "Each profile has a temperature unit setting (°C, °F, or As logged).",
+        "Medication doses and appointments can be moved to another profile.",
+        "A safety copy of your data is saved on the phone before an update changes how it's stored.",
+        "Deleting a profile removes all of its health data.",
+        "Text in a CSV export can no longer run as a spreadsheet formula."
+      ]
+    },
+    {
+      "version": "1.9.1",
+      "date": "2026-09-24",
+      "changes": [
+        "Quick Log reads what you type more accurately, and can log flares, fluids and check-in notes."
+      ]
+    },
+    {
+      "version": "1.9.0",
+      "date": "2026-09-24",
+      "changes": [
+        "Backups can be locked with a password."
+      ]
+    },
+    {
+      "version": "1.8.0",
+      "date": "2026-09-18",
+      "changes": [
+        "Sleep has its own place in the bottom bar, with a Nap toggle."
+      ]
+    },
+    {
+      "version": "1.7.1",
+      "date": "2026-09-15",
+      "changes": [
+        "Store screenshots updated. No changes in the app."
+      ]
+    },
+    {
+      "version": "1.7.0",
+      "date": "2026-09-13",
+      "changes": [
+        "Onboarding is now four short steps."
+      ]
+    },
+    {
+      "version": "1.6.0",
+      "date": "2026-09-12",
+      "changes": [
+        "Height can be logged as a vital."
+      ]
+    },
+    {
+      "version": "1.5.2",
+      "date": "2026-09-08",
+      "changes": [
+        "Fixes for iOS App Store requirements."
+      ]
+    },
+    {
+      "version": "1.5.1",
+      "date": "2026-09-08",
+      "changes": [
+        "Onboarding is easier to read in dark mode."
+      ]
+    },
+    {
+      "version": "1.5.0",
+      "date": "2026-08-21",
+      "changes": [
+        "Maintenance release."
+      ]
+    },
+    {
+      "version": "1.3.0",
+      "date": "2026-05-26",
+      "changes": [
+        "The profile button sits in the top bar on every screen."
+      ]
+    },
+    {
+      "version": "1.2.0",
+      "date": "2026-05-07",
+      "changes": [
+        "Weather can be captured with entries, if you turn it on."
+      ]
+    },
+    {
+      "version": "1.1.0",
+      "date": "2026-05-04",
+      "changes": [
+        "Symptoms and conditions share one Tracking tab, and conditions can be marked In Recovery."
+      ]
+    },
+    {
+      "version": "1.0.0",
+      "date": "2026-04-28",
+      "changes": [
+        "First release."
+      ]
+    }
+  ]
+}

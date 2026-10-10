@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
+import 'package:health_flare/core/providers/app_lock_provider.dart';
 import 'package:health_flare/core/providers/meal_entry_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/core/providers/weather_provider.dart';
@@ -97,7 +98,10 @@ class _MealEntryFormScreenState extends ConsumerState<MealEntryFormScreen> {
   }
 
   Future<void> _pickPhoto(ImageSource source) async {
-    final file = await _picker.pickImage(source: source, imageQuality: 85);
+    // Camera or photo library: coming back must not lock the app.
+    final file = await ref
+        .read(appLockProvider.notifier)
+        .whileAway(() => _picker.pickImage(source: source, imageQuality: 85));
     if (file == null || !mounted) return;
     setState(() {
       _photoPath = file.path;

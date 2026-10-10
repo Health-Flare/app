@@ -4,10 +4,17 @@
 # Cut a new Health Flare release.
 #
 # Automates every step described in CHANGELOG.md's release checklist:
+#   0. Refuse to go on unless What's new is ready for the new version:
+#      no fragments left in changes/, and an entry in
+#      assets/whats_new/releases.json that isn't a draft (#140).
 #   1. Bump `version:` in pubspec.yaml (versionName + versionCode).
 #   2. Promote the ## [Unreleased] section in CHANGELOG.md.
-#   3. Commit the changes and create an annotated git tag.
-#   4. Push the commit and tag: triggering the GitHub release workflow.
+#   3. Date the What's new entry.
+#   4. Commit the changes and create an annotated git tag.
+#   5. Push the commit and tag: triggering the GitHub release workflow.
+#
+# Before running it: dart run tool/rollup_changes.dart --write --version X.Y.Z,
+# write the highlights, delete "draft", commit. docs/feature-releases.md.
 #
 # Usage:
 #   bash scripts/release.sh patch                # 1.0.0 → 1.0.1
@@ -26,6 +33,7 @@ set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PUBSPEC="${REPO_ROOT}/pubspec.yaml"
 CHANGELOG="${REPO_ROOT}/CHANGELOG.md"
+RELEASES_JSON="${REPO_ROOT}/assets/whats_new/releases.json"
 GITHUB_BASE="https://github.com/Health-Flare/app"
 
 # ── Defaults ────────────────────────────────────────────────────────────
@@ -144,6 +152,16 @@ if git rev-parse "$NEW_TAG" >/dev/null 2>&1; then
   exit 1
 fi
 
+# ── What's new ready? ──────────────────────────────────────────────────
+# Fragments rolled up, an entry for this version, not a draft. Checked in
+# --dry-run too, so a dry run tells you everything that's missing.
+if ! (cd "$REPO_ROOT" && dart run tool/rollup_changes.dart \
+      --stamp "$NEW_VERSION" --date "$TODAY" --dry-run); then
+  echo "" >&2
+  echo "error: What's new isn't ready for ${NEW_VERSION} (see above)." >&2
+  exit 1
+fi
+
 # ── Check Unreleased content ───────────────────────────────────────────
 UNRELEASED=$(bash "${REPO_ROOT}/scripts/extract_changelog.sh" Unreleased 2>/dev/null || true)
 REAL_ENTRIES=$(echo "$UNRELEASED" | grep -v '^\s*$\|^###\|_Nothing yet\._' || true)
@@ -171,7 +189,7 @@ echo "────────────────────────�
 
 if [[ "$DRY_RUN" == true ]]; then
   echo ""
-  echo "[dry-run] Would update pubspec.yaml and CHANGELOG.md, commit, and tag."
+  echo "[dry-run] Would update pubspec.yaml, CHANGELOG.md and What's new, commit, and tag."
   echo "[dry-run] No changes made."
   exit 0
 fi
@@ -227,19 +245,22 @@ awk -v new_ver="$NEW_VERSION" -v new_tag="$NEW_TAG" -v prev_tag="$PREV_TAG" -v b
 
 echo "  Updated CHANGELOG.md"
 
-# ── 3. Commit ──────────────────────────────────────────────────────────
-git add "$PUBSPEC" "$CHANGELOG"
+# ── 3. Date What's new ─────────────────────────────────────────────────
+dart run tool/rollup_changes.dart --stamp "$NEW_VERSION" --date "$TODAY"
+
+# ── 4. Commit ──────────────────────────────────────────────────────────
+git add "$PUBSPEC" "$CHANGELOG" "$RELEASES_JSON"
 git commit -m "release: ${NEW_TAG}
 
-Bump version to ${NEW_VERSION}+${NEW_BUILD} and promote changelog."
+Bump version to ${NEW_VERSION}+${NEW_BUILD}, promote changelog, date What's new."
 
 echo "  Committed release changes"
 
-# ── 4. Tag ─────────────────────────────────────────────────────────────
+# ── 5. Tag ─────────────────────────────────────────────────────────────
 git tag -a "$NEW_TAG" -m "Health Flare ${NEW_TAG}"
 echo "  Created tag ${NEW_TAG}"
 
-# ── 5. Push ────────────────────────────────────────────────────────────
+# ── 6. Push ────────────────────────────────────────────────────────────
 if [[ "$NO_PUSH" == true ]]; then
   echo ""
   echo "  Tag created locally. Push when ready:"

@@ -3,6 +3,7 @@
 How a user-facing change gets from merged to in someone's hands without
 surprising them. Applies to every release from the Track and Care layout
 onward. Specs: `docs/features/whats-new.feature`,
+`docs/features/release-guides.feature`,
 `docs/features/navigation-customization.feature`.
 
 ## Sort the change first
@@ -19,6 +20,12 @@ to ship with it.
 A **move** is anything that changes where an existing screen, control or
 default is, or what it does when tapped. If someone who used the app
 yesterday would look for it in the old place, it's a move.
+
+Each changelog fragment says its kind (`changes/README.md`): `added` is
+an addition and `fixed`/`security` a fix unless it says otherwise;
+`changed`, `removed` and `deprecated` must say. A move names its guide:
+`<!-- kind: move; guide: track-and-care -->`. The checks enforce all of
+it.
 
 ## Rules
 
@@ -44,15 +51,87 @@ yesterday would look for it in the old place, it's a move.
 8. **Offline.** Highlights and guides are bundled. Nothing is fetched,
    nothing reports whether it was read.
 
+## Writing What's new
+
+Release content lives in `assets/whats_new/releases.json`, bundled with
+the app. One entry per version, newest first:
+
+```json
+{
+  "version": "1.10.0",
+  "date": "2026-10-20",
+  "highlights": [{ "title": "Naps in Quick Log", "body": "You can log a nap from Quick Log." }],
+  "changes": ["One line per change, from the changelog fragments."],
+  "guideId": null
+}
+```
+
+- `highlights`: 0 to 4. Leave empty for a fix-only release: it's listed
+  in history and never gets a card. A release only gets a dashboard card
+  when it has highlights.
+- `changes`: the full list, shown collapsed under "All changes".
+- `date`: `null` while the release is being written. The app only lists
+  versions up to the one installed, so an entry for the next version can
+  sit on main before release.
+- `guideId`: the release guide for a move (#145). Null otherwise.
+
+How the card behaves (all in `lib/features/whats_new/whats_new_rules.dart`):
+
+- A fresh install never sees a card. Someone updating sees one card for
+  every release with highlights since the last one they saw.
+- Dismissing, opening What's new, or ignoring the card for 5 opens ends it
+  for every release up to the installed one.
+- With "Show update highlights" off, updates count as seen, so turning it
+  back on never brings back an old card.
+
+To see your entry in the app before release, and to test or screenshot
+the card: `bash scripts/whats_new.sh` (guide: `docs/testing/whats-new.md`).
+
+## Releasing
+
+Three commands. Each refuses to go on, and says why, if something is
+missing.
+
+```bash
+# 1. Roll fragments into CHANGELOG.md and draft What's new for the version.
+dart run tool/rollup_changes.dart --write --version 1.10.0
+
+# 2. Write the highlights. In assets/whats_new/releases.json, the 1.10.0
+#    entry has "changes" filled in from the changelog and "draft": true.
+#    Write 0 to 4 highlights (none for a fix-only release), delete "draft".
+bash scripts/whats_new.sh check         # valid?
+bash scripts/whats_new.sh run upgrade   # how the card looks (fixture data)
+git commit -am "release: What's new for 1.10.0"
+
+# 3. Cut it. Bumps pubspec, promotes Unreleased, dates What's new, tags.
+bash scripts/release.sh 1.10.0
+```
+
+What stops a release:
+
+| Check | Where | Fails when |
+|---|---|---|
+| Fragment kind | `--check`, unit tests, CI on every PR | A `changed`/`removed`/`deprecated` fragment doesn't say its kind; a move has no guide |
+| What's new file | same | Bad JSON, unknown key, more than 4 highlights, empty highlight, bad version or date, not newest first, duplicate version |
+| Shipping version | same | The `pubspec.yaml` version has no entry, is still a draft, or has no date |
+| Release script | `scripts/release.sh` (also `--dry-run`) | Fragments not rolled up, no entry for the new version, or it's a draft |
+| One guide per release | `--write` | Fragments name two different guides |
+
+A draft for the *next* version on main is fine: the app only lists
+versions up to the installed one, and the check only demands a finished
+entry for the version in `pubspec.yaml`.
+
+If a move's guide isn't built yet, the move stays behind its build flag
+and has no fragment, so none of this triggers.
+
 ## Release checklist additions
 
-- [ ] Each fragment in `changes/` is tagged fix, addition or move
-- [ ] Every move has a guide entry and its build flag is on
 - [ ] Highlights written for the release (2 to 4, plain language, grade 6 to 8, no dashes)
+- [ ] `bash scripts/whats_new.sh run upgrade` looks right
+- [ ] Every move's guide is built and its build flag is on
 - [ ] Any retired section, tab or feature id is in the replacement map
 - [ ] Backup round trip checked with a customized bar and a feature turned off
 - [ ] Guide checked with a screen reader, Reduce Motion and 200% text
-- [ ] CI check: the `pubspec.yaml` version has a What's new entry (may be empty for fix-only releases)
 
 ## Ordering for Track and Care
 

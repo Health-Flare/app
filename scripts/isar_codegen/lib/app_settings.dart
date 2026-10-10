@@ -8,4 +8,11 @@ class AppSettings {
   int? activeProfileId;
   int schemaVersion = 1;
   int lastProfileId = 0;
+  bool appLockEnabled = false;
+  int? appLockRelockSeconds;
+  bool hideInAppSwitcher = false;
+  String? lastSeenWhatsNewVersion;
+  bool updateHighlightsOff = false;
+  String? whatsNewCardVersion;
+  int? whatsNewCardShownCount;
 }

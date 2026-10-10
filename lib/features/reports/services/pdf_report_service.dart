@@ -1,11 +1,13 @@
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:intl/intl.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
 import 'package:health_flare/features/reports/models/report_data.dart';
 import 'package:health_flare/models/appointment.dart';
+import 'package:health_flare/models/appointment_timing.dart';
 import 'package:health_flare/models/medication.dart';
 
 /// Generates a PDF [Uint8List] from [ReportData].
@@ -14,7 +16,8 @@ abstract final class PdfReportService {
   static final _timeFmt = DateFormat('HH:mm');
   static final _hdrFmt = DateFormat('d MMM yyyy, HH:mm');
 
-  static Future<Uint8List> generate(ReportData data) async {
+  static Future<Uint8List> generate(ReportData data, {DateTime? now}) async {
+    final at = now ?? DateTime.now();
     final pdf = pw.Document();
 
     // Pre-build all content sections so we know what to include.
@@ -26,7 +29,7 @@ abstract final class PdfReportService {
     _addMeals(sections, data);
     _addSleep(sections, data);
     _addCheckins(sections, data);
-    _addAppointments(sections, data);
+    _addAppointments(sections, data, at);
     _addActivities(sections, data);
     _addJournal(sections, data);
 
@@ -214,17 +217,17 @@ abstract final class PdfReportService {
 
   // ── Appointments ──────────────────────────────────────────────────────────
 
-  static void _addAppointments(List<pw.Widget> out, ReportData data) {
+  static void _addAppointments(
+    List<pw.Widget> out,
+    ReportData data,
+    DateTime now,
+  ) {
     if (data.appointments.isEmpty) return;
     out.add(_sectionTitle('Appointments (${data.appointments.length})'));
     for (final e in data.appointments) {
       final label =
           '${_fmt.format(e.scheduledAt)} ${_timeFmt.format(e.scheduledAt)}';
-      final value = StringBuffer(e.title);
-      if (e.providerName != null) value.write('  ·  ${e.providerName}');
-      value.write('  ·  ${_apptStatus(e.status)}');
-      if (e.outcomeNotes != null) value.write('\n${e.outcomeNotes}');
-      out.add(_row(label, value.toString()));
+      out.add(_row(label, appointmentRowValue(e, now)));
     }
   }
 
@@ -262,11 +265,14 @@ abstract final class PdfReportService {
     }
   }
 
-  static String _apptStatus(String status) => switch (status) {
-    AppointmentStatus.upcoming => 'Upcoming',
-    AppointmentStatus.completed => 'Completed',
-    AppointmentStatus.cancelled => 'Cancelled',
-    AppointmentStatus.missed => 'Missed',
-    _ => status,
-  };
+  /// The text of one appointment row in the PDF. [now] decides whether an
+  /// appointment still marked Upcoming has passed (#138).
+  @visibleForTesting
+  static String appointmentRowValue(Appointment e, DateTime now) {
+    final value = StringBuffer(e.title);
+    if (e.providerName != null) value.write('  ·  ${e.providerName}');
+    value.write('  ·  ${appointmentStatusLabel(e, now)}');
+    if (e.outcomeNotes != null) value.write('\n${e.outcomeNotes}');
+    return value.toString();
+  }
 }

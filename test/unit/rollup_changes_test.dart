@@ -157,6 +157,41 @@ void main() {
   });
 
   group('the real repo', () {
+    test('preview shows the Unreleased section, not the header comment '
+        'that mentions it', () {
+      const changelog = '''# Changelog
+
+<!--
+- Rename `## [Unreleased]` to `## [X.Y.Z] - YYYY-MM-DD`.
+-->
+
+## [Unreleased]
+
+### Added
+- New thing.
+
+## [1.0.0] - 2026-01-01
+
+### Added
+- Old thing.
+''';
+      final preview = unreleasedSection(changelog);
+      expect(preview, startsWith('## [Unreleased]\n'));
+      expect(preview, contains('- New thing.'));
+      expect(preview, isNot(contains('Rename')));
+      expect(preview, isNot(contains('Old thing.')));
+    });
+
+    test('fragment comments are not rolled into the changelog', () {
+      final f = parseFragment(
+        '138-x.changed.md',
+        '<!-- Track and Care (#141) moves this. Edit this bullet then. -->\n'
+            '<!-- kind: addition -->\n'
+            '- The dashboard has an "All appointments" link.\n',
+      );
+      expect(f.bullets, ['- The dashboard has an "All appointments" link.']);
+    });
+
     test('every fragment in changes/ is valid', () {
       // Same check CI runs: a malformed fragment fails here, in the PR that
       // adds it, not at release time.

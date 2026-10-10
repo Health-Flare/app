@@ -5,9 +5,11 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import 'package:health_flare/core/providers/appointment_provider.dart';
+import 'package:health_flare/core/providers/clock_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/core/router/app_router.dart';
 import 'package:health_flare/models/appointment.dart';
+import 'package:health_flare/models/appointment_timing.dart';
 import 'package:health_flare/features/shared/widgets/move_entry_action.dart';
 import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 
@@ -16,9 +18,17 @@ import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 /// Shows header info, question checklist, outcome notes, medication changes,
 /// and status actions (complete / cancel / missed / follow-up).
 class AppointmentDetailScreen extends ConsumerWidget {
-  const AppointmentDetailScreen({super.key, required this.appointmentId});
+  const AppointmentDetailScreen({
+    super.key,
+    required this.appointmentId,
+    this.scrollToOutcome = false,
+  });
 
   final int appointmentId;
+
+  /// Open with the outcome notes field in view (#138), used by the
+  /// dashboard card's "How did it go?" rows.
+  final bool scrollToOutcome;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -31,13 +41,20 @@ class AppointmentDetailScreen extends ConsumerWidget {
       return const Scaffold(body: Center(child: Text('Appointment not found')));
     }
 
-    return _AppointmentDetailView(appointment: appointment);
+    return _AppointmentDetailView(
+      appointment: appointment,
+      scrollToOutcome: scrollToOutcome,
+    );
   }
 }
 
 class _AppointmentDetailView extends ConsumerStatefulWidget {
-  const _AppointmentDetailView({required this.appointment});
+  const _AppointmentDetailView({
+    required this.appointment,
+    required this.scrollToOutcome,
+  });
   final Appointment appointment;
+  final bool scrollToOutcome;
 
   @override
   ConsumerState<_AppointmentDetailView> createState() =>
@@ -47,6 +64,7 @@ class _AppointmentDetailView extends ConsumerStatefulWidget {
 class _AppointmentDetailViewState
     extends ConsumerState<_AppointmentDetailView> {
   late TextEditingController _outcomeController;
+  final _outcomeKey = GlobalKey();
   late TextEditingController _questionController;
   late TextEditingController _medChangeController;
 
@@ -58,6 +76,19 @@ class _AppointmentDetailViewState
     );
     _questionController = TextEditingController();
     _medChangeController = TextEditingController();
+    if (widget.scrollToOutcome) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final target = _outcomeKey.currentContext;
+        if (target == null || !mounted) return;
+        Scrollable.ensureVisible(
+          target,
+          alignment: 0.3,
+          duration: MediaQuery.disableAnimationsOf(context)
+              ? Duration.zero
+              : const Duration(milliseconds: 250),
+        );
+      });
+    }
   }
 
   @override
@@ -242,11 +273,14 @@ class _AppointmentDetailViewState
 
     final cs = Theme.of(context).colorScheme;
     final tt = Theme.of(context).textTheme;
+    final timing = appointmentTiming(appt, ref.watch(clockProvider)());
 
     return Scaffold(
       appBar: HFAppBar(
         title: Text(
-          appt.isUpcoming ? 'Upcoming appointment' : 'Appointment detail',
+          timing == AppointmentTiming.upcoming
+              ? 'Upcoming appointment'
+              : 'Appointment detail',
         ),
         actions: [
           MoveEntryAction(
@@ -275,100 +309,111 @@ class _AppointmentDetailViewState
           ),
         ],
       ),
-      body: ListView(
+      // Fully built (not a lazy ListView) so "How did it go?" can scroll
+      // straight to the outcome notes field (#138).
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
-        children: [
-          // ── Header ────────────────────────────────────────────────────────
-          _HeaderCard(appointment: appt),
-          const SizedBox(height: 16),
-
-          // ── Status actions ────────────────────────────────────────────────
-          if (appt.isUpcoming) ...[
-            _StatusActionsRow(
-              onComplete: () => _setStatus(AppointmentStatus.completed),
-              onCancel: () => _setStatus(AppointmentStatus.cancelled),
-              onMissed: () => _setStatus(AppointmentStatus.missed),
-            ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // ── Header ────────────────────────────────────────────────────────
+            _HeaderCard(appointment: appt, timing: timing),
             const SizedBox(height: 16),
-          ],
 
-          // ── Follow-up button ──────────────────────────────────────────────
-          if (appt.isCompleted) ...[
-            OutlinedButton.icon(
-              onPressed: () => context.push(
-                AppRoutes.appointmentNew,
-                extra: appt.providerName,
+            // ── Status actions ────────────────────────────────────────────────
+            if (appt.isUpcoming) ...[
+              _StatusActionsRow(
+                onComplete: () => _setStatus(AppointmentStatus.completed),
+                onCancel: () => _setStatus(AppointmentStatus.cancelled),
+                onMissed: () => _setStatus(AppointmentStatus.missed),
               ),
-              icon: const Icon(Icons.event_repeat_outlined),
-              label: const Text('Schedule follow-up'),
+              const SizedBox(height: 16),
+            ],
+
+            // ── Follow-up button ──────────────────────────────────────────────
+            if (appt.isCompleted) ...[
+              OutlinedButton.icon(
+                onPressed: () => context.push(
+                  AppRoutes.appointmentNew,
+                  extra: appt.providerName,
+                ),
+                icon: const Icon(Icons.event_repeat_outlined),
+                label: const Text('Schedule follow-up'),
+              ),
+              const SizedBox(height: 16),
+            ],
+
+            // ── Questions ─────────────────────────────────────────────────────
+            _SectionTitle(
+              title: appt.questions.isEmpty
+                  ? 'Questions'
+                  : 'Questions (${appt.questions.length})',
+              cs: cs,
+              tt: tt,
+            ),
+            ...appt.questions.map(
+              (q) => _QuestionTile(
+                question: q,
+                onToggle: () => _toggleQuestion(q),
+                onDelete: () => _removeQuestion(q.questionId),
+              ),
+            ),
+            _AddItemRow(
+              controller: _questionController,
+              hintText: 'Add a question',
+              onAdd: _addQuestion,
             ),
             const SizedBox(height: 16),
+
+            // ── Outcome notes ─────────────────────────────────────────────────
+            _SectionTitle(
+              key: _outcomeKey,
+              title: 'Outcome notes',
+              cs: cs,
+              tt: tt,
+            ),
+            TextField(
+              key: const Key('appointment_outcome_field'),
+              controller: _outcomeController,
+              decoration: const InputDecoration(
+                hintText: 'What did the doctor say?',
+                border: OutlineInputBorder(),
+              ),
+              textCapitalization: TextCapitalization.sentences,
+              maxLines: 4,
+            ),
+            const SizedBox(height: 8),
+            Align(
+              alignment: Alignment.centerRight,
+              child: FilledButton.tonal(
+                onPressed: _saveOutcome,
+                child: const Text('Save outcome'),
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // ── Medication changes ─────────────────────────────────────────────
+            _SectionTitle(
+              title: appt.medicationChanges.isEmpty
+                  ? 'Medication changes'
+                  : 'Medication changes (${appt.medicationChanges.length})',
+              cs: cs,
+              tt: tt,
+            ),
+            ...appt.medicationChanges.map(
+              (c) => _MedChangeTile(
+                change: c,
+                onDelete: () => _removeMedChange(c.changeId),
+              ),
+            ),
+            _AddItemRow(
+              controller: _medChangeController,
+              hintText: 'Add medication change',
+              onAdd: _addMedChange,
+            ),
+            const SizedBox(height: 32),
           ],
-
-          // ── Questions ─────────────────────────────────────────────────────
-          _SectionTitle(
-            title: appt.questions.isEmpty
-                ? 'Questions'
-                : 'Questions (${appt.questions.length})',
-            cs: cs,
-            tt: tt,
-          ),
-          ...appt.questions.map(
-            (q) => _QuestionTile(
-              question: q,
-              onToggle: () => _toggleQuestion(q),
-              onDelete: () => _removeQuestion(q.questionId),
-            ),
-          ),
-          _AddItemRow(
-            controller: _questionController,
-            hintText: 'Add a question',
-            onAdd: _addQuestion,
-          ),
-          const SizedBox(height: 16),
-
-          // ── Outcome notes ─────────────────────────────────────────────────
-          _SectionTitle(title: 'Outcome notes', cs: cs, tt: tt),
-          TextField(
-            controller: _outcomeController,
-            decoration: const InputDecoration(
-              hintText: 'What did the doctor say?',
-              border: OutlineInputBorder(),
-            ),
-            textCapitalization: TextCapitalization.sentences,
-            maxLines: 4,
-          ),
-          const SizedBox(height: 8),
-          Align(
-            alignment: Alignment.centerRight,
-            child: FilledButton.tonal(
-              onPressed: _saveOutcome,
-              child: const Text('Save outcome'),
-            ),
-          ),
-          const SizedBox(height: 16),
-
-          // ── Medication changes ─────────────────────────────────────────────
-          _SectionTitle(
-            title: appt.medicationChanges.isEmpty
-                ? 'Medication changes'
-                : 'Medication changes (${appt.medicationChanges.length})',
-            cs: cs,
-            tt: tt,
-          ),
-          ...appt.medicationChanges.map(
-            (c) => _MedChangeTile(
-              change: c,
-              onDelete: () => _removeMedChange(c.changeId),
-            ),
-          ),
-          _AddItemRow(
-            controller: _medChangeController,
-            hintText: 'Add medication change',
-            onAdd: _addMedChange,
-          ),
-          const SizedBox(height: 32),
-        ],
+        ),
       ),
     );
   }
@@ -379,8 +424,9 @@ class _AppointmentDetailViewState
 // ---------------------------------------------------------------------------
 
 class _HeaderCard extends StatelessWidget {
-  const _HeaderCard({required this.appointment});
+  const _HeaderCard({required this.appointment, required this.timing});
   final Appointment appointment;
+  final AppointmentTiming timing;
 
   @override
   Widget build(BuildContext context) {
@@ -402,7 +448,7 @@ class _HeaderCard extends StatelessWidget {
                     style: tt.titleMedium?.copyWith(color: cs.onSurface),
                   ),
                 ),
-                _StatusChip(status: appointment.status),
+                _StatusChip(timing: timing),
               ],
             ),
             if (appointment.providerName != null) ...[
@@ -425,19 +471,20 @@ class _HeaderCard extends StatelessWidget {
 }
 
 class _StatusChip extends StatelessWidget {
-  const _StatusChip({required this.status});
-  final String status;
+  const _StatusChip({required this.timing});
+  final AppointmentTiming timing;
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final (label, color) = switch (status) {
-      AppointmentStatus.upcoming => ('Upcoming', cs.primary),
-      AppointmentStatus.completed => ('Completed', Colors.green),
-      AppointmentStatus.cancelled => ('Cancelled', cs.onSurfaceVariant),
-      AppointmentStatus.missed => ('Missed', cs.error),
-      _ => (status, cs.primary),
+    final color = switch (timing) {
+      AppointmentTiming.upcoming => cs.primary,
+      AppointmentTiming.outcomeNotRecorded => cs.onSurfaceVariant,
+      AppointmentTiming.completed => Colors.green,
+      AppointmentTiming.cancelled => cs.onSurfaceVariant,
+      AppointmentTiming.missed => cs.error,
     };
+    final label = appointmentTimingLabel(timing);
     return Chip(
       label: Text(
         label,
@@ -484,6 +531,7 @@ class _StatusActionsRow extends StatelessWidget {
 
 class _SectionTitle extends StatelessWidget {
   const _SectionTitle({
+    super.key,
     required this.title,
     required this.cs,
     required this.tt,

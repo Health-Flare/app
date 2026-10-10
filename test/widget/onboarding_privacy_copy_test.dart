@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:health_flare/core/security/device_auth.dart';
 import 'package:health_flare/features/onboarding/widgets/onboarding_privacy_zone.dart';
 
 // docs/features/onboarding.feature, "Your privacy" step. The copy must match
@@ -12,10 +14,14 @@ Future<void> _pump(WidgetTester tester) async {
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.reset);
   await tester.pumpWidget(
-    MaterialApp(
-      home: Scaffold(
-        body: SingleChildScrollView(
-          child: OnboardingPrivacyZone(onNext: () {}),
+    ProviderScope(
+      // The app lock offer has its own tests (onboarding_app_lock_offer_test).
+      overrides: [appLockSupportedProvider.overrideWithValue(false)],
+      child: MaterialApp(
+        home: Scaffold(
+          body: SingleChildScrollView(
+            child: OnboardingPrivacyZone(onNext: () {}),
+          ),
         ),
       ),
     ),

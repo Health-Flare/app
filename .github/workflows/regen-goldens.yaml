@@ -6,6 +6,9 @@ name: Regenerate goldens
 # rounded/circular shapes and icons, even with a platform-stable test font
 # for text. Run this after an intentional visual change, then download the
 # "goldens" artifact from the run and copy the PNGs into test/goldens/.
+#
+# One command from a branch: bash scripts/whats_new.sh goldens
+# (or: gh workflow run regen-goldens.yaml --ref <branch>)
 on:
   workflow_dispatch: {}
 

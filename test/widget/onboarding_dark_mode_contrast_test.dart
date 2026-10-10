@@ -11,6 +11,8 @@ import 'package:health_flare/features/onboarding/widgets/onboarding_profile_zone
 import 'package:health_flare/features/onboarding/widgets/weather_opt_in_sheet.dart';
 import 'package:health_flare/models/condition.dart';
 
+import '../helpers/app_lock_fakes.dart';
+
 class _FakeConditionCatalog extends ConditionCatalogNotifier {
   @override
   List<Condition> build() => [];
@@ -106,9 +108,23 @@ void main() {
       tester,
     ) async {
       await tester.pumpWidget(
-        MaterialApp(
-          theme: AppTheme.dark,
-          home: Scaffold(body: OnboardingPrivacyZone(onNext: () {})),
+        ProviderScope(
+          // Includes the app lock offer (#100), so its text is checked too.
+          overrides: appLockOverrides(
+            auth: FakeDeviceAuth(),
+            store: MemoryAppLockStore(),
+            window: FakeSecureWindow(),
+            clock: FakeClock(),
+          ),
+          child: MaterialApp(
+            theme: AppTheme.dark,
+            // Scrolls, as in OnboardingScreen.
+            home: Scaffold(
+              body: SingleChildScrollView(
+                child: OnboardingPrivacyZone(onNext: () {}),
+              ),
+            ),
+          ),
         ),
       );
       await tester.pump();

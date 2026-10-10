@@ -5,6 +5,11 @@ Feature: Journaling
   in my own words, and read back over time to notice patterns my structured
   logs cannot capture
 
+  # UNVERIFIED (TODO): scenarios tagged @unverified were written by an agent
+  # and haven't been checked by a person. Read each one, fix it or agree it,
+  # then delete its tag. Tracked on #135. List them all:
+  #   bash scripts/unverified_specs.sh
+
   # ---------------------------------------------------------------------------
   # Background
   # ---------------------------------------------------------------------------
@@ -290,6 +295,7 @@ Feature: Journaling
   # Navigation
   # ---------------------------------------------------------------------------
 
+  @unverified
   Scenario: Journal is accessible from the bottom navigation bar
     When I am on any section in the main app
     And I tap "Journal" in the bottom navigation bar

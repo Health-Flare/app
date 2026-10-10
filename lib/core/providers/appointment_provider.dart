@@ -3,6 +3,8 @@ import 'package:isar_community/isar.dart';
 
 import 'package:health_flare/data/models/appointment_isar.dart';
 import 'package:health_flare/models/appointment.dart';
+import 'package:health_flare/models/appointment_timing.dart';
+import 'package:health_flare/core/providers/clock_provider.dart';
 import 'package:health_flare/core/providers/database_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 
@@ -119,18 +121,12 @@ final activeProfileAppointmentsProvider = Provider<List<Appointment>>((ref) {
 });
 
 /// Upcoming appointments for the active profile, sorted soonest first.
+/// "Upcoming" is the shared rule in [isUpcomingAt] (#138).
 final upcomingAppointmentsProvider = Provider<List<Appointment>>((ref) {
-  final profileId = ref.watch(activeProfileProvider);
-  if (profileId == null) return [];
-  final all = ref.watch(appointmentListProvider);
-  final now = DateTime.now();
-  return all
-      .where(
-        (a) =>
-            a.profileId == profileId &&
-            a.status == AppointmentStatus.upcoming &&
-            a.scheduledAt.isAfter(now),
-      )
+  final now = ref.watch(clockProvider)();
+  return ref
+      .watch(activeProfileAppointmentsProvider)
+      .where((a) => isUpcomingAt(a, now))
       .toList()
     ..sort((a, b) => a.scheduledAt.compareTo(b.scheduledAt));
 });

@@ -4,6 +4,11 @@ Feature: Quick Log
   So that I can capture anything relevant to my health in one motion,
   without deciding in advance what type of entry I am making
 
+  # UNVERIFIED (TODO): scenarios tagged @unverified were written by an agent
+  # and haven't been checked by a person. Read each one, fix it or agree it,
+  # then delete its tag. Tracked on #135. List them all:
+  #   bash scripts/unverified_specs.sh
+
   Background:
     Given a profile named "Sarah" exists and is active
     And I am on the Dashboard screen
@@ -19,6 +24,7 @@ Feature: Quick Log
     And it is positioned in the bottom-right corner of the screen
     And it does not obscure dashboard content beneath it
 
+  @unverified
   Scenario: Typed screens keep an add button for that screen
     Given "Sarah" is the active profile
     When I am on the Track screen with the Symptoms tab selected
