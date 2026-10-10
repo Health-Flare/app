@@ -19,7 +19,7 @@ Spec: `docs/features/whats-new.feature`. How to write release content:
 | Prove it works on a device, no screenshots | `bash scripts/whats_new.sh e2e` | Same |
 | Play with the card myself | `bash scripts/whats_new.sh run card` | Same |
 | List the states I can open | `bash scripts/whats_new.sh scenarios` | Nothing |
-| Check `releases.json` after editing it | `bash scripts/whats_new.sh check` | Nothing |
+| Check `changes/` and `releases.json` after editing them | `bash scripts/whats_new.sh check` | Nothing |
 | Update the golden images after a visual change | `bash scripts/whats_new.sh goldens` | `gh` logged in, branch pushed |
 
 Pick a simulator or device with `-d`, before the command:
@@ -160,4 +160,4 @@ the diff images are in its log output. Don't regenerate to make it pass.
 | `shots` fails with "Timed out waiting for…" | The UI copy changed. The strings the test looks for are at the top of `integration_test/whats_new_test.dart` |
 | `jq not found` | `brew install jq` |
 | Golden test fails locally on macOS | It shouldn't run there; if it does, you're not on macOS. Use `goldens` to re-render on Linux |
-| `check` fails | `releases.json` isn't valid, or a release has more than 4 highlights. The error names the version |
+| `check` fails | It names the file and the version, and says what to change. Releasing: `docs/feature-releases.md` |

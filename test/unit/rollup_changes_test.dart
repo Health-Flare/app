@@ -186,6 +186,7 @@ void main() {
       final f = parseFragment(
         '138-x.changed.md',
         '<!-- Track and Care (#141) moves this. Edit this bullet then. -->\n'
+            '<!-- kind: addition -->\n'
             '- The dashboard has an "All appointments" link.\n',
       );
       expect(f.bullets, ['- The dashboard has an "All appointments" link.']);

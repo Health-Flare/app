@@ -3,6 +3,7 @@
     {
       "version": "1.10.0",
       "date": null,
+      "draft": true,
       "highlights": [
         {
           "title": "What's new lives in Settings",

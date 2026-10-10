@@ -1,3 +1,4 @@
+<!-- kind: addition -->
 <!-- Track and Care (#141) moves "All appointments" to Care > Appointments. Update this bullet then. -->
 - The dashboard's Upcoming card is now an Appointments card. It always has
   an "All appointments" link once a profile has an appointment, where before

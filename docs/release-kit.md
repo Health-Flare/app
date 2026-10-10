@@ -22,13 +22,12 @@ All three can be produced individually, or together via the orchestrator
 
 ### The normal path: write them as you merge
 
-`CHANGELOG.md`'s `[Unreleased]` section is the source of truth. Add an
-entry in the right subsection (`Added`/`Changed`/`Fixed`/etc.) as part of
-the PR that makes the change, in past tense, user-facing voice. This
-produces better prose than any script: a human who just made the change
-knows why it matters to a user in a way a title-parsing tool never will.
-`scripts/release.sh` promotes `[Unreleased]` into a dated version section
-when you cut a release.
+Each user-facing PR adds a fragment under `changes/` (`changes/README.md`)
+saying what changed and what kind of change it is. At release time,
+`dart run tool/rollup_changes.dart --write --version X.Y.Z` rolls them
+into `CHANGELOG.md` and drafts the in-app What's new entry; you write its
+highlights; `scripts/release.sh` refuses to cut the release until you
+have. Full steps: `docs/feature-releases.md` ("Releasing").
 
 ### The gap this fills: retroactive or aggregate notes
 
