@@ -411,3 +411,11 @@ class _IllnessesEmptyState extends StatelessWidget {
     );
   }
 }
+
+// TODO(#141): the Conditions list, shared with Care > Conditions.
+class ConditionListBody extends StatelessWidget {
+  const ConditionListBody({super.key});
+
+  @override
+  Widget build(BuildContext context) => const SizedBox.shrink();
+}
