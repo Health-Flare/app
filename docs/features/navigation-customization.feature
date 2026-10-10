@@ -239,7 +239,6 @@ Feature: Your layout: features in use and the bottom bar
     And my bar and my other feature switches are not changed
     And the release guide says where the new tab is and how to turn it off
 
-  @unverified
   Scenario: A pinned screen that was merged follows its replacement
     Given "Activity" is pinned to my bar
     When an update merges Activity into another tab
@@ -256,7 +255,6 @@ Feature: Your layout: features in use and the bottom bar
     # Turning off one part of a merged feature is not the same as turning
     # off the whole thing. Tell, don't guess.
 
-  @unverified
   Scenario: An id the app doesn't recognise is skipped safely
     Given the stored bar contains an id this version doesn't know
     When the app starts
