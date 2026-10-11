@@ -126,7 +126,11 @@ String draftWhatsNew(
 /// Everything wrong with [releasesJson], or an empty list. With
 /// [pubspecVersion], also checks that version is ready to ship: it has an
 /// entry, the entry isn't a draft, and it has a date.
-List<String> validateReleases(String releasesJson, {String? pubspecVersion}) {
+List<String> validateReleases(
+  String releasesJson, {
+  String? pubspecVersion,
+  Set<String>? knownGuides,
+}) {
   final Map<String, Object?> root;
   try {
     root = _decode(releasesJson);
@@ -297,3 +301,6 @@ String entryJson(String releasesJson, String version) {
   ).firstWhere((e) => e['version'] == version);
   return const JsonEncoder.withIndent('  ').convert(e);
 }
+
+/// Guide ids from tool/known_guide_ids.txt. TODO(#145): stub.
+Set<String> readKnownGuides(String text) => throw UnimplementedError();

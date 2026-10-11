@@ -1,0 +1,6 @@
+# Every release guide id (#145). The release checks fail a releases.json
+# "guideId", or a move fragment's "guide:", that isn't listed here.
+# test/unit/release_guides/guide_rules_test.dart keeps this in step with
+# releaseGuides in lib/features/release_guides/release_guide.dart.
+
+track-and-care

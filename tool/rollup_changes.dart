@@ -241,6 +241,10 @@ String unreleasedSection(String changelog) {
   return lines.sublist(start, end).join('\n').trimRight();
 }
 
+/// Move fragments naming a guide that doesn't exist. TODO(#145): stub.
+List<String> checkFragmentGuides(List<Fragment> fragments, Set<String> known) =>
+    throw UnimplementedError();
+
 /// Loads and validates every fragment in [dir], ignoring README.md.
 List<Fragment> loadFragments(Directory dir) {
   if (!dir.existsSync()) return [];

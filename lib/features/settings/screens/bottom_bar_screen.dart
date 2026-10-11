@@ -11,7 +11,11 @@ import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 /// Settings > Your layout > Bottom bar (#143). Changes apply at once, with
 /// Undo. Spec: navigation-customization.feature ("Bottom bar (per device)").
 class BottomBarScreen extends ConsumerStatefulWidget {
-  const BottomBarScreen({super.key});
+  const BottomBarScreen({super.key, this.pendingId});
+
+  /// Opened from the guide's "Pin" with a full bar (#145): this is shown
+  /// first under "Can be added", with a line saying what to do.
+  final String? pendingId;
 
   @override
   ConsumerState<BottomBarScreen> createState() => _BottomBarScreenState();

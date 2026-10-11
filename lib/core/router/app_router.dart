@@ -118,6 +118,11 @@ abstract final class AppRoutes {
   static const whatsNew = '/settings/whats-new';
   static const featuresInUse = '/settings/features-in-use';
   static const bottomBar = '/settings/bottom-bar';
+
+  /// A release guide (#145): `/guide/ID?step=N&replay=1`.
+  static const releaseGuide = '/guide';
+  static String guide(String id, {int step = 0, bool replay = false}) =>
+      '$releaseGuide/$id?step=$step${replay ? '&replay=1' : ''}';
 }
 
 /// A list screen's page: inside its section with Track and Care on, the
