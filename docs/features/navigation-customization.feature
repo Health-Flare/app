@@ -74,10 +74,28 @@ Feature: Your layout: features in use and the bottom bar
     And no meal is deleted or changed
     And reports and exports still offer Meals while "Sarah" has meal data
 
+  # UNVERIFIED (TODO): agent-written wording for the case the scenario
+  # above doesn't cover (#142).
+  @unverified
+  Scenario: Turning off a feature with nothing logged
+    Given "Sarah" has no meals logged
+    When I turn off "Meals" for "Sarah"
+    Then I am told "Meals is off for Sarah. Turn it back on any time."
+
   Scenario: Turning a feature back on brings everything back
     Given "Meals" is off for "Sarah" and she has 40 meals logged
     When I turn "Meals" back on
     Then the Meals tab shows all 40 meals
+
+  Scenario: A turned-off feature's list opened directly still shows
+    Given "Meals" is off for "Sarah" and she has 40 meals logged
+    When something opens the Meals list directly, such as an old link, a
+      notification, or Back from a meal opened in recent activity
+    Then the Meals list opens with all 40 meals
+    And a line at the top reads "Meals is turned off for Sarah" with a
+      "Turn on" button
+    And Meals stays out of the tab row once I move to another tab
+    # Data is never hidden, only not offered (#142 review).
 
   Scenario: Quick Log still logs a turned-off feature, and says so
     Given "Meals" is off for "Sarah"
