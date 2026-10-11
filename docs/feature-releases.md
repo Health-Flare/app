@@ -140,8 +140,11 @@ Unfinished work merges to main switched off behind a build flag
 define:
 
 ```bash
-flutter run --dart-define=TRACK_AND_CARE=true
+flutter run --dart-define=SOME_FLAG=true
 ```
+
+`TRACK_AND_CARE` is on by default (1.10.0); `--dart-define=TRACK_AND_CARE=false`
+shows the old bar until the flag is deleted.
 
 Tests override `featureFlagsProvider` instead. A flag and its off path are
 deleted in the release that turns it on for good.

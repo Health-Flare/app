@@ -256,6 +256,7 @@ Widget _buildDashboardWithRouter({
     overrides: [
       activeProfileProvider.overrideWith(_FakeActiveProfile.new),
       activeProfileDataProvider.overrideWith((ref) => _sarahProfile),
+      profileListProvider.overrideWith(_FeatureProfiles.new),
       activeProfileJournalProvider.overrideWith((ref) => journalEntries),
       activeSleepEntriesProvider.overrideWith((ref) => sleepEntries),
       dashboardActivityProvider.overrideWith((ref) => feedItems),

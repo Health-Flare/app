@@ -298,6 +298,9 @@ void main() {
   testWidgets('with the flag off the bar is unchanged', (tester) async {
     await tester.pumpWidget(
       ProviderScope(
+        overrides: [
+          featureFlagsProvider.overrideWithValue(const FeatureFlags()),
+        ],
         child: MaterialApp.router(
           routerConfig: GoRouter(
             initialLocation: AppRoutes.dashboard,
