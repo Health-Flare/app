@@ -236,6 +236,21 @@ void main() {
       handle.dispose();
     });
 
+    testWidgets('icons only from 150%, labels at 130%', (tester) async {
+      await tester.pumpWidget(_app(_default, textScale: 1.5));
+      await tester.pumpAndSettle();
+      expect(
+        tester.widget<NavigationBar>(find.byType(NavigationBar)).labelBehavior,
+        NavigationDestinationLabelBehavior.alwaysHide,
+      );
+      await tester.pumpWidget(_app(_default, textScale: 1.3));
+      await tester.pumpAndSettle();
+      expect(
+        tester.widget<NavigationBar>(find.byType(NavigationBar)).labelBehavior,
+        isNot(NavigationDestinationLabelBehavior.alwaysHide),
+      );
+    });
+
     testWidgets('labels shown at normal size', (tester) async {
       await tester.pumpWidget(_app(_default));
       await tester.pumpAndSettle();

@@ -81,7 +81,7 @@ void main() {
   setUp(() {
     final view =
         TestWidgetsFlutterBinding.instance.platformDispatcher.views.first;
-    view.physicalSize = const Size(1179, 3000);
+    view.physicalSize = const Size(1179, 4200);
     view.devicePixelRatio = 3;
   });
   tearDown(
@@ -214,9 +214,9 @@ void main() {
     expect(_announced.last, 'Medications, position 3 of 5');
     // Track can't move above Dashboard.
     final up = tester.widget<IconButton>(
-      find.descendant(
-        of: _row('Track'),
-        matching: find.byTooltip('Move Track up'),
+      find.ancestor(
+        of: find.byTooltip('Move Track up'),
+        matching: find.byType(IconButton),
       ),
     );
     expect(up.onPressed, isNull);

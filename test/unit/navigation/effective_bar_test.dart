@@ -11,6 +11,11 @@ const _default = ['dashboard', 'track', 'care', 'journal'];
 
 bool _all(String id) => true;
 
+/// As if a later update merged Activity into Sleep: its id is retired.
+final _knownWithoutActivity = {
+  for (final s in navSections) ...[s.id, for (final t in s.tabs) t.id],
+}..remove('track.activity');
+
 List<String> _ids(List<BarSlot> slots) => [for (final s in slots) s.id];
 
 BarSlot _more(List<BarSlot> slots) => slots.firstWhere((s) => s.id == moreId);
@@ -194,6 +199,7 @@ void main() {
         ['dashboard', 'track', 'track.activity', 'care'],
         defaultBar: _default,
         retired: const {'track.activity': 'track.sleep'},
+        known: _knownWithoutActivity,
       );
       expect(ids, ['dashboard', 'track', 'track.sleep', 'care']);
     });
@@ -203,6 +209,7 @@ void main() {
         ['dashboard', 'track.sleep', 'track.activity', 'care'],
         defaultBar: _default,
         retired: const {'track.activity': 'track.sleep'},
+        known: _knownWithoutActivity,
       );
       expect(ids, ['dashboard', 'track.sleep', 'care']);
     });

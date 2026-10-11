@@ -74,6 +74,8 @@ cmd_test() {
     test/widget/features_in_use_screen_test.dart \
     test/widget/features_in_use_sections_test.dart \
     test/widget/quick_log_features_off_test.dart \
+    test/widget/bottom_bar_screen_test.dart \
+    test/widget/bottom_bar_shell_test.dart \
     test/widget/app_shell_test.dart
   ok "All Track and Care tests passed."
 }

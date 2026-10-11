@@ -3,11 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:health_flare/core/feature_flags.dart';
+import 'package:health_flare/core/navigation/bar_choice.dart';
 import 'package:health_flare/core/router/app_router.dart';
 import 'package:health_flare/features/settings/widgets/settings_section_header.dart';
 
-/// Settings > Your layout (#142). Features in use now; the bottom bar
-/// joins it in #143. Hidden until Track and Care ships.
+/// Settings > Your layout: Features in use (#142) and Bottom bar (#143).
+/// Hidden until Track and Care ships.
 class YourLayoutTiles extends ConsumerWidget {
   const YourLayoutTiles({super.key});
 
@@ -26,6 +27,15 @@ class YourLayoutTiles extends ConsumerWidget {
           subtitle: const Text("Turn off what you don't track"),
           trailing: const Icon(Icons.chevron_right),
           onTap: () => context.push(AppRoutes.featuresInUse),
+        ),
+        ListTile(
+          leading: const Icon(Icons.space_dashboard_outlined),
+          title: const Text('Bottom bar'),
+          subtitle: Text(
+            ref.watch(barIsCustomizedProvider) ? 'Customized' : 'Default',
+          ),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: () => context.push(AppRoutes.bottomBar),
         ),
       ],
     );
