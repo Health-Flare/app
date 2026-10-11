@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:health_flare/core/feature_flags.dart';
 import 'package:health_flare/features/illness/screens/illness_screen.dart';
 import 'package:health_flare/features/sections/section_screen.dart';
+import 'package:health_flare/features/settings/screens/features_in_use_screen.dart';
 import 'package:health_flare/features/settings/screens/settings_screen.dart';
 import 'package:health_flare/features/whats_new/screens/whats_new_screen.dart';
 import 'package:health_flare/features/journal/screens/journal_composer_screen.dart';
@@ -112,6 +113,7 @@ abstract final class AppRoutes {
   static String activityEdit(int id) => '/activity/$id/edit';
   static const settings = '/settings';
   static const whatsNew = '/settings/whats-new';
+  static const featuresInUse = '/settings/features-in-use';
 }
 
 /// A list screen's page: inside its section with Track and Care on, the
@@ -183,6 +185,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.whatsNew,
         name: 'whats-new',
         builder: (context, state) => const WhatsNewScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.featuresInUse,
+        name: 'features-in-use',
+        builder: (context, state) => const FeaturesInUseScreen(),
       ),
 
       // Main app shell: wraps all tab destinations

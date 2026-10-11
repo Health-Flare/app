@@ -3,6 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:health_flare/core/feature_flags.dart';
+import 'package:health_flare/features/appointments/widgets/upcoming_appointments_card.dart';
+import 'package:health_flare/features/daily_checkin/widgets/daily_checkin_card.dart';
+import 'package:health_flare/features/flare/widgets/active_flare_banner.dart';
 import 'package:health_flare/core/providers/appointment_provider.dart';
 import 'package:health_flare/core/providers/condition_provider.dart';
 import 'package:health_flare/core/providers/daily_checkin_provider.dart';
@@ -108,6 +112,11 @@ class _FakeActiveProfile extends ActiveProfileNotifier {
 
 final _sarahProfile = Profile(id: 1, name: 'Sarah');
 
+class _FeatureProfiles extends ProfileListNotifier {
+  @override
+  List<Profile> build() => [_sarahProfile];
+}
+
 JournalEntry _journalEntry({
   int id = 1,
   String body = 'Test body',
@@ -160,6 +169,8 @@ List<ActivityItem> _feedItems({
 Widget _buildDashboard({
   List<JournalEntry> journalEntries = const [],
   List<SleepEntry> sleepEntries = const [],
+  List<String> featuresOff = const [],
+  bool trackAndCare = false,
 }) {
   final feedItems = _feedItems(
     journalEntries: journalEntries,
@@ -168,7 +179,13 @@ Widget _buildDashboard({
   return ProviderScope(
     overrides: [
       activeProfileProvider.overrideWith(_FakeActiveProfile.new),
-      activeProfileDataProvider.overrideWith((ref) => _sarahProfile),
+      activeProfileDataProvider.overrideWith(
+        (ref) => _sarahProfile.copyWith(disabledFeatureIds: featuresOff),
+      ),
+      profileListProvider.overrideWith(_FeatureProfiles.new),
+      featureFlagsProvider.overrideWithValue(
+        FeatureFlags(trackAndCare: trackAndCare),
+      ),
       activeProfileJournalProvider.overrideWith((ref) => journalEntries),
       activeSleepEntriesProvider.overrideWith((ref) => sleepEntries),
       dashboardActivityProvider.overrideWith((ref) => feedItems),
@@ -457,6 +474,60 @@ void main() {
         // SleepEntryScreen opens in edit mode rather than a blank create form.
         expect(find.text('Sleep Edit: entry 7'), findsOneWidget);
       });
+    });
+  });
+
+  // #142: a turned-off feature's card or prompt is not on the dashboard;
+  // its entries still are, in recent activity.
+  group('Turning a feature off removes it from everyday use: no card or '
+      'prompt on the dashboard', () {
+    testWidgets('every card shows while everything is on', (tester) async {
+      await tester.pumpWidget(_buildDashboard(trackAndCare: true));
+      await tester.pump();
+      expect(find.byType(ActiveFlareBanner), findsOneWidget);
+      expect(find.byType(DailyCheckinCard), findsOneWidget);
+      expect(find.byType(UpcomingAppointmentsCard), findsOneWidget);
+    });
+
+    testWidgets('Flares, Check-ins and Appointments off', (tester) async {
+      await tester.pumpWidget(
+        _buildDashboard(
+          trackAndCare: true,
+          featuresOff: ['care.flares', 'journal.checkins', 'care.appointments'],
+        ),
+      );
+      await tester.pump();
+      expect(find.byType(ActiveFlareBanner), findsNothing);
+      expect(find.byType(DailyCheckinCard), findsNothing);
+      expect(find.byType(UpcomingAppointmentsCard), findsNothing);
+    });
+
+    testWidgets('a turned-off feature\'s entries stay in recent activity', (
+      tester,
+    ) async {
+      final entry = _sleepEntry(
+        id: 7,
+        wakeTime: DateTime(2026, 3, 15, 7, 30),
+        bedtime: DateTime(2026, 3, 15, 0, 0),
+      );
+      await tester.pumpWidget(
+        _buildDashboard(
+          trackAndCare: true,
+          featuresOff: ['track.sleep'],
+          sleepEntries: [entry],
+        ),
+      );
+      await tester.pump();
+      expect(find.text('7h 30m'), findsOneWidget);
+    });
+
+    testWidgets('with Track and Care off, every card shows', (tester) async {
+      await tester.pumpWidget(
+        _buildDashboard(featuresOff: ['care.flares', 'journal.checkins']),
+      );
+      await tester.pump();
+      expect(find.byType(ActiveFlareBanner), findsOneWidget);
+      expect(find.byType(DailyCheckinCard), findsOneWidget);
     });
   });
 }

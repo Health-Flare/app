@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import 'package:health_flare/core/navigation/features_in_use.dart';
+import 'package:health_flare/features/quick_log/quick_log_features.dart';
 import 'package:health_flare/core/providers/activity_entry_provider.dart';
 import 'package:health_flare/core/providers/appointment_provider.dart';
 import 'package:health_flare/core/providers/condition_provider.dart';
@@ -56,6 +58,10 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
   QuickLogEntryType? _classification;
   QuickLogEntryType? _typeOverride;
   bool _saving = false;
+
+  /// "Save as a journal note too", offered when what's being saved belongs
+  /// to a turned-off feature (#142).
+  bool _alsoJournal = false;
 
   static final _fmt = DateFormat('EEE, d MMM · HH:mm');
 
@@ -197,6 +203,26 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
       ) !=
       null;
 
+  // ── Features in use (#142) ───────────────────────────────────────────────
+
+  /// The turned-off feature what's about to be saved belongs to, or null.
+  /// Anything Quick Log can't save as [type] is saved as a journal entry.
+  String? _offFeature(QuickLogEntryType? type, {required bool quickAdd}) {
+    if (!_hasText) return null;
+    final feature = quickAdd && type != null
+        ? quickLogFeatureFor(type)
+        : 'journal.entries';
+    if (feature == null) return null;
+    return ref.watch(featureOnProvider(feature)) ? null : feature;
+  }
+
+  Future<void> _turnOn(String featureId) => setFeatureOn(
+    ref.read(profileListProvider.notifier),
+    ref.read(activeProfileDataProvider)!,
+    featureId,
+    on: true,
+  );
+
   // ── Save ────────────────────────────────────────────────────────────────
 
   Future<void> _save() async {
@@ -208,6 +234,10 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
       final type = _effectiveType;
       if (_canQuickAdd(type)) {
         await _quickSave(profileId, type!);
+        final off = _offFeature(type, quickAdd: true);
+        if (off != null && off != 'journal.entries' && _alsoJournal) {
+          await _saveJournal(profileId);
+        }
       } else {
         await _saveJournal(profileId);
       }
@@ -687,6 +717,8 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
     final weather = ref.watch(currentWeatherProvider).asData?.value;
     final type = _effectiveType;
     final quickAdd = _canQuickAdd(type);
+    ref.watch(activeDisabledFeaturesProvider);
+    final offFeature = _offFeature(type, quickAdd: quickAdd);
 
     return PopScope(
       canPop: !_hasText,
@@ -809,6 +841,16 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
                     ],
                   ),
                 ),
+              if (offFeature != null)
+                _FeatureOffWarning(
+                  featureId: offFeature,
+                  profileName: profileName,
+                  alsoJournal: _alsoJournal,
+                  onAlsoJournal: offFeature == 'journal.entries'
+                      ? null
+                      : (v) => setState(() => _alsoJournal = v),
+                  onTurnOn: () => _turnOn(offFeature),
+                ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
                 child: FilledButton(
@@ -828,6 +870,69 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// Under the sheet when what's about to be saved belongs to a turned-off
+/// feature (navigation-customization.feature, "Quick Log still logs a
+/// turned-off feature, and says so"). It's still saved: turning a feature
+/// off changes what the app offers, never what someone can record.
+class _FeatureOffWarning extends StatelessWidget {
+  const _FeatureOffWarning({
+    required this.featureId,
+    required this.profileName,
+    required this.alsoJournal,
+    required this.onAlsoJournal,
+    required this.onTurnOn,
+  });
+
+  final String featureId;
+  final String profileName;
+  final bool alsoJournal;
+
+  /// Null when it's being saved as a journal entry anyway.
+  final ValueChanged<bool>? onAlsoJournal;
+  final VoidCallback onTurnOn;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
+    final label = navFeature(featureId).label;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Semantics(
+            liveRegion: true,
+            child: Text(
+              quickLogOffWarning(
+                profileName: profileName,
+                featureId: featureId,
+              ),
+              style: tt.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+            ),
+          ),
+          Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: TextButton(
+              onPressed: onTurnOn,
+              child: Text('Turn $label on'),
+            ),
+          ),
+          if (onAlsoJournal != null)
+            CheckboxListTile(
+              contentPadding: EdgeInsets.zero,
+              controlAffinity: ListTileControlAffinity.leading,
+              dense: true,
+              value: alsoJournal,
+              onChanged: (v) => onAlsoJournal!(v ?? false),
+              title: const Text('Save as a journal note too'),
+            ),
+        ],
       ),
     );
   }

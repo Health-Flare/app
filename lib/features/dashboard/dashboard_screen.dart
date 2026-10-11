@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:health_flare/core/widgets/feature_gate.dart';
 import 'package:health_flare/core/providers/dashboard_provider.dart';
 import 'package:health_flare/core/providers/onboarding_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
@@ -112,6 +113,18 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 // Body: switches between empty state and activity feed
 // ---------------------------------------------------------------------------
 
+/// Cards above the activity feed. A turned-off feature's card or prompt
+/// is left out (#142); its entries stay in recent activity.
+const _featureCards = <Widget>[
+  FeatureGate(featureId: 'care.flares', child: ActiveFlareBanner()),
+  WhatsNewCard(),
+  FeatureGate(featureId: 'journal.checkins', child: DailyCheckinCard()),
+  FeatureGate(
+    featureId: 'care.appointments',
+    child: UpcomingAppointmentsCard(),
+  ),
+];
+
 class _DashboardBody extends ConsumerWidget {
   const _DashboardBody();
 
@@ -136,10 +149,7 @@ class _DashboardBody extends ConsumerWidget {
             child: IntrinsicHeight(
               child: Column(
                 children: [
-                  const ActiveFlareBanner(),
-                  const WhatsNewCard(),
-                  const DailyCheckinCard(),
-                  const UpcomingAppointmentsCard(),
+                  ..._featureCards,
                   Expanded(
                     child: Center(
                       child: Padding(
@@ -188,10 +198,7 @@ class _DashboardBody extends ConsumerWidget {
 
     return ListView(
       children: [
-        const ActiveFlareBanner(),
-        const WhatsNewCard(),
-        const DailyCheckinCard(),
-        const UpcomingAppointmentsCard(),
+        ..._featureCards,
         DashboardActivityFeed(items: items, temperatureUnit: temperatureUnit),
       ],
     );

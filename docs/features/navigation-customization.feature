@@ -74,14 +74,32 @@ Feature: Your layout: features in use and the bottom bar
     And no meal is deleted or changed
     And reports and exports still offer Meals while "Sarah" has meal data
 
+  # UNVERIFIED (TODO): agent-written wording for the case the scenario
+  # above doesn't cover (#142).
+  @unverified
+  Scenario: Turning off a feature with nothing logged
+    Given "Sarah" has no meals logged
+    When I turn off "Meals" for "Sarah"
+    Then I am told "Meals is off for Sarah. Turn it back on any time."
+
   Scenario: Turning a feature back on brings everything back
     Given "Meals" is off for "Sarah" and she has 40 meals logged
     When I turn "Meals" back on
     Then the Meals tab shows all 40 meals
 
+  Scenario: A turned-off feature's list opened directly still shows
+    Given "Meals" is off for "Sarah" and she has 40 meals logged
+    When something opens the Meals list directly, such as an old link, a
+      notification, or Back from a meal opened in recent activity
+    Then the Meals list opens with all 40 meals
+    And a line at the top reads "Meals is turned off for Sarah" with a
+      "Turn on" button
+    And Meals stays out of the tab row once I move to another tab
+    # Data is never hidden, only not offered (#142 review).
+
   Scenario: Quick Log still logs a turned-off feature, and says so
     Given "Meals" is off for "Sarah"
-    When I quick-log "Had toast and eggs"
+    When I quick-log "Toast and eggs for breakfast"
     Then the Meals chip is still offered and selected
     And a warning under the sheet reads "Meals is turned off for Sarah. This
       meal will be saved and shown in recent activity, but not in Track
@@ -108,9 +126,11 @@ Feature: Your layout: features in use and the bottom bar
     And Settings > Your layout > Features in use is where it comes back
 
   Scenario: A section with one tab left shows no tab row
-    Given only Medications is on in Care for "Sarah"
-    When I tap "Care"
-    Then the Medications list opens with no tab row above it
+    Given Check-ins is off for "Sarah"
+    When I tap "Journal"
+    Then the Journal entries list opens with no tab row above it
+    # Was "only Medications is on in Care", which can't happen: Conditions
+    # is always on (#142).
 
   Scenario: Onboarding never asks this up front
     When a new profile is created
