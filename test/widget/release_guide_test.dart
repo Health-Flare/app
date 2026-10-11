@@ -132,6 +132,11 @@ Widget _app({
               path: AppRoutes.settings,
               builder: (_, _) => const Scaffold(body: Text('Settings screen')),
             ),
+            GoRoute(
+              path: AppRoutes.settingsLayout,
+              builder: (_, _) =>
+                  const Scaffold(body: Text('Settings screen layout')),
+            ),
           ],
         ),
       ),
@@ -481,14 +486,25 @@ void main() {
     testWidgets('"Set it up myself" opens Settings after the guide', (
       tester,
     ) async {
-      await _openGuide(tester, step: 2);
+      // From the card, as in the app: the guide is pushed over the dashboard.
+      await tester.pumpWidget(_app());
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Show me'));
+      await tester.pumpAndSettle();
+      await _next(tester);
+      await _next(tester);
       await tester.tap(find.text('Set it up myself'));
       await tester.pumpAndSettle();
       await _next(tester);
       await tester.tap(find.widgetWithText(FilledButton, 'Done'));
       await tester.pumpAndSettle();
-      // Settings, opened at Your layout, as the option says.
+      // Settings, opened at Your layout, as the option says; Back returns
+      // to the dashboard, not the guide.
       expect(find.text('Settings screen layout'), findsOneWidget);
+      expect(
+        find.byType(ReleaseGuideScreen, skipOffstage: false),
+        findsNothing,
+      );
     });
   });
 

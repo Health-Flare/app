@@ -169,9 +169,15 @@ class _ReleaseGuideScreenState extends ConsumerState<ReleaseGuideScreen> {
   Future<void> _done() async {
     await _markSeen();
     if (!mounted) return;
-    final router = GoRouter.of(context);
-    _close();
-    if (_setUpAfter) unawaited(router.push(AppRoutes.settings));
+    if (!_setUpAfter) return _close();
+    // "Set it up myself": Settings, scrolled to Your layout.
+    if (context.canPop()) {
+      final router = GoRouter.of(context);
+      context.pop();
+      unawaited(router.push(AppRoutes.settingsLayout));
+    } else {
+      context.go(AppRoutes.settingsLayout);
+    }
   }
 
   /// "Show me": the guide closes and the screen opens, its bar item
@@ -289,11 +295,7 @@ class _ReleaseGuideScreenState extends ConsumerState<ReleaseGuideScreen> {
         if (slotFor(id) case final s?) (s.icon, s.label),
     ];
     return [
-      Text(
-        'Health Flare is now in four sections. Everything you had is '
-        'still here.',
-        style: tt.bodyLarge,
-      ),
+      Text(_guide.intro, style: tt.bodyLarge),
       const SizedBox(height: 16),
       BarDrawing(
         label: _change.customized ? 'Your bar' : 'The bar you had',
@@ -468,7 +470,7 @@ class _MovedRow extends StatelessWidget {
           );
     return Semantics(
       container: true,
-      label: '${row.was}, now ${row.now}',
+      label: spokenRow(row),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 6),
         child: Column(

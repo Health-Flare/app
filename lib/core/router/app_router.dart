@@ -117,6 +117,9 @@ abstract final class AppRoutes {
   static const activityNew = '/activity/new';
   static String activityEdit(int id) => '/activity/$id/edit';
   static const settings = '/settings';
+
+  /// Settings, opened scrolled to Your layout (#145).
+  static const settingsLayout = '/settings/layout';
   static const whatsNew = '/settings/whats-new';
   static const featuresInUse = '/settings/features-in-use';
   static const bottomBar = '/settings/bottom-bar';
@@ -191,6 +194,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.settings,
         name: 'settings',
         builder: (context, state) => const SettingsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.settingsLayout,
+        name: 'settings-layout',
+        builder: (context, state) => const SettingsScreen(section: 'layout'),
       ),
       GoRoute(
         path: AppRoutes.whatsNew,

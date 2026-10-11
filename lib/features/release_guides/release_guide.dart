@@ -63,7 +63,7 @@ const trackAndCareGuide = ReleaseGuide(
   id: 'track-and-care',
   cardTitle: 'The bottom bar has changed',
   cardBody: 'Meds, Meals and Sleep have moved. Nothing has been removed.',
-  intro: '', // TODO(#145): copy review
+  intro: 'Health Flare is now in four sections. Nothing has been removed.',
   steps: [
     'Four sections now',
     'Where things moved',
@@ -124,5 +124,13 @@ const releaseGuides = <String, ReleaseGuide>{
   'track-and-care': trackAndCareGuide,
 };
 
-/// A row as a screen reader says it. TODO(#145): stub.
-String spokenRow(GuideRow row) => throw UnimplementedError();
+/// A row as a screen reader says it. ">" is for the eye: read aloud it
+/// can come out as "greater than". "Care > Medications" is read "in Care,
+/// Medications tab"; a section alone, "in Track".
+String spokenRow(GuideRow row) {
+  final parts = row.now.split('>').map((p) => p.trim()).toList();
+  final where = parts.length == 1
+      ? parts.single
+      : '${parts.first}, ${parts.skip(1).join(', ')} tab';
+  return '${row.was}, now in $where';
+}

@@ -91,8 +91,7 @@ List<String> movedPinNotes(
 /// After "Pin". Pinning makes the bar the person's own, so it stops
 /// following new defaults; this says so.
 String pinnedLine(String label) =>
-    '$label is in your bar. Your bar is now your own, so later updates '
-    "won't change it.";
+    "$label is in your bar. It's your bar now, so updates won't change it.";
 
 String pinFullLine(String label) =>
     'The bar holds five items. Remove one to add $label.';
