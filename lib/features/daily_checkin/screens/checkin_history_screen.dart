@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 
 import 'package:health_flare/core/providers/daily_checkin_provider.dart';
 import 'package:health_flare/core/router/app_router.dart';
+import 'package:health_flare/core/widgets/list_empty_state.dart';
 import 'package:health_flare/models/daily_checkin.dart';
 import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 
@@ -14,26 +15,9 @@ class CheckInHistoryScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final checkins = ref.watch(activeProfileCheckinsProvider);
-
     return Scaffold(
       appBar: const HFAppBar(title: Text('Check-in history')),
-      body: checkins.isEmpty
-          ? const Center(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 40),
-                child: Text(
-                  'No check-ins recorded yet.',
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            )
-          : ListView.separated(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              itemCount: checkins.length,
-              separatorBuilder: (context, i) => const Divider(height: 1),
-              itemBuilder: (context, i) => _CheckInTile(checkin: checkins[i]),
-            ),
+      body: const CheckInHistoryBody(),
       floatingActionButton: FloatingActionButton(
         onPressed: () => context.push(AppRoutes.checkinNew),
         tooltip: 'Add check-in',
@@ -123,5 +107,28 @@ class _WellbeingBadge extends StatelessWidget {
     if (v >= 8) return Colors.green.shade600;
     if (v >= 5) return Colors.orange.shade600;
     return cs.error;
+  }
+}
+
+/// The check-in list, shared by this screen and Journal > Check-ins (#141).
+class CheckInHistoryBody extends ConsumerWidget {
+  const CheckInHistoryBody({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final checkins = ref.watch(activeProfileCheckinsProvider);
+    if (checkins.isEmpty) {
+      return const ListEmptyState(
+        icon: Icons.wb_sunny_outlined,
+        title: 'No check-ins recorded yet',
+        hint: "Tap + to add today's check-in",
+      );
+    }
+    return ListView.separated(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      itemCount: checkins.length,
+      separatorBuilder: (context, i) => const Divider(height: 1),
+      itemBuilder: (context, i) => _CheckInTile(checkin: checkins[i]),
+    );
   }
 }

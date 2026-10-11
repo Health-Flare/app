@@ -41,7 +41,8 @@ class NavTab {
   /// The feature that turns this tab on or off.
   final String featureId;
 
-  /// The list screen's route today. Track and Care (#141) moves these.
+  /// Where the tab opens: the list screen's own address, so old links
+  /// keep working (`section_routes.dart`, #141).
   final String route;
 }
 
@@ -129,7 +130,7 @@ const navSections = <NavSection>[
         id: 'track.vitals',
         label: 'Vitals',
         featureId: 'track.vitals',
-        route: AppRoutes.tracking,
+        route: AppRoutes.vitals,
       ),
       NavTab(
         id: 'track.meals',
@@ -173,7 +174,7 @@ const navSections = <NavSection>[
         id: 'care.conditions',
         label: 'Conditions',
         featureId: 'care.conditions',
-        route: AppRoutes.tracking,
+        route: AppRoutes.conditions,
       ),
       NavTab(
         id: 'care.flares',

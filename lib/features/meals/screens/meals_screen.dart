@@ -18,7 +18,6 @@ class MealsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final activeProfile = ref.watch(activeProfileDataProvider);
-    final entries = ref.watch(activeProfileMealEntriesProvider);
 
     return Scaffold(
       appBar: HFAppBar(
@@ -36,13 +35,7 @@ class MealsScreen extends ConsumerWidget {
           ],
         ),
       ),
-      body: entries.isEmpty
-          ? const _EmptyState()
-          : ListView.builder(
-              padding: const EdgeInsets.only(bottom: 88),
-              itemCount: entries.length,
-              itemBuilder: (context, i) => _MealTile(entry: entries[i]),
-            ),
+      body: const MealsBody(),
       floatingActionButton: FloatingActionButton(
         onPressed: () => context.push(AppRoutes.mealsNew),
         tooltip: 'Log meal',
@@ -153,6 +146,22 @@ class _EmptyState extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// The meals list, shared by this screen and Track > Meals (#141).
+class MealsBody extends ConsumerWidget {
+  const MealsBody({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final entries = ref.watch(activeProfileMealEntriesProvider);
+    if (entries.isEmpty) return const _EmptyState();
+    return ListView.builder(
+      padding: const EdgeInsets.only(bottom: 88),
+      itemCount: entries.length,
+      itemBuilder: (context, i) => _MealTile(entry: entries[i]),
     );
   }
 }

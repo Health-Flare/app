@@ -168,7 +168,8 @@ void main() {
       await tester.pumpWidget(_buildListScreen());
       await tester.pump();
 
-      expect(find.text('No appointments recorded.'), findsOneWidget);
+      expect(find.text('No appointments recorded yet'), findsOneWidget);
+      expect(find.text('Add appointment'), findsOneWidget);
     });
 
     testWidgets('shows upcoming appointment title', (tester) async {

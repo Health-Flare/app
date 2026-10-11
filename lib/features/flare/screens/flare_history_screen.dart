@@ -16,7 +16,6 @@ class FlareHistoryScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final activeProfile = ref.watch(activeProfileDataProvider);
-    final flares = ref.watch(activeProfileFlaresProvider);
 
     return Scaffold(
       appBar: HFAppBar(
@@ -34,13 +33,7 @@ class FlareHistoryScreen extends ConsumerWidget {
           ],
         ),
       ),
-      body: flares.isEmpty
-          ? const _EmptyState()
-          : ListView.builder(
-              padding: const EdgeInsets.only(bottom: 24),
-              itemCount: flares.length,
-              itemBuilder: (context, i) => _FlareTile(flare: flares[i]),
-            ),
+      body: const FlareHistoryBody(),
     );
   }
 }
@@ -102,7 +95,9 @@ class _FlareTile extends StatelessWidget {
 // ---------------------------------------------------------------------------
 
 class _EmptyState extends StatelessWidget {
-  const _EmptyState();
+  const _EmptyState({this.canAdd = false});
+
+  final bool canAdd;
 
   @override
   Widget build(BuildContext context) {
@@ -128,13 +123,36 @@ class _EmptyState extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'When a flare begins, tap "I\'m flaring" on the dashboard.',
+              canAdd
+                  ? 'Tap + to record a flare, or tap "I\'m flaring" on the '
+                        'dashboard when one begins.'
+                  : 'When a flare begins, tap "I\'m flaring" on the dashboard.',
               style: tt.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
               textAlign: TextAlign.center,
             ),
           ],
         ),
       ),
+    );
+  }
+}
+
+/// The flare list, shared by this screen and Care > Flares (#141).
+/// [canAdd] is true where a + button is shown (the Care tab), so the empty
+/// state can point at it.
+class FlareHistoryBody extends ConsumerWidget {
+  const FlareHistoryBody({super.key, this.canAdd = false});
+
+  final bool canAdd;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final flares = ref.watch(activeProfileFlaresProvider);
+    if (flares.isEmpty) return _EmptyState(canAdd: canAdd);
+    return ListView.builder(
+      padding: const EdgeInsets.only(bottom: 88),
+      itemCount: flares.length,
+      itemBuilder: (context, i) => _FlareTile(flare: flares[i]),
     );
   }
 }

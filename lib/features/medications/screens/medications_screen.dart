@@ -17,20 +17,6 @@ class MedicationsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final activeProfile = ref.watch(activeProfileDataProvider);
-    final activeMeds = ref.watch(activeProfileActiveMedicationsProvider);
-    final discontinuedMeds = ref.watch(
-      activeProfileDiscontinuedMedicationsProvider,
-    );
-    final activeSupps = ref.watch(activeProfileActiveSupplementsProvider);
-    final discontinuedSupps = ref.watch(
-      activeProfileDiscontinuedSupplementsProvider,
-    );
-
-    final hasAny =
-        activeMeds.isNotEmpty ||
-        discontinuedMeds.isNotEmpty ||
-        activeSupps.isNotEmpty ||
-        discontinuedSupps.isNotEmpty;
 
     return Scaffold(
       appBar: HFAppBar(
@@ -48,14 +34,7 @@ class MedicationsScreen extends ConsumerWidget {
           ],
         ),
       ),
-      body: hasAny
-          ? _MedicationList(
-              activeMeds: activeMeds,
-              discontinuedMeds: discontinuedMeds,
-              activeSupps: activeSupps,
-              discontinuedSupps: discontinuedSupps,
-            )
-          : const _EmptyState(),
+      body: const MedicationsBody(),
       floatingActionButton: FloatingActionButton(
         heroTag: 'fab_medications',
         onPressed: () => context.push(AppRoutes.medicationsNew),
@@ -287,6 +266,36 @@ class _EmptyState extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// The medications list, shared by this screen and Care > Medications
+/// (#141).
+class MedicationsBody extends ConsumerWidget {
+  const MedicationsBody({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final activeMeds = ref.watch(activeProfileActiveMedicationsProvider);
+    final discontinuedMeds = ref.watch(
+      activeProfileDiscontinuedMedicationsProvider,
+    );
+    final activeSupps = ref.watch(activeProfileActiveSupplementsProvider);
+    final discontinuedSupps = ref.watch(
+      activeProfileDiscontinuedSupplementsProvider,
+    );
+    final hasAny =
+        activeMeds.isNotEmpty ||
+        discontinuedMeds.isNotEmpty ||
+        activeSupps.isNotEmpty ||
+        discontinuedSupps.isNotEmpty;
+    if (!hasAny) return const _EmptyState();
+    return _MedicationList(
+      activeMeds: activeMeds,
+      discontinuedMeds: discontinuedMeds,
+      activeSupps: activeSupps,
+      discontinuedSupps: discontinuedSupps,
     );
   }
 }

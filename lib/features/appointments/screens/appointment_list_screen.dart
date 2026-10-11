@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:health_flare/core/providers/appointment_provider.dart';
 import 'package:health_flare/core/providers/clock_provider.dart';
 import 'package:health_flare/core/router/app_router.dart';
+import 'package:health_flare/core/widgets/list_empty_state.dart';
 import 'package:health_flare/models/appointment.dart';
 import 'package:health_flare/models/appointment_timing.dart';
 import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
@@ -16,44 +17,9 @@ class AppointmentListScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final all = ref.watch(activeProfileAppointmentsProvider);
-    final now = ref.watch(clockProvider)();
-
-    // One rule for "upcoming" (#138). Anything else is past, newest first
-    // (the provider already sorts by scheduled date, descending).
-    final upcoming = all.where((a) => isUpcomingAt(a, now)).toList()
-      ..sort((a, b) => a.scheduledAt.compareTo(b.scheduledAt));
-
-    final past = all.where((a) => !isUpcomingAt(a, now)).toList();
-
     return Scaffold(
       appBar: const HFAppBar(title: Text('Appointments')),
-      body: all.isEmpty
-          ? const Center(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 40),
-                child: Text(
-                  'No appointments recorded.',
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            )
-          : ListView(
-              children: [
-                if (upcoming.isNotEmpty) ...[
-                  _SectionHeader(title: 'Upcoming (${upcoming.length})'),
-                  ...upcoming.map(
-                    (a) => _AppointmentTile(appointment: a, now: now),
-                  ),
-                ],
-                if (past.isNotEmpty) ...[
-                  _SectionHeader(title: 'Past (${past.length})'),
-                  ...past.map(
-                    (a) => _AppointmentTile(appointment: a, now: now),
-                  ),
-                ],
-              ],
-            ),
+      body: const AppointmentListBody(),
       floatingActionButton: FloatingActionButton(
         onPressed: () => context.push(AppRoutes.appointmentNew),
         tooltip: 'New appointment',
@@ -146,5 +112,46 @@ class _StatusIcon extends StatelessWidget {
       AppointmentTiming.missed => (Icons.error_outline, cs.error),
     };
     return Icon(icon, color: color);
+  }
+}
+
+/// Upcoming then past appointments, shared by this screen and
+/// Care > Appointments (#141).
+class AppointmentListBody extends ConsumerWidget {
+  const AppointmentListBody({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final all = ref.watch(activeProfileAppointmentsProvider);
+    final now = ref.watch(clockProvider)();
+
+    // One rule for "upcoming" (#138). Anything else is past, newest first
+    // (the provider already sorts by scheduled date, descending).
+    final upcoming = all.where((a) => isUpcomingAt(a, now)).toList()
+      ..sort((a, b) => a.scheduledAt.compareTo(b.scheduledAt));
+    final past = all.where((a) => !isUpcomingAt(a, now)).toList();
+
+    if (all.isEmpty) {
+      return ListEmptyState(
+        icon: Icons.event_outlined,
+        title: 'No appointments recorded yet',
+        hint: 'Keep track of visits, and what was said.',
+        actionLabel: 'Add appointment',
+        onAction: () => context.push(AppRoutes.appointmentNew),
+      );
+    }
+    return ListView(
+      padding: const EdgeInsets.only(bottom: 88),
+      children: [
+        if (upcoming.isNotEmpty) ...[
+          _SectionHeader(title: 'Upcoming (${upcoming.length})'),
+          ...upcoming.map((a) => _AppointmentTile(appointment: a, now: now)),
+        ],
+        if (past.isNotEmpty) ...[
+          _SectionHeader(title: 'Past (${past.length})'),
+          ...past.map((a) => _AppointmentTile(appointment: a, now: now)),
+        ],
+      ],
+    );
   }
 }
