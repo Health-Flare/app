@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:health_flare/features/release_guides/guide_rules.dart';
 import 'package:health_flare/core/navigation/bar_choice.dart';
 import 'package:health_flare/core/navigation/bar_layout.dart';
 import 'package:health_flare/core/navigation/effective_bar.dart';
@@ -11,7 +12,11 @@ import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 /// Settings > Your layout > Bottom bar (#143). Changes apply at once, with
 /// Undo. Spec: navigation-customization.feature ("Bottom bar (per device)").
 class BottomBarScreen extends ConsumerStatefulWidget {
-  const BottomBarScreen({super.key});
+  const BottomBarScreen({super.key, this.pendingId});
+
+  /// Opened from the guide's "Pin" with a full bar (#145): this is shown
+  /// first under "Can be added", with a line saying what to do.
+  final String? pendingId;
 
   @override
   ConsumerState<BottomBarScreen> createState() => _BottomBarScreenState();
@@ -105,11 +110,18 @@ class _BottomBarScreenState extends ConsumerState<BottomBarScreen> {
     final tt = Theme.of(context).textTheme;
     final rest = ids.where((id) => id != 'dashboard').toList();
 
+    final pending = widget.pendingId;
+    final waiting = pending != null && !ids.contains(pending);
     final addable = [
+      if (waiting && shown(pending)) pending,
       for (final s in navSections) ...[
-        if (s.id != 'dashboard' && !ids.contains(s.id) && shown(s.id)) s.id,
+        if (s.id != 'dashboard' &&
+            !ids.contains(s.id) &&
+            s.id != pending &&
+            shown(s.id))
+          s.id,
         for (final t in s.tabs)
-          if (!ids.contains(t.id) && shown(t.id)) t.id,
+          if (!ids.contains(t.id) && t.id != pending && shown(t.id)) t.id,
       ],
     ];
 
@@ -128,6 +140,14 @@ class _BottomBarScreenState extends ConsumerState<BottomBarScreen> {
               ),
             ),
             _Preview(slots: slots),
+            if (waiting && !canAdd(ids, pending))
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                child: Text(
+                  pinFullLine(barLabelFor(pending)),
+                  style: tt.bodyMedium?.copyWith(color: cs.primary),
+                ),
+              ),
             if (more != null)
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),

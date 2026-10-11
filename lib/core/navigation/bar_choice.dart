@@ -68,6 +68,15 @@ class BarChoiceNotifier extends Notifier<BarRecord> {
         for (var i = 0; i < ids.length; i++) ids[i] == _default[i],
       ].every((x) => x);
 
+  /// The release guide was seen (#145): record the current default as
+  /// shown, so it isn't offered again. The bar itself is untouched.
+  Future<void> markChangeSeen() async {
+    final next = markBarChangeSeen(state, _current);
+    if (next == state) return;
+    state = next;
+    await ref.read(barStoreProvider)(state);
+  }
+
   /// Shows [record], already saved (a bar taken from a backup, #144).
   void reload(BarRecord record) => state = record;
 

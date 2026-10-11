@@ -42,6 +42,15 @@ Feature: Release guides
     Then the guide card does not come back
     And no layout change is made unless I chose one on "Keep it or change it"
 
+  # TODO(#145): agent-written; verify.
+  @unverified
+  Scenario: The guide card goes before the What's new card
+    Given the update has a guide and highlights
+    When I open the dashboard
+    Then only the guide card is shown
+    And once the guide is seen, the What's new card shows
+    # One card at a time.
+
   Scenario: Leaving the app mid-guide resumes it next time
     Given the guide is open on "Where things moved"
     When I leave the app, or it is closed
@@ -67,7 +76,8 @@ Feature: Release guides
 
   Scenario: The guide shows the new bar next to the old one
     Given I am on the "Four sections now" step
-    Then I see the old bar and the new bar drawn one above the other
+    Then it says "Health Flare is now in four sections. Nothing has been removed."
+    And I see the old bar and the new bar drawn one above the other
     And each new section has a one-line description:
       | Section   | Description                                   |
       | Dashboard | Today, and what's coming up                   |
@@ -100,6 +110,12 @@ Feature: Release guides
     And the button reads "Pinned" and the step says "Sleep is in your bar"
     And "Bottom bar" in Settings reads "Customized"
 
+  # Pinning makes the bar your own, so later default bars no longer replace
+  # it; the step says so in one line. Wording agreed in copy review (#145).
+  Scenario: "Pin" says the bar is now your own
+    When I tap "Pin" next to "Sleep" on "Where things moved"
+    Then the step says "Sleep is in your bar. It's your bar now, so updates won't change it."
+
   Scenario: "Pin" with a full bar opens the bar editor
     Given my bar already has five items
     When I tap "Pin" next to "Sleep" on "Where things moved"
@@ -114,6 +130,16 @@ Feature: Release guides
     And the Medications tab in Care opens
     And the Care section in the bottom bar is outlined for two pulses
 
+  Scenario: "Show me" counts as seen once the guide has been read to the end
+    Given I am on "Where things moved"
+    When I tap "Show me" next to "Meds" before reaching "Finding this again"
+    Then the guide card is still there
+    And "Show me" on it opens the guide on "Where things moved"
+    But if I had already reached "Finding this again" and went back
+    Then "Show me" counts as seen and the card does not come back
+    # Looking at one screen halfway through isn't finishing the guide;
+    # going back to look after reading it all is.
+
   Scenario: The guide offers to keep it like before
     Given I never changed the bottom bar
     And I am on the "Keep it or change it" step
@@ -121,7 +147,7 @@ Feature: Release guides
       | Choice              | What happens                                                               |
       | Use the new layout  | The default bar is kept                                                    |
       | Keep it like before | The "Like before" bar preset is applied (navigation-customization.feature) |
-      | Set it up myself    | Settings > Your layout opens after the guide                               |
+      | Set it up myself    | Settings opens after the guide, scrolled to Your layout                    |
     And "Use the new layout" is selected by default
     And the step says features I don't use can be turned off in Settings > Your layout
     And it says all of this can be changed any time
@@ -182,6 +208,7 @@ Feature: Release guides
     When the guide opens
     Then each step is announced as "Step 2 of 4, Where things moved"
     And the old and new bar drawings have text descriptions
+    And each moved row is read without ">", e.g. "Meds, now in Care, Medications tab"
     # The card's own announcement is in whats-new.feature.
 
   Scenario: Reduce Motion turns off pulses and guide slides

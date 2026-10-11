@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:health_flare/features/release_guides/widgets/bar_outline.dart';
 import 'package:health_flare/core/feature_flags.dart';
 import 'package:health_flare/core/navigation/bar_choice.dart';
 import 'package:health_flare/core/navigation/effective_bar.dart';
@@ -85,8 +86,9 @@ class _SectionBar extends ConsumerWidget {
       destinations: [
         for (final s in slots)
           NavigationDestination(
-            icon: Icon(s.icon),
-            selectedIcon: Icon(s.selectedIcon),
+            // Outlined after the release guide's "Show me" (#145).
+            icon: BarOutline(id: s.id, child: Icon(s.icon)),
+            selectedIcon: BarOutline(id: s.id, child: Icon(s.selectedIcon)),
             label: s.label,
             tooltip: s.label,
           ),

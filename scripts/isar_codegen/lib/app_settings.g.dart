@@ -42,38 +42,48 @@ const AppSettingsSchema = CollectionSchema(
       name: r'bottomBarLayoutVersion',
       type: IsarType.long,
     ),
-    r'hideInAppSwitcher': PropertySchema(
+    r'guidePutOffOn': PropertySchema(
       id: 5,
+      name: r'guidePutOffOn',
+      type: IsarType.dateTime,
+    ),
+    r'guideResumeStep': PropertySchema(
+      id: 6,
+      name: r'guideResumeStep',
+      type: IsarType.long,
+    ),
+    r'hideInAppSwitcher': PropertySchema(
+      id: 7,
       name: r'hideInAppSwitcher',
       type: IsarType.bool,
     ),
     r'lastProfileId': PropertySchema(
-      id: 6,
+      id: 8,
       name: r'lastProfileId',
       type: IsarType.long,
     ),
     r'lastSeenWhatsNewVersion': PropertySchema(
-      id: 7,
+      id: 9,
       name: r'lastSeenWhatsNewVersion',
       type: IsarType.string,
     ),
     r'schemaVersion': PropertySchema(
-      id: 8,
+      id: 10,
       name: r'schemaVersion',
       type: IsarType.long,
     ),
     r'updateHighlightsOff': PropertySchema(
-      id: 9,
+      id: 11,
       name: r'updateHighlightsOff',
       type: IsarType.bool,
     ),
     r'whatsNewCardShownCount': PropertySchema(
-      id: 10,
+      id: 12,
       name: r'whatsNewCardShownCount',
       type: IsarType.long,
     ),
     r'whatsNewCardVersion': PropertySchema(
-      id: 11,
+      id: 13,
       name: r'whatsNewCardVersion',
       type: IsarType.string,
     )
@@ -136,13 +146,15 @@ void _appSettingsSerialize(
   writer.writeLong(offsets[2], object.appLockRelockSeconds);
   writer.writeStringList(offsets[3], object.bottomBarIds);
   writer.writeLong(offsets[4], object.bottomBarLayoutVersion);
-  writer.writeBool(offsets[5], object.hideInAppSwitcher);
-  writer.writeLong(offsets[6], object.lastProfileId);
-  writer.writeString(offsets[7], object.lastSeenWhatsNewVersion);
-  writer.writeLong(offsets[8], object.schemaVersion);
-  writer.writeBool(offsets[9], object.updateHighlightsOff);
-  writer.writeLong(offsets[10], object.whatsNewCardShownCount);
-  writer.writeString(offsets[11], object.whatsNewCardVersion);
+  writer.writeDateTime(offsets[5], object.guidePutOffOn);
+  writer.writeLong(offsets[6], object.guideResumeStep);
+  writer.writeBool(offsets[7], object.hideInAppSwitcher);
+  writer.writeLong(offsets[8], object.lastProfileId);
+  writer.writeString(offsets[9], object.lastSeenWhatsNewVersion);
+  writer.writeLong(offsets[10], object.schemaVersion);
+  writer.writeBool(offsets[11], object.updateHighlightsOff);
+  writer.writeLong(offsets[12], object.whatsNewCardShownCount);
+  writer.writeString(offsets[13], object.whatsNewCardVersion);
 }
 
 AppSettings _appSettingsDeserialize(
@@ -157,14 +169,16 @@ AppSettings _appSettingsDeserialize(
   object.appLockRelockSeconds = reader.readLongOrNull(offsets[2]);
   object.bottomBarIds = reader.readStringList(offsets[3]);
   object.bottomBarLayoutVersion = reader.readLongOrNull(offsets[4]);
-  object.hideInAppSwitcher = reader.readBool(offsets[5]);
+  object.guidePutOffOn = reader.readDateTimeOrNull(offsets[5]);
+  object.guideResumeStep = reader.readLongOrNull(offsets[6]);
+  object.hideInAppSwitcher = reader.readBool(offsets[7]);
   object.id = id;
-  object.lastProfileId = reader.readLong(offsets[6]);
-  object.lastSeenWhatsNewVersion = reader.readStringOrNull(offsets[7]);
-  object.schemaVersion = reader.readLong(offsets[8]);
-  object.updateHighlightsOff = reader.readBool(offsets[9]);
-  object.whatsNewCardShownCount = reader.readLongOrNull(offsets[10]);
-  object.whatsNewCardVersion = reader.readStringOrNull(offsets[11]);
+  object.lastProfileId = reader.readLong(offsets[8]);
+  object.lastSeenWhatsNewVersion = reader.readStringOrNull(offsets[9]);
+  object.schemaVersion = reader.readLong(offsets[10]);
+  object.updateHighlightsOff = reader.readBool(offsets[11]);
+  object.whatsNewCardShownCount = reader.readLongOrNull(offsets[12]);
+  object.whatsNewCardVersion = reader.readStringOrNull(offsets[13]);
   return object;
 }
 
@@ -186,18 +200,22 @@ P _appSettingsDeserializeProp<P>(
     case 4:
       return (reader.readLongOrNull(offset)) as P;
     case 5:
-      return (reader.readBool(offset)) as P;
+      return (reader.readDateTimeOrNull(offset)) as P;
     case 6:
-      return (reader.readLong(offset)) as P;
+      return (reader.readLongOrNull(offset)) as P;
     case 7:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 8:
       return (reader.readLong(offset)) as P;
     case 9:
-      return (reader.readBool(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 10:
-      return (reader.readLongOrNull(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 11:
+      return (reader.readBool(offset)) as P;
+    case 12:
+      return (reader.readLongOrNull(offset)) as P;
+    case 13:
       return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -764,6 +782,154 @@ extension AppSettingsQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'bottomBarLayoutVersion',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      guidePutOffOnIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'guidePutOffOn',
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      guidePutOffOnIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'guidePutOffOn',
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      guidePutOffOnEqualTo(DateTime? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'guidePutOffOn',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      guidePutOffOnGreaterThan(
+    DateTime? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'guidePutOffOn',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      guidePutOffOnLessThan(
+    DateTime? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'guidePutOffOn',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      guidePutOffOnBetween(
+    DateTime? lower,
+    DateTime? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'guidePutOffOn',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      guideResumeStepIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'guideResumeStep',
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      guideResumeStepIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'guideResumeStep',
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      guideResumeStepEqualTo(int? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'guideResumeStep',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      guideResumeStepGreaterThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'guideResumeStep',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      guideResumeStepLessThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'guideResumeStep',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      guideResumeStepBetween(
+    int? lower,
+    int? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'guideResumeStep',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -1404,6 +1570,32 @@ extension AppSettingsQuerySortBy
     });
   }
 
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy> sortByGuidePutOffOn() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'guidePutOffOn', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+      sortByGuidePutOffOnDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'guidePutOffOn', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy> sortByGuideResumeStep() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'guideResumeStep', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+      sortByGuideResumeStepDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'guideResumeStep', Sort.desc);
+    });
+  }
+
   QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
       sortByHideInAppSwitcher() {
     return QueryBuilder.apply(this, (query) {
@@ -1557,6 +1749,32 @@ extension AppSettingsQuerySortThenBy
     });
   }
 
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy> thenByGuidePutOffOn() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'guidePutOffOn', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+      thenByGuidePutOffOnDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'guidePutOffOn', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy> thenByGuideResumeStep() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'guideResumeStep', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+      thenByGuideResumeStepDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'guideResumeStep', Sort.desc);
+    });
+  }
+
   QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
       thenByHideInAppSwitcher() {
     return QueryBuilder.apply(this, (query) {
@@ -1701,6 +1919,19 @@ extension AppSettingsQueryWhereDistinct
     });
   }
 
+  QueryBuilder<AppSettings, AppSettings, QDistinct> distinctByGuidePutOffOn() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'guidePutOffOn');
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QDistinct>
+      distinctByGuideResumeStep() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'guideResumeStep');
+    });
+  }
+
   QueryBuilder<AppSettings, AppSettings, QDistinct>
       distinctByHideInAppSwitcher() {
     return QueryBuilder.apply(this, (query) {
@@ -1789,6 +2020,19 @@ extension AppSettingsQueryProperty
       bottomBarLayoutVersionProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'bottomBarLayoutVersion');
+    });
+  }
+
+  QueryBuilder<AppSettings, DateTime?, QQueryOperations>
+      guidePutOffOnProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'guidePutOffOn');
+    });
+  }
+
+  QueryBuilder<AppSettings, int?, QQueryOperations> guideResumeStepProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'guideResumeStep');
     });
   }
 

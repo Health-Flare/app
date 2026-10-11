@@ -71,6 +71,37 @@ define, the app is exactly as before: the six-item bar.
     editor says "Turned off for Sarah, so not shown". Turn it on: back.
 24. **Large text** at 150% or more: icons only; long press shows a label.
 
+### Release guide (#145)
+
+Run `bash scripts/track_and_care.sh guide`: the app opens as if just
+updated from 1.9.1. Every run starts over.
+
+30. **Card.** "The bottom bar has changed / Meds, Meals and Sleep have
+    moved. Nothing has been removed." with Not now and Show me. No What's
+    new card under it.
+31. **Not now.** Gone until tomorrow. (To see "Dismiss": change the
+    phone's date to tomorrow and reopen.)
+32. **Show me.** Four steps with onboarding's dots, Back and Skip. Step 1:
+    the old six-item bar over the new four, a line per section.
+33. **Where things moved.** Five moved, four with a place of their own.
+    Show me on Meds: the guide closes, Medications opens, Care pulses
+    twice in the bar. Back on the dashboard the card is still there, and
+    opens on this step.
+34. **Pin** Sleep: "Pinned", and the line says your bar is now your own.
+    Fill the bar to five in Settings first and Pin opens the editor with
+    "Remove one to add Sleep".
+35. **Keep it or change it.** "Use the new layout" is selected. "Keep it
+    like before" gives Dashboard, Track, Medications, Meals, More. "Set it
+    up myself" opens Settings after Done.
+36. **Finding this again.** Only Done. Afterwards the card never returns.
+37. **Leave mid-guide.** Swipe the app away on step 2 and reopen: the
+    guide opens on step 2.
+38. **Replay.** Settings > What's new: once 1.10.0 carries the guide (the
+    flag-on PR), "Replay guide" there opens it at step 1.
+39. **Accessibility.** VoiceOver reads "Step 2 of 4, Where things moved".
+    Reduce Motion: steps jump, the outline doesn't pulse. 200% text: rows
+    stack. macOS: Escape closes the guide.
+
 ### Backups (#144)
 
 Make a backup with a customized bar and Meals off for one profile, then:
@@ -127,6 +158,8 @@ Make a backup with a customized bar and Meals off for one profile, then:
 | `test/widget/bottom_bar_screen_test.dart` | The editor: add, remove, move, limits, Undo, Use default, Like before, screen reader, the Settings tile |
 | `test/widget/bottom_bar_shell_test.dart` | The live bar: pins, More, per profile, unknown ids, large text |
 | `test/unit/database/layout_backup_test.dart` | Bar, switches and highlights through Replace everything, Add missing data and Choose what to import; unknown ids |
+| `test/unit/release_guides/` | Guide card rules, content, choices, the stored state (schema v22), the release checks for guide ids |
+| `test/widget/release_guide_test.dart` | The card, every step, Pin, Show me and the bar outline, choices, seen and resume, screen reader, Reduce Motion, large text, Escape, replay |
 | `integration_test/track_and_care_test.dart` | The real app on a real database: every section and tab, Features in use, then the bottom bar, screenshotted |
 
 Screenshots land in `screenshots/track_and_care/`, with a contact sheet at

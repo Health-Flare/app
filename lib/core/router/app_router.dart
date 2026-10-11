@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:health_flare/features/release_guides/release_guide.dart';
+import 'package:health_flare/features/release_guides/screens/release_guide_screen.dart';
 import 'package:health_flare/core/navigation/effective_bar.dart';
 import 'package:health_flare/features/sections/more_screen.dart';
 import 'package:health_flare/features/settings/screens/bottom_bar_screen.dart';
@@ -115,9 +117,17 @@ abstract final class AppRoutes {
   static const activityNew = '/activity/new';
   static String activityEdit(int id) => '/activity/$id/edit';
   static const settings = '/settings';
+
+  /// Settings, opened scrolled to Your layout (#145).
+  static const settingsLayout = '/settings/layout';
   static const whatsNew = '/settings/whats-new';
   static const featuresInUse = '/settings/features-in-use';
   static const bottomBar = '/settings/bottom-bar';
+
+  /// A release guide (#145): `/guide/ID?step=N&replay=1`.
+  static const releaseGuide = '/guide';
+  static String guide(String id, {int step = 0, bool replay = false}) =>
+      '$releaseGuide/$id?step=$step${replay ? '&replay=1' : ''}';
 }
 
 /// A list screen's page: inside its section with Track and Care on, the
@@ -186,6 +196,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const SettingsScreen(),
       ),
       GoRoute(
+        path: AppRoutes.settingsLayout,
+        name: 'settings-layout',
+        builder: (context, state) => const SettingsScreen(section: 'layout'),
+      ),
+      GoRoute(
         path: AppRoutes.whatsNew,
         name: 'whats-new',
         builder: (context, state) => const WhatsNewScreen(),
@@ -198,7 +213,22 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.bottomBar,
         name: 'bottom-bar',
-        builder: (context, state) => const BottomBarScreen(),
+        builder: (context, state) =>
+            BottomBarScreen(pendingId: state.extra as String?),
+      ),
+      GoRoute(
+        path: '${AppRoutes.releaseGuide}/:id',
+        name: 'release-guide',
+        redirect: (context, state) =>
+            releaseGuides.containsKey(state.pathParameters['id'])
+            ? null
+            : AppRoutes.dashboard,
+        builder: (context, state) => ReleaseGuideScreen(
+          guideId: state.pathParameters['id']!,
+          initialStep:
+              int.tryParse(state.uri.queryParameters['step'] ?? '') ?? 0,
+          replay: state.uri.queryParameters['replay'] == '1',
+        ),
       ),
 
       // Main app shell: wraps all tab destinations

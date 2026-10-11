@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:health_flare/features/release_guides/debug/guide_preview.dart';
 import 'package:health_flare/core/navigation/bar_choice.dart';
 import 'package:health_flare/core/navigation/bar_layout.dart';
 import 'package:health_flare/core/feature_flags.dart';
@@ -36,6 +37,10 @@ void main() async {
   // later change to the default is explained and a fresh install's isn't.
   var barRecord = const BarRecord();
   try {
+    if (guidePreviewFromEnvironment()) {
+      debugPrint('Release guide preview: as if updated from 1.9.1');
+      await applyGuidePreview(isar);
+    }
     barRecord = await BarLayoutStore.settle(
       isar,
       current: currentDefaultBarVersion(FeatureFlags.fromEnvironment()),

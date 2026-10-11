@@ -17,4 +17,6 @@ class AppSettings {
   int? whatsNewCardShownCount;
   List<String>? bottomBarIds;
   int? bottomBarLayoutVersion;
+  DateTime? guidePutOffOn;
+  int? guideResumeStep;
 }

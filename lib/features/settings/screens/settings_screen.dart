@@ -1,3 +1,4 @@
+import 'package:flutter/rendering.dart' show ScrollCacheExtent;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -12,6 +13,37 @@ import 'package:health_flare/data/database/import_service.dart';
 import 'package:health_flare/features/settings/widgets/app_version_tile.dart';
 import 'package:health_flare/features/whats_new/widgets/whats_new_settings_tiles.dart';
 import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
+
+/// Scrolls [child] to the top of the screen once, after the first frame.
+class _ScrollIntoView extends StatefulWidget {
+  const _ScrollIntoView({required this.enabled, required this.child});
+
+  final bool enabled;
+  final Widget child;
+
+  @override
+  State<_ScrollIntoView> createState() => _ScrollIntoViewState();
+}
+
+class _ScrollIntoViewState extends State<_ScrollIntoView> {
+  @override
+  void initState() {
+    super.initState();
+    if (!widget.enabled) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      Scrollable.ensureVisible(
+        context,
+        duration: MediaQuery.of(context).disableAnimations
+            ? Duration.zero
+            : const Duration(milliseconds: 300),
+      );
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
+}
 
 // ---------------------------------------------------------------------------
 // Local provider: reads schema version from AppSettings singleton.
@@ -28,7 +60,11 @@ final _schemaVersionProvider = FutureProvider<int>((ref) async {
 /// Surfaces data backup / restore and displays the current schema version.
 /// Accessible from the dashboard app bar (gear icon).
 class SettingsScreen extends ConsumerWidget {
-  const SettingsScreen({super.key});
+  const SettingsScreen({super.key, this.section});
+
+  /// Opens scrolled to a section: `layout` is Your layout (the release
+  /// guide's "Set it up myself", #145).
+  final String? section;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -38,6 +74,11 @@ class SettingsScreen extends ConsumerWidget {
         showSettingsButton: false,
       ),
       body: ListView(
+        // Builds the whole (short) screen, so a section opened by name is
+        // there to scroll to.
+        scrollCacheExtent: section == null
+            ? null
+            : const ScrollCacheExtent.pixels(10000),
         children: [
           // ── Privacy (#100, #101): renders nothing on desktop and web ──────
           const PrivacySettingsSection(),
@@ -47,7 +88,10 @@ class SettingsScreen extends ConsumerWidget {
           _BackupTiles(),
 
           // ── Your layout (#142): only with Track and Care on ───────────────
-          const YourLayoutTiles(),
+          _ScrollIntoView(
+            enabled: section == 'layout',
+            child: const YourLayoutTiles(),
+          ),
 
           // ── Updates ───────────────────────────────────────────────────────
           const SettingsSectionHeader(label: 'Updates'),

@@ -5,6 +5,7 @@
 #   bash scripts/track_and_care.sh          # show this help
 #   bash scripts/track_and_care.sh test     # unit and widget tests, no simulator (~20 s)
 #   bash scripts/track_and_care.sh run      # open the app with Track and Care on
+#   bash scripts/track_and_care.sh guide    # open it as if just updated: the release guide card
 #   bash scripts/track_and_care.sh shots    # end to end on a simulator + screenshots
 #   bash scripts/track_and_care.sh e2e      # end to end, no screenshots kept
 #
@@ -27,7 +28,7 @@ ok()   { printf '\033[32m✓\033[0m %s\n' "$*"; }
 fail() { printf '\033[31m✗\033[0m %s\n' "$*" >&2; exit 1; }
 need() { command -v "$1" >/dev/null || fail "$1 not found. $2"; }
 
-usage() { sed -n '2,15p' "$0" | sed 's/^# \{0,1\}//'; }
+usage() { sed -n '2,16p' "$0" | sed 's/^# \{0,1\}//'; }
 
 ios_device() {
   need xcrun "Install Xcode."
@@ -77,6 +78,8 @@ cmd_test() {
     test/widget/quick_log_features_off_test.dart \
     test/widget/bottom_bar_screen_test.dart \
     test/widget/bottom_bar_shell_test.dart \
+    test/unit/release_guides \
+    test/widget/release_guide_test.dart \
     test/widget/app_shell_test.dart
   ok "All Track and Care tests passed."
 }
@@ -85,6 +88,14 @@ cmd_run() {
   local id; id=$(pick_device | tail -1)
   bold "Opening Health Flare with Track and Care on ($id)"
   flutter run --dart-define=TRACK_AND_CARE=true --device-id="$id"
+}
+
+cmd_guide() {
+  local id; id=$(pick_device | tail -1)
+  bold "Opening Health Flare as if just updated from 1.9.1 ($id)"
+  echo "  The dashboard shows \"The bottom bar has changed\". Each run starts over."
+  flutter run --dart-define=TRACK_AND_CARE=true --dart-define=GUIDE_PREVIEW=true \
+    --device-id="$id"
 }
 
 cmd_e2e() {
@@ -130,6 +141,7 @@ done
 case "${1:-}" in
   test) cmd_test ;;
   run) cmd_run ;;
+  guide) cmd_guide ;;
   shots) cmd_e2e yes ;;
   e2e) cmd_e2e no ;;
   ""|-h|--help|help) usage ;;

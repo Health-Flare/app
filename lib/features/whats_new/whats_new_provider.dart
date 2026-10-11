@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar_community/isar.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
+import 'package:health_flare/features/release_guides/release_guide_provider.dart';
 import 'package:health_flare/core/providers/database_provider.dart';
 import 'package:health_flare/data/database/app_settings.dart';
 import 'package:health_flare/data/models/profile_isar.dart';
@@ -154,11 +155,15 @@ class WhatsNewNotifier extends AsyncNotifier<WhatsNewState> {
 
   /// "Show update highlights". Turning it off counts everything installed
   /// so far as seen, so turning it back on brings back no old card.
-  Future<void> setHighlightsOn(bool on) => _save(
-    (s) => on
-        ? s.record.copyWith(highlightsOff: false)
-        : markSeen(s.record.copyWith(highlightsOff: true), s.installed),
-  );
+  Future<void> setHighlightsOn(bool on) {
+    // Off means off: guide cards too (#145).
+    ref.read(releaseGuideProvider.notifier).setHighlightsOff(!on);
+    return _save(
+      (s) => on
+          ? s.record.copyWith(highlightsOff: false)
+          : markSeen(s.record.copyWith(highlightsOff: true), s.installed),
+    );
+  }
 }
 
 final whatsNewProvider = AsyncNotifierProvider<WhatsNewNotifier, WhatsNewState>(
