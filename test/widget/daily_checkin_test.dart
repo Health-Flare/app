@@ -134,7 +134,8 @@ void main() {
       await tester.pumpWidget(_buildHistoryScreen());
       await tester.pump();
 
-      expect(find.text('No check-ins recorded yet.'), findsOneWidget);
+      expect(find.text('No check-ins recorded yet'), findsOneWidget);
+      expect(find.text("Tap + to add today's check-in"), findsOneWidget);
     });
 
     testWidgets('shows check-in date and wellbeing', (tester) async {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
@@ -51,7 +52,8 @@ Widget _buildShell() {
     ],
   );
 
-  return MaterialApp.router(routerConfig: router);
+  // The shell reads the build flags (#141); off here: the legacy bar.
+  return ProviderScope(child: MaterialApp.router(routerConfig: router));
 }
 
 // ---------------------------------------------------------------------------

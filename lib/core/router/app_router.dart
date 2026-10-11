@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:health_flare/core/feature_flags.dart';
 import 'package:health_flare/features/illness/screens/illness_screen.dart';
+import 'package:health_flare/features/sections/section_screen.dart';
 import 'package:health_flare/features/settings/screens/settings_screen.dart';
 import 'package:health_flare/features/whats_new/screens/whats_new_screen.dart';
 import 'package:health_flare/features/journal/screens/journal_composer_screen.dart';
@@ -60,6 +62,11 @@ abstract final class AppRoutes {
   static const illness = '/illness';
   static const tracking = '/tracking';
   static const symptoms = '/tracking';
+
+  /// Tracking's other tabs (#141). With Track and Care on, Conditions is
+  /// shown in Care.
+  static const vitals = '/tracking?tab=vitals';
+  static const conditions = '/tracking?tab=conditions';
   static String conditionDetail(int id) => '/tracking/condition/$id';
   static const symptomsNew = '/tracking/new-symptom';
   static String symptomsEdit(int id) => '/tracking/$id/edit';
@@ -107,6 +114,13 @@ abstract final class AppRoutes {
   static const whatsNew = '/settings/whats-new';
 }
 
+/// A list screen's page: inside its section with Track and Care on, the
+/// screen as it was otherwise.
+Page<void> _listPage(GoRouterState state, bool trackAndCare, Widget legacy) =>
+    trackAndCare
+    ? sectionPage(state)
+    : MaterialPage(key: state.pageKey, child: legacy);
+
 // ---------------------------------------------------------------------------
 // Router provider
 // ---------------------------------------------------------------------------
@@ -124,6 +138,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
   });
 
   ref.onDispose(notifier.dispose);
+
+  // Track and Care (#141): list routes show their section and tab. Read
+  // once: the flag comes from the build, not from settings.
+  final trackAndCare = ref.read(featureFlagsProvider).trackAndCare;
 
   return GoRouter(
     initialLocation: ref.read(onboardingProvider)
@@ -189,7 +207,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: AppRoutes.tracking,
             name: 'tracking',
-            builder: (context, state) => const TrackingScreen(),
+            pageBuilder: (context, state) =>
+                _listPage(state, trackAndCare, const TrackingScreen()),
             routes: [
               GoRoute(
                 path: 'new-symptom',
@@ -230,7 +249,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: AppRoutes.medications,
             name: 'medications',
-            builder: (context, state) => const MedicationsScreen(),
+            pageBuilder: (context, state) =>
+                _listPage(state, trackAndCare, const MedicationsScreen()),
             routes: [
               GoRoute(
                 path: 'new',
@@ -289,7 +309,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: AppRoutes.meals,
             name: 'meals',
-            builder: (context, state) => const MealsScreen(),
+            pageBuilder: (context, state) =>
+                _listPage(state, trackAndCare, const MealsScreen()),
             routes: [
               GoRoute(
                 path: 'new',
@@ -318,7 +339,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: AppRoutes.flareHistory,
             name: 'flare-history',
-            builder: (context, state) => const FlareHistoryScreen(),
+            pageBuilder: (context, state) =>
+                _listPage(state, trackAndCare, const FlareHistoryScreen()),
             routes: [
               GoRoute(
                 path: 'new',
@@ -347,7 +369,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: AppRoutes.checkinHistory,
             name: 'checkin-history',
-            builder: (context, state) => const CheckInHistoryScreen(),
+            pageBuilder: (context, state) =>
+                _listPage(state, trackAndCare, const CheckInHistoryScreen()),
             routes: [
               GoRoute(
                 path: 'new',
@@ -369,7 +392,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: AppRoutes.appointments,
             name: 'appointments',
-            builder: (context, state) => const AppointmentListScreen(),
+            pageBuilder: (context, state) =>
+                _listPage(state, trackAndCare, const AppointmentListScreen()),
             routes: [
               GoRoute(
                 path: 'new',
@@ -405,7 +429,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: AppRoutes.activity,
             name: 'activity',
-            builder: (context, state) => const ActivityListScreen(),
+            pageBuilder: (context, state) =>
+                _listPage(state, trackAndCare, const ActivityListScreen()),
             routes: [
               GoRoute(
                 path: 'new',
@@ -440,7 +465,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: AppRoutes.sleep,
             name: 'sleep',
-            builder: (context, state) => const SleepListScreen(),
+            pageBuilder: (context, state) =>
+                _listPage(state, trackAndCare, const SleepListScreen()),
             routes: [
               GoRoute(
                 path: 'new',
@@ -460,7 +486,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: AppRoutes.journal,
             name: 'journal',
-            builder: (context, state) => const JournalListScreen(),
+            pageBuilder: (context, state) =>
+                _listPage(state, trackAndCare, const JournalListScreen()),
             routes: [
               GoRoute(
                 path: 'new',

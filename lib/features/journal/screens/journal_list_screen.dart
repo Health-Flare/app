@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
@@ -43,9 +44,6 @@ class _JournalListScreenState extends ConsumerState<JournalListScreen> {
   @override
   Widget build(BuildContext context) {
     final activeProfile = ref.watch(activeProfileDataProvider);
-    final entries = ref.watch(filteredJournalProvider);
-    final hasEntries = ref.watch(activeProfileJournalProvider).isNotEmpty;
-    final searchQuery = ref.watch(journalSearchQueryProvider);
     final cs = Theme.of(context).colorScheme;
     final tt = Theme.of(context).textTheme;
 
@@ -100,11 +98,7 @@ class _JournalListScreenState extends ConsumerState<JournalListScreen> {
           // Leave space for the shell overlay profile avatar.
         ],
       ),
-      body: !hasEntries
-          ? const JournalEmptyState(isSearch: false)
-          : entries.isEmpty && searchQuery.isNotEmpty
-          ? JournalEmptyState(isSearch: true, onClearSearch: _closeSearch)
-          : _GroupedEntryList(entries: entries),
+      body: JournalEntriesBody(onClearSearch: _closeSearch),
       floatingActionButton: FloatingActionButton(
         onPressed: () => context.push(AppRoutes.journalNew),
         tooltip: 'New journal entry',
@@ -190,4 +184,80 @@ class _MonthHeader extends _ListItem {
 class _EntryItem extends _ListItem {
   _EntryItem(this.entry);
   final JournalEntry entry;
+}
+
+/// Whether the search field is open on Journal > Entries (#141). The
+/// standalone screen keeps its own search in the app bar.
+final journalTabSearchOpenProvider = StateProvider<bool>((ref) => false);
+
+/// The search button for Journal > Entries' top bar (#141).
+class JournalSearchAction extends ConsumerWidget {
+  const JournalSearchAction({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final open = ref.watch(journalTabSearchOpenProvider);
+    return IconButton(
+      icon: Icon(open ? Icons.close_rounded : Icons.search_rounded),
+      tooltip: open ? 'Close search' : 'Search journal',
+      onPressed: () {
+        if (open) ref.read(journalSearchQueryProvider.notifier).state = '';
+        ref.read(journalTabSearchOpenProvider.notifier).state = !open;
+      },
+    );
+  }
+}
+
+/// The journal list grouped by month, shared by this screen and
+/// Journal > Entries (#141). [showSearchField] puts the search field at the
+/// top when Journal > Entries' search is open.
+class JournalEntriesBody extends ConsumerWidget {
+  const JournalEntriesBody({
+    super.key,
+    this.onClearSearch,
+    this.showSearchField = false,
+  });
+
+  final VoidCallback? onClearSearch;
+  final bool showSearchField;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final entries = ref.watch(filteredJournalProvider);
+    final hasEntries = ref.watch(activeProfileJournalProvider).isNotEmpty;
+    final searchQuery = ref.watch(journalSearchQueryProvider);
+    final searchOpen =
+        showSearchField && ref.watch(journalTabSearchOpenProvider);
+    void clear() {
+      ref.read(journalSearchQueryProvider.notifier).state = '';
+      if (showSearchField) {
+        ref.read(journalTabSearchOpenProvider.notifier).state = false;
+      }
+      onClearSearch?.call();
+    }
+
+    final Widget list = !hasEntries
+        ? const JournalEmptyState(isSearch: false)
+        : entries.isEmpty && searchQuery.isNotEmpty
+        ? JournalEmptyState(isSearch: true, onClearSearch: clear)
+        : _GroupedEntryList(entries: entries);
+    if (!searchOpen) return list;
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+          child: TextField(
+            autofocus: true,
+            decoration: const InputDecoration(
+              hintText: 'Search journal…',
+              prefixIcon: Icon(Icons.search_rounded),
+            ),
+            onChanged: (value) =>
+                ref.read(journalSearchQueryProvider.notifier).state = value,
+          ),
+        ),
+        Expanded(child: list),
+      ],
+    );
+  }
 }

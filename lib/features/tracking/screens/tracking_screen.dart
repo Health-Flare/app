@@ -40,9 +40,6 @@ class _TrackingScreenState extends ConsumerState<TrackingScreen>
   @override
   Widget build(BuildContext context) {
     final activeProfile = ref.watch(activeProfileDataProvider);
-    final symptoms = ref.watch(activeProfileSymptomEntriesProvider);
-    final vitals = ref.watch(activeProfileVitalEntriesProvider);
-    final conditions = ref.watch(userConditionListProvider);
 
     final tabIndex = _tabController.index;
 
@@ -72,10 +69,10 @@ class _TrackingScreenState extends ConsumerState<TrackingScreen>
       ),
       body: TabBarView(
         controller: _tabController,
-        children: [
-          _SymptomList(entries: symptoms),
-          _VitalList(entries: vitals),
-          _IllnessesList(conditions: conditions),
+        children: const [
+          SymptomListBody(),
+          VitalListBody(),
+          ConditionListBody(),
         ],
       ),
       floatingActionButton: switch (tabIndex) {
@@ -412,10 +409,34 @@ class _IllnessesEmptyState extends StatelessWidget {
   }
 }
 
-// TODO(#141): the Conditions list, shared with Care > Conditions.
-class ConditionListBody extends StatelessWidget {
+// ---------------------------------------------------------------------------
+// Tab bodies, shared with Track and Care (#141)
+// ---------------------------------------------------------------------------
+
+/// The symptom list: Tracking > Symptoms, and Track > Symptoms.
+class SymptomListBody extends ConsumerWidget {
+  const SymptomListBody({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) =>
+      _SymptomList(entries: ref.watch(activeProfileSymptomEntriesProvider));
+}
+
+/// The vital list: Tracking > Vitals, and Track > Vitals.
+class VitalListBody extends ConsumerWidget {
+  const VitalListBody({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) =>
+      _VitalList(entries: ref.watch(activeProfileVitalEntriesProvider));
+}
+
+/// The conditions list: Tracking > Conditions, and Care > Conditions, the
+/// same screen moved (navigation.feature, "Conditions tab is in Care").
+class ConditionListBody extends ConsumerWidget {
   const ConditionListBody({super.key});
 
   @override
-  Widget build(BuildContext context) => const SizedBox.shrink();
+  Widget build(BuildContext context, WidgetRef ref) =>
+      _IllnessesList(conditions: ref.watch(userConditionListProvider));
 }

@@ -16,30 +16,9 @@ class SleepListScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final entries = ref.watch(activeSleepEntriesProvider);
-
     return Scaffold(
       appBar: const HFAppBar(title: Text('Sleep')),
-      body: entries.isEmpty
-          ? const _EmptyState()
-          : CustomScrollView(
-              slivers: [
-                SliverToBoxAdapter(child: _SummaryHeader(entries: entries)),
-                SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, i) => SleepEntryCard(
-                      entry: entries[i],
-                      onTap: () => context.push(
-                        AppRoutes.sleepEdit(entries[i].id),
-                        extra: entries[i],
-                      ),
-                    ),
-                    childCount: entries.length,
-                  ),
-                ),
-                const SliverToBoxAdapter(child: SizedBox(height: 100)),
-              ],
-            ),
+      body: const SleepListBody(),
       floatingActionButton: FloatingActionButton(
         onPressed: () => context.push(AppRoutes.sleepNew),
         tooltip: 'Log sleep',
@@ -165,6 +144,35 @@ class _EmptyState extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// The sleep list, shared by this screen and Track > Sleep (#141).
+class SleepListBody extends ConsumerWidget {
+  const SleepListBody({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final entries = ref.watch(activeSleepEntriesProvider);
+    if (entries.isEmpty) return const _EmptyState();
+    return CustomScrollView(
+      slivers: [
+        SliverToBoxAdapter(child: _SummaryHeader(entries: entries)),
+        SliverList(
+          delegate: SliverChildBuilderDelegate(
+            (context, i) => SleepEntryCard(
+              entry: entries[i],
+              onTap: () => context.push(
+                AppRoutes.sleepEdit(entries[i].id),
+                extra: entries[i],
+              ),
+            ),
+            childCount: entries.length,
+          ),
+        ),
+        const SliverToBoxAdapter(child: SizedBox(height: 100)),
+      ],
     );
   }
 }

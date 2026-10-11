@@ -16,7 +16,6 @@ class ActivityListScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final activeProfile = ref.watch(activeProfileDataProvider);
-    final entries = ref.watch(activeProfileActivityEntriesProvider);
 
     return Scaffold(
       appBar: HFAppBar(
@@ -34,13 +33,7 @@ class ActivityListScreen extends ConsumerWidget {
           ],
         ),
       ),
-      body: entries.isEmpty
-          ? const _EmptyState()
-          : ListView.builder(
-              padding: const EdgeInsets.only(bottom: 88),
-              itemCount: entries.length,
-              itemBuilder: (context, i) => _ActivityTile(entry: entries[i]),
-            ),
+      body: const ActivityListBody(),
       floatingActionButton: FloatingActionButton(
         onPressed: () => context.push(AppRoutes.activityNew),
         tooltip: 'Log activity',
@@ -189,6 +182,22 @@ class _EmptyState extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// The activity list, shared by this screen and Track > Activity (#141).
+class ActivityListBody extends ConsumerWidget {
+  const ActivityListBody({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final entries = ref.watch(activeProfileActivityEntriesProvider);
+    if (entries.isEmpty) return const _EmptyState();
+    return ListView.builder(
+      padding: const EdgeInsets.only(bottom: 88),
+      itemCount: entries.length,
+      itemBuilder: (context, i) => _ActivityTile(entry: entries[i]),
     );
   }
 }

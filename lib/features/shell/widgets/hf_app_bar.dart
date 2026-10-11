@@ -65,3 +65,19 @@ class SettingsIconButton extends StatelessWidget {
     );
   }
 }
+
+/// Opens Reports. In the top bar of every section with Track and Care on
+/// (navigation.feature, "Reports is accessible from every section's top
+/// bar"). Pushed, so Back returns to the tab it was opened from.
+class ReportsIconButton extends StatelessWidget {
+  const ReportsIconButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      icon: const Icon(Icons.summarize_rounded),
+      tooltip: 'Reports',
+      onPressed: () => context.push(AppRoutes.reports),
+    );
+  }
+}
