@@ -130,14 +130,15 @@ Feature: Release guides
     And the Medications tab in Care opens
     And the Care section in the bottom bar is outlined for two pulses
 
-  # TODO(#145): agent-written; verify.
-  @unverified
-  Scenario: "Show me" doesn't count as seen
-    Given I tapped "Show me" next to "Meds" on "Where things moved"
-    When I go back to the dashboard
+  Scenario: "Show me" counts as seen once the guide has been read to the end
+    Given I am on "Where things moved"
+    When I tap "Show me" next to "Meds" before reaching "Finding this again"
     Then the guide card is still there
     And "Show me" on it opens the guide on "Where things moved"
-    # Looking at one screen isn't the same as finishing the guide.
+    But if I had already reached "Finding this again" and went back
+    Then "Show me" counts as seen and the card does not come back
+    # Looking at one screen halfway through isn't finishing the guide;
+    # going back to look after reading it all is.
 
   Scenario: The guide offers to keep it like before
     Given I never changed the bottom bar

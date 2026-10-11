@@ -426,6 +426,52 @@ void main() {
     expect(find.byKey(const ValueKey('bar-outline-care')), findsNothing);
   });
 
+  group('"Show me" counts as seen once the guide has been read to the end', () {
+    Future<void> openFromCard(WidgetTester tester) async {
+      await tester.pumpWidget(_app());
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Show me'));
+      await tester.pumpAndSettle();
+    }
+
+    Future<void> showMeds(WidgetTester tester) async {
+      final show = find.descendant(
+        of: find.byKey(const ValueKey('moved-Meds')),
+        matching: find.text('Show me'),
+      );
+      await tester.ensureVisible(show);
+      await tester.tap(show);
+      await tester.pumpAndSettle(const Duration(seconds: 5));
+    }
+
+    testWidgets('before the last step: the card stays, and reopens there', (
+      tester,
+    ) async {
+      await openFromCard(tester);
+      await _next(tester);
+      await showMeds(tester);
+      expect(_seen(tester), isFalse);
+      expect(_guideSaves.last.resumeStep, 1);
+    });
+
+    testWidgets('after reaching the last step: seen', (tester) async {
+      await openFromCard(tester);
+      for (var i = 0; i < 3; i++) {
+        await _next(tester);
+      }
+      expect(find.widgetWithText(FilledButton, 'Done'), findsOneWidget);
+      // Back to "Where things moved", then Show me.
+      await tester.tap(find.byTooltip('Back'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byTooltip('Back'));
+      await tester.pumpAndSettle();
+      await showMeds(tester);
+      expect(find.text('care.medications list'), findsOneWidget);
+      expect(_seen(tester), isTrue);
+      expect(_guideSaves.last.resumeStep, isNull);
+    });
+  });
+
   group('Keep it or change it', () {
     testWidgets('The guide offers to keep it like before; the new layout is '
         'selected by default', (tester) async {
