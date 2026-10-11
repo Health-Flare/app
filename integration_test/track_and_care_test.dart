@@ -16,6 +16,7 @@ import 'package:integration_test/integration_test.dart';
 import 'package:isar_community/isar.dart';
 import 'package:path_provider/path_provider.dart';
 
+import 'package:health_flare/features/release_guides/screens/release_guide_screen.dart';
 import 'package:health_flare/core/navigation/bar_choice.dart';
 import 'package:health_flare/core/navigation/bar_layout_store.dart';
 import 'package:health_flare/core/navigation/effective_bar.dart';
@@ -66,7 +67,7 @@ Future<void> _settle(WidgetTester tester) async {
 
 /// One profile, onboarding and post-setup prompts done: opens on the
 /// dashboard.
-Future<Isar> _db() async {
+Future<Isar> _db({bool highlightsOff = true}) async {
   final dir = await getTemporaryDirectory();
   final isar = await Isar.open(
     appSchemas,
@@ -86,8 +87,8 @@ Future<Isar> _db() async {
     s
       ..activeProfileId = 1
       ..lastProfileId = 1
-      // No What's new card in the way.
-      ..updateHighlightsOff = true;
+      // No What's new card in the way (and so no release guide card).
+      ..updateHighlightsOff = highlightsOff;
     await isar.appSettings.put(s);
   });
   return isar;
@@ -388,6 +389,69 @@ void main() {
     await _tap(tester, find.text('Use default'));
     await _tap(tester, find.widgetWithText(FilledButton, 'Use default'));
     expect((await BarLayoutStore.read(isar)).storedBar, isNull);
+
+    await isar.close(deleteFromDisk: true);
+  });
+
+  testWidgets('Release guide: card, four steps, Pin, Like before, seen', (
+    tester,
+  ) async {
+    final isar = await _db(highlightsOff: false);
+    await _launch(tester, isar);
+
+    // Updated from 1.9.1: the card on the dashboard.
+    await _waitFor(tester, find.text('The bottom bar has changed'));
+    await _shot(tester, '40_guide_card');
+    await _tap(tester, find.text('Show me'));
+    await _waitFor(tester, find.byType(ReleaseGuideScreen));
+    await _shot(tester, '41_guide_four_sections');
+
+    await _tap(tester, find.widgetWithText(FilledButton, 'Next'));
+    await _waitFor(tester, find.text('Where things moved'));
+    await _shot(tester, '42_guide_where_things_moved');
+
+    // Pin Sleep back into the bar.
+    final pin = find.descendant(
+      of: find.byKey(const ValueKey('moved-Sleep')),
+      matching: find.text('Pin'),
+    );
+    await tester.ensureVisible(pin);
+    await _settle(tester);
+    await _tap(tester, pin);
+    await tester.scrollUntilVisible(
+      find.textContaining('Sleep is in your bar'),
+      100,
+      scrollable: find.byType(Scrollable).last,
+    );
+    await _shot(tester, '43_guide_pinned');
+
+    await _tap(tester, find.widgetWithText(FilledButton, 'Next'));
+    await _waitFor(tester, find.text('Keep it like before'));
+    await _shot(tester, '44_guide_keep_or_change');
+    await _tap(tester, find.text('Keep it like before'));
+    await _tap(tester, find.widgetWithText(FilledButton, 'Next'));
+    await _waitFor(tester, find.widgetWithText(FilledButton, 'Done'));
+    await _shot(tester, '45_guide_finding_again');
+    await _tap(tester, find.widgetWithText(FilledButton, 'Done'));
+
+    // Like before, and the card is gone for good.
+    for (final label in [
+      'Dashboard',
+      'Track',
+      'Medications',
+      'Meals',
+      'More',
+    ]) {
+      expect(_bar(label), findsOneWidget, reason: label);
+    }
+    expect(find.text('The bottom bar has changed'), findsNothing);
+    final bar = await BarLayoutStore.read(isar);
+    expect(bar.seenVersion, 2);
+    expect(bar.storedBar, likeBeforePreset);
+
+    await _launch(tester, isar);
+    await _settle(tester);
+    expect(find.text('The bottom bar has changed'), findsNothing);
 
     await isar.close(deleteFromDisk: true);
   });

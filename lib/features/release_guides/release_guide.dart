@@ -54,15 +54,63 @@ class ReleaseGuide {
   final List<GuideRow> ownPlace;
 }
 
-// TODO(#145): content.
+/// Track and Care (#135): the six-item bar becomes four sections.
 const trackAndCareGuide = ReleaseGuide(
   id: 'track-and-care',
-  cardTitle: '',
-  cardBody: '',
-  steps: [],
-  sectionLines: {},
-  moved: [],
-  ownPlace: [],
+  cardTitle: 'The bottom bar has changed',
+  cardBody: 'Meds, Meals and Sleep have moved. Nothing has been removed.',
+  steps: [
+    'Four sections now',
+    'Where things moved',
+    'Keep it or change it',
+    'Finding this again',
+  ],
+  sectionLines: {
+    'dashboard': "Today, and what's coming up",
+    'track': 'Symptoms, vitals, meals, sleep and activity',
+    'care': 'Medications, appointments, conditions, flares',
+    'journal': 'Journal entries and daily check-ins',
+  },
+  moved: [
+    GuideRow(was: 'Tracking', now: 'Track', tabId: 'track'),
+    GuideRow(
+      was: 'Meds',
+      now: 'Care > Medications',
+      tabId: 'care.medications',
+      pinnable: true,
+    ),
+    GuideRow(
+      was: 'Meals',
+      now: 'Track > Meals',
+      tabId: 'track.meals',
+      pinnable: true,
+    ),
+    GuideRow(
+      was: 'Sleep',
+      now: 'Track > Sleep',
+      tabId: 'track.sleep',
+      pinnable: true,
+    ),
+    GuideRow(
+      was: 'Journal',
+      now: 'Journal > Entries',
+      tabId: 'journal.entries',
+    ),
+  ],
+  ownPlace: [
+    GuideRow(
+      was: 'Appointments',
+      now: 'Care > Appointments',
+      tabId: 'care.appointments',
+    ),
+    GuideRow(was: 'Activity', now: 'Track > Activity', tabId: 'track.activity'),
+    GuideRow(
+      was: 'Check-ins',
+      now: 'Journal > Check-ins',
+      tabId: 'journal.checkins',
+    ),
+    GuideRow(was: 'Flares', now: 'Care > Flares', tabId: 'care.flares'),
+  ],
 );
 
 /// Every guide, by id. tool/known_guide_ids.txt lists the same ids, for the

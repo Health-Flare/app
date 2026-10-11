@@ -62,4 +62,12 @@ class AppSettings {
   /// Default-bar version (`defaultBarVersions`) last shown on this device,
   /// or the one a custom bar was chosen on. Null means 1.9.1 or earlier.
   int? bottomBarLayoutVersion;
+
+  /// Release guide (#145): the day "Not now" was tapped on the guide card.
+  /// The card comes back once, on a later day.
+  DateTime? guidePutOffOn;
+
+  /// The guide step to resume at after leaving the app mid-guide. Null
+  /// until a guide is opened, and again once it's seen.
+  int? guideResumeStep;
 }

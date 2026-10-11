@@ -13,6 +13,8 @@ import 'package:health_flare/core/providers/database_provider.dart';
 import 'package:health_flare/data/database/app_schemas.dart';
 import 'package:health_flare/data/database/app_settings.dart';
 import 'package:health_flare/data/database/migration_runner.dart';
+import 'package:health_flare/data/models/profile_isar.dart';
+import 'package:health_flare/features/release_guides/debug/guide_preview.dart';
 import 'package:health_flare/features/release_guides/guide_rules.dart';
 import 'package:health_flare/features/release_guides/release_guide_provider.dart';
 
@@ -56,6 +58,34 @@ void main() {
     isar = await open();
     expect(await GuideStore.read(isar), r);
   });
+
+  test(
+    'scripts/track_and_care.sh guide: starts as if updated from 1.9.1',
+    () async {
+      await MigrationRunner.run(isar);
+      await BarLayoutStore.write(
+        isar,
+        const BarRecord(
+          storedBar: ['dashboard', 'track', 'care'],
+          seenVersion: 2,
+        ),
+      );
+      await GuideStore.write(isar, const GuideRecord(resumeStep: 3));
+      await applyGuidePreview(isar);
+      expect(await BarLayoutStore.read(isar), const BarRecord());
+      expect(await GuideStore.read(isar), const GuideRecord());
+      expect(await isar.profileIsars.count(), 1);
+      expect((await isar.appSettings.get(1))!.updateHighlightsOff, isFalse);
+      // A launch after it still sees an update, so the card shows.
+      expect(
+        pendingBarChange(
+          await BarLayoutStore.settle(isar, current: 2),
+          current: 2,
+        ),
+        isNotNull,
+      );
+    },
+  );
 
   group('the notifier', () {
     late ProviderContainer c;

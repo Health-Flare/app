@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:health_flare/features/release_guides/release_guide.dart';
+import 'package:health_flare/features/release_guides/screens/release_guide_screen.dart';
 import 'package:health_flare/core/navigation/effective_bar.dart';
 import 'package:health_flare/features/sections/more_screen.dart';
 import 'package:health_flare/features/settings/screens/bottom_bar_screen.dart';
@@ -203,7 +205,22 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.bottomBar,
         name: 'bottom-bar',
-        builder: (context, state) => const BottomBarScreen(),
+        builder: (context, state) =>
+            BottomBarScreen(pendingId: state.extra as String?),
+      ),
+      GoRoute(
+        path: '${AppRoutes.releaseGuide}/:id',
+        name: 'release-guide',
+        redirect: (context, state) =>
+            releaseGuides.containsKey(state.pathParameters['id'])
+            ? null
+            : AppRoutes.dashboard,
+        builder: (context, state) => ReleaseGuideScreen(
+          guideId: state.pathParameters['id']!,
+          initialStep:
+              int.tryParse(state.uri.queryParameters['step'] ?? '') ?? 0,
+          replay: state.uri.queryParameters['replay'] == '1',
+        ),
       ),
 
       // Main app shell: wraps all tab destinations

@@ -214,6 +214,14 @@ List<String> validateReleases(
         '$v: "guideId" must be lowercase words joined by hyphens, '
         'e.g. track-and-care',
       );
+    } else if (guide is String &&
+        knownGuides != null &&
+        !knownGuides.contains(guide)) {
+      errors.add(
+        '$v: "guideId" is "$guide", and there is no such guide. Build it '
+        '(lib/features/release_guides/) and list it in $knownGuidesPath, '
+        'or remove the guideId.',
+      );
     }
   }
 
@@ -302,5 +310,11 @@ String entryJson(String releasesJson, String version) {
   return const JsonEncoder.withIndent('  ').convert(e);
 }
 
-/// Guide ids from tool/known_guide_ids.txt. TODO(#145): stub.
-Set<String> readKnownGuides(String text) => throw UnimplementedError();
+/// Where the release checks find the guides that exist.
+const knownGuidesPath = 'tool/known_guide_ids.txt';
+
+/// Guide ids from [knownGuidesPath]: one per line, `#` comments.
+Set<String> readKnownGuides(String text) => {
+  for (final l in text.split('\n'))
+    if (l.trim().isNotEmpty && !l.trim().startsWith('#')) l.trim(),
+};

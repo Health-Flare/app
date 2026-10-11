@@ -1,3 +1,6 @@
+import 'package:health_flare/core/navigation/effective_bar.dart';
+import 'package:health_flare/core/navigation/nav_registry.dart';
+
 // When the guide card shows, and what the guide offers (#145). Pure.
 
 /// What's stored about the pending guide on this device.
@@ -28,28 +31,68 @@ enum GuideCardMode { hidden, notNow, dismiss }
 
 enum GuideChoice { useNew, likeBefore, setUpMyself, keepMine }
 
-// TODO(#145): stubs.
+/// Whether the guide card shows, and with which button.
+///
+/// "Not now" hides it for the session and stores the day. On a later day it
+/// shows once more, with "Dismiss" instead. Seen (Dismiss, Skip, Done, a
+/// choice) clears [pending], so it never comes back.
 GuideCardMode guideCardMode({
   required bool pending,
   required GuideRecord record,
   required DateTime now,
   required bool hiddenThisSession,
-}) => throw UnimplementedError('#145');
+}) {
+  if (!pending || hiddenThisSession) return GuideCardMode.hidden;
+  final putOff = record.putOffOn;
+  if (putOff == null) return GuideCardMode.notNow;
+  final today = DateTime(now.year, now.month, now.day);
+  final day = DateTime(putOff.year, putOff.month, putOff.day);
+  return today.isAfter(day) ? GuideCardMode.dismiss : GuideCardMode.hidden;
+}
 
-List<GuideChoice> guideChoices({required bool customized}) =>
-    throw UnimplementedError('#145');
+/// "Keep it or change it", in order; the first is selected.
+List<GuideChoice> guideChoices({required bool customized}) => customized
+    ? const [GuideChoice.keepMine, GuideChoice.useNew, GuideChoice.setUpMyself]
+    : const [
+        GuideChoice.useNew,
+        GuideChoice.likeBefore,
+        GuideChoice.setUpMyself,
+      ];
 
-String choiceLabel(GuideChoice c) => throw UnimplementedError('#145');
+String choiceLabel(GuideChoice c) => switch (c) {
+  GuideChoice.useNew => 'Use the new layout',
+  GuideChoice.likeBefore => 'Keep it like before',
+  GuideChoice.setUpMyself => 'Set it up myself',
+  GuideChoice.keepMine => 'Keep my bar',
+};
 
-String guideCardTitle({required bool customized}) =>
-    throw UnimplementedError('#145');
+String guideCardTitle({required bool customized}) => customized
+    ? 'The default bottom bar has changed. Yours has been kept.'
+    : 'The bottom bar has changed';
 
+/// For each pinned screen a later version merged into another: what
+/// happened, for the guide card. The pin already follows (resolveNavIds).
 List<String> movedPinNotes(
   List<String>? stored, {
   Map<String, String>? retired,
   String Function(String id)? label,
-}) => throw UnimplementedError('#145');
+}) {
+  if (stored == null) return const [];
+  final map = retired ?? retiredNavIds;
+  final name = label ?? barLabelFor;
+  return [
+    for (final id in stored)
+      if (map[id] case final to?)
+        '${name(id)} is now part of ${name(to)}, so your bar shows '
+            '${name(to)}.',
+  ];
+}
 
-String pinnedLine(String label) => throw UnimplementedError('#145');
+/// After "Pin". Pinning makes the bar the person's own, so it stops
+/// following new defaults; this says so.
+String pinnedLine(String label) =>
+    '$label is in your bar. Your bar is now your own, so later updates '
+    "won't change it.";
 
-String pinFullLine(String label) => throw UnimplementedError('#145');
+String pinFullLine(String label) =>
+    'The bar holds five items. Remove one to add $label.';

@@ -39,6 +39,8 @@ import 'package:health_flare/data/seed_data.dart';
 /// Schema v21 = AppSettings.bottomBarIds and bottomBarLayoutVersion, and
 ///              ProfileIsar.disabledFeatureIds (#137). No data change: null
 ///              bar = default, null version = 1.9.1's bar, empty = all on.
+/// Schema v22 = AppSettings.guidePutOffOn and guideResumeStep (#145). No data
+///              change: both read as null, nothing yet.
 ///
 /// How to add a future migration:
 ///   1. Increment [_targetVersion].
@@ -52,7 +54,7 @@ import 'package:health_flare/data/seed_data.dart';
 class MigrationRunner {
   MigrationRunner._();
 
-  static const int _targetVersion = 21;
+  static const int _targetVersion = 22;
 
   /// Whether existing data is waiting for a data migration: the database
   /// has been initialised before (schema version above 0) and is behind the
@@ -320,6 +322,14 @@ class MigrationRunner {
       await isar.writeTxn(() async {
         final s = await isar.appSettings.get(1) ?? (AppSettings()..id = 1);
         s.schemaVersion = 21;
+        await isar.appSettings.put(s);
+      });
+    }
+
+    if (currentVersion < 22) {
+      await isar.writeTxn(() async {
+        final s = await isar.appSettings.get(1) ?? (AppSettings()..id = 1);
+        s.schemaVersion = 22;
         await isar.appSettings.put(s);
       });
     }

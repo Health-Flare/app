@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import 'package:go_router/go_router.dart';
+import 'package:health_flare/core/feature_flags.dart';
+import 'package:health_flare/core/router/app_router.dart';
+import 'package:health_flare/features/release_guides/release_guide.dart';
 import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
 import 'package:health_flare/features/whats_new/models/release_note.dart';
 import 'package:health_flare/features/whats_new/whats_new_provider.dart';
@@ -40,7 +44,7 @@ class WhatsNewScreen extends ConsumerWidget {
   }
 }
 
-class _ReleaseSection extends StatelessWidget {
+class _ReleaseSection extends ConsumerWidget {
   const _ReleaseSection({required this.release});
 
   final ReleaseNote release;
@@ -48,10 +52,15 @@ class _ReleaseSection extends StatelessWidget {
   static final _date = DateFormat('d MMMM yyyy');
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
     final tt = Theme.of(context).textTheme;
     final date = release.date;
+    final guideId = release.guideId;
+    final guide =
+        guideId != null &&
+        ref.watch(featureFlagsProvider).trackAndCare &&
+        releaseGuides.containsKey(guideId);
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
@@ -83,6 +92,16 @@ class _ReleaseSection extends StatelessWidget {
                     style: tt.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
                   ),
                 ],
+              ),
+            ),
+          if (guide)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: OutlinedButton.icon(
+                icon: const Icon(Icons.replay_rounded),
+                label: const Text('Replay guide'),
+                onPressed: () =>
+                    context.push(AppRoutes.guide(guideId, replay: true)),
               ),
             ),
           if (release.changes.isNotEmpty)

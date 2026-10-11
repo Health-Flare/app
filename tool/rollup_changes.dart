@@ -241,9 +241,17 @@ String unreleasedSection(String changelog) {
   return lines.sublist(start, end).join('\n').trimRight();
 }
 
-/// Move fragments naming a guide that doesn't exist. TODO(#145): stub.
-List<String> checkFragmentGuides(List<Fragment> fragments, Set<String> known) =>
-    throw UnimplementedError();
+/// Move fragments naming a guide that doesn't exist (#145).
+List<String> checkFragmentGuides(
+  List<Fragment> fragments,
+  Set<String> known,
+) => [
+  for (final f in fragments)
+    if (f.guide != null && !known.contains(f.guide))
+      '${f.fileName}: names guide "${f.guide}", and there is no such guide. '
+          'Build it and list it in $knownGuidesPath, or keep the change '
+          'behind its build flag.',
+];
 
 /// Loads and validates every fragment in [dir], ignoring README.md.
 List<Fragment> loadFragments(Directory dir) {
@@ -297,12 +305,20 @@ void main(List<String> args) {
     return;
   }
 
+  final knownGuides = readKnownGuides(File(knownGuidesPath).readAsStringSync());
+  final guideErrors = checkFragmentGuides(fragments, knownGuides);
+  if (guideErrors.isNotEmpty) {
+    _fail(guideErrors.join('\n'));
+    return;
+  }
+
   if (check) {
     final errors = validateReleases(
       releasesFile.readAsStringSync(),
       pubspecVersion: readPubspecVersion(
         File('pubspec.yaml').readAsStringSync(),
       ),
+      knownGuides: knownGuides,
     );
     if (errors.isNotEmpty) {
       _fail('$releasesJsonPath:\n${errors.map((e) => '  $e').join('\n')}');

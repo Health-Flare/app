@@ -541,7 +541,8 @@ void main() {
     await _openGuide(tester, step: 1, textScale: 2);
     expect(find.byKey(const ValueKey('moved-Meds-stacked')), findsOneWidget);
     expect(tester.takeException(), isNull);
-    for (var i = 0; i < 3; i++) {
+    // Where things moved -> Keep it or change it -> Finding this again.
+    for (var i = 0; i < 2; i++) {
       await _next(tester);
       expect(tester.takeException(), isNull);
     }

@@ -5,6 +5,8 @@ import 'package:flutter/semantics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:health_flare/features/release_guides/guide_rules.dart';
+import 'package:health_flare/features/release_guides/release_guide_provider.dart';
 import 'package:health_flare/core/providers/flare_provider.dart';
 import 'package:health_flare/core/router/app_router.dart';
 import 'package:health_flare/features/whats_new/models/release_note.dart';
@@ -64,7 +66,11 @@ class _WhatsNewCardState extends ConsumerState<WhatsNewCard> {
     final state = ref.watch(whatsNewProvider).value;
     final flaring = ref.watch(activeFlareProvider) != null;
     final releases = state?.card ?? const <ReleaseNote>[];
-    if (_gone || flaring || releases.isEmpty) return const SizedBox.shrink();
+    // A release guide's card goes first; this one waits (#145).
+    final guide = ref.watch(guideCardModeProvider) != GuideCardMode.hidden;
+    if (_gone || flaring || guide || releases.isEmpty) {
+      return const SizedBox.shrink();
+    }
 
     final cs = Theme.of(context).colorScheme;
     final tt = Theme.of(context).textTheme;

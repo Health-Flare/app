@@ -42,6 +42,15 @@ Feature: Release guides
     Then the guide card does not come back
     And no layout change is made unless I chose one on "Keep it or change it"
 
+  # TODO(#145): agent-written; verify.
+  @unverified
+  Scenario: The guide card goes before the What's new card
+    Given the update has a guide and highlights
+    When I open the dashboard
+    Then only the guide card is shown
+    And once the guide is seen, the What's new card shows
+    # One card at a time.
+
   Scenario: Leaving the app mid-guide resumes it next time
     Given the guide is open on "Where things moved"
     When I leave the app, or it is closed
@@ -100,6 +109,13 @@ Feature: Release guides
     And the button reads "Pinned" and the step says "Sleep is in your bar"
     And "Bottom bar" in Settings reads "Customized"
 
+  # TODO(#145): agent-written; verify. Pinning makes the bar your own, so
+  # later default bars no longer replace it; the step says so in one line.
+  @unverified
+  Scenario: "Pin" says the bar is now your own
+    When I tap "Pin" next to "Sleep" on "Where things moved"
+    Then the step says "Sleep is in your bar. Your bar is now your own, so later updates won't change it."
+
   Scenario: "Pin" with a full bar opens the bar editor
     Given my bar already has five items
     When I tap "Pin" next to "Sleep" on "Where things moved"
@@ -113,6 +129,15 @@ Feature: Release guides
     Then the guide closes
     And the Medications tab in Care opens
     And the Care section in the bottom bar is outlined for two pulses
+
+  # TODO(#145): agent-written; verify.
+  @unverified
+  Scenario: "Show me" doesn't count as seen
+    Given I tapped "Show me" next to "Meds" on "Where things moved"
+    When I go back to the dashboard
+    Then the guide card is still there
+    And "Show me" on it opens the guide on "Where things moved"
+    # Looking at one screen isn't the same as finishing the guide.
 
   Scenario: The guide offers to keep it like before
     Given I never changed the bottom bar
