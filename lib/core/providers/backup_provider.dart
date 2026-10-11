@@ -6,6 +6,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
 
+import 'package:health_flare/core/feature_flags.dart';
+import 'package:health_flare/core/navigation/bar_choice.dart';
+import 'package:health_flare/core/navigation/bar_layout_store.dart';
 import 'package:health_flare/core/providers/app_lock_provider.dart';
 import 'package:health_flare/core/providers/database_provider.dart';
 import 'package:health_flare/data/database/backup_encryption.dart';
@@ -39,8 +42,14 @@ class BackupRestoreStaged extends BackupResult {
 
 /// Merge or selective import complete.
 class ImportComplete extends BackupResult {
-  const ImportComplete(this.recordsAdded);
+  const ImportComplete(this.recordsAdded, {this.barImported = false});
   final int recordsAdded;
+
+  /// The backup's bottom bar was taken (#144): the message says so.
+  final bool barImported;
+
+  String get message =>
+      importCompleteMessage(recordsAdded, barImported: barImported);
 }
 
 /// Selective import: backup opened, category preview ready for user to review.
@@ -192,12 +201,14 @@ class BackupNotifier extends Notifier<BackupResult> {
 
     try {
       final isar = ref.read(isarProvider);
+      final report = ImportReport();
       final added = await ImportService.mergeSelected(
         current.filePath,
         isar,
         selectedCategoryIds,
+        report: report,
       );
-      _emit(ImportComplete(added));
+      await _complete(added, report);
     } catch (e) {
       _emit(BackupError('Import failed: $e'));
     } finally {
@@ -339,10 +350,19 @@ class BackupNotifier extends Notifier<BackupResult> {
           await BackupService.stagePendingRestore(path);
           _emit(const BackupRestoreStaged());
         case PendingImportAction.merge:
-          final added = await ImportService.mergeAll(path, isar);
-          _emit(ImportComplete(added));
+          final report = ImportReport();
+          final added = await ImportService.mergeAll(
+            path,
+            isar,
+            report: report,
+          );
+          await _complete(added, report);
         case PendingImportAction.selective:
-          final categories = await ImportService.preview(path, isar);
+          final categories = [
+            for (final c in await ImportService.preview(path, isar))
+              // The bar is a Track and Care setting (#144).
+              if (c.id != ImportCategoryId.layout || _trackAndCare) c,
+          ];
           if (categories.isEmpty) {
             // Nothing new to import: treat as done with 0 records.
             _emit(const ImportComplete(0));
@@ -361,6 +381,20 @@ class BackupNotifier extends Notifier<BackupResult> {
       // decrypted copy of the user's data around either.
       if (!keepDecryptedCopy || !ref.mounted) await _discardDecryptedCopy();
     }
+  }
+
+  bool get _trackAndCare => ref.read(featureFlagsProvider).trackAndCare;
+
+  /// Reports an import. A bar taken from the backup is shown at once and
+  /// mentioned, with Track and Care on (#144).
+  Future<void> _complete(int added, ImportReport report) async {
+    final bar = report.barImported && _trackAndCare;
+    if (report.barImported && ref.mounted) {
+      ref
+          .read(barChoiceProvider.notifier)
+          .reload(await BarLayoutStore.read(ref.read(isarProvider)));
+    }
+    _emit(ImportComplete(added, barImported: bar));
   }
 
   static String _failurePrefix(PendingImportAction action) => switch (action) {

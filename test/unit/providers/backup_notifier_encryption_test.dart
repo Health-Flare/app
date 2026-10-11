@@ -8,6 +8,10 @@ import 'package:isar_community/isar.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
+import 'package:health_flare/core/feature_flags.dart';
+import 'package:health_flare/core/navigation/bar_choice.dart';
+import 'package:health_flare/core/navigation/bar_layout.dart';
+import 'package:health_flare/core/navigation/bar_layout_store.dart';
 import 'package:health_flare/core/providers/backup_provider.dart';
 import 'package:health_flare/core/providers/database_provider.dart';
 import 'package:health_flare/data/database/app_settings.dart';
@@ -638,6 +642,84 @@ void main() {
           .toList();
       expect(names, ['LiveData']);
       await reopened.close();
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // Layout settings in backups (#144), navigation-customization.feature
+  // -------------------------------------------------------------------------
+  group('the bottom bar in a backup', () {
+    const theirs = ['dashboard', 'track', 'care.medications', 'track.meals'];
+
+    Future<String> backupWithBar() async {
+      final source = await _openAppDb(docsDir.path, 'source_${_uid()}');
+      await source.writeTxn(() async {
+        await source.profileIsars.put(ProfileIsar()..name = 'FromBar');
+      });
+      await BarLayoutStore.write(
+        source,
+        const BarRecord(storedBar: theirs, seenVersion: 2),
+      );
+      final path = await BackupService.export(source);
+      await source.close(deleteFromDisk: true);
+      return path;
+    }
+
+    ProviderContainer withFlag(bool on) {
+      final n = _PickerStubNotifier();
+      final c = ProviderContainer(
+        overrides: [
+          isarProvider.overrideWithValue(mainDb),
+          backupProvider.overrideWith(() => n),
+          featureFlagsProvider.overrideWithValue(
+            FeatureFlags(trackAndCare: on),
+          ),
+        ],
+      );
+      addTearDown(c.dispose);
+      c.read(backupProvider);
+      return c;
+    }
+
+    test('Add missing data onto a default device: the live bar follows, and '
+        'the message says so', () async {
+      final c = withFlag(true);
+      final n = c.read(backupProvider.notifier) as _PickerStubNotifier;
+      n.pickedPath = await backupWithBar();
+      c.read(barChoiceProvider); // the bar as the app started with it
+
+      await n.mergeRestore();
+
+      final done = c.read(backupProvider) as ImportComplete;
+      expect(done.barImported, isTrue);
+      expect(c.read(barChoiceProvider).storedBar, theirs);
+    });
+
+    test(
+      "Choose what to import doesn't list layout with Track and Care off",
+      () async {
+        final c = withFlag(false);
+        final n = c.read(backupProvider.notifier) as _PickerStubNotifier;
+        n.pickedPath = await backupWithBar();
+
+        await n.startSelectiveImport();
+
+        final preview = c.read(backupProvider) as ImportPreviewReady;
+        expect(
+          preview.categories.map((x) => x.id),
+          isNot(contains(ImportCategoryId.layout)),
+        );
+      },
+    );
+
+    test('with Track and Care off, no bar message', () async {
+      final c = withFlag(false);
+      final n = c.read(backupProvider.notifier) as _PickerStubNotifier;
+      n.pickedPath = await backupWithBar();
+
+      await n.mergeRestore();
+
+      expect((c.read(backupProvider) as ImportComplete).barImported, isFalse);
     });
   });
 }

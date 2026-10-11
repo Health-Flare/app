@@ -2,6 +2,11 @@ import 'dart:io';
 
 import 'package:isar_community/isar.dart';
 
+import 'package:flutter/foundation.dart' show listEquals;
+import 'package:health_flare/core/navigation/bar_layout.dart';
+import 'package:health_flare/core/navigation/bar_layout_store.dart';
+import 'package:health_flare/core/navigation/effective_bar.dart';
+import 'package:health_flare/core/navigation/nav_registry.dart';
 import 'package:health_flare/data/models/activity_entry_isar.dart';
 import 'package:health_flare/data/models/appointment_isar.dart';
 import 'package:health_flare/data/models/daily_checkin_isar.dart';
@@ -31,6 +36,7 @@ class ImportCategoryInfo {
     required this.label,
     required this.count,
     this.selected = true,
+    this.detail,
   });
 
   /// Stable identifier used to filter which categories to import.
@@ -46,11 +52,15 @@ class ImportCategoryInfo {
   /// Whether the user has selected this category for import.
   final bool selected;
 
+  /// Shown instead of the record count (the bar a backup would bring).
+  final String? detail;
+
   ImportCategoryInfo copyWith({bool? selected}) => ImportCategoryInfo(
     id: id,
     label: label,
     count: count,
     selected: selected ?? this.selected,
+    detail: detail,
   );
 }
 
@@ -81,6 +91,29 @@ abstract final class ImportCategoryId {
   static const medications = 'medications';
   static const doseLogs = 'doseLogs';
   static const symptomEntries = 'symptomEntries';
+
+  /// The bottom bar (#144). Not records: a setting.
+  static const layout = 'layout';
+}
+
+/// What an import did besides adding records.
+class ImportReport {
+  /// The backup's bottom bar was taken (#144).
+  bool barImported = false;
+}
+
+/// The message after "Add missing data" or "Choose what to import".
+String importCompleteMessage(int added, {required bool barImported}) {
+  const bar =
+      'Bottom bar restored from the backup. Change it in Settings > '
+      'Your layout.';
+  if (added == 0) {
+    return barImported
+        ? bar
+        : 'Everything in the backup is already up to date.';
+  }
+  final records = 'Added $added ${added == 1 ? 'record' : 'records'}.';
+  return barImported ? '$records $bar' : records;
 }
 
 /// Merges data from an Isar backup file into the live database.
@@ -280,6 +313,8 @@ class ImportService {
         'Symptom entries',
         ctx.countNewSymptomEntries,
       );
+      final layout = await ctx.layoutCategory();
+      if (layout != null) categories.add(layout);
 
       return categories;
     } finally {
@@ -290,10 +325,18 @@ class ImportService {
   /// Imports all data from [backupPath] into [main], skipping duplicates.
   ///
   /// Returns the total number of records added.
-  static Future<int> mergeAll(String backupPath, Isar main) async {
+  static Future<int> mergeAll(
+    String backupPath,
+    Isar main, {
+    ImportReport? report,
+  }) async {
     final backup = await _openBackup(backupPath);
     try {
-      return await _Ctx(main: main, backup: backup).importAll(null);
+      return await _Ctx(
+        main: main,
+        backup: backup,
+        report: report,
+      ).importAll(null);
     } finally {
       await _closeBackup(backup);
     }
@@ -305,13 +348,15 @@ class ImportService {
   static Future<int> mergeSelected(
     String backupPath,
     Isar main,
-    Set<String> selectedCategories,
-  ) async {
+    Set<String> selectedCategories, {
+    ImportReport? report,
+  }) async {
     final backup = await _openBackup(backupPath);
     try {
       return await _Ctx(
         main: main,
         backup: backup,
+        report: report,
       ).importAll(selectedCategories);
     } finally {
       await _closeBackup(backup);
@@ -322,10 +367,12 @@ class ImportService {
 // ── Internal context ──────────────────────────────────────────────────────
 
 class _Ctx {
-  _Ctx({required this.main, required this.backup});
+  _Ctx({required this.main, required this.backup, ImportReport? report})
+    : report = report ?? ImportReport();
 
   final Isar main;
   final Isar backup;
+  final ImportReport report;
 
   /// backup profileId → main profileId
   final Map<int, int> profileMap = {};
@@ -595,8 +642,62 @@ class _Ctx {
     if (include(ImportCategoryId.meals)) {
       total += await _importFluids();
     }
+    // The bottom bar (#144). "Add missing data" fills a gap: it takes the
+    // backup's bar only onto a device that never changed its own. Ticked in
+    // "Choose what to import", it replaces this device's.
+    if (filter == null) {
+      await _importBar(replace: false);
+    } else if (filter.contains(ImportCategoryId.layout)) {
+      await _importBar(replace: true);
+    }
 
     return total;
+  }
+
+  // ── Bottom bar (#144) ─────────────────────────────────────────────────
+
+  /// The backup's bar, if it's customized and differs from this device's.
+  Future<List<String>?> _backupBar() async {
+    final theirs = (await BarLayoutStore.read(backup)).storedBar;
+    if (theirs == null) return null;
+    final mine = (await BarLayoutStore.read(main)).storedBar;
+    return listEquals(theirs, mine) ? null : theirs;
+  }
+
+  /// "Bottom bar and layout" for "Choose what to import", or null when the
+  /// backup has nothing to bring. Unticked when this device has its own bar.
+  Future<ImportCategoryInfo?> layoutCategory() async {
+    final theirs = await _backupBar();
+    if (theirs == null) return null;
+    final mine = await BarLayoutStore.read(main);
+    return ImportCategoryInfo(
+      id: ImportCategoryId.layout,
+      label: 'Bottom bar and layout',
+      count: 1,
+      selected: mine.storedBar == null,
+      detail: [
+        for (final id in resolveNavIds(theirs)) barLabelFor(id),
+      ].join(', '),
+    );
+  }
+
+  /// Stores the backup's bar as it came: ids this version doesn't know are
+  /// kept for a later one and skipped when shown. The device keeps its own
+  /// record of which default bar it has shown.
+  Future<void> _importBar({required bool replace}) async {
+    final theirs = await _backupBar();
+    if (theirs == null) return;
+    final mine = await BarLayoutStore.read(main);
+    if (!replace && mine.storedBar != null) return;
+    await BarLayoutStore.write(
+      main,
+      BarRecord(
+        storedBar: theirs,
+        seenVersion:
+            mine.seenVersion ?? (await BarLayoutStore.read(backup)).seenVersion,
+      ),
+    );
+    report.barImported = true;
   }
 
   Future<int> _importProfiles() async {
