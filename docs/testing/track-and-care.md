@@ -1,9 +1,8 @@
 # Testing Track and Care
 
 How to check the Track and Care layout (Dashboard, Track, Care, Journal,
-each with tabs) by hand, by test and by screenshot. It's behind the
-`TRACK_AND_CARE` build flag until the release guide ships (#145). One
-script does all of it:
+each with tabs) by hand, by test and by screenshot. It's on by default
+from 1.10.0. One script does all of it:
 
 ```bash
 bash scripts/track_and_care.sh       # help
@@ -27,8 +26,8 @@ bash scripts/track_and_care.sh -d "iPhone 17 Pro Max" shots
 bash scripts/track_and_care.sh -d emulator-5554 run     # Android
 ```
 
-`run` is `flutter run --dart-define=TRACK_AND_CARE=true`. Without the
-define, the app is exactly as before: the six-item bar.
+`run` is plain `flutter run`. Until the flag is deleted,
+`flutter run --dart-define=TRACK_AND_CARE=false` shows the old six-item bar.
 
 ## What to check by hand
 
@@ -96,8 +95,8 @@ updated from 1.9.1. Every run starts over.
 36. **Finding this again.** Only Done. Afterwards the card never returns.
 37. **Leave mid-guide.** Swipe the app away on step 2 and reopen: the
     guide opens on step 2.
-38. **Replay.** Settings > What's new: once 1.10.0 carries the guide (the
-    flag-on PR), "Replay guide" there opens it at step 1.
+38. **Replay.** Settings > What's new: "Replay guide" under 1.10.0 opens
+    it at step 1.
 39. **Accessibility.** VoiceOver reads "Step 2 of 4, Where things moved".
     Reduce Motion: steps jump, the outline doesn't pulse. 200% text: rows
     stack. macOS: Escape closes the guide.

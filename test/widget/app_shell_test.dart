@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:health_flare/core/feature_flags.dart';
 import 'package:health_flare/core/navigation/nav_registry.dart';
 import 'package:health_flare/core/router/app_router.dart';
 import 'package:health_flare/features/shell/app_shell.dart';
@@ -53,7 +54,11 @@ Widget _buildShell() {
   );
 
   // The shell reads the build flags (#141); off here: the legacy bar.
-  return ProviderScope(child: MaterialApp.router(routerConfig: router));
+  // The bar before Track and Care, kept until the flag is deleted.
+  return ProviderScope(
+    overrides: [featureFlagsProvider.overrideWithValue(const FeatureFlags())],
+    child: MaterialApp.router(routerConfig: router),
+  );
 }
 
 // ---------------------------------------------------------------------------
