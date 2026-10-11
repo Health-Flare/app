@@ -11,13 +11,21 @@ import 'package:health_flare/features/quick_log/quick_log_classifier.dart';
 import 'package:health_flare/features/quick_log/quick_log_features.dart';
 import 'package:health_flare/models/profile.dart';
 
+class _Profiles extends ProfileListNotifier {
+  _Profiles(this._p);
+  final Profile _p;
+
+  @override
+  List<Profile> build() => [_p];
+}
+
 ProviderContainer _with({List<String> off = const [], bool flag = true}) {
+  final sarah = Profile(id: 1, name: 'Sarah', disabledFeatureIds: off);
   final c = ProviderContainer(
     overrides: [
       featureFlagsProvider.overrideWithValue(FeatureFlags(trackAndCare: flag)),
-      activeProfileDataProvider.overrideWith(
-        (ref) => Profile(id: 1, name: 'Sarah', disabledFeatureIds: off),
-      ),
+      profileListProvider.overrideWith(() => _Profiles(sarah)),
+      activeProfileDataProvider.overrideWith((ref) => sarah),
     ],
   );
   addTearDown(c.dispose);

@@ -112,6 +112,11 @@ class _FakeActiveProfile extends ActiveProfileNotifier {
 
 final _sarahProfile = Profile(id: 1, name: 'Sarah');
 
+class _FeatureProfiles extends ProfileListNotifier {
+  @override
+  List<Profile> build() => [_sarahProfile];
+}
+
 JournalEntry _journalEntry({
   int id = 1,
   String body = 'Test body',
@@ -177,6 +182,7 @@ Widget _buildDashboard({
       activeProfileDataProvider.overrideWith(
         (ref) => _sarahProfile.copyWith(disabledFeatureIds: featuresOff),
       ),
+      profileListProvider.overrideWith(_FeatureProfiles.new),
       featureFlagsProvider.overrideWithValue(
         FeatureFlags(trackAndCare: trackAndCare),
       ),

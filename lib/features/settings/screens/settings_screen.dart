@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'package:health_flare/features/settings/widgets/your_layout_tiles.dart';
 import 'package:health_flare/core/providers/backup_provider.dart';
 import 'package:health_flare/features/settings/widgets/privacy_settings_section.dart';
 import 'package:health_flare/features/settings/widgets/settings_section_header.dart';
@@ -44,6 +45,9 @@ class SettingsScreen extends ConsumerWidget {
           // ── Data & backup ─────────────────────────────────────────────────
           const SettingsSectionHeader(label: 'Data & backup'),
           _BackupTiles(),
+
+          // ── Your layout (#142): only with Track and Care on ───────────────
+          const YourLayoutTiles(),
 
           // ── Updates ───────────────────────────────────────────────────────
           const SettingsSectionHeader(label: 'Updates'),

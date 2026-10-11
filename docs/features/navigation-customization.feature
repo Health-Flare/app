@@ -99,7 +99,7 @@ Feature: Your layout: features in use and the bottom bar
 
   Scenario: Quick Log still logs a turned-off feature, and says so
     Given "Meals" is off for "Sarah"
-    When I quick-log "Had toast and eggs"
+    When I quick-log "Toast and eggs for breakfast"
     Then the Meals chip is still offered and selected
     And a warning under the sheet reads "Meals is turned off for Sarah. This
       meal will be saved and shown in recent activity, but not in Track

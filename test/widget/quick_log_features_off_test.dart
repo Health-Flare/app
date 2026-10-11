@@ -178,7 +178,11 @@ void main() {
   group('Quick Log still logs a turned-off feature, and says so', () {
     testWidgets('the Meals chip is still offered and selected, with the '
         'warning', (tester) async {
-      await _type(tester, _sheet(off: ['track.meals']), 'Had toast and eggs');
+      await _type(
+        tester,
+        _sheet(off: ['track.meals']),
+        'Toast and eggs for breakfast',
+      );
       expect(find.text('Meal'), findsOneWidget);
       expect(find.text(_warning), findsOneWidget);
       expect(find.text('Turn Meals on'), findsOneWidget);
@@ -187,25 +191,37 @@ void main() {
 
     testWidgets('saving saves a meal with the text as typed, and no journal '
         'note unless ticked', (tester) async {
-      await _type(tester, _sheet(off: ['track.meals']), 'Had toast and eggs');
+      await _type(
+        tester,
+        _sheet(off: ['track.meals']),
+        'Toast and eggs for breakfast',
+      );
       await _save(tester);
-      expect(_meals, ['Had toast and eggs']);
+      expect(_meals, ['Toast and eggs for breakfast']);
       expect(_journal, isEmpty);
     });
 
     testWidgets('ticked, a journal note is saved too', (tester) async {
-      await _type(tester, _sheet(off: ['track.meals']), 'Had toast and eggs');
+      await _type(
+        tester,
+        _sheet(off: ['track.meals']),
+        'Toast and eggs for breakfast',
+      );
       await tester.tap(find.text('Save as a journal note too'));
       await tester.pumpAndSettle();
       await _save(tester);
-      expect(_meals, ['Had toast and eggs']);
-      expect(_journal, ['Had toast and eggs']);
+      expect(_meals, ['Toast and eggs for breakfast']);
+      expect(_journal, ['Toast and eggs for breakfast']);
     });
 
     testWidgets('"Turn Meals on" turns it on and the warning goes', (
       tester,
     ) async {
-      await _type(tester, _sheet(off: ['track.meals']), 'Had toast and eggs');
+      await _type(
+        tester,
+        _sheet(off: ['track.meals']),
+        'Toast and eggs for breakfast',
+      );
       await tester.tap(find.text('Turn Meals on'));
       await tester.pumpAndSettle();
       expect(_profileUpdates.single.disabledFeatureIds, isEmpty);
@@ -215,7 +231,7 @@ void main() {
   });
 
   testWidgets('no warning when Meals is on', (tester) async {
-    await _type(tester, _sheet(), 'Had toast and eggs');
+    await _type(tester, _sheet(), 'Toast and eggs for breakfast');
     expect(find.text(_warning), findsNothing);
     expect(find.text('Save as a journal note too'), findsNothing);
   });
@@ -226,7 +242,7 @@ void main() {
     await _type(
       tester,
       _sheet(off: ['track.meals'], flag: false),
-      'Had toast and eggs',
+      'Toast and eggs for breakfast',
     );
     expect(find.text(_warning), findsNothing);
   });

@@ -68,8 +68,12 @@ cmd_test() {
   bold "Track and Care: unit and widget tests"
   flutter test \
     test/unit/navigation \
+    test/unit/database/features_off_keeps_data_test.dart \
     test/widget/track_and_care_test.dart \
     test/widget/track_and_care_bodies_test.dart \
+    test/widget/features_in_use_screen_test.dart \
+    test/widget/features_in_use_sections_test.dart \
+    test/widget/quick_log_features_off_test.dart \
     test/widget/app_shell_test.dart
   ok "All Track and Care tests passed."
 }

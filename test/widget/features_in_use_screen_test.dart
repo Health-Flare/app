@@ -56,7 +56,13 @@ Widget _screen({List<String> off = const [], int meals = 40}) {
   );
 }
 
-Finder _switchFor(String label) => find.widgetWithText(SwitchListTile, label);
+/// The switch whose title is [label] (Check-ins' subtitle is "Journal").
+Finder _switchFor(String label) => find.byWidgetPredicate(
+  (w) =>
+      w is SwitchListTile &&
+      w.title is Text &&
+      (w.title! as Text).data == label,
+);
 
 bool _isOn(WidgetTester tester, String label) =>
     tester.widget<SwitchListTile>(_switchFor(label)).value;
@@ -166,9 +172,16 @@ void main() {
     final handle = tester.ensureSemantics();
     await tester.pumpWidget(_screen(off: ['track.meals']));
     await tester.pumpAndSettle();
-    final node = tester.getSemantics(_switchFor('Meals'));
-    expect(node.label, contains('Meals for Sarah'));
-    expect(node.flagsCollection.isToggled, Tristate.isFalse);
+    var node = tester.getSemantics(
+      find.bySemanticsLabel(RegExp('Meals for Sarah')),
+    );
+    // The row is one merged node: label, state and action together.
+    while (node.isMergedIntoParent) {
+      node = node.parent!;
+    }
+    final data = node.getSemanticsData();
+    expect(data.label, contains('Meals for Sarah'));
+    expect(data.flagsCollection.isToggled, Tristate.isFalse);
     handle.dispose();
   });
 

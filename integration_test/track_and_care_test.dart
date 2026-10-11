@@ -23,6 +23,7 @@ import 'package:health_flare/data/database/app_database.dart';
 import 'package:health_flare/data/database/app_schemas.dart';
 import 'package:health_flare/data/database/app_settings.dart';
 import 'package:health_flare/data/database/migration_runner.dart';
+import 'package:health_flare/data/models/meal_entry_isar.dart';
 import 'package:health_flare/data/models/profile_isar.dart';
 import 'package:health_flare/main.dart';
 
@@ -125,6 +126,14 @@ String _selectedTab(WidgetTester tester) {
   return (bar.tabs[bar.controller!.index] as Tab).text!;
 }
 
+/// A Features in use switch by its title (Check-ins' subtitle is "Journal").
+Finder _switchTitled(String label) => find.byWidgetPredicate(
+  (w) =>
+      w is SwitchListTile &&
+      w.title is Text &&
+      (w.title! as Text).data == label,
+);
+
 Future<void> _tap(WidgetTester tester, Finder f) async {
   await tester.tap(f);
   await _settle(tester);
@@ -206,6 +215,85 @@ void main() {
     expect(_selectedTab(tester), 'Activity');
     expect(tester.takeException(), isNull);
     await _shot(tester, '${n++}_track_large_text_scrolled');
+
+    await isar.close(deleteFromDisk: true);
+  });
+
+  testWidgets('Features in use: turn off, what goes, what stays', (
+    tester,
+  ) async {
+    final isar = await _db();
+    await _launch(tester, isar);
+
+    // Settings > Your layout > Features in use.
+    await _tap(tester, find.byTooltip('Settings').first);
+    await _waitFor(tester, find.text('Your layout'));
+    await tester.scrollUntilVisible(
+      find.text('Features in use'),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await _tap(tester, find.text('Features in use'));
+    await _waitFor(
+      tester,
+      find.textContaining('These switches apply to Sarah'),
+    );
+    await _shot(tester, '20_features_in_use');
+
+    // Turning a feature off keeps its data: I am told.
+    await _tap(tester, find.text('Meals'));
+    await _waitFor(tester, find.textContaining('Meals is off for Sarah'));
+    await _shot(tester, '21_meals_turned_off');
+
+    // Journal and Check-ins off: Journal leaves the bar.
+    await tester.scrollUntilVisible(
+      find.text('Check-ins'),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+    // Each switch shows a "kept" message; clear it so it can't sit over
+    // the next row.
+    Future<void> toggle(String label) async {
+      await _tap(tester, _switchTitled(label));
+      tester
+          .state<ScaffoldMessengerState>(find.byType(ScaffoldMessenger).first)
+          .hideCurrentSnackBar();
+      await _settle(tester);
+    }
+
+    await toggle('Journal');
+    await toggle('Check-ins');
+    final stored = (await isar.profileIsars.get(1))!.disabledFeatureIds;
+    expect(stored, containsAll(['journal.entries', 'journal.checkins']));
+    await tester.pageBack();
+    await _settle(tester);
+    await tester.pageBack();
+    await _settle(tester);
+    expect(_bar('Journal'), findsNothing);
+
+    // The Meals tab is not shown in Track.
+    await _tap(tester, _bar('Track'));
+    expect(_tab('Meals'), findsNothing);
+    await _shot(tester, '22_track_without_meals');
+
+    await _tap(tester, _bar('Dashboard'));
+
+    // Quick Log still logs a turned-off feature, and says so.
+    await _tap(tester, find.byType(FloatingActionButton));
+    await tester.enterText(
+      find.byType(TextField),
+      'Toast and eggs for breakfast',
+    );
+    await _settle(tester);
+    expect(
+      find.textContaining('Meals is turned off for Sarah'),
+      findsOneWidget,
+    );
+    expect(find.text('Turn Meals on'), findsOneWidget);
+    await _shot(tester, '23_quick_log_meals_off');
+    await _tap(tester, find.widgetWithText(FilledButton, 'Quick Add: Meal'));
+    await _settle(tester);
+    expect(await isar.mealEntryIsars.count(), 1);
 
     await isar.close(deleteFromDisk: true);
   });

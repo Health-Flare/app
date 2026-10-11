@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:health_flare/core/feature_flags.dart';
+import 'package:health_flare/core/navigation/features_in_use.dart';
 import 'package:health_flare/core/navigation/nav_registry.dart';
 import 'package:health_flare/core/navigation/section_routes.dart';
 import 'package:health_flare/core/router/app_router.dart';
@@ -43,25 +44,29 @@ class _SectionBar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // A section with every tab turned off leaves the bar (#142).
+    final sections = ref.watch(visibleSectionsProvider);
     final memo = ref.read(lastSectionProvider);
     final current = sectionIdForLocation(location);
     if (current != null) memo['bar'] = current;
-    final selected = navSections.indexWhere((s) => s.id == memo['bar']);
+    final selected = sections.indexWhere((s) => s.id == memo['bar']);
 
     return NavigationBar(
       selectedIndex: selected < 0 ? 0 : selected,
       onDestinationSelected: (index) {
-        final section = navSections[index];
+        final section = sections[index];
         if (section.tabs.isEmpty) {
           context.go(AppRoutes.dashboard);
           return;
         }
-        final tab =
-            ref.read(lastTabProvider)[section.id] ?? section.tabs.first.id;
+        // The tab last used here, if it's still on; else the first on.
+        final visible = ref.read(visibleTabsProvider(section.id));
+        final last = ref.read(lastTabProvider)[section.id];
+        final tab = visible.any((t) => t.id == last) ? last! : visible.first.id;
         context.go(tabLocation(tab));
       },
       destinations: [
-        for (final s in navSections)
+        for (final s in sections)
           NavigationDestination(
             icon: Icon(s.icon),
             selectedIcon: Icon(s.selectedIcon),
