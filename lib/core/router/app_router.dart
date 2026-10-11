@@ -112,6 +112,7 @@ abstract final class AppRoutes {
   static String activityEdit(int id) => '/activity/$id/edit';
   static const settings = '/settings';
   static const whatsNew = '/settings/whats-new';
+  static const featuresInUse = '/settings/features-in-use';
 }
 
 /// A list screen's page: inside its section with Track and Care on, the

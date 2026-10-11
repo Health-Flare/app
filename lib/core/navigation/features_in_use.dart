@@ -1,3 +1,5 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import 'package:health_flare/core/navigation/nav_registry.dart';
 import 'package:health_flare/models/profile.dart';
 
@@ -10,3 +12,26 @@ bool featureInUse(Profile profile, String featureId) {
   }
   return !profile.disabledFeatureIds.contains(featureId);
 }
+
+// TODO(#142): stubs.
+final featureOnProvider = Provider.family<bool, String>(
+  (ref, id) => throw UnimplementedError('#142'),
+);
+
+final visibleTabsProvider = Provider.family<List<NavTab>, String>(
+  (ref, sectionId) => throw UnimplementedError('#142'),
+);
+
+final visibleSectionsProvider = Provider<List<NavSection>>(
+  (ref) => throw UnimplementedError('#142'),
+);
+
+final featureEntryCountProvider = Provider.family<int, String>(
+  (ref, id) => throw UnimplementedError('#142'),
+);
+
+String featureKeptMessage({
+  required String profileName,
+  required String featureId,
+  required int count,
+}) => throw UnimplementedError('#142');

@@ -126,9 +126,11 @@ Feature: Your layout: features in use and the bottom bar
     And Settings > Your layout > Features in use is where it comes back
 
   Scenario: A section with one tab left shows no tab row
-    Given only Medications is on in Care for "Sarah"
-    When I tap "Care"
-    Then the Medications list opens with no tab row above it
+    Given Check-ins is off for "Sarah"
+    When I tap "Journal"
+    Then the Journal entries list opens with no tab row above it
+    # Was "only Medications is on in Care", which can't happen: Conditions
+    # is always on (#142).
 
   Scenario: Onboarding never asks this up front
     When a new profile is created
