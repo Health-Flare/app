@@ -31,6 +31,7 @@ class ReleaseGuide {
     required this.id,
     required this.cardTitle,
     required this.cardBody,
+    required this.intro,
     required this.steps,
     required this.sectionLines,
     required this.moved,
@@ -40,6 +41,9 @@ class ReleaseGuide {
   final String id;
   final String cardTitle;
   final String cardBody;
+
+  /// The first step's opening line.
+  final String intro;
 
   /// Step titles, in order.
   final List<String> steps;
@@ -59,6 +63,7 @@ const trackAndCareGuide = ReleaseGuide(
   id: 'track-and-care',
   cardTitle: 'The bottom bar has changed',
   cardBody: 'Meds, Meals and Sleep have moved. Nothing has been removed.',
+  intro: '', // TODO(#145): copy review
   steps: [
     'Four sections now',
     'Where things moved',
@@ -118,3 +123,6 @@ const trackAndCareGuide = ReleaseGuide(
 const releaseGuides = <String, ReleaseGuide>{
   'track-and-care': trackAndCareGuide,
 };
+
+/// A row as a screen reader says it. TODO(#145): stub.
+String spokenRow(GuideRow row) => throw UnimplementedError();

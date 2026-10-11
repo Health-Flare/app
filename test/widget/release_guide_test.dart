@@ -300,6 +300,12 @@ void main() {
       find.bySemanticsLabel('The new bar: Dashboard, Track, Care, Journal'),
       findsOneWidget,
     );
+    expect(
+      find.text(
+        'Health Flare is now in four sections. Nothing has been removed.',
+      ),
+      findsOneWidget,
+    );
     for (final line in trackAndCareGuide.sectionLines.values) {
       expect(find.text(line), findsOneWidget, reason: line);
     }
@@ -328,6 +334,17 @@ void main() {
       );
     }
     expect(find.text('Pin'), findsNWidgets(3));
+  });
+
+  testWidgets('rows are read without ">"', (tester) async {
+    final handle = tester.ensureSemantics();
+    await _openGuide(tester, step: 1);
+    expect(
+      find.bySemanticsLabel(RegExp(r'^Meds, now in Care, Medications tab')),
+      findsOneWidget,
+    );
+    expect(find.bySemanticsLabel(RegExp('>')), findsNothing);
+    handle.dispose();
   });
 
   testWidgets('"Pin" on a moved row puts it back in the bar', (tester) async {
@@ -470,7 +487,8 @@ void main() {
       await _next(tester);
       await tester.tap(find.widgetWithText(FilledButton, 'Done'));
       await tester.pumpAndSettle();
-      expect(find.text('Settings screen'), findsOneWidget);
+      // Settings, opened at Your layout, as the option says.
+      expect(find.text('Settings screen layout'), findsOneWidget);
     });
   });
 

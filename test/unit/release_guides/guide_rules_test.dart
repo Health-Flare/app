@@ -69,6 +69,50 @@ void main() {
     });
   });
 
+  test('the guide says nothing was removed, in the same words as the card', () {
+    expect(
+      trackAndCareGuide.intro,
+      'Health Flare is now in four sections. Nothing has been removed.',
+    );
+    expect(
+      trackAndCareGuide.intro,
+      endsWith(trackAndCareGuide.cardBody.split('. ').last),
+    );
+  });
+
+  group('Every row is read without ">"', () {
+    test('a tab reads as "in Care, Medications tab"', () {
+      expect(
+        spokenRow(
+          const GuideRow(
+            was: 'Meds',
+            now: 'Care > Medications',
+            tabId: 'care.medications',
+          ),
+        ),
+        'Meds, now in Care, Medications tab',
+      );
+    });
+
+    test('a section reads as "in Track"', () {
+      expect(
+        spokenRow(
+          const GuideRow(was: 'Tracking', now: 'Track', tabId: 'track'),
+        ),
+        'Tracking, now in Track',
+      );
+    });
+
+    test('no row is read with ">"', () {
+      for (final r in [
+        ...trackAndCareGuide.moved,
+        ...trackAndCareGuide.ownPlace,
+      ]) {
+        expect(spokenRow(r), isNot(contains('>')), reason: r.was);
+      }
+    });
+  });
+
   test('"Show me" opens the guide: four steps, in order', () {
     expect(trackAndCareGuide.steps, [
       'Four sections now',
@@ -143,8 +187,7 @@ void main() {
     test('the pinned line says the bar is now your own', () {
       expect(
         pinnedLine('Sleep'),
-        'Sleep is in your bar. Your bar is now your own, so later updates '
-        "won't change it.",
+        "Sleep is in your bar. It's your bar now, so updates won't change it.",
       );
     });
 

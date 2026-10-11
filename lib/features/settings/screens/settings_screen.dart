@@ -28,7 +28,10 @@ final _schemaVersionProvider = FutureProvider<int>((ref) async {
 /// Surfaces data backup / restore and displays the current schema version.
 /// Accessible from the dashboard app bar (gear icon).
 class SettingsScreen extends ConsumerWidget {
-  const SettingsScreen({super.key});
+  const SettingsScreen({super.key, this.section});
+
+  /// Opens scrolled to a section: `layout` is Your layout. TODO(#145).
+  final String? section;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
