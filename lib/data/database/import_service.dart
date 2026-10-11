@@ -31,6 +31,7 @@ class ImportCategoryInfo {
     required this.label,
     required this.count,
     this.selected = true,
+    this.detail,
   });
 
   /// Stable identifier used to filter which categories to import.
@@ -46,11 +47,15 @@ class ImportCategoryInfo {
   /// Whether the user has selected this category for import.
   final bool selected;
 
+  /// Shown instead of the record count (the bar a backup would bring).
+  final String? detail;
+
   ImportCategoryInfo copyWith({bool? selected}) => ImportCategoryInfo(
     id: id,
     label: label,
     count: count,
     selected: selected ?? this.selected,
+    detail: detail,
   );
 }
 
@@ -81,7 +86,19 @@ abstract final class ImportCategoryId {
   static const medications = 'medications';
   static const doseLogs = 'doseLogs';
   static const symptomEntries = 'symptomEntries';
+
+  /// The bottom bar (#144). Not records: a setting.
+  static const layout = 'layout';
 }
+
+/// What an import did besides adding records. TODO(#144): stub.
+class ImportReport {
+  bool barImported = false;
+}
+
+/// The message after an import. TODO(#144): stub.
+String importCompleteMessage(int added, {required bool barImported}) =>
+    throw UnimplementedError('#144');
 
 /// Merges data from an Isar backup file into the live database.
 ///
@@ -290,7 +307,11 @@ class ImportService {
   /// Imports all data from [backupPath] into [main], skipping duplicates.
   ///
   /// Returns the total number of records added.
-  static Future<int> mergeAll(String backupPath, Isar main) async {
+  static Future<int> mergeAll(
+    String backupPath,
+    Isar main, {
+    ImportReport? report,
+  }) async {
     final backup = await _openBackup(backupPath);
     try {
       return await _Ctx(main: main, backup: backup).importAll(null);
@@ -305,8 +326,9 @@ class ImportService {
   static Future<int> mergeSelected(
     String backupPath,
     Isar main,
-    Set<String> selectedCategories,
-  ) async {
+    Set<String> selectedCategories, {
+    ImportReport? report,
+  }) async {
     final backup = await _openBackup(backupPath);
     try {
       return await _Ctx(
