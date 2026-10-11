@@ -114,6 +114,7 @@ abstract final class AppRoutes {
   static const settings = '/settings';
   static const whatsNew = '/settings/whats-new';
   static const featuresInUse = '/settings/features-in-use';
+  static const bottomBar = '/settings/bottom-bar';
 }
 
 /// A list screen's page: inside its section with Track and Care on, the
