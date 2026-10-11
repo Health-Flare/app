@@ -285,7 +285,8 @@ void main() {
         find.bySemanticsLabel('Step ${i + 1} of 4, $title'),
         findsOneWidget,
       );
-      expect(_guideSaves.last.resumeStep, i);
+      // Saved to resume at, until the choice on step 3 makes it seen.
+      expect(_guideSaves.last.resumeStep, i < 3 ? i : isNull);
     }
     handle.dispose();
   });

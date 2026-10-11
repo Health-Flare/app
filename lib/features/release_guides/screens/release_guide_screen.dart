@@ -23,8 +23,9 @@ import 'package:health_flare/features/shared/widgets/guided_step_header.dart';
 /// dots, Back, Skip. Spec: docs/features/release-guides.feature.
 ///
 /// Seen (the card won't come back) on Skip, Back on the first step, Escape,
-/// a choice on "Keep it or change it", or Done. Leaving any other way (the
-/// app closes, "Show me") resumes at the same step next time.
+/// a choice on "Keep it or change it", Done, or "Show me" after reaching the
+/// last step. Leaving any other way (the app closes, "Show me" before the
+/// end) resumes at the same step next time.
 class ReleaseGuideScreen extends ConsumerStatefulWidget {
   const ReleaseGuideScreen({
     super.key,
@@ -96,13 +97,20 @@ class _ReleaseGuideScreenState extends ConsumerState<ReleaseGuideScreen> {
     super.dispose();
   }
 
+  /// Reached "Finding this again" at least once in this guide.
+  late bool _reachedEnd = widget.initialStep == _count - 1;
+
+  /// Seen in this guide: no more resume steps are saved.
+  bool _seen = false;
+
   void _saveStep(int i) {
-    if (widget.replay) return;
+    if (widget.replay || _seen) return;
     ref.read(releaseGuideProvider.notifier).saveStep(i);
   }
 
   Future<void> _markSeen() async {
-    if (widget.replay) return;
+    if (widget.replay || _seen) return;
+    _seen = true;
     await ref.read(releaseGuideProvider.notifier).markSeen();
   }
 
@@ -132,7 +140,10 @@ class _ReleaseGuideScreenState extends ConsumerState<ReleaseGuideScreen> {
   }
 
   void _onPage(int i) {
-    setState(() => _index = i);
+    setState(() {
+      _index = i;
+      if (i == _count - 1) _reachedEnd = true;
+    });
     _saveStep(i);
     ref.read(announcerProvider)(
       context,
@@ -181,8 +192,10 @@ class _ReleaseGuideScreenState extends ConsumerState<ReleaseGuideScreen> {
   }
 
   /// "Show me": the guide closes and the screen opens, its bar item
-  /// outlined. Not counted as seen: the card stays until it is.
+  /// outlined. Counts as seen once the guide has been read to the end;
+  /// before that the card stays, and reopens on this step.
   void _showMe(GuideRow row) {
+    if (_reachedEnd) unawaited(_markSeen());
     final location = tabLocation(row.tabId);
     final slots = ref.read(effectiveBarProvider);
     ref.read(barOutlineProvider.notifier).state = selectedSlotId(
