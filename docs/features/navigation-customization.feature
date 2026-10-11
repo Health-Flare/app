@@ -341,6 +341,14 @@ Feature: Your layout: features in use and the bottom bar
     And a long press on an item shows its label
     And every item is at least 48 by 48 dp
 
+  # TODO(#143): agent-written threshold; verify. At 150% "Medications" no
+  # longer fits a fifth of a phone's width, so labels go from there.
+  @unverified
+  Scenario: Icons only from 150% text
+    Given the system text size is set to 150%
+    Then the bar shows icons only, whatever its length
+    And at 130% the labels show
+
   Scenario: The settings screens work with a screen reader
     Given a screen reader is active
     When I open Settings > Your layout > Bottom bar

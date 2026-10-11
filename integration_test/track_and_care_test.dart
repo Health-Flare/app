@@ -16,6 +16,9 @@ import 'package:integration_test/integration_test.dart';
 import 'package:isar_community/isar.dart';
 import 'package:path_provider/path_provider.dart';
 
+import 'package:health_flare/core/navigation/bar_choice.dart';
+import 'package:health_flare/core/navigation/bar_layout_store.dart';
+import 'package:health_flare/core/navigation/effective_bar.dart';
 import 'package:health_flare/core/feature_flags.dart';
 import 'package:health_flare/core/providers/database_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
@@ -94,6 +97,7 @@ Future<Isar> _db() async {
 Future<void> _launch(WidgetTester tester, Isar isar) async {
   await tester.pumpWidget(const SizedBox.shrink());
   final startup = await IsarService.readStartupData(isar);
+  final barRecord = await BarLayoutStore.read(isar);
   await tester.pumpWidget(
     ProviderScope(
       key: UniqueKey(),
@@ -107,6 +111,9 @@ Future<void> _launch(WidgetTester tester, Isar isar) async {
         ),
         activeProfileProvider.overrideWith(
           () => ActiveProfileNotifier()..preload(startup.activeProfileId),
+        ),
+        barChoiceProvider.overrideWith(
+          () => BarChoiceNotifier()..preload(barRecord),
         ),
       ],
       child: const HealthFlareApp(),
@@ -294,6 +301,93 @@ void main() {
     await _tap(tester, find.widgetWithText(FilledButton, 'Quick Add: Meal'));
     await _settle(tester);
     expect(await isar.mealEntryIsars.count(), 1);
+
+    await isar.close(deleteFromDisk: true);
+  });
+
+  testWidgets('Bottom bar: pin, More, Like before, kept after a restart', (
+    tester,
+  ) async {
+    final isar = await _db();
+    await _launch(tester, isar);
+
+    Future<void> openEditor() async {
+      await _tap(tester, find.byTooltip('Settings').first);
+      await _waitFor(tester, find.text('Your layout'));
+      await tester.scrollUntilVisible(
+        find.text('Bottom bar'),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await _tap(tester, find.text('Bottom bar'));
+      await _waitFor(tester, find.text('In the bar'));
+    }
+
+    Future<void> back() async {
+      ScaffoldMessenger.of(
+        tester.element(find.byType(Scaffold).last),
+      ).hideCurrentSnackBar();
+      await tester.pageBack();
+      await _settle(tester);
+    }
+
+    await openEditor();
+    await _shot(tester, '30_bottom_bar_editor');
+
+    // Pin Medications: it joins the real bar at once.
+    await tester.scrollUntilVisible(
+      find.byKey(const ValueKey('add-Medications')),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await _tap(tester, find.byKey(const ValueKey('add-Medications')));
+    expect(find.text('Undo'), findsOneWidget);
+
+    // Take Journal out: More appears.
+    await tester.scrollUntilVisible(
+      find.byTooltip('Remove Journal'),
+      -200,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await _tap(tester, find.byTooltip('Remove Journal'));
+    expect(find.text('More: Journal'), findsOneWidget);
+    await _shot(tester, '31_bottom_bar_pinned_and_more');
+    await back();
+    await back();
+
+    expect(_bar('Medications'), findsOneWidget);
+    expect(_bar('More'), findsOneWidget);
+    expect(_bar('Journal'), findsNothing);
+    await _tap(tester, _bar('Medications'));
+    await _shot(tester, '32_pinned_medications');
+    await _tap(tester, _bar('More'));
+    await _waitFor(tester, find.text('Check-ins'));
+    await _shot(tester, '33_more');
+
+    // Like before, then a restart keeps it.
+    await openEditor();
+    await _tap(tester, find.text('Like before'));
+    expect(find.text(likeBeforeNote), findsOneWidget);
+    await _shot(tester, '34_like_before');
+    await back();
+    await back();
+
+    await _launch(tester, isar);
+    for (final label in [
+      'Dashboard',
+      'Track',
+      'Medications',
+      'Meals',
+      'More',
+    ]) {
+      expect(_bar(label), findsOneWidget, reason: label);
+    }
+
+    // Use default puts it back and stores nothing.
+    await openEditor();
+    await _tap(tester, find.text('Use default'));
+    await _tap(tester, find.widgetWithText(FilledButton, 'Use default'));
+    expect((await BarLayoutStore.read(isar)).storedBar, isNull);
 
     await isar.close(deleteFromDisk: true);
   });

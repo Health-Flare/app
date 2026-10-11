@@ -33,10 +33,23 @@ class NavTab {
     required this.label,
     required this.featureId,
     required this.route,
-  });
+    required this.icon,
+    required this.selectedIcon,
+    String? barLabel,
+  }) : _barLabel = barLabel;
 
   final String id;
   final String label;
+
+  /// Icons for when the tab is pinned to the bottom bar (#143).
+  final IconData icon;
+  final IconData selectedIcon;
+
+  final String? _barLabel;
+
+  /// The label when pinned to the bottom bar, where it stands alone
+  /// ("Journal entries", not "Entries").
+  String get barLabel => _barLabel ?? label;
 
   /// The feature that turns this tab on or off.
   final String featureId;
@@ -125,30 +138,40 @@ const navSections = <NavSection>[
         label: 'Symptoms',
         featureId: 'track.symptoms',
         route: AppRoutes.tracking,
+        icon: Icons.sick_outlined,
+        selectedIcon: Icons.sick_rounded,
       ),
       NavTab(
         id: 'track.vitals',
         label: 'Vitals',
         featureId: 'track.vitals',
         route: AppRoutes.vitals,
+        icon: Icons.favorite_outline_rounded,
+        selectedIcon: Icons.favorite_rounded,
       ),
       NavTab(
         id: 'track.meals',
         label: 'Meals',
         featureId: 'track.meals',
         route: AppRoutes.meals,
+        icon: Icons.restaurant_outlined,
+        selectedIcon: Icons.restaurant_rounded,
       ),
       NavTab(
         id: 'track.sleep',
         label: 'Sleep',
         featureId: 'track.sleep',
         route: AppRoutes.sleep,
+        icon: Icons.bedtime_outlined,
+        selectedIcon: Icons.bedtime_rounded,
       ),
       NavTab(
         id: 'track.activity',
         label: 'Activity',
         featureId: 'track.activity',
         route: AppRoutes.activity,
+        icon: Icons.directions_walk_outlined,
+        selectedIcon: Icons.directions_walk_rounded,
       ),
     ],
   ),
@@ -163,24 +186,32 @@ const navSections = <NavSection>[
         label: 'Medications',
         featureId: 'care.medications',
         route: AppRoutes.medications,
+        icon: Icons.medication_outlined,
+        selectedIcon: Icons.medication_rounded,
       ),
       NavTab(
         id: 'care.appointments',
         label: 'Appointments',
         featureId: 'care.appointments',
         route: AppRoutes.appointments,
+        icon: Icons.event_outlined,
+        selectedIcon: Icons.event_rounded,
       ),
       NavTab(
         id: 'care.conditions',
         label: 'Conditions',
         featureId: 'care.conditions',
         route: AppRoutes.conditions,
+        icon: Icons.healing_outlined,
+        selectedIcon: Icons.healing_rounded,
       ),
       NavTab(
         id: 'care.flares',
         label: 'Flares',
         featureId: 'care.flares',
         route: AppRoutes.flareHistory,
+        icon: Icons.local_fire_department_outlined,
+        selectedIcon: Icons.local_fire_department_rounded,
       ),
     ],
   ),
@@ -195,12 +226,17 @@ const navSections = <NavSection>[
         label: 'Entries',
         featureId: 'journal.entries',
         route: AppRoutes.journal,
+        icon: Icons.edit_note_outlined,
+        selectedIcon: Icons.edit_note_rounded,
+        barLabel: 'Journal entries',
       ),
       NavTab(
         id: 'journal.checkins',
         label: 'Check-ins',
         featureId: 'journal.checkins',
         route: AppRoutes.checkinHistory,
+        icon: Icons.wb_sunny_outlined,
+        selectedIcon: Icons.wb_sunny_rounded,
       ),
     ],
   ),

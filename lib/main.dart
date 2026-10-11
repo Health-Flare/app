@@ -4,8 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:health_flare/core/feature_flags.dart';
+import 'package:health_flare/core/navigation/bar_choice.dart';
 import 'package:health_flare/core/navigation/bar_layout.dart';
+import 'package:health_flare/core/feature_flags.dart';
 import 'package:health_flare/core/navigation/bar_layout_store.dart';
 import 'package:health_flare/core/providers/app_lock_provider.dart';
 import 'package:health_flare/core/providers/database_provider.dart';
@@ -33,8 +34,9 @@ void main() async {
   // Bottom bar (#137): record which default bar a fresh install starts on,
   // before onboarding (or a preview scenario) can create a profile, so a
   // later change to the default is explained and a fresh install's isn't.
+  var barRecord = const BarRecord();
   try {
-    await BarLayoutStore.settle(
+    barRecord = await BarLayoutStore.settle(
       isar,
       current: currentDefaultBarVersion(FeatureFlags.fromEnvironment()),
     );
@@ -97,6 +99,10 @@ void main() async {
               lockSupported ? appLock : const AppLockSettings(),
               hasScreenLock: hasScreenLock,
             ),
+        ),
+        // The bar the person chose (#143), so the first frame has it.
+        barChoiceProvider.overrideWith(
+          () => BarChoiceNotifier()..preload(barRecord),
         ),
         if (preview != null) ...previewOverrides(preview),
       ],

@@ -48,6 +48,29 @@ define, the app is exactly as before: the six-item bar.
 8. **Large text.** Settings > Accessibility > Larger Text at the maximum:
    the tab row scrolls sideways; no label is cut off.
 
+### Bottom bar (#143)
+
+16. **Settings > Your layout > Bottom bar** reads "Default". The editor
+    shows a preview, "In the bar" (Dashboard first, no controls) and
+    "Can be added".
+17. **Add Medications.** It joins the real bar at once; "Undo" puts it
+    back. Tap it in the bar: Care's Medications tab, and Medications is
+    highlighted, not Care.
+18. **Remove Journal.** "More: Journal" under the preview; More in the
+    bar opens a screen listing Entries and Check-ins. Opening one keeps
+    More highlighted.
+19. **Limits.** At three items the remove buttons go grey, with a line
+    saying why; at five (More included) the add buttons do.
+20. **Move up / Move down**, and dragging by the icon. With VoiceOver on,
+    each move is read out ("Medications, position 3 of 5").
+21. **Like before.** Dashboard, Track, Medications, Meals, More; the note
+    "The old bar had six items. Sleep is now in Track." with "Change it".
+    Settings reads "Customized". Quit and reopen: still there.
+22. **Use default.** Asks first; Settings reads "Default" again.
+23. **Turn Meals off** with Meals pinned: it drops out of the bar, the
+    editor says "Turned off for Sarah, so not shown". Turn it on: back.
+24. **Large text** at 150% or more: icons only; long press shows a label.
+
 ### Features in use (#142)
 
 9. **Settings > Your layout > Features in use.** Nine switches, all on;
@@ -80,7 +103,11 @@ define, the app is exactly as before: the six-item bar.
 | `test/widget/features_in_use_sections_test.dart` | Tabs and bar with features off, per profile, one tab left, opened directly |
 | `test/widget/quick_log_features_off_test.dart` | Quick Log's warning, Turn on, and the journal note too |
 | `test/unit/database/features_off_keeps_data_test.dart` | Turning everything off deletes nothing and reports still include it; onboarding never asks |
-| `integration_test/track_and_care_test.dart` | The real app on a real database: every section and tab, then Features in use, screenshotted |
+| `test/unit/navigation/effective_bar_test.dart` | The bar as shown: More, limits, Dashboard first, Like before, turned-off and unknown ids, highlighting |
+| `test/unit/navigation/bar_choice_test.dart` | Saving the choice on a real database: undo, Use default, the preset, a restart |
+| `test/widget/bottom_bar_screen_test.dart` | The editor: add, remove, move, limits, Undo, Use default, Like before, screen reader, the Settings tile |
+| `test/widget/bottom_bar_shell_test.dart` | The live bar: pins, More, per profile, unknown ids, large text |
+| `integration_test/track_and_care_test.dart` | The real app on a real database: every section and tab, Features in use, then the bottom bar, screenshotted |
 
 Screenshots land in `screenshots/track_and_care/`, with a contact sheet at
 `index.html`. They're committed, so a PR shows what changed.

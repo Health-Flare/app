@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:health_flare/core/navigation/effective_bar.dart';
+import 'package:health_flare/features/sections/more_screen.dart';
+import 'package:health_flare/features/settings/screens/bottom_bar_screen.dart';
 import 'package:health_flare/core/feature_flags.dart';
 import 'package:health_flare/features/illness/screens/illness_screen.dart';
 import 'package:health_flare/features/sections/section_screen.dart';
@@ -114,6 +117,7 @@ abstract final class AppRoutes {
   static const settings = '/settings';
   static const whatsNew = '/settings/whats-new';
   static const featuresInUse = '/settings/features-in-use';
+  static const bottomBar = '/settings/bottom-bar';
 }
 
 /// A list screen's page: inside its section with Track and Care on, the
@@ -191,6 +195,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         name: 'features-in-use',
         builder: (context, state) => const FeaturesInUseScreen(),
       ),
+      GoRoute(
+        path: AppRoutes.bottomBar,
+        name: 'bottom-bar',
+        builder: (context, state) => const BottomBarScreen(),
+      ),
 
       // Main app shell: wraps all tab destinations
       ShellRoute(
@@ -204,6 +213,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             path: AppRoutes.dashboard,
             name: 'dashboard',
             builder: (context, state) => const DashboardScreen(),
+          ),
+          // More (#143): what isn't in the bottom bar.
+          GoRoute(
+            path: moreLocation,
+            name: 'more',
+            pageBuilder: (context, state) =>
+                NoTransitionPage(key: state.pageKey, child: const MoreScreen()),
           ),
           GoRoute(
             path: AppRoutes.illness,
