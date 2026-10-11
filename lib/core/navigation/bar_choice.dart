@@ -68,6 +68,9 @@ class BarChoiceNotifier extends Notifier<BarRecord> {
         for (var i = 0; i < ids.length; i++) ids[i] == _default[i],
       ].every((x) => x);
 
+  /// Shows [record], already saved (a bar taken from a backup, #144).
+  void reload(BarRecord record) => state = record;
+
   /// Puts back a record from before a change (Undo).
   Future<void> restore(BarRecord record) async {
     state = record;

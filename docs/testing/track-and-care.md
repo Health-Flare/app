@@ -71,6 +71,25 @@ define, the app is exactly as before: the six-item bar.
     editor says "Turned off for Sarah, so not shown". Turn it on: back.
 24. **Large text** at 150% or more: icons only; long press shows a label.
 
+### Backups (#144)
+
+Make a backup with a customized bar and Meals off for one profile, then:
+
+25. **Use default**, then **Add missing data** from that backup: the bar
+    becomes the backup's, and the message ends "Bottom bar restored from
+    the backup. Change it in Settings > Your layout."
+26. **Customize the bar differently**, then Add missing data again: your
+    bar stays.
+27. **Choose what to import**: "Bottom bar and layout" is listed with the
+    bar it would bring (e.g. "Dashboard, Track, Medications, Meals"),
+    unticked because this device has its own bar. Tick it: the bar
+    changes.
+28. **Replace everything**: after the restart the bar, Meals off for that
+    profile and "Show update highlights" are all as in the backup. The
+    app lock stays this phone's.
+29. **Profiles**: a profile only in the backup comes in with its switches;
+    one on both keeps this device's switches.
+
 ### Features in use (#142)
 
 9. **Settings > Your layout > Features in use.** Nine switches, all on;
@@ -107,6 +126,7 @@ define, the app is exactly as before: the six-item bar.
 | `test/unit/navigation/bar_choice_test.dart` | Saving the choice on a real database: undo, Use default, the preset, a restart |
 | `test/widget/bottom_bar_screen_test.dart` | The editor: add, remove, move, limits, Undo, Use default, Like before, screen reader, the Settings tile |
 | `test/widget/bottom_bar_shell_test.dart` | The live bar: pins, More, per profile, unknown ids, large text |
+| `test/unit/database/layout_backup_test.dart` | Bar, switches and highlights through Replace everything, Add missing data and Choose what to import; unknown ids |
 | `integration_test/track_and_care_test.dart` | The real app on a real database: every section and tab, Features in use, then the bottom bar, screenshotted |
 
 Screenshots land in `screenshots/track_and_care/`, with a contact sheet at

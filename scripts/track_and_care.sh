@@ -69,6 +69,7 @@ cmd_test() {
   flutter test \
     test/unit/navigation \
     test/unit/database/features_off_keeps_data_test.dart \
+    test/unit/database/layout_backup_test.dart \
     test/widget/track_and_care_test.dart \
     test/widget/track_and_care_bodies_test.dart \
     test/widget/features_in_use_screen_test.dart \

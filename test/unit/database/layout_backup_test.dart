@@ -52,6 +52,8 @@ class _FakePathProvider
 const _mine = ['dashboard', 'track', 'care', 'care.medications'];
 const _theirs = ['dashboard', 'track', 'care.medications', 'track.meals'];
 
+var _n = 0;
+
 Future<Isar> _open(String dir, {String name = 'healthflare'}) =>
     Isar.open(appSchemas, directory: dir, name: name);
 
@@ -123,7 +125,7 @@ void main() {
     bool highlightsOff = false,
     String? lastSeen,
   }) async {
-    final source = await _open(tmp.path, name: 'other_phone');
+    final source = await _open(tmp.path, name: 'other_phone_${_n++}');
     await _seed(
       source,
       profiles: profiles,
@@ -131,9 +133,10 @@ void main() {
       highlightsOff: highlightsOff,
       lastSeen: lastSeen,
     );
-    final path = await BackupService.export(source);
+    final exported = await BackupService.export(source);
     await source.close();
-    return path;
+    // Exports are named by the second; two in one test would collide.
+    return (await File(exported).rename('${tmp.path}/backup_$_n.isar')).path;
   }
 
   group('Replace everything', () {

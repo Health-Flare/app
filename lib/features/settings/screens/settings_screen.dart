@@ -147,13 +147,9 @@ class _BackupTilesState extends ConsumerState<_BackupTiles> {
         });
       } else if (next is ImportComplete) {
         notifier.reset();
-        final msg = next.recordsAdded == 0
-            ? 'Everything in the backup is already up to date.'
-            : 'Added ${next.recordsAdded} '
-                  '${next.recordsAdded == 1 ? 'record' : 'records'}.';
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text(msg)));
+        ).showSnackBar(SnackBar(content: Text(next.message)));
       } else if (next is BackupError) {
         notifier.reset();
         ScaffoldMessenger.of(
@@ -783,8 +779,9 @@ class _ImportCategorySheetState extends State<_ImportCategorySheet> {
                     ),
                     title: Text(cat.label),
                     subtitle: Text(
-                      '${cat.count} '
-                      '${cat.count == 1 ? 'record' : 'records'}',
+                      cat.detail ??
+                          '${cat.count} '
+                              '${cat.count == 1 ? 'record' : 'records'}',
                     ),
                     controlAffinity: ListTileControlAffinity.leading,
                   );
