@@ -61,10 +61,22 @@ final _fakeWeather = WeatherSnapshot(
   pressureHPa: 1013.0,
   humidityPercent: 62,
   windSpeedKmh: 14.0,
-  capturedAt: DateTime(2026, 5, 4, 9, 30),
+  capturedAt: _at(2026, 5, 4, 9, 30),
 );
 
-final _now = DateTime(2026, 5, 4, 9, 30);
+/// The fixtures were written on 4 May 2026. The app reads the real clock,
+/// so every 2026 date moves by the same amount to make that day today:
+/// "Last dose 2h ago", not "160d ago" (#165). Older dates (start dates,
+/// diagnoses) stay as written.
+final _shift = () {
+  final n = DateTime.now();
+  return DateTime(n.year, n.month, n.day).difference(DateTime(2026, 5, 4));
+}();
+
+DateTime _at(int y, int m, [int d = 1, int h = 0, int min = 0]) =>
+    DateTime(y, m, d, h, min).add(_shift);
+
+final _now = _at(2026, 5, 4, 9, 30);
 
 final _medications = [
   Medication(
@@ -108,7 +120,7 @@ final _appointments = [
     profileId: 1,
     title: 'Rheumatology follow-up',
     providerName: 'Dr. Patel',
-    scheduledAt: DateTime(2026, 5, 12, 14, 0),
+    scheduledAt: _at(2026, 5, 12, 14, 0),
     status: AppointmentStatus.upcoming,
     createdAt: _now,
     questions: const [
@@ -127,7 +139,7 @@ final _appointments = [
     profileId: 1,
     title: 'GP check-in',
     providerName: 'Dr. Williams',
-    scheduledAt: DateTime(2026, 4, 22, 10, 30),
+    scheduledAt: _at(2026, 4, 22, 10, 30),
     status: AppointmentStatus.completed,
     outcomeNotes: 'Blood work ordered. Continue current medications.',
     createdAt: _now,
@@ -138,7 +150,7 @@ final _journalEntries = [
   JournalEntry(
     id: 1,
     profileId: 1,
-    createdAt: DateTime(2026, 5, 3, 20, 15),
+    createdAt: _at(2026, 5, 3, 20, 15),
     snapshots: [
       JournalSnapshot(
         body:
@@ -146,8 +158,8 @@ final _journalEntries = [
             'Managed a short walk but had to rest for two hours afterwards. '
             "Joint pain in knees is a 6/10 today. Tomorrow's rheumatology "
             'appointment can\'t come soon enough.',
-        title: 'Rough Saturday',
-        savedAt: DateTime(2026, 5, 3, 20, 15),
+        title: 'Rough day',
+        savedAt: _at(2026, 5, 3, 20, 15),
       ),
     ],
     mood: 3,
@@ -158,13 +170,13 @@ final _journalEntries = [
       pressureHPa: 1008.0,
       humidityPercent: 78,
       windSpeedKmh: 22.0,
-      capturedAt: DateTime(2026, 5, 3, 20, 15),
+      capturedAt: _at(2026, 5, 3, 20, 15),
     ),
   ),
   JournalEntry(
     id: 2,
     profileId: 1,
-    createdAt: DateTime(2026, 4, 30, 18, 0),
+    createdAt: _at(2026, 4, 30, 18, 0),
     snapshots: [
       JournalSnapshot(
         body:
@@ -172,7 +184,7 @@ final _journalEntries = [
             'Morning stiffness was only about 20 minutes today. '
             'Went to the farmers market with mum, first outing in weeks!',
         title: 'A good day',
-        savedAt: DateTime(2026, 4, 30, 18, 0),
+        savedAt: _at(2026, 4, 30, 18, 0),
       ),
     ],
     mood: 1,
@@ -186,8 +198,8 @@ final _meals = [
     profileId: 1,
     description: 'Oat porridge with blueberries and flaxseed',
     hasReaction: false,
-    loggedAt: DateTime(2026, 5, 4, 8, 0),
-    createdAt: DateTime(2026, 5, 4, 8, 0),
+    loggedAt: _at(2026, 5, 4, 8, 0),
+    createdAt: _at(2026, 5, 4, 8, 0),
   ),
   MealEntry(
     id: 2,
@@ -195,8 +207,8 @@ final _meals = [
     description: 'Gluten-free pasta with roasted vegetables',
     notes: 'Felt slightly bloated after. Monitor this.',
     hasReaction: true,
-    loggedAt: DateTime(2026, 5, 3, 19, 30),
-    createdAt: DateTime(2026, 5, 3, 19, 30),
+    loggedAt: _at(2026, 5, 3, 19, 30),
+    createdAt: _at(2026, 5, 3, 19, 30),
   ),
 ];
 
@@ -208,8 +220,8 @@ final _activities = [
     activityType: ActivityType.walking,
     effortLevel: 2,
     durationMinutes: 20,
-    loggedAt: DateTime(2026, 5, 3, 15, 0),
-    createdAt: DateTime(2026, 5, 3, 15, 0),
+    loggedAt: _at(2026, 5, 3, 15, 0),
+    createdAt: _at(2026, 5, 3, 15, 0),
   ),
 ];
 
@@ -217,13 +229,13 @@ final _flares = [
   Flare(
     id: 1,
     profileId: 1,
-    startedAt: DateTime(2026, 4, 20),
-    endedAt: DateTime(2026, 4, 24),
+    startedAt: _at(2026, 4, 20),
+    endedAt: _at(2026, 4, 24),
     initialSeverity: 7,
     peakSeverity: 8,
     notes:
         'Triggered after the cold front came through. Joint pain and fatigue.',
-    createdAt: DateTime(2026, 4, 20),
+    createdAt: _at(2026, 4, 20),
   ),
 ];
 
@@ -231,10 +243,10 @@ final _checkins = [
   DailyCheckin(
     id: 1,
     profileId: 1,
-    checkinDate: DateTime(2026, 5, 3),
+    checkinDate: _at(2026, 5, 3),
     wellbeing: 3,
     notes: 'Joints aching. Tired after a busy day.',
-    createdAt: DateTime(2026, 5, 3, 22, 0),
+    createdAt: _at(2026, 5, 3, 22, 0),
   ),
 ];
 
@@ -291,8 +303,8 @@ final _symptomEntries = [
     userSymptomIsarId: 1,
     name: 'Fatigue',
     severity: 7,
-    loggedAt: DateTime(2026, 5, 3, 14, 0),
-    createdAt: DateTime(2026, 5, 3, 14, 0),
+    loggedAt: _at(2026, 5, 3, 14, 0),
+    createdAt: _at(2026, 5, 3, 14, 0),
   ),
 ];
 
@@ -300,10 +312,10 @@ final _sleepEntries = [
   SleepEntry(
     id: 1,
     profileId: 1,
-    bedtime: DateTime(2026, 5, 3, 23, 15),
-    wakeTime: DateTime(2026, 5, 4, 7, 0),
+    bedtime: _at(2026, 5, 3, 23, 15),
+    wakeTime: _at(2026, 5, 4, 7, 0),
     qualityRating: 3,
-    createdAt: DateTime(2026, 5, 4, 7, 0),
+    createdAt: _at(2026, 5, 4, 7, 0),
   ),
 ];
 
@@ -312,8 +324,8 @@ final _doseLogs = [
     id: 1,
     profileId: 1,
     medicationIsarId: 1,
-    loggedAt: DateTime(2026, 5, 4, 8, 0),
-    createdAt: DateTime(2026, 5, 4, 8, 0),
+    loggedAt: _at(2026, 5, 4, 8, 0),
+    createdAt: _at(2026, 5, 4, 8, 0),
     amount: 200,
     unit: 'mg',
     status: 'taken',
