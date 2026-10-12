@@ -3,12 +3,16 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:isar_community/isar.dart';
 
+import 'package:health_flare/data/database/failed_upgrade.dart';
 import 'package:health_flare/core/security/backup_exclusion.dart' as backup;
 import 'package:health_flare/data/database/app_settings.dart';
 import 'package:health_flare/data/database/migration_runner.dart';
 
 /// What happened to the data migrations at startup.
 enum MigrationOutcome {
+  /// TODO(#112): stopped retrying.
+  stopped,
+
   /// Fresh install, or the database was already on the current version.
   /// No snapshot was taken.
   upToDate,
@@ -27,7 +31,15 @@ enum MigrationOutcome {
 
 /// Result of [PreMigrationSnapshot.migrate].
 class MigrationResult {
-  const MigrationResult(this.outcome, {this.snapshotPath, this.error});
+  const MigrationResult(
+    this.outcome, {
+    this.snapshotPath,
+    this.error,
+    this.failure,
+  });
+
+  /// TODO(#112)
+  final FailedUpgrade? failure;
 
   final MigrationOutcome outcome;
 
@@ -40,7 +52,9 @@ class MigrationResult {
   /// Message shown to the user on the first screen, or null when there is
   /// nothing to say.
   String? get startupNotice => switch (outcome) {
-    MigrationOutcome.upToDate || MigrationOutcome.migrated => null,
+    MigrationOutcome.upToDate ||
+    MigrationOutcome.migrated ||
+    MigrationOutcome.stopped => null,
     MigrationOutcome.skippedNoSnapshot =>
       "Health Flare couldn't save a safety copy of your data, so it "
           "didn't update it. Your data is unchanged. It will try again next "
@@ -121,6 +135,7 @@ class PreMigrationSnapshot {
     Future<void> Function(Isar isar)? migrate,
     DateTime Function()? now,
     Future<bool> Function(String path)? excludeFromBackup,
+    String appVersion = 'unknown',
   }) async {
     final runMigrations = migrate ?? MigrationRunner.run;
 

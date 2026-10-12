@@ -159,6 +159,38 @@ void main() {
       expect(storedIds, isNot(contains(next)));
       expect(next, greaterThan(storedIds.reduce((a, b) => a > b ? a : b)));
     });
+
+    // datastore.feature, "Running without the upgrade keeps profiles apart"
+    // (#112): an upgrade that stopped before v19 never seeded the counter,
+    // and v18 never removed a deleted profile's entries.
+    test('never returns an id still on an entry, even without v19', () async {
+      final isar = await _open(
+        'id_reuse_no_v19_${DateTime.now().microsecondsSinceEpoch}',
+      );
+      await isar.writeTxn(() async {
+        await isar.appSettings.put(
+          AppSettings()
+            ..schemaVersion = 17
+            ..lastProfileId = 0,
+        );
+        await isar.profileIsars.put(
+          ProfileIsar()
+            ..id = 2
+            ..name = 'B',
+        );
+        // Left by a deleted profile 3.
+        await isar.journalEntryIsars.put(
+          JournalEntryIsar()
+            ..profileId = 3
+            ..createdAt = DateTime(2026)
+            ..snapshots = [],
+        );
+      });
+
+      final next = await isar.writeTxn(() => nextProfileId(isar));
+
+      expect(next, greaterThan(3));
+    });
   });
 
   group('MigrationRunner v18 -> v19', () {
