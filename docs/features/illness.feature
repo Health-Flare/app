@@ -261,13 +261,13 @@ Feature: Illness Tracking
   # Recovery and relapse
   # ---------------------------------------------------------------------------
   #
-  # Schema note (pending): UserConditionIsar needs:
-  #   - status (enum: active | inRecovery), default: active
-  #   - recoveryDate (DateTime?)
-  #   - relapseDate (DateTime?)
-  #   - conditionHistory (List<ConditionStatusEventIsar>): embedded, each event
-  #     has eventType (diagnosed | recovery | relapse) and date
-  # Requires a schema version bump and migration before implementation.
+  # Built since 1.1.0 (#157 added the tests). UserConditionIsar stores
+  # status ("active" | "inRecovery") and statusHistory (embedded events:
+  # recovery | relapse, each with a date); the diagnosis date is its own
+  # field and leads the timeline. Backups carry both; a value an older
+  # backup never had reads as Active.
+  # Tests: test/widget/condition_recovery_test.dart,
+  # test/unit/database/condition_status_backup_test.dart.
 
   Scenario: Marking a condition as in recovery
     Given the active profile is tracking "Arthritis" with a status of "Active"

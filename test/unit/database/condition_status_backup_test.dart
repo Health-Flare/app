@@ -44,9 +44,6 @@ class _FakePathProvider
   Future<String?> getApplicationCachePath() async => tempDir.path;
 }
 
-const _mine = ['dashboard', 'track', 'care', 'care.medications'];
-const _theirs = ['dashboard', 'track', 'care.medications', 'track.meals'];
-
 Future<Isar> _open(String dir, {String name = 'healthflare'}) =>
     Isar.open(appSchemas, directory: dir, name: name);
 
