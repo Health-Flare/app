@@ -39,6 +39,9 @@ const defaultBarGuideIds = <int, String>{2: 'track-and-care'};
 int currentDefaultBarVersion(FeatureFlags flags) =>
     flags.trackAndCare ? 2 : kLegacyBarVersion;
 
+/// TODO(#165)
+const kCurrentBarVersion = 0;
+
 /// What's stored on this device: [storedBar] null means "use the default",
 /// [seenVersion] null means 1.9.1 or earlier.
 @immutable
