@@ -18,7 +18,11 @@ import 'package:health_flare/data/models/profile_isar.dart';
 /// puts the profile, so a failed write doesn't burn or reuse an id.
 Future<int> nextProfileId(Isar isar) async {
   final settings = await isar.appSettings.get(1) ?? AppSettings();
-  final next = max(settings.lastProfileId, await _maxStoredId(isar)) + 1;
+  // Ids still on entries count too: an upgrade that stopped before v19
+  // never seeded the counter, and before v18 a deleted profile's entries
+  // are still there (#112). Profiles are created rarely; the scan is cheap.
+  final next =
+      max(settings.lastProfileId, await highestProfileIdInUse(isar)) + 1;
   settings.lastProfileId = next;
   await isar.appSettings.put(settings);
   return next;

@@ -120,6 +120,9 @@ abstract final class AppRoutes {
 
   /// Settings, opened scrolled to Your layout (#145).
   static const settingsLayout = '/settings/layout';
+
+  /// Settings, opened at a failed update (#112).
+  static const settingsUpdate = '/settings/update';
   static const whatsNew = '/settings/whats-new';
   static const featuresInUse = '/settings/features-in-use';
   static const bottomBar = '/settings/bottom-bar';
@@ -199,6 +202,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.settingsLayout,
         name: 'settings-layout',
         builder: (context, state) => const SettingsScreen(section: 'layout'),
+      ),
+      GoRoute(
+        path: AppRoutes.settingsUpdate,
+        name: 'settings-update',
+        builder: (context, state) => const SettingsScreen(section: 'update'),
       ),
       GoRoute(
         path: AppRoutes.whatsNew,

@@ -1,3 +1,4 @@
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:isar_community/isar.dart';
 import 'package:path_provider/path_provider.dart';
@@ -66,12 +67,24 @@ class IsarService {
       lastMigration = await PreMigrationSnapshot.migrate(
         isar,
         documentsDir: directory,
+        appVersion: await _appVersion(),
       );
     } else {
       await MigrationRunner.run(isar);
     }
 
     return isar;
+  }
+
+  /// Version and build, so a failed upgrade is retried by a new build
+  /// (#112). Never stops the app opening.
+  static Future<String> _appVersion() async {
+    try {
+      final info = await PackageInfo.fromPlatform();
+      return '${info.version}+${info.buildNumber}';
+    } catch (_) {
+      return 'unknown';
+    }
   }
 
   /// Reads profiles and active profile id before [runApp].

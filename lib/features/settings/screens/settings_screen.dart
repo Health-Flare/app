@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'package:health_flare/features/failed_upgrade/failed_upgrade_section.dart';
 import 'package:health_flare/features/settings/widgets/your_layout_tiles.dart';
 import 'package:health_flare/core/providers/backup_provider.dart';
 import 'package:health_flare/features/settings/widgets/privacy_settings_section.dart';
@@ -63,7 +64,7 @@ class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key, this.section});
 
   /// Opens scrolled to a section: `layout` is Your layout (the release
-  /// guide's "Set it up myself", #145).
+  /// guide's "Set it up myself", #145); `update` is a failed update (#112).
   final String? section;
 
   @override
@@ -85,6 +86,11 @@ class SettingsScreen extends ConsumerWidget {
 
           // ── Data & backup ─────────────────────────────────────────────────
           const SettingsSectionHeader(label: 'Data & backup'),
+          // An upgrade that stopped retrying (#112): only while there is one.
+          _ScrollIntoView(
+            enabled: section == 'update',
+            child: const FailedUpgradeSection(),
+          ),
           _BackupTiles(),
 
           // ── Your layout (#142): only with Track and Care on ───────────────

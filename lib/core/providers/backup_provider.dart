@@ -177,6 +177,19 @@ class BackupNotifier extends Notifier<BackupResult> {
   /// The restore is applied on the next app launch. Returns true only if a
   /// restore was staged right away; false if the user cancelled, it failed,
   /// or the file is encrypted and is waiting on [submitImportPassword].
+  /// Stages the safety copy from before a failed upgrade (#112). Same
+  /// result as "Replace everything": the app finishes it on next launch.
+  Future<void> restoreSafetyCopy(String snapshotPath) async {
+    if (state is BackupInProgress) return;
+    state = const BackupInProgress();
+    try {
+      await BackupService.stagePendingRestore(snapshotPath);
+      _emit(const BackupRestoreStaged());
+    } catch (e) {
+      _emit(BackupError('Restore failed: $e'));
+    }
+  }
+
   Future<bool> stageRestore() async {
     await _pickAndRun(PendingImportAction.overwrite);
     return state is BackupRestoreStaged;

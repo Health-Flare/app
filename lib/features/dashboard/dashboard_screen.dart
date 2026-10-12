@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:health_flare/features/failed_upgrade/failed_upgrade_card.dart';
 import 'package:health_flare/features/release_guides/widgets/guide_card.dart';
 import 'package:health_flare/core/widgets/feature_gate.dart';
 import 'package:health_flare/core/providers/dashboard_provider.dart';
@@ -117,6 +118,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 /// Cards above the activity feed. A turned-off feature's card or prompt
 /// is left out (#142); its entries stay in recent activity.
 const _featureCards = <Widget>[
+  // An upgrade that stopped retrying (#112): first, and it stays.
+  FailedUpgradeCard(),
   FeatureGate(featureId: 'care.flares', child: ActiveFlareBanner()),
   GuideCard(),
   WhatsNewCard(),
