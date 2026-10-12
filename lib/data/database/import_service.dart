@@ -763,7 +763,16 @@ class _Ctx {
           ..conditionName = bu.conditionName
           ..trackedSince = bu.trackedSince
           ..diagnosedAt = bu.diagnosedAt
-          ..notes = bu.notes,
+          ..notes = bu.notes
+          // Recovery and relapse (#157). Anything but in recovery, including
+          // a value an older backup never had, is Active.
+          ..status = bu.status == 'inRecovery' ? 'inRecovery' : 'active'
+          ..statusHistory = [
+            for (final e in bu.statusHistory)
+              ConditionStatusEventIsar()
+                ..eventType = e.eventType
+                ..date = e.date,
+          ],
       );
     }
 
