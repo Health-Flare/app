@@ -10,7 +10,9 @@ import 'package:health_flare/data/database/migration_runner.dart';
 
 /// What happened to the data migrations at startup.
 enum MigrationOutcome {
-  /// TODO(#112): stopped retrying.
+  /// The same upgrade failed [FailedUpgrade.maxAttempts] times on this app
+  /// version, so it isn't tried again until another version is installed
+  /// (#112). The app opens on the data as it is; a card says so.
   stopped,
 
   /// Fresh install, or the database was already on the current version.
@@ -38,7 +40,7 @@ class MigrationResult {
     this.failure,
   });
 
-  /// TODO(#112)
+  /// The failed upgrade, for a failure or [MigrationOutcome.stopped].
   final FailedUpgrade? failure;
 
   final MigrationOutcome outcome;
@@ -138,18 +140,32 @@ class PreMigrationSnapshot {
     String appVersion = 'unknown',
   }) async {
     final runMigrations = migrate ?? MigrationRunner.run;
+    final dir = Directory(directoryPath(documentsDir));
 
     if (!await MigrationRunner.needsMigration(isar)) {
       // Fresh install (seeds the catalogue) or already up to date (no-op).
-      // Nothing to protect, so no snapshot.
+      // Nothing to protect, so no snapshot. A failed upgrade, if one was
+      // recorded, is resolved.
       await runMigrations(isar);
+      await _clearFailure(dir);
       return const MigrationResult(MigrationOutcome.upToDate);
     }
 
     final settings = await isar.appSettings.get(1);
     final from = settings!.schemaVersion;
-    final dir = Directory(directoryPath(documentsDir));
     final marker = File('${dir.path}/$pendingMarkerName');
+
+    // Tried and failed often enough on this version: don't try again until
+    // another version is installed (#112).
+    final previous = dir.existsSync() ? FailedUpgrade.readFrom(dir.path) : null;
+    final sameVersion = previous != null && previous.appVersion == appVersion;
+    if (sameVersion && previous.stopped) {
+      return MigrationResult(
+        MigrationOutcome.stopped,
+        snapshotPath: previous.snapshotPath,
+        failure: previous,
+      );
+    }
 
     String snapshotPath;
     try {
@@ -178,16 +194,37 @@ class PreMigrationSnapshot {
       await runMigrations(isar);
     } catch (e, st) {
       debugPrint('Health Flare: migration from v$from failed: $e\n$st');
+      // Each step commits on its own: the data is on the last good one.
+      final reached = (await isar.appSettings.get(1))?.schemaVersion ?? from;
+      final failure = FailedUpgrade(
+        appVersion: appVersion,
+        fromVersion: sameVersion ? previous.fromVersion : from,
+        reachedVersion: reached,
+        failedStep: reached + 1,
+        targetVersion: MigrationRunner.targetVersion,
+        attempts: sameVersion ? previous.attempts + 1 : 1,
+        error: FailedUpgrade.fromError(e),
+        snapshotPath: snapshotPath,
+        snapshotTakenAt: _takenAt(snapshotPath),
+      );
+      try {
+        await failure.writeTo(dir.path);
+      } catch (w) {
+        // Without the record the next launch simply tries again.
+        debugPrint('Health Flare: could not record the failed upgrade: $w');
+      }
       return MigrationResult(
-        MigrationOutcome.failed,
+        failure.stopped ? MigrationOutcome.stopped : MigrationOutcome.failed,
         snapshotPath: snapshotPath,
         error: e,
+        failure: failure,
       );
     }
 
     // Success: the snapshot is now a plain "before" copy. Prune old ones.
     try {
       if (marker.existsSync()) await marker.delete();
+      await _clearFailure(dir);
       await _prune(dir);
     } catch (e) {
       // Housekeeping only. The data is migrated and the snapshot is kept.
@@ -199,12 +236,15 @@ class PreMigrationSnapshot {
     );
   }
 
-  /// The snapshot recorded by an unfinished migration from [from], if it is
-  /// still on disk.
+  /// The snapshot recorded by an unfinished migration that started at or
+  /// below [from], if it is still on disk. Each step commits on its own, so
+  /// a retry usually starts above the version the copy was taken at: it is
+  /// still the same upgrade, and the copy from before it is the one to keep.
   static String? _pendingSnapshot(File marker, int from, String dir) {
     if (!marker.existsSync()) return null;
     final lines = marker.readAsLinesSync();
-    if (lines.length < 2 || int.tryParse(lines[0]) != from) return null;
+    final started = lines.isEmpty ? null : int.tryParse(lines[0]);
+    if (lines.length < 2 || started == null || started > from) return null;
     if (!_namePattern.hasMatch(lines[1])) return null;
     final file = File('$dir/${lines[1]}');
     if (!file.existsSync()) return null;
@@ -256,6 +296,30 @@ class PreMigrationSnapshot {
   }
 
   static String _fileName(String path) => path.split('/').last;
+
+  static Future<void> _clearFailure(Directory dir) async {
+    try {
+      if (dir.existsSync()) await FailedUpgrade.clear(dir.path);
+    } catch (e) {
+      debugPrint('Health Flare: could not clear the failed upgrade: $e');
+    }
+  }
+
+  /// When a snapshot was taken, from its file name.
+  static DateTime? _takenAt(String path) {
+    final m = _namePattern.firstMatch(_fileName(path));
+    final stamp = m?.group(2);
+    if (stamp == null || stamp.length != 16) return null;
+    int at(int a, int b) => int.parse(stamp.substring(a, b));
+    return DateTime.utc(
+      at(0, 4),
+      at(4, 6),
+      at(6, 8),
+      at(9, 11),
+      at(11, 13),
+      at(13, 15),
+    );
+  }
 
   static String _stamp(DateTime utc) {
     String two(int n) => n.toString().padLeft(2, '0');

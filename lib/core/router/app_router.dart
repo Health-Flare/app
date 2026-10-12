@@ -204,6 +204,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const SettingsScreen(section: 'layout'),
       ),
       GoRoute(
+        path: AppRoutes.settingsUpdate,
+        name: 'settings-update',
+        builder: (context, state) => const SettingsScreen(section: 'update'),
+      ),
+      GoRoute(
         path: AppRoutes.whatsNew,
         name: 'whats-new',
         builder: (context, state) => const WhatsNewScreen(),

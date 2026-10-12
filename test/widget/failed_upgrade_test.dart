@@ -181,11 +181,15 @@ void main() {
       await tester.tap(find.text('Restore the copy from before the update'));
       await tester.pumpAndSettle();
       expect(actions.calls, ['backup'], reason: 'saved before anything else');
+      Finder inDialog(Finder f) =>
+          find.descendant(of: find.byType(AlertDialog), matching: f);
       expect(
-        find.textContaining('healthflare_before_restore_20261102T1015Z.isar'),
+        inDialog(
+          find.textContaining('healthflare_before_restore_20261102T1015Z.isar'),
+        ),
         findsOneWidget,
       );
-      expect(find.textContaining('logged since'), findsOneWidget);
+      expect(inDialog(find.textContaining('logged since')), findsOneWidget);
 
       await tester.tap(find.text('Share backup'));
       await tester.pumpAndSettle();

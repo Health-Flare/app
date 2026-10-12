@@ -446,6 +446,39 @@ void main() {
       expect(fourth.snapshotPath, isNot(first.snapshotPath));
     });
 
+    test(
+      'a retry after a step committed still reuses the first snapshot',
+      () async {
+        // The usual failure: v17 commits, v18 throws. The retry starts at v17,
+        // and must not copy that half-updated data as the "safety" copy.
+        final isar = await _open(docs.path);
+        await _seedOldVersion(isar, version: 16);
+        Future<void> commitThenFail(Isar db) async {
+          await db.writeTxn(() async {
+            final s = (await db.appSettings.get(1))!..schemaVersion = 17;
+            await db.appSettings.put(s);
+          });
+          throw StateError('v18 broke');
+        }
+
+        final first = await PreMigrationSnapshot.migrate(
+          isar,
+          documentsDir: docs.path,
+          now: () => fixedNow,
+          migrate: commitThenFail,
+        );
+        final second = await PreMigrationSnapshot.migrate(
+          isar,
+          documentsDir: docs.path,
+          now: () => fixedNow.add(const Duration(days: 1)),
+          migrate: commitThenFail,
+        );
+
+        expect(second.snapshotPath, first.snapshotPath);
+        expect(_snapshotFiles(docs.path), hasLength(1));
+      },
+    );
+
     test('marks the snapshots folder as excluded from backup', () async {
       final isar = await _open(docs.path);
       await _seedOldVersion(isar);

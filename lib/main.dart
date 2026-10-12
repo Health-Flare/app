@@ -1,9 +1,13 @@
+import 'package:path_provider/path_provider.dart';
 import 'package:flutter/foundation.dart'
     show LicenseRegistry, LicenseEntryWithLineBreaks;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:health_flare/features/failed_upgrade/failed_upgrade_preview.dart';
+import 'package:health_flare/data/database/pre_migration_snapshot.dart';
+import 'package:health_flare/features/failed_upgrade/failed_upgrade_provider.dart';
 import 'package:health_flare/features/release_guides/debug/guide_preview.dart';
 import 'package:health_flare/core/navigation/bar_choice.dart';
 import 'package:health_flare/core/navigation/bar_layout.dart';
@@ -31,6 +35,19 @@ void main() async {
   // Open the database and run migrations. Completes before any UI is shown.
   final isar = await IsarService.open();
   final startupNotice = IsarService.lastMigration.startupNotice;
+  var failedUpgrade =
+      IsarService.lastMigration.outcome == MigrationOutcome.stopped
+      ? IsarService.lastMigration.failure
+      : null;
+  if (failedUpgradePreviewFromEnvironment()) {
+    try {
+      final docs = await getApplicationDocumentsDirectory();
+      failedUpgrade = await previewFailedUpgrade(isar, docs.path);
+      debugPrint('Failed upgrade preview: the card and Settings section');
+    } catch (e) {
+      debugPrint('Failed upgrade preview: $e');
+    }
+  }
 
   // Bottom bar (#137): record which default bar a fresh install starts on,
   // before onboarding (or a preview scenario) can create a profile, so a
@@ -91,6 +108,8 @@ void main() async {
     ProviderScope(
       overrides: [
         isarProvider.overrideWithValue(isar),
+        // An upgrade that stopped retrying: the card and Settings say so.
+        failedUpgradeProvider.overrideWithValue(failedUpgrade),
         // Seed providers with persisted values so the first frame is correct.
         profileListProvider.overrideWith(
           () => ProfileListNotifier()..preload(startup.profiles),

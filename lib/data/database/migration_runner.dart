@@ -56,6 +56,9 @@ class MigrationRunner {
 
   static const int _targetVersion = 22;
 
+  /// The schema version a full upgrade reaches.
+  static int get targetVersion => _targetVersion;
+
   /// Whether existing data is waiting for a data migration: the database
   /// has been initialised before (schema version above 0) and is behind the
   /// current version. A fresh install returns false: it has nothing to lose.
