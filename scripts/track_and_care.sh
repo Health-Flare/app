@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # track_and_care.sh: test, try and screenshot Track and Care (#135).
-# It's behind the TRACK_AND_CARE build flag until it ships (#145).
+# On by default from 1.10.0; TRACK_AND_CARE=false still turns it off.
 #
 #   bash scripts/track_and_care.sh          # show this help
 #   bash scripts/track_and_care.sh test     # unit and widget tests, no simulator (~20 s)

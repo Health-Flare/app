@@ -322,9 +322,11 @@ void main() {
   });
 
   group('FeatureFlags', () {
-    test('trackAndCare is off unless the build turns it on', () {
+    test('trackAndCare is on unless the build turns it off (#135 ships)', () {
+      // --dart-define=TRACK_AND_CARE=false turns it off until the flag and
+      // its off path are deleted before 1.10.0 is cut.
+      expect(FeatureFlags.fromEnvironment().trackAndCare, isTrue);
       expect(const FeatureFlags().trackAndCare, isFalse);
-      expect(FeatureFlags.fromEnvironment().trackAndCare, isFalse);
     });
 
     test(
@@ -332,17 +334,15 @@ void main() {
       () {
         final plain = ProviderContainer();
         addTearDown(plain.dispose);
-        expect(plain.read(featureFlagsProvider).trackAndCare, isFalse);
+        expect(plain.read(featureFlagsProvider).trackAndCare, isTrue);
 
-        final on = ProviderContainer(
+        final off = ProviderContainer(
           overrides: [
-            featureFlagsProvider.overrideWithValue(
-              const FeatureFlags(trackAndCare: true),
-            ),
+            featureFlagsProvider.overrideWithValue(const FeatureFlags()),
           ],
         );
-        addTearDown(on.dispose);
-        expect(on.read(featureFlagsProvider).trackAndCare, isTrue);
+        addTearDown(off.dispose);
+        expect(off.read(featureFlagsProvider).trackAndCare, isFalse);
       },
     );
   });
