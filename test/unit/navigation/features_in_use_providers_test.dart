@@ -4,7 +4,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:health_flare/core/feature_flags.dart';
 import 'package:health_flare/core/navigation/features_in_use.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/features/quick_log/quick_log_classifier.dart';
@@ -19,11 +18,10 @@ class _Profiles extends ProfileListNotifier {
   List<Profile> build() => [_p];
 }
 
-ProviderContainer _with({List<String> off = const [], bool flag = true}) {
+ProviderContainer _with({List<String> off = const []}) {
   final sarah = Profile(id: 1, name: 'Sarah', disabledFeatureIds: off);
   final c = ProviderContainer(
     overrides: [
-      featureFlagsProvider.overrideWithValue(FeatureFlags(trackAndCare: flag)),
       profileListProvider.overrideWith(() => _Profiles(sarah)),
       activeProfileDataProvider.overrideWith((ref) => sarah),
     ],
@@ -52,11 +50,6 @@ void main() {
       final c = _with(off: ['track.symptoms', 'care.conditions']);
       expect(c.read(featureOnProvider('track.symptoms')), isTrue);
       expect(c.read(featureOnProvider('care.conditions')), isTrue);
-    });
-
-    test('with Track and Care off, everything is on, whatever is stored', () {
-      final c = _with(off: ['track.meals'], flag: false);
-      expect(c.read(featureOnProvider('track.meals')), isTrue);
     });
   });
 

@@ -1,6 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:health_flare/core/feature_flags.dart';
 import 'package:health_flare/core/navigation/nav_registry.dart';
 import 'package:health_flare/core/providers/activity_entry_provider.dart';
 import 'package:health_flare/core/providers/appointment_provider.dart';
@@ -28,10 +27,8 @@ bool featureInUse(Profile profile, String featureId) {
 // The active profile (#142)
 // ---------------------------------------------------------------------------
 
-/// Whether [featureId] is on for the active profile. Always on with Track
-/// and Care off: nothing can turn a feature off until it ships.
+/// Whether [featureId] is on for the active profile.
 final featureOnProvider = Provider.family<bool, String>((ref, featureId) {
-  if (!ref.watch(featureFlagsProvider).trackAndCare) return true;
   for (final f in navFeatures) {
     if (f.id == featureId && !f.canTurnOff) return true;
   }

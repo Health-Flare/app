@@ -24,9 +24,7 @@ void main() {
   });
 
   test('the old six-item bar is gone', () {
-    final shell = File(
-      'lib/features/shell/app_shell.dart',
-    ).readAsStringSync();
+    final shell = File('lib/features/shell/app_shell.dart').readAsStringSync();
     expect(shell, isNot(contains('_LegacyBar')));
   });
 }

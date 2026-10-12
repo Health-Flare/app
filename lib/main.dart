@@ -11,7 +11,6 @@ import 'package:health_flare/features/failed_upgrade/failed_upgrade_provider.dar
 import 'package:health_flare/features/release_guides/debug/guide_preview.dart';
 import 'package:health_flare/core/navigation/bar_choice.dart';
 import 'package:health_flare/core/navigation/bar_layout.dart';
-import 'package:health_flare/core/feature_flags.dart';
 import 'package:health_flare/core/navigation/bar_layout_store.dart';
 import 'package:health_flare/core/providers/app_lock_provider.dart';
 import 'package:health_flare/core/providers/database_provider.dart';
@@ -58,10 +57,7 @@ void main() async {
       debugPrint('Release guide preview: as if updated from 1.9.1');
       await applyGuidePreview(isar);
     }
-    barRecord = await BarLayoutStore.settle(
-      isar,
-      current: currentDefaultBarVersion(FeatureFlags.fromEnvironment()),
-    );
+    barRecord = await BarLayoutStore.settle(isar, current: kCurrentBarVersion);
   } catch (e) {
     debugPrint("Bottom bar: couldn't settle layout version: $e");
   }

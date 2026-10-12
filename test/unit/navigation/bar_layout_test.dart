@@ -5,7 +5,6 @@
 // changed").
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:health_flare/core/feature_flags.dart';
 import 'package:health_flare/core/navigation/bar_layout.dart';
 import 'package:health_flare/core/navigation/nav_registry.dart';
 
@@ -29,13 +28,9 @@ void main() {
       ]);
     });
 
-    test('Track and Care is version 2, behind its flag', () {
+    test('Track and Care is version 2, the default', () {
       expect(defaultBarVersions[2], _v2);
-      expect(currentDefaultBarVersion(const FeatureFlags()), 1);
-      expect(
-        currentDefaultBarVersion(const FeatureFlags(trackAndCare: true)),
-        2,
-      );
+      expect(kCurrentBarVersion, 2);
     });
 
     test('every default bar only uses ids in use now', () {
@@ -146,7 +141,7 @@ void main() {
       );
     });
 
-    test('nothing to show after a downgrade, or with the flag turned off', () {
+    test('nothing to show after a downgrade', () {
       expect(
         pendingBarChange(
           const BarRecord(seenVersion: 2),

@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart' show immutable, listEquals;
 
-import 'package:health_flare/core/feature_flags.dart';
 import 'package:health_flare/core/navigation/nav_registry.dart';
 
 // Bottom bar choice and default-layout versions (#137).
@@ -35,12 +34,8 @@ const defaultBarVersions = <int, List<String>>{
 /// release that turns a version on must carry that guide (#145).
 const defaultBarGuideIds = <int, String>{2: 'track-and-care'};
 
-/// The default bar this build shows.
-int currentDefaultBarVersion(FeatureFlags flags) =>
-    flags.trackAndCare ? 2 : kLegacyBarVersion;
-
-/// TODO(#165)
-const kCurrentBarVersion = 0;
+/// The default bar this build shows: Track and Care (#135).
+const kCurrentBarVersion = 2;
 
 /// What's stored on this device: [storedBar] null means "use the default",
 /// [seenVersion] null means 1.9.1 or earlier.

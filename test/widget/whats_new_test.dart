@@ -7,7 +7,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:health_flare/core/feature_flags.dart';
 import 'package:health_flare/core/providers/flare_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/core/router/app_router.dart';
@@ -107,7 +106,6 @@ Future<_FakeWhatsNew> _pump(
   required Widget home,
   WhatsNewRecord record = _pending,
   Flare? activeFlare,
-  bool trackAndCare = false,
 }) async {
   final fake = _FakeWhatsNew(record);
   final router = GoRouter(
@@ -136,9 +134,6 @@ Future<_FakeWhatsNew> _pump(
     ProviderScope(
       overrides: [
         whatsNewProvider.overrideWith(() => fake),
-        featureFlagsProvider.overrideWithValue(
-          FeatureFlags(trackAndCare: trackAndCare),
-        ),
         activeFlareProvider.overrideWith((ref) => activeFlare),
         activeProfileProvider.overrideWith(_NoActiveProfile.new),
         profileListProvider.overrideWith(_NoProfiles.new),
@@ -268,17 +263,12 @@ void main() {
     });
 
     testWidgets('A guide can be replayed from its release', (tester) async {
-      await _pump(tester, home: const WhatsNewScreen(), trackAndCare: true);
+      await _pump(tester, home: const WhatsNewScreen());
       expect(find.text('Replay guide'), findsOneWidget);
       await tester.ensureVisible(find.text('Replay guide'));
       await tester.tap(find.text('Replay guide'));
       await tester.pumpAndSettle();
       expect(find.text('Guide track-and-care step 0 replay 1'), findsOneWidget);
-    });
-
-    testWidgets('no Replay with Track and Care off', (tester) async {
-      await _pump(tester, home: const WhatsNewScreen());
-      expect(find.text('Replay guide'), findsNothing);
     });
 
     testWidgets('history works with highlights off', (tester) async {

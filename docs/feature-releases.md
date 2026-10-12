@@ -143,8 +143,8 @@ define:
 flutter run --dart-define=SOME_FLAG=true
 ```
 
-`TRACK_AND_CARE` is on by default (1.10.0); `--dart-define=TRACK_AND_CARE=false`
-shows the old bar until the flag is deleted.
+There are no flags right now. `TRACK_AND_CARE` shipped in 1.10.0 and was
+deleted with its off path and the old bar (#165).
 
 Tests override `featureFlagsProvider` instead. A flag and its off path are
 deleted in the release that turns it on for good.

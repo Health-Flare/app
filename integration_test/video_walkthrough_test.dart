@@ -541,6 +541,19 @@ Future<void> _settle(WidgetTester tester) async {
   await tester.pump(const Duration(milliseconds: 400));
 }
 
+/// Opens a bar item, then one of its tabs (Track and Care, #165).
+Future<void> _open(WidgetTester tester, String item, [String? tab]) async {
+  await tester.tap(
+    find.descendant(of: find.byType(NavigationBar), matching: find.text(item)),
+  );
+  await _settle(tester);
+  if (tab == null) return;
+  await tester.tap(
+    find.descendant(of: find.byType(TabBar), matching: find.text(tab)),
+  );
+  await _settle(tester);
+}
+
 /// Holds on the current frame for [seconds] of real wall-clock time: long
 /// enough for a viewer (or the external screen recorder) to actually read
 /// the screen, not just flash past it.
@@ -630,8 +643,7 @@ void main() {
       ),
     );
     await _settle(tester);
-    await tester.tap(find.text('Tracking'));
-    await _settle(tester);
+    await _open(tester, 'Track', 'Symptoms');
     await _hold(tester, 2.5, 'tracking: symptoms');
 
     // ── Scene 4: tracking: illnesses → condition detail ───────────────
@@ -643,10 +655,7 @@ void main() {
       ),
     );
     await _settle(tester);
-    await tester.tap(find.text('Tracking'));
-    await _settle(tester);
-    await tester.tap(find.text('Illnesses'));
-    await _settle(tester);
+    await _open(tester, 'Care', 'Conditions');
     await _hold(tester, 2, 'tracking: illnesses');
     await tester.tap(find.text('Fibromyalgia'));
     await _settle(tester);
@@ -661,8 +670,7 @@ void main() {
       ),
     );
     await _settle(tester);
-    await tester.tap(find.text('Medications'));
-    await _settle(tester);
+    await _open(tester, 'Care', 'Medications');
     await _hold(tester, 2.5, 'medications');
 
     // ── Scene 6: journal: list → composer ──────────────────────────────
@@ -674,8 +682,7 @@ void main() {
       ),
     );
     await _settle(tester);
-    await tester.tap(find.text('Journal'));
-    await _settle(tester);
+    await _open(tester, 'Journal', 'Entries');
     await _hold(tester, 2, 'journal: entries');
 
     await tester.tap(find.byTooltip('New journal entry'));
@@ -692,8 +699,7 @@ void main() {
       ),
     );
     await _settle(tester);
-    await tester.tap(find.text('Tracking'));
-    await _settle(tester);
+    await _open(tester, 'Track', 'Symptoms');
     await tester.tap(find.byTooltip('Log symptom'));
     await _settle(tester);
     await tester.pump(); // weather postFrameCallback

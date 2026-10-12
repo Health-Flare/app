@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:health_flare/core/feature_flags.dart';
 import 'package:health_flare/features/appointments/widgets/upcoming_appointments_card.dart';
 import 'package:health_flare/features/daily_checkin/widgets/daily_checkin_card.dart';
 import 'package:health_flare/features/flare/widgets/active_flare_banner.dart';
@@ -170,7 +169,6 @@ Widget _buildDashboard({
   List<JournalEntry> journalEntries = const [],
   List<SleepEntry> sleepEntries = const [],
   List<String> featuresOff = const [],
-  bool trackAndCare = false,
 }) {
   final feedItems = _feedItems(
     journalEntries: journalEntries,
@@ -183,9 +181,6 @@ Widget _buildDashboard({
         (ref) => _sarahProfile.copyWith(disabledFeatureIds: featuresOff),
       ),
       profileListProvider.overrideWith(_FeatureProfiles.new),
-      featureFlagsProvider.overrideWithValue(
-        FeatureFlags(trackAndCare: trackAndCare),
-      ),
       activeProfileJournalProvider.overrideWith((ref) => journalEntries),
       activeSleepEntriesProvider.overrideWith((ref) => sleepEntries),
       dashboardActivityProvider.overrideWith((ref) => feedItems),
@@ -483,7 +478,7 @@ void main() {
   group('Turning a feature off removes it from everyday use: no card or '
       'prompt on the dashboard', () {
     testWidgets('every card shows while everything is on', (tester) async {
-      await tester.pumpWidget(_buildDashboard(trackAndCare: true));
+      await tester.pumpWidget(_buildDashboard());
       await tester.pump();
       expect(find.byType(ActiveFlareBanner), findsOneWidget);
       expect(find.byType(DailyCheckinCard), findsOneWidget);
@@ -493,7 +488,6 @@ void main() {
     testWidgets('Flares, Check-ins and Appointments off', (tester) async {
       await tester.pumpWidget(
         _buildDashboard(
-          trackAndCare: true,
           featuresOff: ['care.flares', 'journal.checkins', 'care.appointments'],
         ),
       );
@@ -512,23 +506,10 @@ void main() {
         bedtime: DateTime(2026, 3, 15, 0, 0),
       );
       await tester.pumpWidget(
-        _buildDashboard(
-          trackAndCare: true,
-          featuresOff: ['track.sleep'],
-          sleepEntries: [entry],
-        ),
+        _buildDashboard(featuresOff: ['track.sleep'], sleepEntries: [entry]),
       );
       await tester.pump();
       expect(find.text('7h 30m'), findsOneWidget);
-    });
-
-    testWidgets('with Track and Care off, every card shows', (tester) async {
-      await tester.pumpWidget(
-        _buildDashboard(featuresOff: ['care.flares', 'journal.checkins']),
-      );
-      await tester.pump();
-      expect(find.byType(ActiveFlareBanner), findsOneWidget);
-      expect(find.byType(DailyCheckinCard), findsOneWidget);
     });
   });
 }

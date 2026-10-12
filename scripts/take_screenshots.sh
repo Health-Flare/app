@@ -75,11 +75,9 @@ run_screenshot_suite() {
   local out_dir="$2"
 
   mkdir -p "$out_dir"
-  # Old bar until the store shots are re-shot for Track and Care (#165).
   SCREENSHOT_DIR="$out_dir" flutter drive \
     --driver=test_driver/integration_test.dart \
     --target=integration_test/screenshot_test.dart \
-    --dart-define=TRACK_AND_CARE=false \
     --device-id="$device_id"
 }
 

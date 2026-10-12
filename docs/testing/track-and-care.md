@@ -26,8 +26,8 @@ bash scripts/track_and_care.sh -d "iPhone 17 Pro Max" shots
 bash scripts/track_and_care.sh -d emulator-5554 run     # Android
 ```
 
-`run` is plain `flutter run`. Until the flag is deleted,
-`flutter run --dart-define=TRACK_AND_CARE=false` shows the old six-item bar.
+`run` is plain `flutter run`. Stop it with `q` in its terminal, not by
+closing the window: a closed window leaves `flutter run` running.
 
 ## What to check by hand
 
@@ -145,7 +145,7 @@ Make a backup with a customized bar and Meals off for one profile, then:
 |---|---|
 | `test/unit/navigation/section_routes_test.dart` | Which tab and section every address belongs to, old links, 2-tap reach |
 | `test/unit/navigation/tab_content_test.dart` | What each tab's add button opens, including today's check-in |
-| `test/widget/track_and_care_test.dart` | The bar, tabs, remembered tab, scroll, Reports, add button, large text, flag off |
+| `test/widget/track_and_care_test.dart` | The bar, tabs, remembered tab, scroll, Reports, add button, large text |
 | `test/widget/track_and_care_bodies_test.dart` | Every real tab with no data shows how to add the first entry |
 | `test/unit/navigation/features_in_use_providers_test.dart` | What's on for the active profile, visible tabs and sections, every message's wording |
 | `test/widget/features_in_use_screen_test.dart` | The Features in use screen, the "kept" message, screen reader labels, the Settings entry |
@@ -167,8 +167,7 @@ Screenshots land in `screenshots/track_and_care/`, with a contact sheet at
 ## How it works, briefly
 
 - Every tab has its own address: the list screen's old one
-  (`/medications`, `/sleep`, `/tracking?tab=vitals`). With the flag on,
-  those routes show `SectionScreen` on the right tab; that's why old links
+  (`/medications`, `/sleep`, `/tracking?tab=vitals`). Those routes show `SectionScreen` on the right tab; that's why old links
   keep working. Rules: `lib/core/navigation/section_routes.dart`.
 - Tab contents (list, add button, extra top-bar actions) come from
   `tabContentProvider` in `lib/features/sections/tab_content.dart`. The

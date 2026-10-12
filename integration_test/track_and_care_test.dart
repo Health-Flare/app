@@ -20,7 +20,6 @@ import 'package:health_flare/features/release_guides/screens/release_guide_scree
 import 'package:health_flare/core/navigation/bar_choice.dart';
 import 'package:health_flare/core/navigation/bar_layout_store.dart';
 import 'package:health_flare/core/navigation/effective_bar.dart';
-import 'package:health_flare/core/feature_flags.dart';
 import 'package:health_flare/core/providers/database_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/data/database/app_database.dart';
@@ -104,9 +103,6 @@ Future<void> _launch(WidgetTester tester, Isar isar) async {
       key: UniqueKey(),
       overrides: [
         isarProvider.overrideWithValue(isar),
-        featureFlagsProvider.overrideWithValue(
-          const FeatureFlags(trackAndCare: true),
-        ),
         profileListProvider.overrideWith(
           () => ProfileListNotifier()..preload(startup.profiles),
         ),

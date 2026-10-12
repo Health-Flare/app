@@ -645,6 +645,19 @@ Future<void> _settle(WidgetTester tester) async {
   await tester.pump(const Duration(milliseconds: 400));
 }
 
+/// Opens a bar item, then one of its tabs (Track and Care, #165).
+Future<void> _open(WidgetTester tester, String item, [String? tab]) async {
+  await tester.tap(
+    find.descendant(of: find.byType(NavigationBar), matching: find.text(item)),
+  );
+  await _settle(tester);
+  if (tab == null) return;
+  await tester.tap(
+    find.descendant(of: find.byType(TabBar), matching: find.text(tab)),
+  );
+  await _settle(tester);
+}
+
 // On Android, convertFlutterSurfaceToImage() may only be called once per
 // test: it registers its own tearDown to revert the surface, so a second
 // call within the same test body (needed when one test takes several
@@ -723,27 +736,23 @@ void main() {
       await _screenshot(binding, tester, '02_dashboard');
     });
 
-    // Tracking: Symptoms tab (default view when tapping Tracking in nav)
+    // Track: Symptoms tab
     testWidgets('03_tracking_symptoms', (tester) async {
       await tester.pumpWidget(
         ProviderScope(overrides: _overrides(), child: const HealthFlareApp()),
       );
       await _settle(tester);
-      await tester.tap(find.text('Tracking'));
-      await _settle(tester);
+      await _open(tester, 'Track', 'Symptoms');
       await _screenshot(binding, tester, '03_tracking_symptoms');
     });
 
-    // Tracking: Illnesses tab showing Active + In recovery sections
+    // Care: Conditions tab showing Active + In recovery sections
     testWidgets('04_tracking_illnesses', (tester) async {
       await tester.pumpWidget(
         ProviderScope(overrides: _overrides(), child: const HealthFlareApp()),
       );
       await _settle(tester);
-      await tester.tap(find.text('Tracking'));
-      await _settle(tester);
-      await tester.tap(find.text('Illnesses'));
-      await _settle(tester);
+      await _open(tester, 'Care', 'Conditions');
       await _screenshot(binding, tester, '04_tracking_illnesses');
     });
 
@@ -753,10 +762,7 @@ void main() {
         ProviderScope(overrides: _overrides(), child: const HealthFlareApp()),
       );
       await _settle(tester);
-      await tester.tap(find.text('Tracking'));
-      await _settle(tester);
-      await tester.tap(find.text('Illnesses'));
-      await _settle(tester);
+      await _open(tester, 'Care', 'Conditions');
       await tester.tap(find.text('Fibromyalgia'));
       await _settle(tester);
       await _screenshot(binding, tester, '05_condition_detail');
@@ -767,8 +773,7 @@ void main() {
         ProviderScope(overrides: _overrides(), child: const HealthFlareApp()),
       );
       await _settle(tester);
-      await tester.tap(find.text('Medications'));
-      await _settle(tester);
+      await _open(tester, 'Care', 'Medications');
       await _screenshot(binding, tester, '06_medications');
     });
 
@@ -777,8 +782,7 @@ void main() {
         ProviderScope(overrides: _overrides(), child: const HealthFlareApp()),
       );
       await _settle(tester);
-      await tester.tap(find.text('Meals'));
-      await _settle(tester);
+      await _open(tester, 'Track', 'Meals');
       await _screenshot(binding, tester, '07_meals');
     });
 
@@ -787,8 +791,7 @@ void main() {
         ProviderScope(overrides: _overrides(), child: const HealthFlareApp()),
       );
       await _settle(tester);
-      await tester.tap(find.text('Journal'));
-      await _settle(tester);
+      await _open(tester, 'Journal', 'Entries');
       await _screenshot(binding, tester, '08_journal');
     });
 
@@ -797,8 +800,7 @@ void main() {
         ProviderScope(overrides: _overrides(), child: const HealthFlareApp()),
       );
       await _settle(tester);
-      await tester.tap(find.text('Journal'));
-      await _settle(tester);
+      await _open(tester, 'Journal', 'Entries');
       await tester.tap(find.byTooltip('New journal entry'));
       await _settle(tester);
       // Extra pump for the weather postFrameCallback to fire.
@@ -812,8 +814,7 @@ void main() {
         ProviderScope(overrides: _overrides(), child: const HealthFlareApp()),
       );
       await _settle(tester);
-      await tester.tap(find.text('Journal'));
-      await _settle(tester);
+      await _open(tester, 'Journal', 'Entries');
       await tester.tap(
         find.descendant(
           of: find.byType(JournalEntryCard),
@@ -829,8 +830,7 @@ void main() {
         ProviderScope(overrides: _overrides(), child: const HealthFlareApp()),
       );
       await _settle(tester);
-      await tester.tap(find.text('Medications'));
-      await _settle(tester);
+      await _open(tester, 'Care', 'Medications');
       await tester.tap(find.byTooltip('Add medication'));
       await _settle(tester);
       await _screenshot(binding, tester, '10_medication_form');
@@ -841,8 +841,7 @@ void main() {
         ProviderScope(overrides: _overrides(), child: const HealthFlareApp()),
       );
       await _settle(tester);
-      await tester.tap(find.text('Meals'));
-      await _settle(tester);
+      await _open(tester, 'Track', 'Meals');
       await tester.tap(find.byTooltip('Log meal'));
       await _settle(tester);
       await _screenshot(binding, tester, '11_meal_form');
@@ -854,8 +853,7 @@ void main() {
         ProviderScope(overrides: _overrides(), child: const HealthFlareApp()),
       );
       await _settle(tester);
-      await tester.tap(find.text('Tracking'));
-      await _settle(tester);
+      await _open(tester, 'Track', 'Symptoms');
       await tester.tap(find.byTooltip('Log symptom'));
       await _settle(tester);
       // Extra pump for the weather postFrameCallback to fire.

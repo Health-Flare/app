@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import 'package:go_router/go_router.dart';
-import 'package:health_flare/core/feature_flags.dart';
 import 'package:health_flare/core/router/app_router.dart';
 import 'package:health_flare/features/release_guides/release_guide.dart';
 import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
@@ -57,10 +56,7 @@ class _ReleaseSection extends ConsumerWidget {
     final tt = Theme.of(context).textTheme;
     final date = release.date;
     final guideId = release.guideId;
-    final guide =
-        guideId != null &&
-        ref.watch(featureFlagsProvider).trackAndCare &&
-        releaseGuides.containsKey(guideId);
+    final guide = guideId != null && releaseGuides.containsKey(guideId);
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),

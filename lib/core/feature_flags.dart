@@ -5,24 +5,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 ///
 ///   flutter run --dart-define=SOME_FLAG=true
 ///
-/// TRACK_AND_CARE is on by default now (#135 ships in 1.10.0);
-/// `--dart-define=TRACK_AND_CARE=false` shows the old bar until the flag
-/// and its off path are deleted, before 1.10.0 is cut.
-///
 /// Read once at startup. Tests override [featureFlagsProvider] instead of
 /// passing defines. A flag is deleted, with its off path, in the release
 /// that turns it on for good. Docs: docs/feature-releases.md.
+///
+/// No flags right now: Track and Care shipped in 1.10.0 and its flag was
+/// deleted (#165).
 class FeatureFlags {
-  const FeatureFlags({this.trackAndCare = false});
+  const FeatureFlags();
 
   /// From the build's `--dart-define`s.
-  factory FeatureFlags.fromEnvironment() => const FeatureFlags(
-    trackAndCare: bool.fromEnvironment('TRACK_AND_CARE', defaultValue: true),
-  );
-
-  /// Layout v2: Track and Care sections with tabs, Your layout, and the
-  /// release guide (#135). On unless the build turns it off.
-  final bool trackAndCare;
+  factory FeatureFlags.fromEnvironment() => const FeatureFlags();
 }
 
 final featureFlagsProvider = Provider<FeatureFlags>(

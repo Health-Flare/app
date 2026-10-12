@@ -7,7 +7,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:health_flare/core/feature_flags.dart';
 import 'package:health_flare/core/navigation/features_in_use.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/core/router/app_router.dart';
@@ -40,9 +39,6 @@ Widget _screen({List<String> off = const [], int meals = 40}) {
   final sarah = Profile(id: 1, name: 'Sarah', disabledFeatureIds: off);
   return ProviderScope(
     overrides: [
-      featureFlagsProvider.overrideWithValue(
-        const FeatureFlags(trackAndCare: true),
-      ),
       activeProfileProvider.overrideWith(_ActiveProfile.new),
       profileListProvider.overrideWith(() => _Profiles(sarah)),
       activeProfileDataProvider.overrideWith(
@@ -186,12 +182,7 @@ void main() {
   });
 
   group('Layout settings are in Settings', () {
-    Widget settings({required bool flag}) => ProviderScope(
-      overrides: [
-        featureFlagsProvider.overrideWithValue(
-          FeatureFlags(trackAndCare: flag),
-        ),
-      ],
+    Widget settings() => ProviderScope(
       child: MaterialApp.router(
         routerConfig: GoRouter(
           routes: [
@@ -210,19 +201,12 @@ void main() {
     );
 
     testWidgets('a "Your layout" section with Features in use', (tester) async {
-      await tester.pumpWidget(settings(flag: true));
+      await tester.pumpWidget(settings());
       await tester.pumpAndSettle();
       expect(find.text('Your layout'), findsOneWidget);
       await tester.tap(find.text('Features in use'));
       await tester.pumpAndSettle();
       expect(find.text('Features in use screen'), findsOneWidget);
-    });
-
-    testWidgets('not there with Track and Care off', (tester) async {
-      await tester.pumpWidget(settings(flag: false));
-      await tester.pumpAndSettle();
-      expect(find.text('Your layout'), findsNothing);
-      expect(find.text('Features in use'), findsNothing);
     });
   });
 }
