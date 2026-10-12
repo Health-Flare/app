@@ -204,6 +204,99 @@ Feature: Persistent local datastore
     Then the retry uses the safety copy from before the first attempt
     And no new copy of the half-updated data is made
 
+  # ---------------------------------------------------------------------------
+  # When an upgrade keeps failing (#112)
+  #
+  # Each upgrade step runs in one transaction: a failed step changes nothing,
+  # and the steps before it stay done. So retrying the same build mostly
+  # fails the same way, and restoring the safety copy mostly undoes the
+  # steps that worked. Rules:
+  #
+  # 1. A failed upgrade is retried on the next 2 launches, then stops until
+  #    a different app version is installed, which tries again.
+  # 2. Stopped, the app opens normally on the data as it is, with a lasting
+  #    card on the dashboard. Nothing is read-only.
+  # 3. Running without the upgrade must stay safe: nothing the app does may
+  #    depend on a step that hasn't run. In particular a new profile never
+  #    gets the id of a deleted one (#117), with or without v19.
+  # 4. "Restore the copy from before the update" is offered only once
+  #    retrying has stopped, and only while that safety copy exists.
+  # 5. Health Flare has no telemetry. "Copy details" is the only way a
+  #    failure reaches us, and it holds no health data.
+  # ---------------------------------------------------------------------------
+
+  Scenario: A failed upgrade is retried on the next two launches
+    Given an upgrade from v16 failed when I opened the app
+    When I open the app again, twice
+    Then the upgrade is tried each time
+    And each time I see the message that it couldn't finish
+
+  Scenario: After three failures the app stops retrying and says so
+    Given the same upgrade has failed on three launches of the same app version
+    When I open the app
+    Then the upgrade is not tried again
+    And the app opens normally on my data as it is
+    And the dashboard shows a card that stays until it's resolved
+
+  Scenario: A new app version tries the upgrade again
+    Given the app stopped retrying a failed upgrade
+    When I install a newer version of Health Flare and open it
+    Then the upgrade is tried again, with three attempts as before
+    And if it succeeds the card is gone
+
+  Scenario: Running without the upgrade keeps profiles apart
+    Given the upgrade stopped before the step that records profile ids (v19)
+    And the data still has entries from a deleted profile
+    When I add a new profile
+    Then it gets an id no profile or entry has ever used
+    And it shows none of the deleted profile's entries
+
+  # TODO(#112): agent-written wording; verify.
+  @unverified
+  Scenario: The card says what happened and what to do
+    Given the app stopped retrying a failed upgrade
+    When I open the dashboard
+    Then the card reads "This update didn't finish"
+    And it says "Your data is safe and the app works. Updating the app again will retry it."
+    And "Details" opens the update section in Settings > Data & backup
+    And the card can't be dismissed
+
+  # TODO(#112): agent-written wording; verify.
+  @unverified
+  Scenario: Settings explains the failed update
+    Given the app stopped retrying a failed upgrade
+    When I open Settings > Data & backup
+    Then "Update didn't finish" explains: the data is as it was before the update's unfinished steps, nothing was lost, and a newer version will try again
+    And it offers "Export a backup", "Copy details" and "Restore the copy from before the update"
+    And it says the restore helps only if something looks wrong since the update, and that it removes anything logged since
+
+  Scenario: Copy details holds what we need and no health data
+    Given the app stopped retrying a failed upgrade
+    When I tap "Copy details"
+    Then the clipboard has the app version, the platform, the schema version reached, the step that failed, the number of attempts, the date of the safety copy and the error
+    And it has no names, entries, notes or other health data
+    And I see "Copied. Paste it into an email or a GitHub issue."
+
+  Scenario: Restoring the safety copy saves a backup first
+    Given the app stopped retrying a failed upgrade
+    When I tap "Restore the copy from before the update"
+    Then a backup of my current data is saved first, and I'm told where
+    And I'm asked to confirm, with the date of the copy and that anything logged since then will be replaced
+    And after a restart my data is as it was before the update
+    And the app still doesn't retry the same upgrade on this version
+
+  Scenario: No restore is offered while the upgrade is still being retried
+    Given an upgrade failed once
+    When I open Settings > Data & backup
+    Then there is no "Restore the copy from before the update"
+
+  Scenario: No restore is offered when the safety copy is gone
+    Given the app stopped retrying a failed upgrade
+    And its safety copy has been deleted
+    When I open Settings > Data & backup
+    Then "Restore the copy from before the update" is not offered
+    And "Export a backup" and "Copy details" still are
+
   Scenario: Safety copies are not in phone backups
     When the app saves a safety copy
     Then the snapshots folder is left out of Google backup and new-phone transfer on Android
