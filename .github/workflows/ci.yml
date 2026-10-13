@@ -155,13 +155,47 @@ jobs:
       - name: Run tests
         run: flutter test --reporter=github
 
+  # ── 5b. Tool packages ─────────────────────────────────────────────────────
+  # tools/csv_import and scripts/isar_codegen are their own Dart packages,
+  # excluded from the root analysis, so nothing above resolves or builds
+  # them. Renovate still bumps their dependencies: csv 8 and Isar 3.3.2 each
+  # broke csv_import with CI green (#177).
+  tool-packages:
+    name: Tool packages
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+      - name: "csv_import: analyze and test"
+        working-directory: tools/csv_import
+        run: |
+          dart pub get
+          dart analyze --fatal-infos
+          dart test --reporter=github
+      # The root pub get gives `dart format` the repo's analysis options;
+      # without it, format falls back to defaults and rewrites everything.
+      - name: "isar_codegen: generated code is current"
+        run: |
+          flutter pub get
+          bash scripts/generate_isar.sh
+          dart format lib/data
+          if ! git diff --exit-code --stat -- lib; then
+            echo "::error::Generated Isar code is out of date. Run 'bash scripts/generate_isar.sh', then 'dart format lib/data', and commit the result."
+            exit 1
+          fi
+
   # ── 6. Gates ──────────────────────────────────────────────────────────────
   # The single required status check for merging (set in the "Main"
   # ruleset). Add new gate jobs to `needs` here rather than to the ruleset.
   gates:
     name: CI gates
     runs-on: ubuntu-latest
-    needs: [flutter-pub-get, url-scan, dart-format, flutter-analyze, flutter-test]
+    needs: [flutter-pub-get, url-scan, dart-format, flutter-analyze, flutter-test, tool-packages]
     if: always() && github.event_name != 'schedule'
     steps:
       - name: All gates passed
