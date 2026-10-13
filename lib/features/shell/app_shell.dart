@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:health_flare/features/release_guides/widgets/bar_outline.dart';
-import 'package:health_flare/core/feature_flags.dart';
 import 'package:health_flare/core/navigation/bar_choice.dart';
 import 'package:health_flare/core/navigation/effective_bar.dart';
 import 'package:health_flare/core/navigation/features_in_use.dart';
@@ -18,9 +17,8 @@ import 'package:health_flare/features/sections/section_state.dart';
 /// responsible for its own [AppBar] via [HFAppBar], which automatically
 /// includes the [ProfileIconButton] as its rightmost action.
 ///
-/// With the trackAndCare flag on (#141) the bar is Dashboard, Track, Care
-/// and Journal; otherwise it's the six-item bar every release up to 1.9.1
-/// had.
+/// The bar is Dashboard, Track, Care and Journal by default (#141), as the
+/// person has set it up (#143).
 class AppShell extends ConsumerWidget {
   const AppShell({super.key, required this.child});
 
@@ -28,17 +26,14 @@ class AppShell extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final trackAndCare = ref.watch(featureFlagsProvider).trackAndCare;
     return Scaffold(
       body: child,
-      bottomNavigationBar: trackAndCare
-          ? _SectionBar(location: GoRouterState.of(context).uri)
-          : _LegacyBar(location: GoRouterState.of(context).matchedLocation),
+      bottomNavigationBar: _SectionBar(location: GoRouterState.of(context).uri),
     );
   }
 }
 
-/// The bottom bar with Track and Care on: the person's choice (#143), with
+/// The bottom bar: the person's choice (#143), with
 /// features in use applied. A section opens on the tab last used in it
 /// this session, or its first tab that's on; a pinned screen opens itself.
 class _SectionBar extends ConsumerWidget {
@@ -93,41 +88,6 @@ class _SectionBar extends ConsumerWidget {
             tooltip: s.label,
           ),
       ],
-    );
-  }
-}
-
-class _LegacyBar extends StatelessWidget {
-  const _LegacyBar({required this.location});
-
-  final String location;
-
-  /// From the navigation registry (#136).
-  static const _destinations = legacyBar;
-
-  int get _currentIndex {
-    final index = _destinations.indexWhere(
-      (d) => d.route == '/'
-          ? location == '/'
-          : location == d.route || location.startsWith('${d.route}/'),
-    );
-    return index < 0 ? 0 : index;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return NavigationBar(
-      selectedIndex: _currentIndex,
-      onDestinationSelected: (index) => context.go(_destinations[index].route),
-      destinations: _destinations
-          .map(
-            (d) => NavigationDestination(
-              icon: Icon(d.icon),
-              selectedIcon: Icon(d.selectedIcon),
-              label: d.label,
-            ),
-          )
-          .toList(),
     );
   }
 }

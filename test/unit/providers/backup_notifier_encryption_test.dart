@@ -8,7 +8,6 @@ import 'package:isar_community/isar.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
-import 'package:health_flare/core/feature_flags.dart';
 import 'package:health_flare/core/navigation/bar_choice.dart';
 import 'package:health_flare/core/navigation/bar_layout.dart';
 import 'package:health_flare/core/navigation/bar_layout_store.dart';
@@ -665,15 +664,12 @@ void main() {
       return path;
     }
 
-    ProviderContainer withFlag(bool on) {
+    ProviderContainer withFlag() {
       final n = _PickerStubNotifier();
       final c = ProviderContainer(
         overrides: [
           isarProvider.overrideWithValue(mainDb),
           backupProvider.overrideWith(() => n),
-          featureFlagsProvider.overrideWithValue(
-            FeatureFlags(trackAndCare: on),
-          ),
         ],
       );
       addTearDown(c.dispose);
@@ -683,7 +679,7 @@ void main() {
 
     test('Add missing data onto a default device: the live bar follows, and '
         'the message says so', () async {
-      final c = withFlag(true);
+      final c = withFlag();
       final n = c.read(backupProvider.notifier) as _PickerStubNotifier;
       n.pickedPath = await backupWithBar();
       c.read(barChoiceProvider); // the bar as the app started with it
@@ -693,33 +689,6 @@ void main() {
       final done = c.read(backupProvider) as ImportComplete;
       expect(done.barImported, isTrue);
       expect(c.read(barChoiceProvider).storedBar, theirs);
-    });
-
-    test(
-      "Choose what to import doesn't list layout with Track and Care off",
-      () async {
-        final c = withFlag(false);
-        final n = c.read(backupProvider.notifier) as _PickerStubNotifier;
-        n.pickedPath = await backupWithBar();
-
-        await n.startSelectiveImport();
-
-        final preview = c.read(backupProvider) as ImportPreviewReady;
-        expect(
-          preview.categories.map((x) => x.id),
-          isNot(contains(ImportCategoryId.layout)),
-        );
-      },
-    );
-
-    test('with Track and Care off, no bar message', () async {
-      final c = withFlag(false);
-      final n = c.read(backupProvider.notifier) as _PickerStubNotifier;
-      n.pickedPath = await backupWithBar();
-
-      await n.mergeRestore();
-
-      expect((c.read(backupProvider) as ImportComplete).barImported, isFalse);
     });
   });
 }

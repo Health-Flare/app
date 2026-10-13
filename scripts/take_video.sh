@@ -89,11 +89,9 @@ record_walkthrough() {
   fi
 
   local drive_status=0
-  # Old bar until the store shots are re-shot for Track and Care (#165).
   flutter drive \
     --driver=test_driver/integration_test.dart \
     --target=integration_test/video_walkthrough_test.dart \
-    --dart-define=TRACK_AND_CARE=false \
     --device-id="$device_id" || drive_status=$?
 
   # simctl recordVideo finalizes the file on SIGINT: a hard kill leaves a

@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:isar_community/isar.dart';
 
-import 'package:health_flare/core/feature_flags.dart';
 import 'package:health_flare/core/navigation/bar_choice.dart';
 import 'package:health_flare/core/navigation/bar_layout.dart';
 import 'package:health_flare/core/navigation/bar_layout_store.dart';
@@ -95,9 +94,6 @@ void main() {
       final c = ProviderContainer(
         overrides: [
           isarProvider.overrideWithValue(isar),
-          featureFlagsProvider.overrideWithValue(
-            const FeatureFlags(trackAndCare: true),
-          ),
           barChoiceProvider.overrideWith(
             () => BarChoiceNotifier()..preload(bar),
           ),
@@ -156,17 +152,6 @@ void main() {
     test('a fresh install on the new bar: no guide', () {
       final c2 = container(bar: const BarRecord(seenVersion: 2));
       expect(c2.read(releaseGuideProvider).change, isNull);
-      expect(c2.read(guideCardModeProvider), GuideCardMode.hidden);
-    });
-
-    test('flag off: no guide', () {
-      final c2 = ProviderContainer(
-        overrides: [
-          isarProvider.overrideWithValue(isar),
-          featureFlagsProvider.overrideWithValue(const FeatureFlags()),
-        ],
-      );
-      addTearDown(c2.dispose);
       expect(c2.read(guideCardModeProvider), GuideCardMode.hidden);
     });
   });

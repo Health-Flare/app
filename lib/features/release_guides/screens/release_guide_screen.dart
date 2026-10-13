@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:health_flare/core/feature_flags.dart';
 import 'package:health_flare/core/navigation/bar_choice.dart';
 import 'package:health_flare/core/navigation/bar_layout.dart';
 import 'package:health_flare/core/navigation/effective_bar.dart';
@@ -77,7 +76,7 @@ class _ReleaseGuideScreenState extends ConsumerState<ReleaseGuideScreen> {
   /// What the guide shows when replayed: the bar before this change, or
   /// the person's own bar, beside the new default.
   BarChange _replayChange() {
-    final current = currentDefaultBarVersion(ref.read(featureFlagsProvider));
+    const current = kCurrentBarVersion;
     final record = ref.read(barChoiceProvider);
     final customized = record.storedBar != null;
     return BarChange(

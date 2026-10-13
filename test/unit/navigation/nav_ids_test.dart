@@ -3,10 +3,8 @@
 // screen that was merged follows its replacement") and navigation.feature.
 import 'dart:io';
 
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:health_flare/core/feature_flags.dart';
 import 'package:health_flare/core/navigation/nav_registry.dart';
 import 'package:health_flare/core/router/app_router.dart';
 
@@ -319,31 +317,5 @@ void main() {
         expect(resolveNavId(id), isNotNull, reason: id);
       }
     });
-  });
-
-  group('FeatureFlags', () {
-    test('trackAndCare is on unless the build turns it off (#135 ships)', () {
-      // --dart-define=TRACK_AND_CARE=false turns it off until the flag and
-      // its off path are deleted before 1.10.0 is cut.
-      expect(FeatureFlags.fromEnvironment().trackAndCare, isTrue);
-      expect(const FeatureFlags().trackAndCare, isFalse);
-    });
-
-    test(
-      'the provider gives the build\'s flags, and tests can override it',
-      () {
-        final plain = ProviderContainer();
-        addTearDown(plain.dispose);
-        expect(plain.read(featureFlagsProvider).trackAndCare, isTrue);
-
-        final off = ProviderContainer(
-          overrides: [
-            featureFlagsProvider.overrideWithValue(const FeatureFlags()),
-          ],
-        );
-        addTearDown(off.dispose);
-        expect(off.read(featureFlagsProvider).trackAndCare, isFalse);
-      },
-    );
   });
 }

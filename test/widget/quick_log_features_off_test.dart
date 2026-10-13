@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:health_flare/core/feature_flags.dart';
 import 'package:health_flare/core/providers/appointment_provider.dart';
 import 'package:health_flare/core/providers/condition_provider.dart';
 import 'package:health_flare/core/providers/journal_provider.dart';
@@ -116,11 +115,10 @@ class _UserSymptoms extends UserSymptomListNotifier {
   List<UserSymptom> build() => [];
 }
 
-Widget _sheet({List<String> off = const [], bool flag = true}) {
+Widget _sheet({List<String> off = const []}) {
   final sarah = Profile(id: 1, name: 'Sarah', disabledFeatureIds: off);
   return ProviderScope(
     overrides: [
-      featureFlagsProvider.overrideWithValue(FeatureFlags(trackAndCare: flag)),
       activeProfileProvider.overrideWith(_Active.new),
       profileListProvider.overrideWith(() => _Profiles(sarah)),
       activeProfileDataProvider.overrideWith(
@@ -234,16 +232,5 @@ void main() {
     await _type(tester, _sheet(), 'Toast and eggs for breakfast');
     expect(find.text(_warning), findsNothing);
     expect(find.text('Save as a journal note too'), findsNothing);
-  });
-
-  testWidgets('no warning with Track and Care off, whatever is stored', (
-    tester,
-  ) async {
-    await _type(
-      tester,
-      _sheet(off: ['track.meals'], flag: false),
-      'Toast and eggs for breakfast',
-    );
-    expect(find.text(_warning), findsNothing);
   });
 }

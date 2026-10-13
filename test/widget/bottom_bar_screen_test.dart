@@ -7,7 +7,6 @@ import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:health_flare/core/feature_flags.dart';
 import 'package:health_flare/core/navigation/bar_choice.dart';
 import 'package:health_flare/core/navigation/bar_layout.dart';
 import 'package:health_flare/core/navigation/effective_bar.dart';
@@ -35,9 +34,6 @@ class _Profiles extends ProfileListNotifier {
 List<Override> _overrides(BarRecord start, {List<String> off = const []}) {
   final sarah = Profile(id: 1, name: 'Sarah', disabledFeatureIds: off);
   return [
-    featureFlagsProvider.overrideWithValue(
-      const FeatureFlags(trackAndCare: true),
-    ),
     activeProfileProvider.overrideWith(_Active.new),
     profileListProvider.overrideWith(() => _Profiles(sarah)),
     activeProfileDataProvider.overrideWith((ref) => sarah),

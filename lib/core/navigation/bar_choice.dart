@@ -2,7 +2,6 @@ import 'package:flutter/semantics.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:health_flare/core/feature_flags.dart';
 import 'package:health_flare/core/navigation/bar_layout.dart';
 import 'package:health_flare/core/navigation/bar_layout_store.dart';
 import 'package:health_flare/core/navigation/effective_bar.dart';
@@ -39,7 +38,7 @@ class BarChoiceNotifier extends Notifier<BarRecord> {
 
   void preload(BarRecord record) => _preloaded = record;
 
-  int get _current => currentDefaultBarVersion(ref.read(featureFlagsProvider));
+  int get _current => kCurrentBarVersion;
 
   List<String> get _default => defaultBarVersions[_current]!;
 

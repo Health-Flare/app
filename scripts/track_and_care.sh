@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # track_and_care.sh: test, try and screenshot Track and Care (#135).
-# On by default from 1.10.0; TRACK_AND_CARE=false still turns it off.
+# Shipped in 1.10.0; the build flag was deleted (#165).
 #
 #   bash scripts/track_and_care.sh          # show this help
 #   bash scripts/track_and_care.sh test     # unit and widget tests, no simulator (~20 s)
@@ -79,23 +79,21 @@ cmd_test() {
     test/widget/bottom_bar_screen_test.dart \
     test/widget/bottom_bar_shell_test.dart \
     test/unit/release_guides \
-    test/widget/release_guide_test.dart \
-    test/widget/app_shell_test.dart
+    test/widget/release_guide_test.dart
   ok "All Track and Care tests passed."
 }
 
 cmd_run() {
   local id; id=$(pick_device | tail -1)
-  bold "Opening Health Flare with Track and Care on ($id)"
-  flutter run --dart-define=TRACK_AND_CARE=true --device-id="$id"
+  bold "Opening Health Flare ($id)"
+  flutter run --device-id="$id"
 }
 
 cmd_guide() {
   local id; id=$(pick_device | tail -1)
   bold "Opening Health Flare as if just updated from 1.9.1 ($id)"
   echo "  The dashboard shows \"The bottom bar has changed\". Each run starts over."
-  flutter run --dart-define=TRACK_AND_CARE=true --dart-define=GUIDE_PREVIEW=true \
-    --device-id="$id"
+  flutter run --dart-define=GUIDE_PREVIEW=true --device-id="$id"
 }
 
 cmd_e2e() {

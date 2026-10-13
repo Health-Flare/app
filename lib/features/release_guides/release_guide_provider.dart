@@ -2,7 +2,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:isar_community/isar.dart';
 
-import 'package:health_flare/core/feature_flags.dart';
 import 'package:health_flare/core/navigation/bar_choice.dart';
 import 'package:health_flare/core/navigation/bar_layout.dart';
 import 'package:health_flare/core/providers/database_provider.dart';
@@ -79,8 +78,6 @@ class ReleaseGuideNotifier extends Notifier<GuideState> {
 
   @override
   GuideState build() {
-    final flags = ref.watch(featureFlagsProvider);
-    if (!flags.trackAndCare) return const GuideState(record: GuideRecord());
     if (_record == null) {
       AppSettings? s;
       try {
@@ -96,10 +93,9 @@ class ReleaseGuideNotifier extends Notifier<GuideState> {
   }
 
   GuideState _compute() {
-    final flags = ref.read(featureFlagsProvider);
     final change = pendingBarChange(
       ref.read(barChoiceProvider),
-      current: currentDefaultBarVersion(flags),
+      current: kCurrentBarVersion,
     );
     final guide = change == null
         ? null

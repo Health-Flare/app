@@ -1,4 +1,4 @@
-// Track and Care sections with tabs (#141), with the trackAndCare flag on.
+// Track and Care sections with tabs (#141).
 // Spec: docs/features/navigation.feature. Tab bodies are placeholders here
 // (tabContentProvider is faked); the real bodies are covered by
 // track_and_care_bodies_test.dart and each screen's own tests.
@@ -7,7 +7,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:health_flare/core/feature_flags.dart';
 import 'package:health_flare/core/navigation/nav_registry.dart';
 import 'package:health_flare/core/navigation/section_routes.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
@@ -75,9 +74,6 @@ GoRouter _router(String initial) {
 Widget _app({String initial = AppRoutes.dashboard, double textScale = 1}) =>
     ProviderScope(
       overrides: [
-        featureFlagsProvider.overrideWithValue(
-          const FeatureFlags(trackAndCare: true),
-        ),
         tabContentProvider.overrideWithValue({
           for (final s in navSections)
             for (final t in s.tabs) t.id: _fakeContent(t.id),
@@ -293,37 +289,5 @@ void main() {
       expect(text.maxLines, isNot(1));
     }
     expect(tester.takeException(), isNull);
-  });
-
-  testWidgets('with the flag off the bar is unchanged', (tester) async {
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          featureFlagsProvider.overrideWithValue(const FeatureFlags()),
-        ],
-        child: MaterialApp.router(
-          routerConfig: GoRouter(
-            initialLocation: AppRoutes.dashboard,
-            routes: [
-              ShellRoute(
-                builder: (context, state, child) => AppShell(child: child),
-                routes: [
-                  GoRoute(
-                    path: AppRoutes.dashboard,
-                    builder: (_, _) => _page('Dashboard screen'),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-    await tester.pumpAndSettle();
-    final bar = tester.widget<NavigationBar>(find.byType(NavigationBar));
-    expect(
-      [for (final d in bar.destinations) (d as NavigationDestination).label],
-      [for (final i in legacyBar) i.label],
-    );
   });
 }

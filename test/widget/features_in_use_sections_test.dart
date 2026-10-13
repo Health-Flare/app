@@ -6,7 +6,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:health_flare/core/feature_flags.dart';
 import 'package:health_flare/core/navigation/nav_registry.dart';
 import 'package:health_flare/core/navigation/section_routes.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
@@ -59,9 +58,6 @@ Widget _app({
   };
   return ProviderScope(
     overrides: [
-      featureFlagsProvider.overrideWithValue(
-        const FeatureFlags(trackAndCare: true),
-      ),
       tabContentProvider.overrideWithValue({
         for (final s in navSections)
           for (final t in s.tabs) t.id: _fake(t.id),

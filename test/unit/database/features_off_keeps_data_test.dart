@@ -9,7 +9,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:isar_community/isar.dart';
 
-import 'package:health_flare/core/feature_flags.dart';
 import 'package:health_flare/core/navigation/nav_registry.dart';
 import 'package:health_flare/core/providers/database_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
@@ -98,12 +97,7 @@ void main() {
     final before = await _counts(isar);
 
     final container = ProviderContainer(
-      overrides: [
-        isarProvider.overrideWithValue(isar),
-        featureFlagsProvider.overrideWithValue(
-          const FeatureFlags(trackAndCare: true),
-        ),
-      ],
+      overrides: [isarProvider.overrideWithValue(isar)],
     );
     addTearDown(container.dispose);
     final sarah = (await isar.profileIsars.get(1))!.toDomain();

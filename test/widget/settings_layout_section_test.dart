@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:isar_community/isar.dart';
 
-import 'package:health_flare/core/feature_flags.dart';
 import 'package:health_flare/core/providers/database_provider.dart';
 import 'package:health_flare/data/database/app_settings.dart';
 import 'package:health_flare/data/models/profile_isar.dart';
@@ -42,9 +41,6 @@ void main() {
       ProviderScope(
         overrides: [
           isarProvider.overrideWithValue(isar),
-          featureFlagsProvider.overrideWithValue(
-            const FeatureFlags(trackAndCare: true),
-          ),
           ...appLockOverrides(
             auth: FakeDeviceAuth(),
             store: MemoryAppLockStore(),

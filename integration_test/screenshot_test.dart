@@ -55,10 +55,22 @@ final _fakeWeather = WeatherSnapshot(
   pressureHPa: 1013.0,
   humidityPercent: 62,
   windSpeedKmh: 14.0,
-  capturedAt: DateTime(2026, 5, 4, 9, 30),
+  capturedAt: _at(2026, 5, 4, 9, 30),
 );
 
-final _now = DateTime(2026, 5, 4, 9, 30);
+/// The fixtures were written on 4 May 2026. The app reads the real clock,
+/// so every 2026 date moves by the same amount to make that day today:
+/// "Last dose 2h ago", not "160d ago" (#165). Older dates (start dates,
+/// diagnoses) stay as written.
+final _shift = () {
+  final n = DateTime.now();
+  return DateTime(n.year, n.month, n.day).difference(DateTime(2026, 5, 4));
+}();
+
+DateTime _at(int y, int m, [int d = 1, int h = 0, int min = 0]) =>
+    DateTime(y, m, d, h, min).add(_shift);
+
+final _now = _at(2026, 5, 4, 9, 30);
 
 final _medications = [
   Medication(
@@ -102,7 +114,7 @@ final _appointments = [
     profileId: 1,
     title: 'Rheumatology follow-up',
     providerName: 'Dr. Patel',
-    scheduledAt: DateTime(2026, 5, 12, 14, 0),
+    scheduledAt: _at(2026, 5, 12, 14, 0),
     status: AppointmentStatus.upcoming,
     createdAt: _now,
     questions: const [
@@ -121,7 +133,7 @@ final _appointments = [
     profileId: 1,
     title: 'GP check-in',
     providerName: 'Dr. Williams',
-    scheduledAt: DateTime(2026, 4, 22, 10, 30),
+    scheduledAt: _at(2026, 4, 22, 10, 30),
     status: AppointmentStatus.completed,
     outcomeNotes: 'Blood work ordered. Continue current medications.',
     createdAt: _now,
@@ -132,7 +144,7 @@ final _journalEntries = [
   JournalEntry(
     id: 1,
     profileId: 1,
-    createdAt: DateTime(2026, 5, 3, 20, 15),
+    createdAt: _at(2026, 5, 3, 20, 15),
     snapshots: [
       JournalSnapshot(
         body:
@@ -140,8 +152,8 @@ final _journalEntries = [
             'Managed a short walk but had to rest for two hours afterwards. '
             "Joint pain in knees is a 6/10 today. Tomorrow's rheumatology "
             'appointment can\'t come soon enough.',
-        title: 'Rough Saturday',
-        savedAt: DateTime(2026, 5, 3, 20, 15),
+        title: 'Rough day',
+        savedAt: _at(2026, 5, 3, 20, 15),
       ),
     ],
     mood: 3,
@@ -152,13 +164,13 @@ final _journalEntries = [
       pressureHPa: 1008.0,
       humidityPercent: 78,
       windSpeedKmh: 22.0,
-      capturedAt: DateTime(2026, 5, 3, 20, 15),
+      capturedAt: _at(2026, 5, 3, 20, 15),
     ),
   ),
   JournalEntry(
     id: 2,
     profileId: 1,
-    createdAt: DateTime(2026, 4, 30, 18, 0),
+    createdAt: _at(2026, 4, 30, 18, 0),
     snapshots: [
       JournalSnapshot(
         body:
@@ -166,7 +178,7 @@ final _journalEntries = [
             'Morning stiffness was only about 20 minutes today. '
             'Went to the farmers market with mum, first outing in weeks!',
         title: 'A good day',
-        savedAt: DateTime(2026, 4, 30, 18, 0),
+        savedAt: _at(2026, 4, 30, 18, 0),
       ),
     ],
     mood: 1,
@@ -175,13 +187,13 @@ final _journalEntries = [
   JournalEntry(
     id: 3,
     profileId: 1,
-    createdAt: DateTime(2026, 4, 25, 21, 0),
+    createdAt: _at(2026, 4, 25, 21, 0),
     snapshots: [
       JournalSnapshot(
         body:
             'Started tracking sleep this week. Noticing a clear correlation '
             'between poor sleep and next-day pain levels. Will mention to Dr. Patel.',
-        savedAt: DateTime(2026, 4, 25, 21, 0),
+        savedAt: _at(2026, 4, 25, 21, 0),
       ),
     ],
   ),
@@ -193,8 +205,8 @@ final _meals = [
     profileId: 1,
     description: 'Oat porridge with blueberries and flaxseed',
     hasReaction: false,
-    loggedAt: DateTime(2026, 5, 4, 8, 0),
-    createdAt: DateTime(2026, 5, 4, 8, 0),
+    loggedAt: _at(2026, 5, 4, 8, 0),
+    createdAt: _at(2026, 5, 4, 8, 0),
   ),
   MealEntry(
     id: 2,
@@ -202,16 +214,16 @@ final _meals = [
     description: 'Gluten-free pasta with roasted vegetables',
     notes: 'Felt slightly bloated after. Monitor this.',
     hasReaction: true,
-    loggedAt: DateTime(2026, 5, 3, 19, 30),
-    createdAt: DateTime(2026, 5, 3, 19, 30),
+    loggedAt: _at(2026, 5, 3, 19, 30),
+    createdAt: _at(2026, 5, 3, 19, 30),
   ),
   MealEntry(
     id: 3,
     profileId: 1,
     description: 'Green smoothie: spinach, banana, almond milk',
     hasReaction: false,
-    loggedAt: DateTime(2026, 5, 3, 8, 15),
-    createdAt: DateTime(2026, 5, 3, 8, 15),
+    loggedAt: _at(2026, 5, 3, 8, 15),
+    createdAt: _at(2026, 5, 3, 8, 15),
   ),
 ];
 
@@ -223,8 +235,8 @@ final _activities = [
     activityType: ActivityType.walking,
     effortLevel: 2,
     durationMinutes: 20,
-    loggedAt: DateTime(2026, 5, 3, 15, 0),
-    createdAt: DateTime(2026, 5, 3, 15, 0),
+    loggedAt: _at(2026, 5, 3, 15, 0),
+    createdAt: _at(2026, 5, 3, 15, 0),
   ),
   ActivityEntry(
     id: 2,
@@ -233,8 +245,8 @@ final _activities = [
     activityType: ActivityType.gentleExercise,
     effortLevel: 1,
     durationMinutes: 15,
-    loggedAt: DateTime(2026, 5, 2, 10, 0),
-    createdAt: DateTime(2026, 5, 2, 10, 0),
+    loggedAt: _at(2026, 5, 2, 10, 0),
+    createdAt: _at(2026, 5, 2, 10, 0),
   ),
   ActivityEntry(
     id: 3,
@@ -242,8 +254,8 @@ final _activities = [
     description: 'Rest day: very low energy',
     activityType: ActivityType.rest,
     effortLevel: 1,
-    loggedAt: DateTime(2026, 5, 1, 18, 0),
-    createdAt: DateTime(2026, 5, 1, 18, 0),
+    loggedAt: _at(2026, 5, 1, 18, 0),
+    createdAt: _at(2026, 5, 1, 18, 0),
   ),
 ];
 
@@ -251,22 +263,22 @@ final _flares = [
   Flare(
     id: 1,
     profileId: 1,
-    startedAt: DateTime(2026, 4, 20),
-    endedAt: DateTime(2026, 4, 24),
+    startedAt: _at(2026, 4, 20),
+    endedAt: _at(2026, 4, 24),
     initialSeverity: 7,
     peakSeverity: 8,
     notes:
         'Triggered after the cold front came through. Joint pain and fatigue.',
-    createdAt: DateTime(2026, 4, 20),
+    createdAt: _at(2026, 4, 20),
   ),
   Flare(
     id: 2,
     profileId: 1,
-    startedAt: DateTime(2026, 2, 10),
-    endedAt: DateTime(2026, 2, 13),
+    startedAt: _at(2026, 2, 10),
+    endedAt: _at(2026, 2, 13),
     initialSeverity: 5,
     peakSeverity: 6,
-    createdAt: DateTime(2026, 2, 10),
+    createdAt: _at(2026, 2, 10),
   ),
 ];
 
@@ -274,17 +286,17 @@ final _checkins = [
   DailyCheckin(
     id: 1,
     profileId: 1,
-    checkinDate: DateTime(2026, 5, 3),
+    checkinDate: _at(2026, 5, 3),
     wellbeing: 3,
     notes: 'Joints aching. Tired after a busy day.',
-    createdAt: DateTime(2026, 5, 3, 22, 0),
+    createdAt: _at(2026, 5, 3, 22, 0),
   ),
   DailyCheckin(
     id: 2,
     profileId: 1,
-    checkinDate: DateTime(2026, 5, 2),
+    checkinDate: _at(2026, 5, 2),
     wellbeing: 4,
-    createdAt: DateTime(2026, 5, 2, 21, 30),
+    createdAt: _at(2026, 5, 2, 21, 30),
   ),
 ];
 
@@ -357,8 +369,8 @@ final _symptomEntries = [
     userSymptomIsarId: 1,
     name: 'Fatigue',
     severity: 7,
-    loggedAt: DateTime(2026, 5, 3, 14, 0),
-    createdAt: DateTime(2026, 5, 3, 14, 0),
+    loggedAt: _at(2026, 5, 3, 14, 0),
+    createdAt: _at(2026, 5, 3, 14, 0),
   ),
   SymptomEntry(
     id: 2,
@@ -366,8 +378,8 @@ final _symptomEntries = [
     userSymptomIsarId: 2,
     name: 'Joint pain',
     severity: 6,
-    loggedAt: DateTime(2026, 5, 3, 14, 0),
-    createdAt: DateTime(2026, 5, 3, 14, 0),
+    loggedAt: _at(2026, 5, 3, 14, 0),
+    createdAt: _at(2026, 5, 3, 14, 0),
   ),
   SymptomEntry(
     id: 3,
@@ -375,8 +387,8 @@ final _symptomEntries = [
     userSymptomIsarId: 3,
     name: 'Brain fog',
     severity: 5,
-    loggedAt: DateTime(2026, 5, 2, 10, 30),
-    createdAt: DateTime(2026, 5, 2, 10, 30),
+    loggedAt: _at(2026, 5, 2, 10, 30),
+    createdAt: _at(2026, 5, 2, 10, 30),
   ),
 ];
 
@@ -384,18 +396,18 @@ final _sleepEntries = [
   SleepEntry(
     id: 1,
     profileId: 1,
-    bedtime: DateTime(2026, 5, 3, 23, 15),
-    wakeTime: DateTime(2026, 5, 4, 7, 0),
+    bedtime: _at(2026, 5, 3, 23, 15),
+    wakeTime: _at(2026, 5, 4, 7, 0),
     qualityRating: 3,
-    createdAt: DateTime(2026, 5, 4, 7, 0),
+    createdAt: _at(2026, 5, 4, 7, 0),
   ),
   SleepEntry(
     id: 2,
     profileId: 1,
-    bedtime: DateTime(2026, 5, 2, 22, 0),
-    wakeTime: DateTime(2026, 5, 3, 7, 30),
+    bedtime: _at(2026, 5, 2, 22, 0),
+    wakeTime: _at(2026, 5, 3, 7, 30),
     qualityRating: 4,
-    createdAt: DateTime(2026, 5, 3, 7, 30),
+    createdAt: _at(2026, 5, 3, 7, 30),
   ),
 ];
 
@@ -404,8 +416,8 @@ final _doseLogs = [
     id: 1,
     profileId: 1,
     medicationIsarId: 1,
-    loggedAt: DateTime(2026, 5, 4, 8, 0),
-    createdAt: DateTime(2026, 5, 4, 8, 0),
+    loggedAt: _at(2026, 5, 4, 8, 0),
+    createdAt: _at(2026, 5, 4, 8, 0),
     amount: 200,
     unit: 'mg',
     status: 'taken',
@@ -414,8 +426,8 @@ final _doseLogs = [
     id: 2,
     profileId: 1,
     medicationIsarId: 2,
-    loggedAt: DateTime(2026, 5, 4, 8, 5),
-    createdAt: DateTime(2026, 5, 4, 8, 5),
+    loggedAt: _at(2026, 5, 4, 8, 5),
+    createdAt: _at(2026, 5, 4, 8, 5),
     amount: 2000,
     unit: 'IU',
     status: 'taken',
@@ -645,6 +657,19 @@ Future<void> _settle(WidgetTester tester) async {
   await tester.pump(const Duration(milliseconds: 400));
 }
 
+/// Opens a bar item, then one of its tabs (Track and Care, #165).
+Future<void> _open(WidgetTester tester, String item, [String? tab]) async {
+  await tester.tap(
+    find.descendant(of: find.byType(NavigationBar), matching: find.text(item)),
+  );
+  await _settle(tester);
+  if (tab == null) return;
+  await tester.tap(
+    find.descendant(of: find.byType(TabBar), matching: find.text(tab)),
+  );
+  await _settle(tester);
+}
+
 // On Android, convertFlutterSurfaceToImage() may only be called once per
 // test: it registers its own tearDown to revert the surface, so a second
 // call within the same test body (needed when one test takes several
@@ -723,27 +748,23 @@ void main() {
       await _screenshot(binding, tester, '02_dashboard');
     });
 
-    // Tracking: Symptoms tab (default view when tapping Tracking in nav)
+    // Track: Symptoms tab
     testWidgets('03_tracking_symptoms', (tester) async {
       await tester.pumpWidget(
         ProviderScope(overrides: _overrides(), child: const HealthFlareApp()),
       );
       await _settle(tester);
-      await tester.tap(find.text('Tracking'));
-      await _settle(tester);
+      await _open(tester, 'Track', 'Symptoms');
       await _screenshot(binding, tester, '03_tracking_symptoms');
     });
 
-    // Tracking: Illnesses tab showing Active + In recovery sections
+    // Care: Conditions tab showing Active + In recovery sections
     testWidgets('04_tracking_illnesses', (tester) async {
       await tester.pumpWidget(
         ProviderScope(overrides: _overrides(), child: const HealthFlareApp()),
       );
       await _settle(tester);
-      await tester.tap(find.text('Tracking'));
-      await _settle(tester);
-      await tester.tap(find.text('Illnesses'));
-      await _settle(tester);
+      await _open(tester, 'Care', 'Conditions');
       await _screenshot(binding, tester, '04_tracking_illnesses');
     });
 
@@ -753,10 +774,7 @@ void main() {
         ProviderScope(overrides: _overrides(), child: const HealthFlareApp()),
       );
       await _settle(tester);
-      await tester.tap(find.text('Tracking'));
-      await _settle(tester);
-      await tester.tap(find.text('Illnesses'));
-      await _settle(tester);
+      await _open(tester, 'Care', 'Conditions');
       await tester.tap(find.text('Fibromyalgia'));
       await _settle(tester);
       await _screenshot(binding, tester, '05_condition_detail');
@@ -767,8 +785,7 @@ void main() {
         ProviderScope(overrides: _overrides(), child: const HealthFlareApp()),
       );
       await _settle(tester);
-      await tester.tap(find.text('Medications'));
-      await _settle(tester);
+      await _open(tester, 'Care', 'Medications');
       await _screenshot(binding, tester, '06_medications');
     });
 
@@ -777,8 +794,7 @@ void main() {
         ProviderScope(overrides: _overrides(), child: const HealthFlareApp()),
       );
       await _settle(tester);
-      await tester.tap(find.text('Meals'));
-      await _settle(tester);
+      await _open(tester, 'Track', 'Meals');
       await _screenshot(binding, tester, '07_meals');
     });
 
@@ -787,8 +803,7 @@ void main() {
         ProviderScope(overrides: _overrides(), child: const HealthFlareApp()),
       );
       await _settle(tester);
-      await tester.tap(find.text('Journal'));
-      await _settle(tester);
+      await _open(tester, 'Journal', 'Entries');
       await _screenshot(binding, tester, '08_journal');
     });
 
@@ -797,8 +812,7 @@ void main() {
         ProviderScope(overrides: _overrides(), child: const HealthFlareApp()),
       );
       await _settle(tester);
-      await tester.tap(find.text('Journal'));
-      await _settle(tester);
+      await _open(tester, 'Journal', 'Entries');
       await tester.tap(find.byTooltip('New journal entry'));
       await _settle(tester);
       // Extra pump for the weather postFrameCallback to fire.
@@ -812,12 +826,11 @@ void main() {
         ProviderScope(overrides: _overrides(), child: const HealthFlareApp()),
       );
       await _settle(tester);
-      await tester.tap(find.text('Journal'));
-      await _settle(tester);
+      await _open(tester, 'Journal', 'Entries');
       await tester.tap(
         find.descendant(
           of: find.byType(JournalEntryCard),
-          matching: find.text('Rough Saturday'),
+          matching: find.text('Rough day'),
         ),
       );
       await _settle(tester);
@@ -829,8 +842,7 @@ void main() {
         ProviderScope(overrides: _overrides(), child: const HealthFlareApp()),
       );
       await _settle(tester);
-      await tester.tap(find.text('Medications'));
-      await _settle(tester);
+      await _open(tester, 'Care', 'Medications');
       await tester.tap(find.byTooltip('Add medication'));
       await _settle(tester);
       await _screenshot(binding, tester, '10_medication_form');
@@ -841,8 +853,7 @@ void main() {
         ProviderScope(overrides: _overrides(), child: const HealthFlareApp()),
       );
       await _settle(tester);
-      await tester.tap(find.text('Meals'));
-      await _settle(tester);
+      await _open(tester, 'Track', 'Meals');
       await tester.tap(find.byTooltip('Log meal'));
       await _settle(tester);
       await _screenshot(binding, tester, '11_meal_form');
@@ -854,8 +865,7 @@ void main() {
         ProviderScope(overrides: _overrides(), child: const HealthFlareApp()),
       );
       await _settle(tester);
-      await tester.tap(find.text('Tracking'));
-      await _settle(tester);
+      await _open(tester, 'Track', 'Symptoms');
       await tester.tap(find.byTooltip('Log symptom'));
       await _settle(tester);
       // Extra pump for the weather postFrameCallback to fire.
