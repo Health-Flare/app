@@ -230,6 +230,49 @@ void main() {
     expect(_stored(tester), ['dashboard', 'track', 'care', 'journal']);
   });
 
+  // Found by the release review (#171): the snackbar outlives the editor,
+  // and Undo used the closed screen's ref.
+  testWidgets('Undo still works after leaving the editor', (tester) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: _overrides(const BarRecord(seenVersion: 2)),
+        child: MaterialApp(
+          home: Builder(
+            builder: (context) => Scaffold(
+              body: TextButton(
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => const BottomBarScreen(),
+                  ),
+                ),
+                child: const Text('open'),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('open'));
+    await tester.pumpAndSettle();
+    final c = ProviderScope.containerOf(
+      tester.element(find.byType(BottomBarScreen)),
+    );
+    await _tapIn(tester, 'Journal', 'Remove Journal');
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+    expect(find.byType(BottomBarScreen), findsNothing);
+
+    await tester.tap(find.text('Undo'));
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    expect(c.read(barChoiceProvider.notifier).shownIds, [
+      'dashboard',
+      'track',
+      'care',
+      'journal',
+    ]);
+  });
+
   testWidgets('Reset to the default, after asking', (tester) async {
     await tester.pumpWidget(
       _editor(

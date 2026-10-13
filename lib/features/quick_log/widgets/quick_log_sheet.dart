@@ -737,13 +737,14 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
                 padding: const EdgeInsets.fromLTRB(16, 12, 8, 0),
                 child: Row(
                   children: [
-                    Text(
-                      'Logging for $profileName',
-                      style: tt.labelMedium?.copyWith(
-                        color: cs.onSurfaceVariant,
+                    Expanded(
+                      child: Text(
+                        'Logging for $profileName',
+                        style: tt.labelMedium?.copyWith(
+                          color: cs.onSurfaceVariant,
+                        ),
                       ),
                     ),
-                    const Spacer(),
                     IconButton(
                       icon: const Icon(Icons.close),
                       onPressed: _handlePop,
@@ -752,105 +753,123 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
                   ],
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: TextField(
-                  controller: _textController,
-                  autofocus: true,
-                  minLines: 3,
-                  maxLines: 6,
-                  textCapitalization: TextCapitalization.sentences,
-                  decoration: const InputDecoration(
-                    hintText: 'What would you like to log?',
-                    border: InputBorder.none,
-                  ),
-                  style: tt.bodyLarge,
-                ),
-              ),
-              const Divider(height: 1),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
-                child: Row(
-                  children: [
-                    GestureDetector(
-                      onTap: _pickTimestamp,
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.schedule_outlined,
-                            size: 16,
-                            color: cs.onSurfaceVariant,
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            _fmt.format(_timestamp),
-                            style: tt.bodySmall?.copyWith(
-                              color: cs.onSurfaceVariant,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    if (weather != null) ...[
-                      const SizedBox(width: 12),
-                      WeatherChip(snapshot: weather),
-                    ],
-                  ],
-                ),
-              ),
-              if (type != null)
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                  child: Row(
+              // Everything between the header and the save button scrolls,
+              // so large text, a long warning or the keyboard can't push the
+              // button off the sheet (#171).
+              Flexible(
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      PopupMenuButton<QuickLogEntryType>(
-                        tooltip: 'Change entry type',
-                        onSelected: (picked) =>
-                            setState(() => _typeOverride = picked),
-                        itemBuilder: (context) => [
-                          for (final choice in _typeChoices)
-                            PopupMenuItem(
-                              value: choice,
-                              child: Text(_chipLabel(choice)),
-                            ),
-                        ],
-                        child: Semantics(
-                          liveRegion: true,
-                          label: 'Classified as ${_chipLabel(type)}',
-                          child: Chip(
-                            label: Text(_chipLabel(type)),
-                            avatar: Icon(
-                              _chipIcon(type),
-                              size: 16,
-                              color: cs.primary,
-                            ),
-                            backgroundColor: cs.primaryContainer,
-                            padding: EdgeInsets.zero,
-                            visualDensity: VisualDensity.compact,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: TextField(
+                          controller: _textController,
+                          autofocus: true,
+                          minLines: 3,
+                          maxLines: 6,
+                          textCapitalization: TextCapitalization.sentences,
+                          decoration: const InputDecoration(
+                            hintText: 'What would you like to log?',
+                            border: InputBorder.none,
                           ),
+                          style: tt.bodyLarge,
                         ),
                       ),
-                      const SizedBox(width: 12),
-                      TextButton(
-                        onPressed: _addDetails,
-                        child: const Text('Add details'),
+                      const Divider(height: 1),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        child: Wrap(
+                          spacing: 12,
+                          runSpacing: 4,
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          children: [
+                            GestureDetector(
+                              onTap: _pickTimestamp,
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.schedule_outlined,
+                                    size: 16,
+                                    color: cs.onSurfaceVariant,
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Flexible(
+                                    child: Text(
+                                      _fmt.format(_timestamp),
+                                      style: tt.bodySmall?.copyWith(
+                                        color: cs.onSurfaceVariant,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            if (weather != null) WeatherChip(snapshot: weather),
+                          ],
+                        ),
                       ),
+                      if (type != null)
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                          child: Wrap(
+                            spacing: 12,
+                            runSpacing: 4,
+                            crossAxisAlignment: WrapCrossAlignment.center,
+                            children: [
+                              PopupMenuButton<QuickLogEntryType>(
+                                tooltip: 'Change entry type',
+                                onSelected: (picked) =>
+                                    setState(() => _typeOverride = picked),
+                                itemBuilder: (context) => [
+                                  for (final choice in _typeChoices)
+                                    PopupMenuItem(
+                                      value: choice,
+                                      child: Text(_chipLabel(choice)),
+                                    ),
+                                ],
+                                child: Semantics(
+                                  liveRegion: true,
+                                  label: 'Classified as ${_chipLabel(type)}',
+                                  child: Chip(
+                                    label: Text(_chipLabel(type)),
+                                    avatar: Icon(
+                                      _chipIcon(type),
+                                      size: 16,
+                                      color: cs.primary,
+                                    ),
+                                    backgroundColor: cs.primaryContainer,
+                                    padding: EdgeInsets.zero,
+                                    visualDensity: VisualDensity.compact,
+                                  ),
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: _addDetails,
+                                child: const Text('Add details'),
+                              ),
+                            ],
+                          ),
+                        ),
+                      if (offFeature != null)
+                        _FeatureOffWarning(
+                          featureId: offFeature,
+                          profileName: profileName,
+                          alsoJournal: _alsoJournal,
+                          onAlsoJournal: offFeature == 'journal.entries'
+                              ? null
+                              : (v) => setState(() => _alsoJournal = v),
+                          onTurnOn: () => _turnOn(offFeature),
+                        ),
                     ],
                   ),
                 ),
-              if (offFeature != null)
-                _FeatureOffWarning(
-                  featureId: offFeature,
-                  profileName: profileName,
-                  alsoJournal: _alsoJournal,
-                  onAlsoJournal: offFeature == 'journal.entries'
-                      ? null
-                      : (v) => setState(() => _alsoJournal = v),
-                  onTurnOn: () => _turnOn(offFeature),
-                ),
+              ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
                 child: FilledButton(

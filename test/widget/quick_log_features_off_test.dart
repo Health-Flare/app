@@ -233,4 +233,36 @@ void main() {
     expect(find.text(_warning), findsNothing);
     expect(find.text('Save as a journal note too'), findsNothing);
   });
+
+  // Found by the release review (#171): at 200% text, with the keyboard up,
+  // the warning pushed the save button off the sheet.
+  testWidgets('At 200% text with the keyboard up, the save button is on '
+      'screen', (tester) async {
+    // iPhone 17: 402 x 874 points, keyboard about 336 points.
+    tester.view.physicalSize = const Size(1206, 2622);
+    tester.view.devicePixelRatio = 3;
+    tester.view.viewInsets = const FakeViewPadding(bottom: 336 * 3);
+    tester.platformDispatcher.textScaleFactorTestValue = 2;
+    addTearDown(tester.view.reset);
+    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+
+    await _type(
+      tester,
+      _sheet(off: ['track.meals']),
+      'Toast and eggs for breakfast',
+    );
+    expect(tester.takeException(), isNull);
+    final save = find.widgetWithText(FilledButton, 'Quick Add: Meal');
+    final box = tester.getRect(save);
+    expect(
+      box.bottom,
+      lessThanOrEqualTo(874 - 336),
+      reason: 'above the keyboard',
+    );
+    expect(box.top, greaterThanOrEqualTo(0));
+
+    await tester.tap(save);
+    await tester.pumpAndSettle();
+    expect(_meals, hasLength(1));
+  });
 }

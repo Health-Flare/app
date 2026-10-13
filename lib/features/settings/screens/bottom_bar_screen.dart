@@ -39,6 +39,9 @@ class _BottomBarScreenState extends ConsumerState<BottomBarScreen> {
   }
 
   void _offerUndo(BarRecord before) {
+    // The snackbar outlives this screen, so Undo can't go through its ref
+    // (#171): take the notifier now. It's app-wide, so it's still there.
+    final bar = _bar;
     final messenger = ScaffoldMessenger.of(context)..hideCurrentSnackBar();
     messenger.showSnackBar(
       SnackBar(
@@ -46,7 +49,7 @@ class _BottomBarScreenState extends ConsumerState<BottomBarScreen> {
         action: SnackBarAction(
           label: 'Undo',
           onPressed: () {
-            _bar.restore(before);
+            bar.restore(before);
             if (mounted) setState(() => _likeBeforeNote = false);
           },
         ),
