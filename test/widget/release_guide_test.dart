@@ -15,6 +15,7 @@ import 'package:health_flare/core/navigation/section_routes.dart';
 import 'package:health_flare/core/providers/flare_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/core/router/app_router.dart';
+import 'package:health_flare/core/theme/app_theme.dart';
 import 'package:health_flare/features/release_guides/guide_rules.dart';
 import 'package:health_flare/features/release_guides/release_guide.dart';
 import 'package:health_flare/features/release_guides/release_guide_provider.dart';
@@ -25,6 +26,8 @@ import 'package:health_flare/features/sections/tab_content.dart';
 import 'package:health_flare/features/settings/screens/bottom_bar_screen.dart';
 import 'package:health_flare/features/shell/app_shell.dart';
 import 'package:health_flare/models/profile.dart';
+
+import '../helpers/contrast.dart';
 
 class _Active extends ActiveProfileNotifier {
   @override
@@ -82,6 +85,7 @@ Widget _app({
   String initial = AppRoutes.dashboard,
   double textScale = 1,
   bool reduceMotion = false,
+  ThemeData? theme,
 }) {
   final listPaths = {
     for (final s in navSections)
@@ -96,6 +100,7 @@ Widget _app({
         size: const Size(400, 900),
       ),
       child: MaterialApp.router(
+        theme: theme,
         routerConfig: GoRouter(
           initialLocation: initial,
           routes: [
@@ -647,4 +652,26 @@ void main() {
     await tester.pumpAndSettle();
     expect(_guideSaves, isEmpty);
   });
+
+  // Found by the release review (#171): the arrow between "was" and "now"
+  // was cs.outline, near-invisible on the light background.
+  for (final (name, theme) in [
+    ('light', AppTheme.light),
+    ('dark', AppTheme.dark),
+  ]) {
+    testWidgets('the was -> now arrows are visible ($name)', (tester) async {
+      await tester.pumpWidget(
+        _app(initial: AppRoutes.guide('track-and-care', step: 1), theme: theme),
+      );
+      await tester.pumpAndSettle();
+      final arrows = tester.widgetList<Icon>(find.byIcon(Icons.arrow_forward));
+      expect(arrows, isNotEmpty);
+      for (final a in arrows) {
+        expect(
+          contrast(a.color!, theme.scaffoldBackgroundColor),
+          greaterThanOrEqualTo(3),
+        );
+      }
+    });
+  }
 }
