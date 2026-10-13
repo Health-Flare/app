@@ -20,6 +20,7 @@ import 'package:health_flare/data/models/activity_entry_isar.dart';
 import 'package:health_flare/data/models/dose_log_isar.dart';
 import 'package:health_flare/data/models/flare_isar.dart';
 import 'package:health_flare/data/models/meal_entry_isar.dart';
+import 'package:health_flare/data/models/medication_isar.dart';
 import 'package:health_flare/data/models/profile_isar.dart';
 import 'package:health_flare/data/models/symptom_entry_isar.dart';
 import 'package:health_flare/data/models/vital_entry_isar.dart';
@@ -179,6 +180,18 @@ void main() {
     final source = await _open(tmp.path, name: 'other_phone');
     await _seed(source, version: MigrationRunner.targetVersion);
     await source.writeTxn(() async {
+      await source.medicationIsars.put(
+        MedicationIsar()
+          ..id = 1
+          ..profileId = 1
+          ..name = 'Ibuprofen'
+          ..medicationType = 'medication'
+          ..doseAmount = 200
+          ..doseUnit = 'mg'
+          ..frequency = 'as_needed'
+          ..startDate = _start
+          ..createdAt = _start,
+      );
       await source.symptomEntryIsars.put(
         _symptom(1, _during)..flareDetached = true,
       );

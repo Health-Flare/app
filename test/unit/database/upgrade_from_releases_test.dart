@@ -31,6 +31,7 @@ import 'package:health_flare/data/models/symptom_entry_isar.dart';
 import 'package:health_flare/data/models/symptom_isar.dart';
 import 'package:health_flare/data/models/user_condition_isar.dart';
 import 'package:health_flare/data/models/vital_entry_isar.dart';
+import 'package:health_flare/models/flare_membership.dart';
 
 class _Docs with MockPlatformInterfaceMixin implements PathProviderPlatform {
   _Docs(this.path);
@@ -256,7 +257,19 @@ void main() {
 
         final flare = (await isar.flareIsars.where().findAll()).single;
         final symptom = (await isar.symptomEntryIsars.where().findAll()).single;
-        expect(symptom.flareIsarId, flare.id, reason: 'the flare link');
+        // Still part of its flare. Since v23 that's worked out from the
+        // time (#173): the stored link only repeated it, so it's cleared.
+        expect(
+          flareFor(
+            at: symptom.loggedAt,
+            profileId: symptom.profileId,
+            flares: [flare.toDomain()],
+            pinnedFlareId: symptom.flareIsarId,
+            detached: symptom.flareDetached,
+          ),
+          flare.id,
+          reason: 'still part of its flare',
+        );
         expect(symptom.locations, manifest['symptomLocations']);
 
         final condition =

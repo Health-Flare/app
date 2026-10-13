@@ -13,6 +13,7 @@ import 'package:health_flare/core/providers/vital_entry_provider.dart';
 import 'package:health_flare/models/activity_entry.dart';
 import 'package:health_flare/models/dose_log.dart';
 import 'package:health_flare/models/flare.dart';
+import 'package:health_flare/models/flare_membership.dart';
 import 'package:health_flare/models/meal_entry.dart';
 import 'package:health_flare/models/symptom_entry.dart';
 import 'package:health_flare/models/vital_entry.dart';
@@ -42,13 +43,71 @@ class FlareEntries {
 
 /// Every entry that is part of flare [flareId], newest first in each kind.
 final flareEntriesProvider = Provider.family<FlareEntries, int>((ref, flareId) {
-  ref.watch(flareListProvider);
-  ref.watch(symptomEntryListProvider);
-  ref.watch(vitalEntryListProvider);
-  ref.watch(mealEntryListProvider);
-  ref.watch(doseLogListProvider);
-  ref.watch(activityEntryListProvider);
-  return const FlareEntries(); // TODO(#173): red stub
+  final flares = ref.watch(flareListProvider);
+  final flare = flares.where((f) => f.id == flareId).firstOrNull;
+  if (flare == null) return const FlareEntries();
+
+  bool inIt(int profileId, DateTime at, int? pinned, bool detached) =>
+      profileId == flare.profileId &&
+      flareFor(
+            at: at,
+            profileId: profileId,
+            flares: flares,
+            pinnedFlareId: pinned,
+            detached: detached,
+          ) ==
+          flareId;
+
+  List<T> newestFirst<T>(Iterable<T> items, DateTime Function(T) at) =>
+      items.toList()..sort((a, b) => at(b).compareTo(at(a)));
+
+  return FlareEntries(
+    symptoms: newestFirst(
+      ref
+          .watch(symptomEntryListProvider)
+          .where(
+            (e) =>
+                inIt(e.profileId, e.loggedAt, e.flareIsarId, e.flareDetached),
+          ),
+      (e) => e.loggedAt,
+    ),
+    vitals: newestFirst(
+      ref
+          .watch(vitalEntryListProvider)
+          .where(
+            (e) =>
+                inIt(e.profileId, e.loggedAt, e.flareIsarId, e.flareDetached),
+          ),
+      (e) => e.loggedAt,
+    ),
+    meals: newestFirst(
+      ref
+          .watch(mealEntryListProvider)
+          .where(
+            (e) =>
+                inIt(e.profileId, e.loggedAt, e.flareIsarId, e.flareDetached),
+          ),
+      (e) => e.loggedAt,
+    ),
+    doses: newestFirst(
+      ref
+          .watch(doseLogListProvider)
+          .where(
+            (e) =>
+                inIt(e.profileId, e.loggedAt, e.flareIsarId, e.flareDetached),
+          ),
+      (e) => e.loggedAt,
+    ),
+    activities: newestFirst(
+      ref
+          .watch(activityEntryListProvider)
+          .where(
+            (e) =>
+                inIt(e.profileId, e.loggedAt, e.flareIsarId, e.flareDetached),
+          ),
+      (e) => e.loggedAt,
+    ),
+  );
 });
 
 /// The flare an entry would be part of: for a form, as it's being edited.
@@ -58,14 +117,24 @@ final entryFlareProvider =
       Flare?,
       ({int profileId, DateTime at, int? pinnedFlareId, bool detached})
     >((ref, e) {
-      ref.watch(flareListProvider);
-      return null; // TODO(#173): red stub
+      final flares = ref.watch(flareListProvider);
+      final id = flareFor(
+        at: e.at,
+        profileId: e.profileId,
+        flares: flares,
+        pinnedFlareId: e.pinnedFlareId,
+        detached: e.detached,
+      );
+      return id == null ? null : flares.firstWhere((f) => f.id == id);
     });
 
 /// The flare covering [at] for a profile, ignoring any choice on the
 /// entry: what "Add back" would put it in.
 final coveringFlareProvider =
     Provider.family<Flare?, ({int profileId, DateTime at})>((ref, e) {
-      ref.watch(flareListProvider);
-      return null; // TODO(#173): red stub
+      return flareCovering(
+        e.at,
+        profileId: e.profileId,
+        flares: ref.watch(flareListProvider),
+      );
     });

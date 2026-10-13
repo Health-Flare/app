@@ -15,7 +15,15 @@ Flare? flareCovering(
   required int profileId,
   required Iterable<Flare> flares,
 }) {
-  return null; // TODO(#173): red stub
+  Flare? best;
+  for (final f in flares) {
+    if (f.profileId != profileId) continue;
+    if (at.isBefore(f.startedAt)) continue;
+    final end = f.endedAt;
+    if (end != null && at.isAfter(end)) continue;
+    if (best == null || f.startedAt.isAfter(best.startedAt)) best = f;
+  }
+  return best;
 }
 
 /// The id of the flare an entry is part of, or null.
@@ -30,5 +38,10 @@ int? flareFor({
   int? pinnedFlareId,
   bool detached = false,
 }) {
-  return null; // TODO(#173): red stub
+  if (detached) return null;
+  if (pinnedFlareId != null &&
+      flares.any((f) => f.id == pinnedFlareId && f.profileId == profileId)) {
+    return pinnedFlareId;
+  }
+  return flareCovering(at, profileId: profileId, flares: flares)?.id;
 }

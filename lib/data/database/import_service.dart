@@ -1010,6 +1010,7 @@ class _Ctx {
           ..notes = be.notes
           ..loggedAt = be.loggedAt
           ..createdAt = be.createdAt
+          ..flareDetached = be.flareDetached
           ..flareIsarId = be.flareIsarId != null
               ? flareMap[be.flareIsarId]
               : null,
@@ -1043,6 +1044,7 @@ class _Ctx {
           ..notes = be.notes
           ..loggedAt = be.loggedAt
           ..createdAt = be.createdAt
+          ..flareDetached = be.flareDetached
           ..flareIsarId = be.flareIsarId != null
               ? flareMap[be.flareIsarId]
               : null,
@@ -1154,6 +1156,7 @@ class _Ctx {
           ..durationMinutes = be.durationMinutes
           ..loggedAt = be.loggedAt
           ..createdAt = be.createdAt
+          ..flareDetached = be.flareDetached
           ..flareIsarId = be.flareIsarId != null
               ? flareMap[be.flareIsarId]
               : null,
@@ -1196,6 +1199,7 @@ class _Ctx {
           ..reason = bd.reason
           ..effectiveness = bd.effectiveness
           ..notes = bd.notes
+          ..flareDetached = bd.flareDetached
           ..flareIsarId = bd.flareIsarId != null
               ? flareMap[bd.flareIsarId]
               : null,
@@ -1236,6 +1240,7 @@ class _Ctx {
           ..userConditionIsarId = be.userConditionIsarId != null
               ? userConditionMap[be.userConditionIsarId]
               : null
+          ..flareDetached = be.flareDetached
           ..flareIsarId = be.flareIsarId != null
               ? flareMap[be.flareIsarId]
               : null,
