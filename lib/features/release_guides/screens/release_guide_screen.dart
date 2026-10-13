@@ -474,7 +474,12 @@ class _MovedRow extends StatelessWidget {
             children: [
               Expanded(child: Text(row.was, style: tt.titleSmall)),
               ExcludeSemantics(
-                child: Icon(Icons.arrow_forward, size: 16, color: cs.outline),
+                child: Icon(
+                  Icons.arrow_forward,
+                  size: 16,
+                  // Not outline: under 3:1 on the background (#171).
+                  color: cs.onSurfaceVariant,
+                ),
               ),
               const SizedBox(width: 8),
               Expanded(flex: 2, child: Text(row.now, style: tt.bodyMedium)),
