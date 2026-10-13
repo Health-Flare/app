@@ -39,7 +39,9 @@ List<CsvRow> parseCsv(String filePath) {
   }
 
   final raw = file.readAsStringSync();
-  final rows = const CsvToListConverter(eol: '\n').convert(raw);
+  // csv 8 (#168): `Csv().decode` replaces CsvToListConverter. Fields stay
+  // strings (no dynamic typing); both \n and \r\n line endings work.
+  final rows = Csv().decode(raw);
 
   if (rows.isEmpty) {
     throw FormatException('CSV file is empty: $filePath');
