@@ -39,6 +39,10 @@ DEVICE_OUT_PATH="/sdcard/health_flare_walkthrough.mp4"
 
 SDK_ROOT="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-$HOME/Library/Android/sdk}}"
 EMULATOR_BIN="$SDK_ROOT/emulator/emulator"
+# RAM for this boot only; the AVD's saved config is left alone. At the
+# default 2 GB, low-memory kills hang the driver on the first screenshot
+# ("Service has disappeared", #176). Override: EMULATOR_MEMORY_MB=6144.
+EMULATOR_MEMORY_MB="${EMULATOR_MEMORY_MB:-4096}"
 ADB_BIN="$SDK_ROOT/platform-tools/adb"
 
 if [[ ! -x "$EMULATOR_BIN" || ! -x "$ADB_BIN" ]]; then
@@ -71,7 +75,7 @@ boot_avd() {
   fi
 
   echo "Booting $avd_name..." >&2
-  "$EMULATOR_BIN" -avd "$avd_name" -no-snapshot-save -no-audio > /tmp/android_emulator_video_boot.log 2>&1 &
+  "$EMULATOR_BIN" -avd "$avd_name" -memory "$EMULATOR_MEMORY_MB" -no-snapshot-save -no-audio > /tmp/android_emulator_video_boot.log 2>&1 &
 
   "$ADB_BIN" wait-for-device
   local serial
