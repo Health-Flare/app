@@ -28,5 +28,8 @@ class MealEntryIsar {
 
   int? flareIsarId; // back-filled when FlareIsar lands in v9
 
+  /// Taken out of its flare by hand (#173).
+  bool flareDetached = false;
+
   WeatherSnapshotIsar? weatherSnapshot;
 }

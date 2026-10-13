@@ -93,6 +93,7 @@ class ActivityEntryListNotifier extends Notifier<List<ActivityEntry>> {
       ..updatedAt = DateTime.now()
       ..notes = entry.notes
       ..flareIsarId = entry.flareIsarId
+      ..flareDetached = entry.flareDetached
       ..weatherSnapshot = entry.weatherSnapshot != null
           ? WeatherSnapshotIsar.fromDomain(entry.weatherSnapshot!)
           : null;

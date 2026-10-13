@@ -30,5 +30,8 @@ class SymptomEntryIsar {
 
   int? flareIsarId;
 
+  /// Taken out of its flare by hand (#173).
+  bool flareDetached = false;
+
   WeatherSnapshotIsar? weatherSnapshot;
 }

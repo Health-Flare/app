@@ -36,6 +36,9 @@ class ActivityEntryIsar {
   /// Set when logged during an active flare.
   int? flareIsarId;
 
+  /// Taken out of its flare by hand (#173).
+  bool flareDetached = false;
+
   WeatherSnapshotIsar? weatherSnapshot;
 
   ActivityEntry toDomain() => ActivityEntry(
@@ -52,6 +55,7 @@ class ActivityEntryIsar {
     updatedAt: updatedAt,
     notes: notes,
     flareIsarId: flareIsarId,
+    flareDetached: flareDetached,
     weatherSnapshot: weatherSnapshot?.toDomain(),
   );
 }

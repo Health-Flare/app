@@ -32,6 +32,9 @@ class SymptomEntryIsar {
 
   int? flareIsarId;
 
+  /// Taken out of its flare by hand (#173).
+  bool flareDetached = false;
+
   WeatherSnapshotIsar? weatherSnapshot;
 
   SymptomEntry toDomain() => SymptomEntry(
@@ -46,6 +49,7 @@ class SymptomEntryIsar {
     loggedAt: loggedAt,
     createdAt: createdAt,
     flareIsarId: flareIsarId,
+    flareDetached: flareDetached,
     weatherSnapshot: weatherSnapshot?.toDomain(),
   );
 
@@ -61,6 +65,7 @@ class SymptomEntryIsar {
     ..loggedAt = e.loggedAt
     ..createdAt = e.createdAt
     ..flareIsarId = e.flareIsarId
+    ..flareDetached = e.flareDetached
     ..weatherSnapshot = e.weatherSnapshot != null
         ? WeatherSnapshotIsar.fromDomain(e.weatherSnapshot!)
         : null;

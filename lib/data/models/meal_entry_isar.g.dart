@@ -27,39 +27,44 @@ const MealEntryIsarSchema = CollectionSchema(
       name: r'description',
       type: IsarType.string,
     ),
-    r'flareIsarId': PropertySchema(
+    r'flareDetached': PropertySchema(
       id: 2,
+      name: r'flareDetached',
+      type: IsarType.bool,
+    ),
+    r'flareIsarId': PropertySchema(
+      id: 3,
       name: r'flareIsarId',
       type: IsarType.long,
     ),
     r'hasReaction': PropertySchema(
-      id: 3,
+      id: 4,
       name: r'hasReaction',
       type: IsarType.bool,
     ),
     r'loggedAt': PropertySchema(
-      id: 4,
+      id: 5,
       name: r'loggedAt',
       type: IsarType.dateTime,
     ),
-    r'notes': PropertySchema(id: 5, name: r'notes', type: IsarType.string),
+    r'notes': PropertySchema(id: 6, name: r'notes', type: IsarType.string),
     r'photoPath': PropertySchema(
-      id: 6,
+      id: 7,
       name: r'photoPath',
       type: IsarType.string,
     ),
     r'profileId': PropertySchema(
-      id: 7,
+      id: 8,
       name: r'profileId',
       type: IsarType.long,
     ),
     r'updatedAt': PropertySchema(
-      id: 8,
+      id: 9,
       name: r'updatedAt',
       type: IsarType.dateTime,
     ),
     r'weatherSnapshot': PropertySchema(
-      id: 9,
+      id: 10,
       name: r'weatherSnapshot',
       type: IsarType.object,
       target: r'WeatherSnapshotIsar',
@@ -148,15 +153,16 @@ void _mealEntryIsarSerialize(
 ) {
   writer.writeDateTime(offsets[0], object.createdAt);
   writer.writeString(offsets[1], object.description);
-  writer.writeLong(offsets[2], object.flareIsarId);
-  writer.writeBool(offsets[3], object.hasReaction);
-  writer.writeDateTime(offsets[4], object.loggedAt);
-  writer.writeString(offsets[5], object.notes);
-  writer.writeString(offsets[6], object.photoPath);
-  writer.writeLong(offsets[7], object.profileId);
-  writer.writeDateTime(offsets[8], object.updatedAt);
+  writer.writeBool(offsets[2], object.flareDetached);
+  writer.writeLong(offsets[3], object.flareIsarId);
+  writer.writeBool(offsets[4], object.hasReaction);
+  writer.writeDateTime(offsets[5], object.loggedAt);
+  writer.writeString(offsets[6], object.notes);
+  writer.writeString(offsets[7], object.photoPath);
+  writer.writeLong(offsets[8], object.profileId);
+  writer.writeDateTime(offsets[9], object.updatedAt);
   writer.writeObject<WeatherSnapshotIsar>(
-    offsets[9],
+    offsets[10],
     allOffsets,
     WeatherSnapshotIsarSchema.serialize,
     object.weatherSnapshot,
@@ -172,16 +178,17 @@ MealEntryIsar _mealEntryIsarDeserialize(
   final object = MealEntryIsar();
   object.createdAt = reader.readDateTime(offsets[0]);
   object.description = reader.readString(offsets[1]);
-  object.flareIsarId = reader.readLongOrNull(offsets[2]);
-  object.hasReaction = reader.readBool(offsets[3]);
+  object.flareDetached = reader.readBool(offsets[2]);
+  object.flareIsarId = reader.readLongOrNull(offsets[3]);
+  object.hasReaction = reader.readBool(offsets[4]);
   object.id = id;
-  object.loggedAt = reader.readDateTime(offsets[4]);
-  object.notes = reader.readStringOrNull(offsets[5]);
-  object.photoPath = reader.readStringOrNull(offsets[6]);
-  object.profileId = reader.readLong(offsets[7]);
-  object.updatedAt = reader.readDateTimeOrNull(offsets[8]);
+  object.loggedAt = reader.readDateTime(offsets[5]);
+  object.notes = reader.readStringOrNull(offsets[6]);
+  object.photoPath = reader.readStringOrNull(offsets[7]);
+  object.profileId = reader.readLong(offsets[8]);
+  object.updatedAt = reader.readDateTimeOrNull(offsets[9]);
   object.weatherSnapshot = reader.readObjectOrNull<WeatherSnapshotIsar>(
-    offsets[9],
+    offsets[10],
     WeatherSnapshotIsarSchema.deserialize,
     allOffsets,
   );
@@ -200,20 +207,22 @@ P _mealEntryIsarDeserializeProp<P>(
     case 1:
       return (reader.readString(offset)) as P;
     case 2:
-      return (reader.readLongOrNull(offset)) as P;
-    case 3:
       return (reader.readBool(offset)) as P;
+    case 3:
+      return (reader.readLongOrNull(offset)) as P;
     case 4:
-      return (reader.readDateTime(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 5:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readDateTime(offset)) as P;
     case 6:
       return (reader.readStringOrNull(offset)) as P;
     case 7:
-      return (reader.readLong(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 8:
-      return (reader.readDateTimeOrNull(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 9:
+      return (reader.readDateTimeOrNull(offset)) as P;
+    case 10:
       return (reader.readObjectOrNull<WeatherSnapshotIsar>(
             offset,
             WeatherSnapshotIsarSchema.deserialize,
@@ -735,6 +744,15 @@ extension MealEntryIsarQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(property: r'description', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterFilterCondition>
+  flareDetachedEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'flareDetached', value: value),
       );
     });
   }
@@ -1439,6 +1457,20 @@ extension MealEntryIsarQuerySortBy
     });
   }
 
+  QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterSortBy>
+  sortByFlareDetached() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'flareDetached', Sort.asc);
+    });
+  }
+
+  QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterSortBy>
+  sortByFlareDetachedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'flareDetached', Sort.desc);
+    });
+  }
+
   QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterSortBy> sortByFlareIsarId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'flareIsarId', Sort.asc);
@@ -1555,6 +1587,20 @@ extension MealEntryIsarQuerySortThenBy
   thenByDescriptionDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'description', Sort.desc);
+    });
+  }
+
+  QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterSortBy>
+  thenByFlareDetached() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'flareDetached', Sort.asc);
+    });
+  }
+
+  QueryBuilder<MealEntryIsar, MealEntryIsar, QAfterSortBy>
+  thenByFlareDetachedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'flareDetached', Sort.desc);
     });
   }
 
@@ -1678,6 +1724,13 @@ extension MealEntryIsarQueryWhereDistinct
   }
 
   QueryBuilder<MealEntryIsar, MealEntryIsar, QDistinct>
+  distinctByFlareDetached() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'flareDetached');
+    });
+  }
+
+  QueryBuilder<MealEntryIsar, MealEntryIsar, QDistinct>
   distinctByFlareIsarId() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'flareIsarId');
@@ -1743,6 +1796,12 @@ extension MealEntryIsarQueryProperty
   QueryBuilder<MealEntryIsar, String, QQueryOperations> descriptionProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'description');
+    });
+  }
+
+  QueryBuilder<MealEntryIsar, bool, QQueryOperations> flareDetachedProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'flareDetached');
     });
   }
 

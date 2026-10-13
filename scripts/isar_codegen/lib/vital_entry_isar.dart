@@ -25,4 +25,7 @@ class VitalEntryIsar {
   late DateTime createdAt;
 
   int? flareIsarId;
+
+  /// Taken out of its flare by hand (#173).
+  bool flareDetached = false;
 }

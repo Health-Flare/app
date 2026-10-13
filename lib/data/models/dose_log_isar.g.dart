@@ -28,30 +28,35 @@ const DoseLogIsarSchema = CollectionSchema(
       name: r'effectiveness',
       type: IsarType.string,
     ),
-    r'flareIsarId': PropertySchema(
+    r'flareDetached': PropertySchema(
       id: 3,
+      name: r'flareDetached',
+      type: IsarType.bool,
+    ),
+    r'flareIsarId': PropertySchema(
+      id: 4,
       name: r'flareIsarId',
       type: IsarType.long,
     ),
     r'loggedAt': PropertySchema(
-      id: 4,
+      id: 5,
       name: r'loggedAt',
       type: IsarType.dateTime,
     ),
     r'medicationIsarId': PropertySchema(
-      id: 5,
+      id: 6,
       name: r'medicationIsarId',
       type: IsarType.long,
     ),
-    r'notes': PropertySchema(id: 6, name: r'notes', type: IsarType.string),
+    r'notes': PropertySchema(id: 7, name: r'notes', type: IsarType.string),
     r'profileId': PropertySchema(
-      id: 7,
+      id: 8,
       name: r'profileId',
       type: IsarType.long,
     ),
-    r'reason': PropertySchema(id: 8, name: r'reason', type: IsarType.string),
-    r'status': PropertySchema(id: 9, name: r'status', type: IsarType.string),
-    r'unit': PropertySchema(id: 10, name: r'unit', type: IsarType.string),
+    r'reason': PropertySchema(id: 9, name: r'reason', type: IsarType.string),
+    r'status': PropertySchema(id: 10, name: r'status', type: IsarType.string),
+    r'unit': PropertySchema(id: 11, name: r'unit', type: IsarType.string),
   },
   estimateSize: _doseLogIsarEstimateSize,
   serialize: _doseLogIsarSerialize,
@@ -145,14 +150,15 @@ void _doseLogIsarSerialize(
   writer.writeDouble(offsets[0], object.amount);
   writer.writeDateTime(offsets[1], object.createdAt);
   writer.writeString(offsets[2], object.effectiveness);
-  writer.writeLong(offsets[3], object.flareIsarId);
-  writer.writeDateTime(offsets[4], object.loggedAt);
-  writer.writeLong(offsets[5], object.medicationIsarId);
-  writer.writeString(offsets[6], object.notes);
-  writer.writeLong(offsets[7], object.profileId);
-  writer.writeString(offsets[8], object.reason);
-  writer.writeString(offsets[9], object.status);
-  writer.writeString(offsets[10], object.unit);
+  writer.writeBool(offsets[3], object.flareDetached);
+  writer.writeLong(offsets[4], object.flareIsarId);
+  writer.writeDateTime(offsets[5], object.loggedAt);
+  writer.writeLong(offsets[6], object.medicationIsarId);
+  writer.writeString(offsets[7], object.notes);
+  writer.writeLong(offsets[8], object.profileId);
+  writer.writeString(offsets[9], object.reason);
+  writer.writeString(offsets[10], object.status);
+  writer.writeString(offsets[11], object.unit);
 }
 
 DoseLogIsar _doseLogIsarDeserialize(
@@ -165,15 +171,16 @@ DoseLogIsar _doseLogIsarDeserialize(
   object.amount = reader.readDouble(offsets[0]);
   object.createdAt = reader.readDateTime(offsets[1]);
   object.effectiveness = reader.readStringOrNull(offsets[2]);
-  object.flareIsarId = reader.readLongOrNull(offsets[3]);
+  object.flareDetached = reader.readBool(offsets[3]);
+  object.flareIsarId = reader.readLongOrNull(offsets[4]);
   object.id = id;
-  object.loggedAt = reader.readDateTime(offsets[4]);
-  object.medicationIsarId = reader.readLong(offsets[5]);
-  object.notes = reader.readStringOrNull(offsets[6]);
-  object.profileId = reader.readLong(offsets[7]);
-  object.reason = reader.readStringOrNull(offsets[8]);
-  object.status = reader.readString(offsets[9]);
-  object.unit = reader.readString(offsets[10]);
+  object.loggedAt = reader.readDateTime(offsets[5]);
+  object.medicationIsarId = reader.readLong(offsets[6]);
+  object.notes = reader.readStringOrNull(offsets[7]);
+  object.profileId = reader.readLong(offsets[8]);
+  object.reason = reader.readStringOrNull(offsets[9]);
+  object.status = reader.readString(offsets[10]);
+  object.unit = reader.readString(offsets[11]);
   return object;
 }
 
@@ -191,20 +198,22 @@ P _doseLogIsarDeserializeProp<P>(
     case 2:
       return (reader.readStringOrNull(offset)) as P;
     case 3:
-      return (reader.readLongOrNull(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 4:
-      return (reader.readDateTime(offset)) as P;
+      return (reader.readLongOrNull(offset)) as P;
     case 5:
-      return (reader.readLong(offset)) as P;
+      return (reader.readDateTime(offset)) as P;
     case 6:
-      return (reader.readStringOrNull(offset)) as P;
-    case 7:
       return (reader.readLong(offset)) as P;
-    case 8:
+    case 7:
       return (reader.readStringOrNull(offset)) as P;
+    case 8:
+      return (reader.readLong(offset)) as P;
     case 9:
-      return (reader.readString(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 10:
+      return (reader.readString(offset)) as P;
+    case 11:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -927,6 +936,15 @@ extension DoseLogIsarQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(property: r'effectiveness', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterFilterCondition>
+  flareDetachedEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'flareDetached', value: value),
       );
     });
   }
@@ -1897,6 +1915,19 @@ extension DoseLogIsarQuerySortBy
     });
   }
 
+  QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterSortBy> sortByFlareDetached() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'flareDetached', Sort.asc);
+    });
+  }
+
+  QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterSortBy>
+  sortByFlareDetachedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'flareDetached', Sort.desc);
+    });
+  }
+
   QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterSortBy> sortByFlareIsarId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'flareIsarId', Sort.asc);
@@ -2032,6 +2063,19 @@ extension DoseLogIsarQuerySortThenBy
   thenByEffectivenessDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'effectiveness', Sort.desc);
+    });
+  }
+
+  QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterSortBy> thenByFlareDetached() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'flareDetached', Sort.asc);
+    });
+  }
+
+  QueryBuilder<DoseLogIsar, DoseLogIsar, QAfterSortBy>
+  thenByFlareDetachedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'flareDetached', Sort.desc);
     });
   }
 
@@ -2171,6 +2215,12 @@ extension DoseLogIsarQueryWhereDistinct
     });
   }
 
+  QueryBuilder<DoseLogIsar, DoseLogIsar, QDistinct> distinctByFlareDetached() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'flareDetached');
+    });
+  }
+
   QueryBuilder<DoseLogIsar, DoseLogIsar, QDistinct> distinctByFlareIsarId() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'flareIsarId');
@@ -2252,6 +2302,12 @@ extension DoseLogIsarQueryProperty
   QueryBuilder<DoseLogIsar, String?, QQueryOperations> effectivenessProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'effectiveness');
+    });
+  }
+
+  QueryBuilder<DoseLogIsar, bool, QQueryOperations> flareDetachedProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'flareDetached');
     });
   }
 
