@@ -26,15 +26,20 @@ void main() {
   });
 
   group('contactSheet', () {
-    final shots = {
-      'iphone': [
-        parseShot('dark-100__01_guide_card')!,
-        parseShot('light-100__01_guide_card')!,
-        parseShot('light-100__02_guide_four_sections')!,
-      ],
-      'android': [parseShot('light-100__01_guide_card')!],
-    };
-    final html = contactSheet(shots, title: 'Health Flare 1.10.0 review');
+    late Map<String, List<ReviewShot>> shots;
+    late String html;
+
+    setUpAll(() {
+      shots = {
+        'iphone': [
+          parseShot('dark-100__01_guide_card')!,
+          parseShot('light-100__01_guide_card')!,
+          parseShot('light-100__02_guide_four_sections')!,
+        ],
+        'android': [parseShot('light-100__01_guide_card')!],
+      };
+      html = contactSheet(shots, title: 'Health Flare 1.10.0 review');
+    });
 
     test('one row per step, named in plain words', () {
       expect(html, contains('<title>Health Flare 1.10.0 review</title>'));

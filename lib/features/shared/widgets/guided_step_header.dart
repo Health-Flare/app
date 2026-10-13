@@ -37,48 +37,49 @@ class GuidedStepHeader extends StatelessWidget {
 
     return SafeArea(
       bottom: false,
+      // A stack, not a row of fixed-width slots: the dots stay centred on
+      // the screen and Back and Skip take the room their text needs (at
+      // 200% text "Skip" wrapped a letter per line in 48 points, #171).
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(4, 8, 12, 8),
-        child: Row(
-          children: [
-            SizedBox(
-              width: 48,
-              child: onBack == null
-                  ? null
-                  : IconButton(
-                      icon: const Icon(Icons.arrow_back_ios_new_rounded),
-                      iconSize: 18,
-                      color: cs.onSurfaceVariant,
-                      tooltip: 'Back',
-                      onPressed: onBack,
-                    ),
-            ),
-            Expanded(
-              child: Center(
-                child: Semantics(
-                  label: 'Step ${currentIndex + 1} of $total, $stepTitle',
-                  child: ExcludeSemantics(
-                    child: StepProgressDots(
-                      total: total,
-                      currentIndex: currentIndex,
-                    ),
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        // Full width: positioned children outside a stack's own size
+        // are drawn but can't be tapped.
+        child: SizedBox(
+          height: 48,
+          width: double.infinity,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Semantics(
+                label: 'Step ${currentIndex + 1} of $total, $stepTitle',
+                child: ExcludeSemantics(
+                  child: StepProgressDots(
+                    total: total,
+                    currentIndex: currentIndex,
                   ),
                 ),
               ),
-            ),
-            SizedBox(
-              width: 48,
-              child: onSkip == null
-                  ? null
-                  : Align(
-                      alignment: Alignment.centerRight,
-                      child: TextButton(
-                        onPressed: onSkip,
-                        child: const Text('Skip'),
-                      ),
-                    ),
-            ),
-          ],
+              if (onBack != null)
+                Positioned(
+                  left: 4,
+                  child: IconButton(
+                    icon: const Icon(Icons.arrow_back_ios_new_rounded),
+                    iconSize: 18,
+                    color: cs.onSurfaceVariant,
+                    tooltip: 'Back',
+                    onPressed: onBack,
+                  ),
+                ),
+              if (onSkip != null)
+                Positioned(
+                  right: 12,
+                  child: TextButton(
+                    onPressed: onSkip,
+                    child: const Text('Skip', maxLines: 1, softWrap: false),
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );

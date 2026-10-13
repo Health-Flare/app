@@ -69,3 +69,7 @@ libisar.dylib
 
 # Golden-test failure diffs (regenerated on every failing local run)
 test/golden/failures/
+
+# Release review shots (#171): about 200 full-size PNGs per run, for review
+# on this machine only. Rebuild with: bash scripts/release_review.sh
+/screenshots/release_review/
