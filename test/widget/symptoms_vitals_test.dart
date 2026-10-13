@@ -1,3 +1,4 @@
+import '../helpers/no_flares.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -58,6 +59,7 @@ Widget _buildListScreen({
 }) {
   return ProviderScope(
     overrides: [
+      noFlares,
       symptomEntryListProvider.overrideWith(
         () => _FakeSymptomList(entries: symptoms),
       ),
@@ -83,6 +85,7 @@ Widget _buildListScreen({
 Widget _buildSymptomForm({SymptomEntry? entry}) {
   return ProviderScope(
     overrides: [
+      noFlares,
       symptomEntryListProvider.overrideWith(_FakeSymptomList.new),
       activeProfileProvider.overrideWith(_FakeActiveProfile.new),
       profileListProvider.overrideWith(_FakeProfileList.new),
@@ -95,6 +98,7 @@ Widget _buildSymptomForm({SymptomEntry? entry}) {
 Widget _buildVitalForm({VitalEntry? entry}) {
   return ProviderScope(
     overrides: [
+      noFlares,
       vitalEntryListProvider.overrideWith(_FakeVitalList.new),
       activeProfileProvider.overrideWith(_FakeActiveProfile.new),
       profileListProvider.overrideWith(_FakeProfileList.new),
@@ -253,6 +257,7 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
+            noFlares,
             symptomEntryListProvider.overrideWith(_FakeSymptomList.new),
             vitalEntryListProvider.overrideWith(_FakeVitalList.new),
             activeProfileProvider.overrideWith(_FakeActiveProfile.new),

@@ -1,3 +1,4 @@
+import 'package:health_flare/features/flare/widgets/flare_membership_row.dart';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -35,6 +36,14 @@ class _MealEntryFormScreenState extends ConsumerState<MealEntryFormScreen> {
   late TextEditingController _descriptionController;
   late TextEditingController _notesController;
   late DateTime _loggedAt;
+
+  // Which flare this entry is part of is worked out from [_loggedAt]
+  // (#173); these are the person's choices on top.
+  bool _flareDetached = false;
+  int? _pinnedFlareId;
+
+  int? get _flareProfileId =>
+      widget.entry?.profileId ?? ref.watch(activeProfileProvider);
   late bool _hasReaction;
   String? _photoPath;
   bool _submitting = false;
@@ -54,6 +63,8 @@ class _MealEntryFormScreenState extends ConsumerState<MealEntryFormScreen> {
       _descriptionController = TextEditingController(text: e.description);
       _notesController = TextEditingController(text: e.notes ?? '');
       _loggedAt = e.loggedAt;
+      _flareDetached = e.flareDetached;
+      _pinnedFlareId = e.flareIsarId;
       _hasReaction = e.hasReaction;
       _photoPath = e.photoPath;
     } else {
@@ -157,6 +168,8 @@ class _MealEntryFormScreenState extends ConsumerState<MealEntryFormScreen> {
           photoPath: _photoPath,
           hasReaction: _hasReaction,
           loggedAt: _loggedAt,
+          flareDetached: _flareDetached,
+          clearFlareIsarId: _pinnedFlareId == null,
           updatedAt: DateTime.now(),
           clearNotes: notes.isEmpty,
           clearPhotoPath: _photoPath == null,
@@ -175,6 +188,7 @@ class _MealEntryFormScreenState extends ConsumerState<MealEntryFormScreen> {
         photoPath: _photoPath,
         hasReaction: _hasReaction,
         loggedAt: _loggedAt,
+        flareDetached: _flareDetached,
         weatherSnapshot: _capturedWeather,
       );
     }
@@ -299,6 +313,18 @@ class _MealEntryFormScreenState extends ConsumerState<MealEntryFormScreen> {
               ),
             ),
             const SizedBox(height: 16),
+            // Which flare this is part of, from the time above (#173).
+            if (_flareProfileId case final pid?)
+              FlareMembershipRow(
+                profileId: pid,
+                at: _loggedAt,
+                pinnedFlareId: _pinnedFlareId,
+                detached: _flareDetached,
+                onChanged: (d) => setState(() {
+                  _flareDetached = d;
+                  if (d) _pinnedFlareId = null;
+                }),
+              ),
 
             // Reaction flag
             SwitchListTile(

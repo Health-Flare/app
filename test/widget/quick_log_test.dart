@@ -70,6 +70,7 @@ class _FakeSymptomList extends SymptomEntryListNotifier {
     int? userSymptomIsarId,
     int? userConditionIsarId,
     int? flareIsarId,
+    bool flareDetached = false,
     WeatherSnapshot? weatherSnapshot,
   }) async {
     symptomSaveCalls.add({
@@ -120,6 +121,7 @@ class _RecordingVitalList extends VitalEntryListNotifier {
     required DateTime loggedAt,
     String? notes,
     int? flareIsarId,
+    bool flareDetached = false,
   }) async {
     vitalCalls.add({
       'profileId': profileId,
@@ -149,6 +151,7 @@ class _RecordingDoseList extends DoseLogListNotifier {
     String? effectiveness,
     String? notes,
     int? flareIsarId,
+    bool flareDetached = false,
   }) async {
     doseCalls.add({
       'profileId': profileId,
