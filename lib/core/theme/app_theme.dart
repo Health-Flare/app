@@ -393,7 +393,9 @@ abstract final class AppTheme {
   static ChipThemeData _chipTheme(ColorScheme cs) => ChipThemeData(
     backgroundColor: cs.surfaceContainerHighest,
     selectedColor: AppColors.flareAmber.withAlpha(30),
-    labelStyle: AppTextStyles.label,
+    // A colour, always: without one the label is painted with no colour,
+    // which shows as near-white on a device (#171).
+    labelStyle: AppTextStyles.label.copyWith(color: cs.onSurface),
     side: BorderSide.none,
     shape: const RoundedRectangleBorder(borderRadius: borderRadiusSm),
     padding: const EdgeInsets.symmetric(horizontal: space3, vertical: radiusSm),
