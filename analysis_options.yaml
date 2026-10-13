@@ -21,6 +21,9 @@ analyzer:
     - "**/*.freezed.dart"
     - "scripts/**"
     - "tools/**"
+    # Seeds for old releases: compiled at their tags by
+    # scripts/upgrade_fixture.sh, not against this code (#181).
+    - "tool/upgrade/**"
     - build/**
     - android/**
     - ios/**

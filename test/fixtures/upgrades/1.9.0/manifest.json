@@ -1,0 +1,31 @@
+{
+  "release": "1.9.0",
+  "schemaVersion": 15,
+  "activeProfileId": 1,
+  "profiles": {
+    "1": "Sarah",
+    "2": "Leo"
+  },
+  "deletedProfileLeftovers": {
+    "journalEntries": 1
+  },
+  "symptomLocations": [],
+  "kept": {
+    "journalEntries": 2,
+    "userConditions": 1,
+    "flares": 1,
+    "symptomEntries": 1,
+    "vitalEntries": 1,
+    "medications": 1,
+    "doseLogs": 2,
+    "mealEntries": 1,
+    "sleepEntries": 1,
+    "activityEntries": 1,
+    "dailyCheckins": 1,
+    "appointments": 1
+  },
+  "catalogue": {
+    "conditions": 1125,
+    "symptoms": 241
+  }
+}

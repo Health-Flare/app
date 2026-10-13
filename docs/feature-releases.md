@@ -132,6 +132,14 @@ and has no fragment, so none of this triggers.
 - [ ] Any retired section, tab or feature id is in the replacement map
 - [ ] Backup round trip checked with a customized bar and a feature turned off
 - [ ] Guide checked with a screen reader, Reduce Motion and 200% text
+- [ ] The release's What's new entry keeps its `guideId` (1.10.0:
+      `"guideId": "track-and-care"`), or "Replay guide" disappears from
+      Settings > What's new
+- [ ] `bash scripts/release_review.sh -o` looked through, iPhone and Android
+- [ ] `bash scripts/upgrade_test.sh <last release>` passes on iOS and
+      Android (docs/testing/upgrades.md)
+- [ ] After tagging: `bash scripts/upgrade_fixture.sh vX.Y.Z`, and commit the
+      fixture, so every later pull request tests upgrades from it
 
 ## Build flags and navigation ids
 

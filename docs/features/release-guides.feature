@@ -51,6 +51,16 @@ Feature: Release guides
     And once the guide is seen, the What's new card shows
     # One card at a time.
 
+  # TODO(#181): agent-written from the code (guide_card.dart, #164), which
+  # had no spec; verify.
+  @unverified
+  Scenario: The guide card waits while flaring
+    Given the update has a guide
+    And "Sarah" has an active flare
+    When I open the dashboard
+    Then the guide card is not shown
+    And once the flare has ended, it shows
+
   Scenario: Leaving the app mid-guide resumes it next time
     Given the guide is open on "Where things moved"
     When I leave the app, or it is closed
