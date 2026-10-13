@@ -362,6 +362,9 @@ Future<void> _failedUpgradeWalk(WidgetTester tester) async {
 
 void main() {
   _binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+  // On Android the surface conversion is undone after each test (iOS
+  // ignores it), so each variant converts again.
+  setUp(() => _surfaceConverted = false);
 
   const variants = {
     'light-100': (Brightness.light, 1.0),

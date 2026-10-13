@@ -117,7 +117,7 @@ cmd_android() {
   if [[ -z "$id" ]]; then
     warn "No Android emulator running. Start one, then run: bash scripts/release_review.sh android"
     warn "  flutter emulators                      # list them"
-    warn "  flutter emulators --launch <id>        # start one"
+    warn "  emulator -avd <id> -memory 4096        # start one; 2 GB hangs (#176)"
     return
   fi
   run_device android "$id"
