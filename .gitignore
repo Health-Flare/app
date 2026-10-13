@@ -65,6 +65,8 @@ app.*.map.json
 # Isar test artifacts
 *.isar
 *.isar-lck
+# Except upgrade fixtures: databases written by released versions (#181).
+!/test/fixtures/upgrades/*/healthflare.isar
 libisar.dylib
 
 # Golden-test failure diffs (regenerated on every failing local run)

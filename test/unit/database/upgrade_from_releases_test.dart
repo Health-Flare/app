@@ -129,6 +129,18 @@ void main() {
     expect(fixtures, isNotEmpty);
   });
 
+  test('every fixture has its database committed', () {
+    for (final f in fixtures) {
+      expect(
+        File('${f.path}/healthflare.isar').existsSync(),
+        isTrue,
+        reason:
+            '${f.path}/healthflare.isar is missing. Is it ignored by '
+            '.gitignore, or not committed?',
+      );
+    }
+  });
+
   for (final fixture in fixtures) {
     final manifest =
         jsonDecode(File('${fixture.path}/manifest.json').readAsStringSync())
