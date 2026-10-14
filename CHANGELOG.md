@@ -44,18 +44,74 @@ Subsection meanings (from Keep a Changelog):
 ## [Unreleased]
 
 ### Added
+- _Nothing yet._
+
+### Changed
+- _Nothing yet._
+
+### Deprecated
+- _Nothing yet._
+
+### Removed
+- _Nothing yet._
+
+### Fixed
+- _Nothing yet._
+
+### Security
+- _Nothing yet._
+
+## [1.10.0] - 2026-10-14
+
+### Added
 - Settings > About shows the installed app version, e.g. "1.9.1 (build 13)".
 - Pressure and humidity now show alongside the weather on single-entry views: meal and journal details, and the symptom, meal, activity and check-in forms when editing a saved entry.
 - Insights has a Vitals card. It charts every vital type with readings in the selected window, plots each reading at its logged time, draws blood pressure as systolic and diastolic lines, and shades flare periods behind the chart.
 - Each profile has a temperature unit setting (°C, °F, or As logged). It changes how temperatures are shown; readings are stored as entered, and edit forms and exports show them as logged.
 - Medication doses and appointments can be moved to another profile. If the other profile doesn't have the medication yet, it is added for them as part of the move.
 - Before an app update changes how your data is stored, Health Flare saves a safety copy of your data on the phone first. The newest three copies are kept, and they are left out of your phone's iCloud or Google backup so they don't crowd it. If the copy can't be saved, the update waits and your data is left as it is.
+- If updating your data fails, Health Flare tries again the next two times
+  it opens, then stops and opens normally on your data as it is. A card on
+  the dashboard says so, and Settings > Data & backup has "Copy details"
+  to send us, "Export a backup", and a way to restore the copy saved
+  before the update (a backup of your current data is saved first). The
+  next version of the app tries the update again.
+- Settings > Your layout > Features in use turns off what a profile
+  doesn't track: its tab and dashboard card go, and nothing logged is
+  deleted. Quick Log still saves it, and says so.
+- Settings > Your layout > Bottom bar chooses the bar: pin any screen,
+  three to five items, with More for the rest. "Like before" puts it
+  close to the old six-item bar.
+- Backups keep the bottom bar and each profile's features in use.
+- A profile with no appointments sees "Got an appointment coming up? Tap to
+  add it." on the dashboard. Tapping it opens a new appointment.
+- After an appointment, the dashboard asks "How did it go?" for up to a
+  week. Tapping it opens the appointment at its outcome notes, so what the
+  doctor said can be written down while it's fresh. Saving an outcome, or
+  marking the appointment completed, missed or cancelled, clears it.
+- Settings > What's new lists every version of Health Flare, newest first, with the highlights up top and the full list under "All changes".
+- After an update with something worth knowing, a short card waits at the top of the dashboard. It never covers a screen or a log form, has no badge or count, holds off during an active flare, and goes away for good when dismissed, opened, or ignored for five app opens.
+- "Show update highlights" in Settings turns the card off. What's new stays in Settings either way.
 
 ### Changed
 - Moving any entry to another profile now asks first, and names anything that won't carry over, such as a flare link.
 - Unsaved edits are saved before an entry is moved. An edit that fails validation stops the move.
 - Privacy copy says plainly where data goes: your records are in your phone's own iCloud or Google backup, and weather capture sends an approximate location to Open-Meteo. This replaces "Everything stays on this device" and "never shared" wording, which wasn't accurate.
 - Weather capture rounds your location to about 1 km before sending it.
+- The bottom bar is now Dashboard, Track, Care and Journal. Track holds
+  Symptoms, Vitals, Meals, Sleep and Activity; Care holds Medications,
+  Appointments, Conditions and Flares; Journal holds Entries and
+  Check-ins. Each opens on the tab you last used there. Nothing was
+  removed: Meds, Meals and Sleep are tabs now.
+- After updating, a card on the dashboard explains what moved and walks
+  through it ("Show me"). It can keep the bar like before, and can be
+  replayed from Settings > What's new.
+- The dashboard's Upcoming card is now an Appointments card. It always has
+  an "All appointments" link once a profile has an appointment, where before
+  the list could only be opened with three or more coming up. It shows up to
+  three appointments instead of two.
+- With only past appointments, the card says "No appointments coming up."
+  and offers "Add appointment".
 
 ### Deprecated
 - _Nothing yet._
@@ -69,6 +125,39 @@ Subsection meanings (from Keep a Changelog):
 - Vitals, including temperature, now appear on Insights. A profile with only vitals in the window no longer shows "Not enough data yet".
 - Moving an entry from an edit screen no longer discards changes you hadn't saved yet.
 - If updating your data fails, the app still opens and tells you, and the safety copy from before the update stays on the phone. It tries again next time. Before, a failed update stopped the app from opening at all.
+- When an update to your data failed partway and was tried again, the
+  copy saved before the update could be replaced by a copy of the
+  half-updated data. The copy from before the update is now kept.
+- A new profile can no longer be given the number of a deleted profile
+  whose entries are still stored, even if an update didn't finish.
+- CSV exports now say whether each dose was taken, skipped or missed, with
+  the reason and how well it worked when you recorded them, e.g. "500 mg ·
+  Missed · Forgot". Before, every dose looked taken, so a missed dose was
+  counted as taken by anyone reading the file. Amounts no longer show a
+  stray ".0" ("500 mg", not "500.0 mg").
+- Appointments whose time had passed were still listed as upcoming. They
+  now show as "Outcome not recorded" in the appointments list, on the
+  appointment screen, and in PDF and CSV reports, until an outcome is saved
+  or the appointment is marked completed, missed or cancelled. Nothing is
+  changed in the stored appointment.
+- An empty Appointments list now has an "Add appointment" button, and an
+  empty Check-in history says "Tap + to add today's check-in". Before,
+  both only said nothing was recorded.
+- Adding a backup with "Add missing data" now keeps a condition's
+  recovery status and its history. Before, a condition in recovery came
+  back as active with no history.
+- Changing a profile setting, such as the temperature unit, shows
+  straight away on open screens instead of after leaving and coming back.
+- Chip labels are readable again: the body areas on the symptom form,
+  the "in 2 days" label on upcoming appointments and the entry type in
+  Quick Log were showing in near-white.
+- With very large text, "Skip" at the top of the setup steps no longer
+  breaks into one letter per line.
+- On the Conditions screen, "Add as a custom illness" is now offered
+  for anything you type that isn't exactly a condition already in the list.
+  Before, it disappeared as soon as any condition name contained your text,
+  so "Colitis" (only "Ulcerative colitis" and others in the list) could not
+  be saved at all. The matching conditions are still listed below it.
 
 ### Security
 - Deleting a profile now removes all of its health data. Before, only its journal entries were removed; symptoms, vitals, medications, doses, meals, sleep, activity, fluids, bowel entries, flares, check-ins, appointments, tracked conditions and tracked symptoms stayed in the database and in backups. A one-time cleanup on upgrade removes data left behind by profiles deleted on 1.9.1 and earlier.
@@ -76,6 +165,15 @@ Subsection meanings (from Keep a Changelog):
 - Notes and other text in a CSV export can no longer run as spreadsheet formulas. Text starting with =, +, -, @ now opens in Excel, Sheets or LibreOffice exactly as you typed it, instead of being run, so whoever opens your export is safe from formulas hidden in the data.
 - Backups, reports and decrypted backup copies are no longer left in the phone's or computer's temporary folder. On phones, a shared file is deleted as soon as the share sheet closes. Anything left behind, for example if the app was closed during an import, is deleted the next time Health Flare opens.
 - Import and restore refuse a file over 256 MB with "This file is too big to be a Health Flare backup." before reading any of it. A very large file could crash the app before. Real backups are far smaller.
+- You can now lock Health Flare with your face, fingerprint or phone
+  passcode (Settings > Privacy, or when you set up the app). It locks when
+  the app opens and again after it has been in the background for a time
+  you choose (immediately, 1, 5 or 15 minutes). The lock is a screen in
+  front of the app; it doesn't encrypt the records stored on your phone.
+  iPhone and Android only.
+- New "Hide in app switcher" setting (Settings > Privacy) shows a plain
+  screen in the app switcher instead of your last health screen. On Android
+  it also blocks screenshots and screen recording of Health Flare.
 
 ## [1.9.1] - 2026-09-24
 
@@ -374,7 +472,8 @@ Subsection meanings (from Keep a Changelog):
 - Offline-first guarantee: zero outbound network requests at runtime, enforced
   by the `url-scan` CI check.
 
-[Unreleased]: https://github.com/Health-Flare/app/compare/v1.9.1...HEAD
+[Unreleased]: https://github.com/Health-Flare/app/compare/v1.10.0...HEAD
+[1.10.0]: https://github.com/Health-Flare/app/compare/v1.9.1...v1.10.0
 [1.9.1]: https://github.com/Health-Flare/app/compare/v1.9.0...v1.9.1
 [1.9.0]: https://github.com/Health-Flare/app/compare/v1.8.0...v1.9.0
 [1.8.0]: https://github.com/Health-Flare/app/compare/v1.7.1...v1.8.0
