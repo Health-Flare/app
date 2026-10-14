@@ -44,6 +44,26 @@ Subsection meanings (from Keep a Changelog):
 ## [Unreleased]
 
 ### Added
+- _Nothing yet._
+
+### Changed
+- _Nothing yet._
+
+### Deprecated
+- _Nothing yet._
+
+### Removed
+- _Nothing yet._
+
+### Fixed
+- _Nothing yet._
+
+### Security
+- _Nothing yet._
+
+## [1.10.0] - 2026-10-14
+
+### Added
 - Settings > About shows the installed app version, e.g. "1.9.1 (build 13)".
 - Pressure and humidity now show alongside the weather on single-entry views: meal and journal details, and the symptom, meal, activity and check-in forms when editing a saved entry.
 - Insights has a Vitals card. It charts every vital type with readings in the selected window, plots each reading at its logged time, draws blood pressure as systolic and diastolic lines, and shades flare periods behind the chart.
@@ -452,7 +472,8 @@ Subsection meanings (from Keep a Changelog):
 - Offline-first guarantee: zero outbound network requests at runtime, enforced
   by the `url-scan` CI check.
 
-[Unreleased]: https://github.com/Health-Flare/app/compare/v1.9.1...HEAD
+[Unreleased]: https://github.com/Health-Flare/app/compare/v1.10.0...HEAD
+[1.10.0]: https://github.com/Health-Flare/app/compare/v1.9.1...v1.10.0
 [1.9.1]: https://github.com/Health-Flare/app/compare/v1.9.0...v1.9.1
 [1.9.0]: https://github.com/Health-Flare/app/compare/v1.8.0...v1.9.0
 [1.8.0]: https://github.com/Health-Flare/app/compare/v1.7.1...v1.8.0
