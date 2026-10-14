@@ -35,13 +35,8 @@ final featureOnProvider = Provider.family<bool, String>((ref, featureId) {
   return !ref.watch(activeDisabledFeaturesProvider).contains(featureId);
 });
 
-/// The active profile's turned-off features. Watches the profile list as
-/// well as the active profile: `Profile ==` compares ids only, so
-/// [activeProfileDataProvider] on its own doesn't tell watchers when a
-/// profile's settings change (Riverpod 3 drops updates that compare
-/// equal, #160). Reading it after the list changes gives the new profile.
+/// The active profile's turned-off features.
 final activeDisabledFeaturesProvider = Provider<List<String>>((ref) {
-  ref.watch(profileListProvider);
   return ref.watch(activeProfileDataProvider)?.disabledFeatureIds ?? const [];
 });
 

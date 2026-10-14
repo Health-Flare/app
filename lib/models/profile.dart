@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart' show listEquals;
+
 /// Represents a tracked person in Health Flare.
 ///
 /// MVP: plain Dart class, held in memory via [ProfileListNotifier].
@@ -123,9 +125,24 @@ class Profile {
   @override
   String toString() => 'Profile(id: $id, name: $name)';
 
+  /// Every field, so a changed setting is a change: Riverpod 3 drops an
+  /// update that == the old value, and screens watching the active profile
+  /// were never told about a new unit or switch (#160). hashCode stays on
+  /// the id, which equal profiles always share.
   @override
   bool operator ==(Object other) =>
-      identical(this, other) || (other is Profile && other.id == id);
+      identical(this, other) ||
+      (other is Profile &&
+          other.id == id &&
+          other.name == name &&
+          other.dateOfBirth == dateOfBirth &&
+          other.avatarPath == avatarPath &&
+          other.weatherTrackingEnabled == weatherTrackingEnabled &&
+          other.colorSeed == colorSeed &&
+          other.cycleTrackingEnabled == cycleTrackingEnabled &&
+          other.bowelTrackingEnabled == bowelTrackingEnabled &&
+          other.temperatureUnit == temperatureUnit &&
+          listEquals(other.disabledFeatureIds, disabledFeatureIds));
 
   @override
   int get hashCode => id.hashCode;
