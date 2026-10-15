@@ -17,11 +17,18 @@
 #   • flutter in $PATH
 #   • jq  (brew install jq)
 #
-# App Store Connect screenshot requirements (docs/apple-app-store-checklist.md, Phase 3):
-#   6.9" iPhone (Pro Max class): required
-#   6.5" iPhone (Plus class): required
-#   13"  iPad   (Pro class): required because TARGETED_DEVICE_FAMILY = "1,2" in
-#                                  ios/Runner.xcodeproj (the app is built as universal)
+# App Store Connect screenshot sizes (Apple's screenshot specifications,
+# checked October 2026):
+#   iphone-6.3  iPhone with Dynamic Island, medium display (iPhone 17,
+#               1206 x 2622): REQUIRED
+#   iphone-6.9  iPhone with Dynamic Island, large display (1320 x 2868):
+#               optional; uploaded so large phones get sharp shots
+#   iphone-6.5  iPhone with Face ID, large display (1242 x 2688): optional,
+#               captured but not in the upload set
+#   ipad-13     iPad 13" (2064 x 2752): REQUIRED, because
+#               TARGETED_DEVICE_FAMILY = "1,2" (the app is universal)
+#   iPhone Duo  required from April 2027 for builds on the iOS 27.1 SDK or
+#               later; not captured yet (no simulator, and we build on 26.x)
 #
 # The simulator names below match Xcode's current device-class naming. Apple
 # renames simulators every hardware generation, so if `xcrun simctl list`
@@ -34,8 +41,8 @@ set -euo pipefail
 OUT_ROOT="screenshots"
 
 # Parallel arrays (bash 3.2 on macOS has no associative arrays).
-DEVICE_CLASS_SLUGS=("iphone-6.9" "iphone-6.5" "ipad-13")
-DEVICE_CLASS_NAMES=("iPhone 16 Pro Max" "iPhone 11 Pro Max" "iPad Pro 13-inch (M4)")
+DEVICE_CLASS_SLUGS=("iphone-6.3" "iphone-6.9" "iphone-6.5" "ipad-13")
+DEVICE_CLASS_NAMES=("iPhone 17" "iPhone 16 Pro Max" "iPhone 11 Pro Max" "iPad Pro 13-inch (M4)")
 
 # ── Helpers ──────────────────────────────────────────────────────────────
 
@@ -74,6 +81,9 @@ run_screenshot_suite() {
   local device_id="$1"
   local out_dir="$2"
 
+  # Start empty: a run that fails while pulling the shots must not leave
+  # the previous release's files looking current.
+  rm -rf "$out_dir"
   mkdir -p "$out_dir"
   SCREENSHOT_DIR="$out_dir" flutter drive \
     --driver=test_driver/integration_test.dart \

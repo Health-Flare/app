@@ -4,7 +4,7 @@ Only two folders here are for the stores. Everything else is for testing and rev
 
 | Folder | What it is | Goes to |
 |---|---|---|
-| `appstore/iphone-6.9/`, `appstore/iphone-6.5/`, `appstore/ipad-13/` | Store captures from `scripts/take_screenshots.sh` | **App Store Connect**, through `scripts/store_upload_set.sh` |
+| `appstore/iphone-6.3/` (required), `appstore/iphone-6.9/`, `appstore/ipad-13/` (required); `appstore/iphone-6.5/` isn't uploaded | Store captures from `scripts/take_screenshots.sh` | **App Store Connect**, through `scripts/store_upload_set.sh` |
 | `playstore/phone/` | Store captures from `scripts/take_screenshots_android.sh` | **Google Play Console**, through `scripts/store_upload_set.sh` |
 | `whats_new/` | What's new cards (`scripts/whats_new.sh shots`) | Nowhere: review only |
 | `track_and_care/` | Track and Care flows (`scripts/track_and_care.sh shots`) | Nowhere: review only |

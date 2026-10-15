@@ -33,7 +33,9 @@ copy_set() {
 }
 
 rm -rf "$OUT"
-for device in iphone-6.9 iphone-6.5 ipad-13; do
+# Apple requires iphone-6.3 (Dynamic Island, medium display) and ipad-13;
+# iphone-6.9 fills the large-display slot. iphone-6.5 isn't uploaded.
+for device in iphone-6.3 iphone-6.9 ipad-13; do
   copy_set "screenshots/appstore/$device" "$OUT/app-store/$device" "${APP_STORE[@]}"
 done
 copy_set "screenshots/playstore/phone" "$OUT/play-store/phone" "${PLAY_STORE[@]}"
