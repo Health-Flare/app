@@ -18,6 +18,7 @@ final _bannedClaims = <RegExp>[
   RegExp(r'no network calls', caseSensitive: false),
   RegExp(r'does not transmit data', caseSensitive: false),
   RegExp(r'nothing is uploaded', caseSensitive: false),
+  RegExp(r'no data (is )?uploaded', caseSensitive: false),
   RegExp(r'no data (ever )?leaves', caseSensitive: false),
   RegExp(r'not collect,? transmit', caseSensitive: false),
   RegExp(r'no cloud backup', caseSensitive: false),
@@ -34,6 +35,10 @@ List<File> _copyFiles() => [
   File('docs/privacy-policy.md'),
   File('docs/privacy-policy.html'),
   File('SECURITY.md'),
+  File('docs/store-listing.md'),
+  ...Directory(
+    'docs/store-notes',
+  ).listSync().whereType<File>().where((f) => f.path.endsWith('.md')),
 ];
 
 /// Drops Dart comments so explanatory comments can quote the old wording.

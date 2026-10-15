@@ -13,7 +13,7 @@ Character counts are noted where limits apply.
 | Developer / seller name | Automated Bytes Incorporated |
 | Bundle ID (iOS / macOS) | org.healthflare.app.healthflare |
 | Package name (Android) | org.healthflare.app.healthflare |
-| Version | 1.7.1 |
+| Version | 1.10.0 |
 | Privacy policy URL | https://healthflare.org/privacy |
 | Support URL | https://healthflare.org |
 | Category (primary) | Health & Fitness |
@@ -37,43 +37,45 @@ Chronic illness companion
 
 ### Keywords
 ```
-chronic illness,symptom tracker,health journal,flare,fibromyalgia,lupus,ME,CFS,medication log,pain tracker
-```
-*(100 chars max, 104 used; trim one if rejected: remove "pain tracker")*
-
-Trimmed fallback (99 chars):
-```
 chronic illness,symptom tracker,health journal,flare,fibromyalgia,lupus,ME,CFS,medication log
 ```
+*(100 chars max: 93 used. "pain tracker" was dropped: with it the list was 104 characters, and App Store Connect won't accept that.)*
 
 ### Description
-*(4000 chars max)*
+*(4000 chars max: 2,951 used)*
 
 ```
 Health Flare is a private, offline-first health companion designed for people living with chronic illness.
 
-Track your health story (symptoms, vitals, medications, meals, sleep, flares, activity, and daily check-ins) all in one place, all on your device. There are no accounts and no servers of ours. Your records are stored on your device and are included in your phone's own backup if you use one. Weather tracking is optional; if you turn it on, your approximate location is sent to a weather service to look up the conditions.
+Track your health story (symptoms, vitals, medications, meals, sleep, flares, activity, and daily check-ins) all in one place, on your device. There are no accounts and no servers of ours. Your records are stored on your device and are included in your phone's own backup if you use one. Weather tracking is optional; if you turn it on, your approximate location is sent to a weather service to look up the conditions.
 
 ──────────────────────────────
 WHAT YOU CAN TRACK
 ──────────────────────────────
 
-• Symptoms: log severity over time to surface patterns
+• Symptoms: log severity and where it hurts, and see patterns over time
 • Vitals: blood pressure, heart rate, temperature, oxygen, weight, blood glucose
-• Medications & doses: track what you take and when
+• Medications & doses: what you take, when, and doses missed or skipped
 • Meals: note what you eat and flag reactions
 • Sleep: bedtime, wake time, quality, and naps
 • Flares: document flare start, severity, and triggers
 • Daily check-ins: wellbeing, stress, and optional cycle tracking
 • Activity & rest: log exertion with a PEM (post-exertional malaise) flag for ME/CFS
-• Doctor visits: keep a record of appointments and notes
+• Appointments: questions to ask, and what the doctor said afterwards
 • Journal: long-form entries with mood and energy tagging
+• Insights: charts of your symptoms and vitals, with flares shaded in
+
+──────────────────────────────
+MADE TO FIT YOU
+──────────────────────────────
+
+Everything lives in four sections: Dashboard, Track, Care and Journal. Choose what's in your bottom bar, and turn off the features a profile doesn't use. Turning a feature off never deletes anything, and your layout is kept in backups.
 
 ──────────────────────────────
 BUILT FOR CHRONIC ILLNESS
 ──────────────────────────────
 
-Health Flare was designed with the chronic illness community in mind, not the casual wellness market. It supports the kinds of tracking that matter for conditions like ME/CFS, fibromyalgia, lupus, EDS, POTS, IBD, MS, and other complex long-term conditions: including a dedicated PEM flag for post-exertional activity logging.
+Health Flare was designed with the chronic illness community in mind, not the casual wellness market. It supports the kinds of tracking that matter for conditions like ME/CFS, fibromyalgia, lupus, EDS, POTS, IBD, MS, and other complex long-term conditions, including a dedicated PEM flag for post-exertional activity logging.
 
 ──────────────────────────────
 MULTI-PROFILE SUPPORT
@@ -82,15 +84,16 @@ MULTI-PROFILE SUPPORT
 Manage health records for yourself and the people you care for. Add profiles for family members, switch between them in seconds, and keep each person's data completely separate.
 
 ──────────────────────────────
-YOUR DATA STAYS WITH YOU
+YOUR DATA, YOUR DEVICE
 ──────────────────────────────
 
-• No account or login required: ever
-• No data uploaded to any server
+• No account or login required, ever
+• No servers of ours: the app never sends your health records anywhere
 • No analytics, telemetry, or crash reporting
 • No advertising
-• Data stored in a private, sandboxed database on your device
-• Optional backup lets you export your data as a file and store it wherever you choose
+• Records stored in a private, sandboxed database on your device
+• Optional weather lookups send an approximate location (rounded to about 1 km) to Open-Meteo
+• Export a backup file whenever you like and keep it wherever you choose
 
 Health Flare is not a medical device and does not provide medical advice. Always consult your healthcare team for medical decisions.
 ```
@@ -116,42 +119,48 @@ Private offline health tracker for chronic illness: no account needed.
 *(80 chars max: 71 used)*
 
 ### Full description
-*(4000 chars max)*
+*(4000 chars max: 2,641 used)*
 
 ```
 Health Flare is a private, offline-first health companion designed for people living with chronic illness.
 
-Track your health story (symptoms, vitals, medications, meals, sleep, flares, activity, and daily check-ins) all in one place, all on your device. There are no accounts and no servers of ours. Your records are stored on your device and are included in your phone's own backup if you use one. Weather tracking is optional; if you turn it on, your approximate location is sent to a weather service to look up the conditions.
+Track your health story (symptoms, vitals, medications, meals, sleep, flares, activity, and daily check-ins) all in one place, on your device. There are no accounts and no servers of ours. Your records are stored on your device and are included in your phone's own backup if you use one. Weather tracking is optional; if you turn it on, your approximate location is sent to a weather service to look up the conditions.
 
 WHAT YOU CAN TRACK
 
-• Symptoms: log severity over time to surface patterns
+• Symptoms: log severity and where it hurts, and see patterns over time
 • Vitals: blood pressure, heart rate, temperature, oxygen, weight, blood glucose
-• Medications & doses: track what you take and when
+• Medications & doses: what you take, when, and doses missed or skipped
 • Meals: note what you eat and flag reactions
 • Sleep: bedtime, wake time, quality, and naps
 • Flares: document flare start, severity, and triggers
 • Daily check-ins: wellbeing, stress, and optional cycle tracking
 • Activity & rest: log exertion with a PEM (post-exertional malaise) flag for ME/CFS
-• Doctor visits: keep a record of appointments and notes
+• Appointments: questions to ask, and what the doctor said afterwards
 • Journal: long-form entries with mood and energy tagging
+• Insights: charts of your symptoms and vitals, with flares shaded in
+
+MADE TO FIT YOU
+
+Everything lives in four sections: Dashboard, Track, Care and Journal. Choose what's in your bottom bar, and turn off the features a profile doesn't use. Turning a feature off never deletes anything, and your layout is kept in backups.
 
 BUILT FOR CHRONIC ILLNESS
 
-Health Flare was designed with the chronic illness community in mind, not the casual wellness market. It supports the kinds of tracking that matter for conditions like ME/CFS, fibromyalgia, lupus, EDS, POTS, IBD, MS, and other complex long-term conditions: including a dedicated PEM flag for post-exertional activity logging.
+Health Flare was designed with the chronic illness community in mind, not the casual wellness market. It supports the kinds of tracking that matter for conditions like ME/CFS, fibromyalgia, lupus, EDS, POTS, IBD, MS, and other complex long-term conditions, including a dedicated PEM flag for post-exertional activity logging.
 
 MULTI-PROFILE SUPPORT
 
 Manage health records for yourself and the people you care for. Add profiles for family members, switch between them in seconds, and keep each person's data completely separate.
 
-YOUR DATA STAYS WITH YOU
+YOUR DATA, YOUR DEVICE
 
-• No account or login required: ever
-• No data uploaded to any server
+• No account or login required, ever
+• No servers of ours: the app never sends your health records anywhere
 • No analytics, telemetry, or crash reporting
 • No advertising
-• Data stored in a private, sandboxed database on your device
-• Optional backup lets you export your data as a file and store it wherever you choose
+• Records stored in a private, sandboxed database on your device
+• Optional weather lookups send an approximate location (rounded to about 1 km) to Open-Meteo
+• Export a backup file whenever you like and keep it wherever you choose
 
 Health Flare is not a medical device and does not provide medical advice. Always consult your healthcare team for medical decisions.
 ```
@@ -172,18 +181,24 @@ chronic illness, health tracker, symptom log, medication tracker, health journal
 
 ---
 
-## Screenshot captions (suggested: for both stores)
+## Screenshot captions (optional, for both stores)
 
-These are short captions to display alongside screenshots. Adapt to your actual screens.
+Neither store has a caption field. These are for framed marketing images, if you make them. They follow the upload order from `scripts/store_upload_set.sh`.
 
-| Screen | Caption |
-|---|---|
-| Dashboard | Everything at a glance: your recent health activity in one feed |
-| Symptom logging | Log symptoms with severity in seconds |
-| Medication tracker | Track what you take and when |
-| Daily check-in | A quick daily pulse: wellbeing, stress, and more |
-| Journal | Long-form entries with mood and energy |
-| Privacy / onboarding | Your records live on your device. No account. No server. |
+| # | Screen | Caption |
+|---|---|---|
+| 1 | Welcome | Your health story, in your hands |
+| 2 | Dashboard | Everything at a glance, with appointments and recent activity |
+| 3 | Track: Symptoms | Log symptoms with severity in seconds |
+| 4 | Care: Medications | Track what you take and when |
+| 5 | Log symptom | Severity, where it hurts, and the weather, in one place |
+| 6 | Care: Conditions | Conditions you live with, active or in recovery |
+| 7 | Condition detail | When it started, and how it's changed |
+| 8 | Track: Meals | Note what you eat, and flag reactions |
+| 9 | Journal | Long-form entries with mood and energy |
+| 10 | Privacy | Your records live on your device. No account. |
+
+Play uses 1 to 6 and 9 to 10 (8 shots).
 
 ---
 
@@ -217,4 +232,4 @@ Justification: health records are stored locally in a sandboxed Isar database an
 - **macOS:** submit as a separate listing or use the "Also available on Mac" option via Mac Catalyst / universal purchase if supported.
 - **Android:** ensure `targetSdk` matches the current Play Store requirement before submitting.
 - **Screenshots:** captured by `scripts/take_screenshots.sh` (App Store) and `scripts/take_screenshots_android.sh` (Play). Each capture folder has more shots than a store accepts, so upload from `bash scripts/store_upload_set.sh`, which builds `build/store_upload/<store>/<device>/` with exactly the right set, in order. Which folder is which: `screenshots/README.md`.
-- **Preview videos (optional on both stores):** `scripts/take_video.sh` (iOS) and `scripts/take_video_android.sh` (Android) record the same guided tour used for the App Store "App Preview" slot and the Play Store listing's "Video" field (a YouTube URL: Play doesn't accept an uploaded file directly). See `docs/release-kit.md` for the full workflow, including how "What's New" copy above gets drafted.
+- **Preview videos (optional on both stores):** `scripts/take_video.sh` (iOS) and `scripts/take_video_android.sh` (Android) record the same guided tour used for the App Store "App Preview" slot and the Play Store listing's "Video" field (a YouTube URL: Play doesn't accept an uploaded file directly). See `docs/release-kit.md` for the full workflow, including how the store notes in `docs/store-notes/` get drafted.
