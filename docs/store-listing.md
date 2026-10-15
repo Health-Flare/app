@@ -95,15 +95,9 @@ YOUR DATA STAYS WITH YOU
 Health Flare is not a medical device and does not provide medical advice. Always consult your healthcare team for medical decisions.
 ```
 
-### What's New (version 1.7.1)
-*(covers everything since the store listing was last updated at 1.6.0: 1.6.0, 1.7.0, and 1.7.1 shipped without a listing refresh)*
-```
-Setup is quicker and friendlier: a short guided intro now walks you through what you can track, how your privacy works, and creating your first profile, with an easy skip straight to profile creation if you'd rather explore on your own.
+### What's New
 
-Quick Log got smarter too: typing something like "74kg" or "5'6"" is now recognised automatically as a vital reading, and height joins your other trackable vitals.
-
-Plus onboarding polish: fixed layout overflow and improved chip contrast throughout the guided flow.
-```
+Written per release in `docs/store-notes/<version>.md`; the latest is [1.10.0](store-notes/1.10.0.md). Older notes are in this file's history.
 
 ---
 
@@ -172,15 +166,9 @@ Health & Fitness
 chronic illness, health tracker, symptom log, medication tracker, health journal
 ```
 
-### Recent changes (version 1.7.1)
-*(covers everything since the listing was last updated at 1.6.0: Play's "recent changes" field has a 500-character limit, so this is trimmed tighter than the App Store copy above)*
-```
-Quicker, friendlier setup: a short guided intro replaces the old long scroll, with an easy skip to profile creation.
+### Recent changes
 
-Quick Log is smarter: readings like "74kg" or "5'6"" are now recognised automatically, and height is now a trackable vital.
-
-Plus: fixed layout and contrast issues in onboarding.
-```
+500 characters max. Written per release in `docs/store-notes/<version>.md`; the latest is [1.10.0](store-notes/1.10.0.md).
 
 ---
 
@@ -228,5 +216,5 @@ Justification: health records are stored locally in a sandboxed Isar database an
 - **iOS minimum deployment target:** check Xcode project settings before submitting.
 - **macOS:** submit as a separate listing or use the "Also available on Mac" option via Mac Catalyst / universal purchase if supported.
 - **Android:** ensure `targetSdk` matches the current Play Store requirement before submitting.
-- **Screenshots (v1.7.1):** regenerated for the guided onboarding redesign: `screenshots/appstore/{iphone-6.9,iphone-6.5,ipad-13}/` (App Store Connect) and `screenshots/playstore/phone/` (Play Console). Regenerate via `scripts/take_screenshots.sh` and `scripts/take_screenshots_android.sh`.
+- **Screenshots:** captured by `scripts/take_screenshots.sh` (App Store) and `scripts/take_screenshots_android.sh` (Play). Each capture folder has more shots than a store accepts, so upload from `bash scripts/store_upload_set.sh`, which builds `build/store_upload/<store>/<device>/` with exactly the right set, in order. Which folder is which: `screenshots/README.md`.
 - **Preview videos (optional on both stores):** `scripts/take_video.sh` (iOS) and `scripts/take_video_android.sh` (Android) record the same guided tour used for the App Store "App Preview" slot and the Play Store listing's "Video" field (a YouTube URL: Play doesn't accept an uploaded file directly). See `docs/release-kit.md` for the full workflow, including how "What's New" copy above gets drafted.
