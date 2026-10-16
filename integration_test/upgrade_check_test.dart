@@ -66,18 +66,24 @@ void main() {
     await tester.pump(const Duration(seconds: 2));
     await binding.takeScreenshot('upgrade_from_${release}_first_screen');
 
-    // The release guide card, not a failed update.
-    try {
-      await _waitFor(tester, find.text('The bottom bar has changed'));
-    } on TestFailure {
-      final shown = find
-          .byType(Text)
-          .evaluate()
-          .map((e) => (e.widget as Text).data)
-          .whereType<String>()
-          .toList();
-      print('On screen instead: $shown');
-      rethrow;
+    // The release guide card if this update changes the bar for them
+    // (manifest "expectGuide", default true), and never a failed update.
+    if (manifest['expectGuide'] as bool? ?? true) {
+      try {
+        await _waitFor(tester, find.text('The bottom bar has changed'));
+      } on TestFailure {
+        final shown = find
+            .byType(Text)
+            .evaluate()
+            .map((e) => (e.widget as Text).data)
+            .whereType<String>()
+            .toList();
+        print('On screen instead: $shown');
+        rethrow;
+      }
+    } else {
+      await tester.pump(const Duration(seconds: 2));
+      expect(find.text('The bottom bar has changed'), findsNothing);
     }
     expect(find.text("This update didn't finish"), findsNothing);
     await binding.takeScreenshot('upgrade_from_${release}_dashboard');
@@ -87,12 +93,15 @@ void main() {
     expect(settings.schemaVersion, MigrationRunner.targetVersion);
     expect(settings.activeProfileId, manifest['activeProfileId']);
     expect(FailedUpgrade.read(docs), isNull);
-    final snapshots = Directory(PreMigrationSnapshot.directoryPath(docs));
-    expect(
-      snapshots.listSync().where((f) => f.path.endsWith('.isar')),
-      isNotEmpty,
-      reason: 'the safety copy from before the upgrade',
-    );
+    // A safety copy only when the update changed how data is stored.
+    if (manifest['schemaVersion'] != MigrationRunner.targetVersion) {
+      final snapshots = Directory(PreMigrationSnapshot.directoryPath(docs));
+      expect(
+        snapshots.listSync().where((f) => f.path.endsWith('.isar')),
+        isNotEmpty,
+        reason: 'the safety copy from before the upgrade',
+      );
+    }
 
     final profiles = {
       for (final p in await isar.profileIsars.where().findAll())

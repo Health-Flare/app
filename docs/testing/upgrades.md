@@ -16,7 +16,9 @@ Spec and background: #181. If an upgrade does fail anyway, see #112 (`docs/featu
 - `healthflare.isar`: a database written by that release's own code. It contains two profiles, one row in every collection, flare links, a missed dose with its reason, a condition in recovery, an appointment with a question, and a deleted profile's leftovers.
 - `manifest.json`: what's in it. The CI test checks every item after upgrading: the schema version, profiles, the active profile, row counts, values as logged, and that the leftovers are removed.
 
-Current fixtures are 1.9.0 (schema 15) and 1.9.1 (schema 16). Users on 1.7.0 through 1.9.0 have the same schema as 1.9.0.
+Current fixtures are 1.9.0 (schema 15), 1.9.1 (schema 16) and 1.10.0 (schema 22). Users on 1.7.0 through 1.9.0 have the same schema as 1.9.0.
+
+The newest fixture is usually at the current schema until the next schema change lands. Then it should open as it is (`upToDate`, no safety copy), and the test checks that instead of a migration.
 
 ### Making one
 
@@ -26,7 +28,12 @@ bash scripts/upgrade_fixture.sh v1.9.1
 
 This checks out the tag in a temporary worktree and copies in `tool/upgrade/seed_release_test.dart`, or `seed_<version>_test.dart` if there is one. It runs the seed there, so the release's own models, migrations and catalogue seeding write the data, then copies the result into `test/fixtures/upgrades/<version>/`.
 
-If a release's models differ from the shared seed, copy it to `tool/upgrade/seed_<version>_test.dart` and adjust. 1.9.0 needed this, because symptom body areas arrived in 1.9.1. Files in `tool/upgrade/` aren't analyzed with the app, because they're written against old releases' code.
+If a release's models differ from the shared seed, copy it to `tool/upgrade/seed_<version>_test.dart` and adjust. 1.9.0 needed this, because symptom body areas arrived in 1.9.1. 1.10.0 has its own seed too:
+
+- its user has already seen the Track and Care guide (`bottomBarLayoutVersion = 2`);
+- it writes no rows from a deleted profile, because since v18 that can't happen.
+
+Its manifest says `"expectGuide": false`, so the device check expects no guide card after updating. Files in `tool/upgrade/` aren't analyzed with the app, because they're written against old releases' code.
 
 ### When a release is cut
 
