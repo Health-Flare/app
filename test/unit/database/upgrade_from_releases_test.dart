@@ -182,20 +182,29 @@ void main() {
         root.deleteSync(recursive: true);
       });
 
-      test('reaches the current version, with a safety copy', () async {
-        expect(
-          result.outcome,
-          MigrationOutcome.migrated,
-          reason: '${result.error}',
-        );
-        expect(
-          (await isar.appSettings.get(1))!.schemaVersion,
-          MigrationRunner.targetVersion,
-        );
-        expect(FailedUpgrade.read(docs), isNull);
-        expect(result.snapshotPath, isNotNull);
-        expect(File(result.snapshotPath!).existsSync(), isTrue);
-      });
+      test(
+        'reaches the current version, with a safety copy if it migrated',
+        () async {
+          expect(
+            (await isar.appSettings.get(1))!.schemaVersion,
+            MigrationRunner.targetVersion,
+          );
+          expect(FailedUpgrade.read(docs), isNull);
+          if (manifest['schemaVersion'] == MigrationRunner.targetVersion) {
+            // Already current (the latest release): opened as it is.
+            expect(result.outcome, MigrationOutcome.upToDate);
+            expect(result.snapshotPath, isNull);
+          } else {
+            expect(
+              result.outcome,
+              MigrationOutcome.migrated,
+              reason: '${result.error}',
+            );
+            expect(result.snapshotPath, isNotNull);
+            expect(File(result.snapshotPath!).existsSync(), isTrue);
+          }
+        },
+      );
 
       test('every profile and everything they logged is kept', () async {
         final profiles = {
