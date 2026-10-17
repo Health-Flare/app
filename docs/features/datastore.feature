@@ -360,7 +360,7 @@ Feature: Persistent local datastore
     When the user taps "Cancel"
     Then nothing is merged
     And no decrypted copy of the backup is left on the phone
-    Then they are told "Nothing was added from the backup"
+    And they are told "Nothing was added from the backup"
 
   Scenario: A backup with nothing new says so
     Given the user picks a backup with "Add missing data"

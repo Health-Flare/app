@@ -1,6 +1,8 @@
 // What a backup holds, per profile, so "Add missing data" and "Replace
 // everything" can say what they will do before doing it (#104).
 
+import 'package:health_flare/data/database/import_service.dart';
+
 /// One profile in a backup.
 class BackupProfileSummary {
   const BackupProfileSummary({
@@ -38,8 +40,49 @@ class BackupSummary {
       !layoutIsNew && profiles.every((p) => p.hasNothingNew);
 }
 
-/// "Sarah: 12 symptoms, 3 doses", "Leo: nothing new".
-String backupAddLine(BackupProfileSummary p) => '';
+/// Singular and plural nouns for each kind of record, as the confirmation
+/// lists them.
+const _nouns = <String, (String, String)>{
+  ImportCategoryId.symptomEntries: ('symptom', 'symptoms'),
+  ImportCategoryId.vitals: ('vital sign', 'vital signs'),
+  ImportCategoryId.doseLogs: ('dose', 'doses'),
+  ImportCategoryId.medications: ('medication', 'medications'),
+  ImportCategoryId.meals: ('meal', 'meals'),
+  ImportCategoryId.fluids: ('drink', 'drinks'),
+  ImportCategoryId.elimination: (
+    'bowel or bladder entry',
+    'bowel or bladder entries',
+  ),
+  ImportCategoryId.sleep: ('sleep record', 'sleep records'),
+  ImportCategoryId.activity: ('activity', 'activities'),
+  ImportCategoryId.journal: ('journal entry', 'journal entries'),
+  ImportCategoryId.checkins: ('check-in', 'check-ins'),
+  ImportCategoryId.flares: ('flare', 'flares'),
+  ImportCategoryId.appointments: ('appointment', 'appointments'),
+  ImportCategoryId.trackedConditions: (
+    'tracked condition',
+    'tracked conditions',
+  ),
+  ImportCategoryId.trackedSymptoms: ('tracked symptom', 'tracked symptoms'),
+};
 
-/// "Sarah: 15 entries".
-String backupEntriesLine(BackupProfileSummary p) => '';
+String _count(int n, String id) {
+  final (one, many) = _nouns[id] ?? (id, id);
+  return '$n ${n == 1 ? one : many}';
+}
+
+/// "Sarah: 12 symptoms, 3 doses", "Leo: nothing new",
+/// "Mia (new profile): 2 journal entries".
+String backupAddLine(BackupProfileSummary p) {
+  final name = p.isNew ? '${p.name} (new profile)' : p.name;
+  if (p.newCounts.isEmpty) return p.isNew ? name : '$name: nothing new';
+  final parts = [
+    for (final MapEntry(:key, :value) in p.newCounts.entries)
+      _count(value, key),
+  ];
+  return '$name: ${parts.join(', ')}';
+}
+
+/// "Sarah: 15 entries", "Leo: 1 entry".
+String backupEntriesLine(BackupProfileSummary p) =>
+    '${p.name}: ${p.entryCount} ${p.entryCount == 1 ? 'entry' : 'entries'}';
