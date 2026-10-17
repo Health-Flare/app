@@ -344,6 +344,98 @@ void main() {
     },
   );
 
+  group('"Replace everything"', () {
+    // Restores the backup at [backupDb] the way the app does: staged, swapped
+    // in on the next launch, then upgraded.
+    Future<Isar> restore(Isar backupDb) async {
+      final exported = await BackupService.export(backupDb);
+      await backupDb.close();
+      final live = await open();
+      await seed(live);
+      await live.close();
+      await BackupService.stagePendingRestore(exported);
+      await BackupService.applyPendingRestoreIfNeeded(docs.path);
+      final isar = await open();
+      await MigrationRunner.run(isar);
+      return isar;
+    }
+
+    test(
+      'an older backup cannot point a photo at a file on this phone',
+      () async {
+        final source = await open('other_phone', tmp.path);
+        await seed(source, version: 23);
+        final secret = picked('secret.jpg', _jpeg);
+        await source.writeTxn(() async {
+          final p = (await source.profileIsars.get(1))!..avatarPath = secret;
+          await source.profileIsars.put(p);
+          await source.mealEntryIsars.put(
+            MealEntryIsar()
+              ..profileId = 1
+              ..description = 'Soup'
+              ..hasReaction = false
+              ..photoPath = secret
+              ..loggedAt = DateTime(2026)
+              ..createdAt = DateTime(2026),
+          );
+        });
+
+        final isar = await restore(source);
+
+        expect((await isar.profileIsars.get(1))!.avatarPath, isNull);
+        expect(
+          (await isar.mealEntryIsars.where().findFirst())!.photoPath,
+          isNull,
+        );
+        expect(photoFiles(), isEmpty);
+      },
+    );
+
+    test('a backup from this phone keeps the photos that are here', () async {
+      // Regression guard: our own names in the backup still show.
+      final source = await open('this_phone', tmp.path);
+      await seed(source);
+      final name = (await PhotoStore.adopt(picked('me.png', _png)))!;
+      await source.writeTxn(() async {
+        final p = (await source.profileIsars.get(1))!..avatarPath = name;
+        await source.profileIsars.put(p);
+      });
+
+      final isar = await restore(source);
+
+      expect((await isar.profileIsars.get(1))!.avatarPath, name);
+      expect(PhotoStore.resolve(name), isNotNull);
+    });
+  });
+
+  test(
+    '"Add missing data" keeps a meal photo that is in our photos folder',
+    () async {
+      final source = await open('this_phone', tmp.path);
+      await seed(source);
+      final name = (await PhotoStore.adopt(picked('soup.jpg', _jpeg)))!;
+      await source.writeTxn(() async {
+        await source.mealEntryIsars.put(
+          MealEntryIsar()
+            ..profileId = 1
+            ..description = 'Soup'
+            ..hasReaction = false
+            ..photoPath = name
+            ..loggedAt = DateTime(2026)
+            ..createdAt = DateTime(2026),
+        );
+      });
+      final exported = await BackupService.export(source);
+      await source.close();
+
+      final live = await open();
+      await seed(live);
+      await ImportService.mergeAll(exported, live, report: ImportReport());
+
+      expect((await live.mealEntryIsars.where().findFirst())!.photoPath, name);
+    },
+  );
+
   group('v24 moves photos from before this update', () {
     test('a photo that is still there is copied in under our name', () async {
       final isar = await open();
