@@ -1223,6 +1223,10 @@ class _Ctx {
           ..description = be.description
           ..hasReaction = be.hasReaction
           ..notes = be.notes
+          // As for avatars (#105): kept only if it's ours and it's here.
+          ..photoPath = PhotoStore.resolve(be.photoPath) == null
+              ? null
+              : be.photoPath
           ..loggedAt = be.loggedAt
           ..createdAt = be.createdAt
           ..flareDetached = be.flareDetached
