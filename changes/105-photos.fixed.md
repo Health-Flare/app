@@ -7,4 +7,4 @@
 - Removing a photo, or deleting its meal or profile, now deletes the photo
   file too. Before, it stayed on the phone.
 - A backup file can no longer make the app show another file on the phone
-  as a profile picture.
+  as a profile picture or meal photo.

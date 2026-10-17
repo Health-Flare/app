@@ -66,6 +66,21 @@ abstract final class PhotoStore {
     return name;
   }
 
+  /// Clears every stored photo path that isn't one of our names. Call
+  /// inside a write transaction.
+  static Future<void> clearForeignPaths(Isar isar) async {
+    for (final p in await isar.profileIsars.where().findAll()) {
+      if (p.avatarPath != null && !isManaged(p.avatarPath)) {
+        await isar.profileIsars.put(p..avatarPath = null);
+      }
+    }
+    for (final m in await isar.mealEntryIsars.where().findAll()) {
+      if (m.photoPath != null && !isManaged(m.photoPath)) {
+        await isar.mealEntryIsars.put(m..photoPath = null);
+      }
+    }
+  }
+
   /// Deletes photos no profile or meal points at. Files changed in the last
   /// [grace] are left alone: a photo is copied in just before its row is
   /// written. Only our own names are touched. Returns how many were deleted.
