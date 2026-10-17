@@ -165,6 +165,28 @@ Feature: Meal and Food Logging
     Then the photo is deleted from the phone
 
   @unverified
+  Scenario: Deleting a meal with a photo says the photo goes too
+    Given "Sarah" has a meal entry with a photo
+    When I choose to delete the meal
+    Then the confirmation says "This will permanently remove this meal entry and its photo. If the photo isn't saved anywhere else, it will be lost."
+
+  @unverified
+  Scenario: Removing a saved photo asks first
+    Given "Sarah" has a meal entry with a photo
+    When I tap "Remove" on the photo
+    Then I am asked "Remove photo?"
+    And told "The photo is deleted when you save. If it isn't saved anywhere else, it will be lost."
+    When I tap "Cancel"
+    Then the photo is still attached
+
+  @unverified
+  Scenario: A photo picked but not saved yet is removed without asking
+    Given I picked a photo for a meal and haven't saved it
+    When I tap "Remove" on the photo
+    Then it is removed straight away
+    And the picked file itself is left where it was
+
+  @unverified
   Scenario: Photos are shrunk when saved
     When I attach a photo to a meal
     Then it is saved at most 1600 pixels on its longest side
