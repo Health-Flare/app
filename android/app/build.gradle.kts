@@ -39,6 +39,17 @@ val releaseKeyProblem: String? = when {
     else -> null
 }
 val allowDebugSigning = System.getenv("HEALTHFLARE_ALLOW_DEBUG_SIGNING") == "true"
+// F-Droid builds the release APK itself and signs it with its own key, so it
+// needs a release build with no signature at all (docs/deployment/fdroid/):
+//   HEALTHFLARE_UNSIGNED_RELEASE=true flutter build apk --release
+// Never the debug key: an unsigned APK can't be installed by mistake.
+val unsignedRelease = System.getenv("HEALTHFLARE_UNSIGNED_RELEASE") == "true"
+if (unsignedRelease && allowDebugSigning) {
+    throw GradleException(
+        "HEALTHFLARE_UNSIGNED_RELEASE and HEALTHFLARE_ALLOW_DEBUG_SIGNING " +
+            "contradict each other: set one or the other."
+    )
+}
 
 android {
     namespace = "org.healthflare.app.healthflare"
@@ -69,7 +80,9 @@ android {
 
     buildTypes {
         release {
-            signingConfig = if (releaseKeyProblem == null) {
+            signingConfig = if (unsignedRelease) {
+                null
+            } else if (releaseKeyProblem == null) {
                 signingConfigs.getByName("release")
             } else {
                 // Only reached by a release task if allowDebugSigning is set;
@@ -86,7 +99,7 @@ gradle.taskGraph.whenReady {
     val buildingRelease = allTasks.any {
         it.project == project && it.name.contains("Release")
     }
-    if (buildingRelease && releaseKeyProblem != null && !allowDebugSigning) {
+    if (buildingRelease && releaseKeyProblem != null && !allowDebugSigning && !unsignedRelease) {
         throw GradleException(
             "Refusing to build a release without the release signing key: " +
                 "$releaseKeyProblem. In CI, check the KEYSTORE_BASE64, " +

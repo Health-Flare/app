@@ -21,6 +21,8 @@ analyzer:
     - "**/*.freezed.dart"
     - "scripts/**"
     - "tools/**"
+    # F-Droid builds libisar from this source (scripts/fdroid/build_isar.sh).
+    - "third_party/**"
     # Seeds for old releases: compiled at their tags by
     # scripts/upgrade_fixture.sh, not against this code (#181).
     - "tool/upgrade/**"

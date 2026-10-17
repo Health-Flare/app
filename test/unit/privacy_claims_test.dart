@@ -39,6 +39,11 @@ List<File> _copyFiles() => [
   ...Directory(
     'docs/store-notes',
   ).listSync().whereType<File>().where((f) => f.path.endsWith('.md')),
+  // F-Droid and IzzyOnDroid listing copy.
+  ...Directory('fastlane/metadata/android')
+      .listSync(recursive: true)
+      .whereType<File>()
+      .where((f) => f.path.endsWith('.txt')),
 ];
 
 /// Drops Dart comments so explanatory comments can quote the old wording.
