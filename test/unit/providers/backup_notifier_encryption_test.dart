@@ -288,6 +288,8 @@ void main() {
     notifier.pickedPath = await plainBackupWith('FromPlain');
 
     await notifier.mergeRestore();
+    expect(state(), isA<MergeConfirmRequired>()); // #104
+    await notifier.confirmImport();
 
     expect(state(), isA<ImportComplete>());
     expect((state() as ImportComplete).recordsAdded, 1);
@@ -324,6 +326,8 @@ void main() {
 
     // Retry with the right password: no second pick needed.
     await notifier.submitImportPassword(_password);
+    expect(state(), isA<MergeConfirmRequired>()); // #104
+    await notifier.confirmImport();
 
     expect(notifier.pickCount, 1);
     expect(state(), isA<ImportComplete>());
@@ -367,6 +371,8 @@ void main() {
     await notifier.mergeRestore();
 
     await notifier.submitImportPassword(_password);
+    expect(state(), isA<MergeConfirmRequired>()); // #104
+    await notifier.confirmImport();
 
     expect(state(), isA<ImportComplete>());
     expect((state() as ImportComplete).recordsAdded, 1);
@@ -383,6 +389,8 @@ void main() {
     await notifier.stageRestore();
 
     await notifier.submitImportPassword(_password);
+    expect(state(), isA<ReplaceConfirmRequired>()); // #104
+    await notifier.confirmImport();
 
     expect(state(), isA<BackupRestoreStaged>());
     final pending = await BackupService.pendingRestorePath();
@@ -685,6 +693,9 @@ void main() {
       c.read(barChoiceProvider); // the bar as the app started with it
 
       await n.mergeRestore();
+      // A bar alone is something new: confirmed, not skipped (#104).
+      expect(c.read(backupProvider), isA<MergeConfirmRequired>());
+      await n.confirmImport();
 
       final done = c.read(backupProvider) as ImportComplete;
       expect(done.barImported, isTrue);

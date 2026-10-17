@@ -14,6 +14,7 @@ import 'package:health_flare/data/database/import_service.dart';
 import 'package:health_flare/features/settings/widgets/app_version_tile.dart';
 import 'package:health_flare/features/whats_new/widgets/whats_new_settings_tiles.dart';
 import 'package:health_flare/features/shell/widgets/hf_app_bar.dart';
+import 'package:health_flare/features/settings/widgets/import_confirm_dialog.dart';
 
 /// Scrolls [child] to the top of the screen once, after the first frame.
 class _ScrollIntoView extends StatefulWidget {
@@ -195,6 +196,36 @@ class _BackupTilesState extends ConsumerState<_BackupTiles> {
           // preview so a decrypted working copy doesn't linger on disk.
           if (ref.read(backupProvider) is ImportPreviewReady) notifier.reset();
         });
+      } else if (next is MergeConfirmRequired ||
+          next is ReplaceConfirmRequired) {
+        // Says what the backup holds; nothing is merged or staged until
+        // Add / Replace (#104). Dismissing it counts as Cancel.
+        showDialog<bool>(
+          context: context,
+          builder: (_) => switch (next) {
+            ReplaceConfirmRequired(:final summary, :final currentProfiles) =>
+              ImportConfirmDialog.replace(
+                summary: summary,
+                currentProfiles: currentProfiles,
+              ),
+            MergeConfirmRequired(:final summary) => ImportConfirmDialog.add(
+              summary: summary,
+            ),
+            _ => const SizedBox.shrink(),
+          },
+        ).then((confirmed) {
+          if (!mounted) return;
+          if (confirmed == true) {
+            notifier.confirmImport();
+          } else {
+            notifier.cancelImport();
+          }
+        });
+      } else if (next is ImportNothingDone) {
+        notifier.reset();
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(next.message)));
       } else if (next is ImportComplete) {
         notifier.reset();
         ScaffoldMessenger.of(
