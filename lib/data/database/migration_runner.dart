@@ -1,5 +1,6 @@
 import 'package:isar_community/isar.dart';
 
+import 'package:health_flare/core/files/photo_store.dart';
 import 'package:health_flare/data/database/app_settings.dart';
 import 'package:health_flare/data/database/profile_deletion.dart';
 import 'package:health_flare/data/database/profile_ids.dart';
@@ -8,6 +9,7 @@ import 'package:health_flare/data/models/condition_isar.dart';
 import 'package:health_flare/data/models/dose_log_isar.dart';
 import 'package:health_flare/data/models/flare_isar.dart';
 import 'package:health_flare/data/models/meal_entry_isar.dart';
+import 'package:health_flare/data/models/profile_isar.dart';
 import 'package:health_flare/data/models/symptom_entry_isar.dart';
 import 'package:health_flare/data/models/symptom_isar.dart';
 import 'package:health_flare/data/models/vital_entry_isar.dart';
@@ -52,6 +54,9 @@ import 'package:health_flare/models/flare_membership.dart';
 ///              entries (#173): which flare an entry is part of is worked out
 ///              from its time. Clears stored flare links that only repeat
 ///              that rule; any other link stays, as a pin.
+/// Schema v24 = no schema change (#105): photo paths become names in
+///              `<documents>/photos`. Older photos still there are copied in;
+///              missing or non-image ones are dropped.
 ///
 /// How to add a future migration:
 ///   1. Increment [_targetVersion].
@@ -65,7 +70,7 @@ import 'package:health_flare/models/flare_membership.dart';
 class MigrationRunner {
   MigrationRunner._();
 
-  static const int _targetVersion = 23;
+  static const int _targetVersion = 24;
 
   /// The schema version a full upgrade reaches.
   static int get targetVersion => _targetVersion;
@@ -357,6 +362,39 @@ class MigrationRunner {
         await _clearRedundantFlareLinks(isar);
         final s = await isar.appSettings.get(1) ?? (AppSettings()..id = 1);
         s.schemaVersion = 23;
+        await isar.appSettings.put(s);
+      });
+    }
+
+    // ── v23 → v24: photos into the app's own folder (#105) ───────────────
+    // Photos were stored as the picker's temp or cache path. Copy each one
+    // that's still there and is an image into <documents>/photos under our
+    // own name; drop the rest (already cleared by the OS, or not an image).
+    // Files are copied before the transaction, which must not await I/O
+    // that can fail halfway; a crash in between leaves extra files for the
+    // next sweep and the rows untouched for the next try.
+    if (currentVersion < 24) {
+      final avatars = <int, String?>{
+        for (final p in await isar.profileIsars.where().findAll())
+          if (p.avatarPath != null && !PhotoStore.isManaged(p.avatarPath))
+            p.id: await PhotoStore.adopt(p.avatarPath),
+      };
+      final photos = <int, String?>{
+        for (final m in await isar.mealEntryIsars.where().findAll())
+          if (m.photoPath != null && !PhotoStore.isManaged(m.photoPath))
+            m.id: await PhotoStore.adopt(m.photoPath),
+      };
+      await isar.writeTxn(() async {
+        for (final MapEntry(:key, :value) in avatars.entries) {
+          final p = await isar.profileIsars.get(key);
+          if (p != null) await isar.profileIsars.put(p..avatarPath = value);
+        }
+        for (final MapEntry(:key, :value) in photos.entries) {
+          final m = await isar.mealEntryIsars.get(key);
+          if (m != null) await isar.mealEntryIsars.put(m..photoPath = value);
+        }
+        final s = await isar.appSettings.get(1) ?? (AppSettings()..id = 1);
+        s.schemaVersion = 24;
         await isar.appSettings.put(s);
       });
     }

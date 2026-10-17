@@ -14,4 +14,8 @@
 -->
 <full-backup-content>
     <exclude domain="root" path="app_flutter/snapshots" />
+    <!-- Photos (#105): this format can't tell cloud backup from a transfer
+         to a new phone, so they're left out of both on Android 11 and
+         below rather than risk the 25 MB quota. -->
+    <exclude domain="root" path="app_flutter/photos" />
 </full-backup-content>

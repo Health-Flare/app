@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar_community/isar.dart';
 
+import 'package:health_flare/core/files/photo_store.dart';
 import 'package:health_flare/data/database/app_settings.dart';
 import 'package:health_flare/data/database/profile_deletion.dart';
 import 'package:health_flare/data/database/profile_ids.dart';
@@ -99,10 +100,12 @@ class ProfileListNotifier extends Notifier<List<Profile>> {
   }) async {
     final isar = ref.read(isarProvider);
     final seed = _colorPalette[state.length % _colorPalette.length];
+    // Kept in the app's photos folder under our own name (#105).
+    final avatar = await PhotoStore.adopt(avatarPath);
     final row = ProfileIsar()
       ..name = name
       ..dateOfBirth = dateOfBirth
-      ..avatarPath = avatarPath
+      ..avatarPath = avatar
       ..colorSeed = seed;
     await isar.writeTxn(() async {
       row.id = await nextProfileId(isar);
@@ -118,13 +121,14 @@ class ProfileListNotifier extends Notifier<List<Profile>> {
   /// preserved even when the domain model doesn't carry them.
   Future<void> update(Profile updated) async {
     final isar = ref.read(isarProvider);
+    final avatar = await PhotoStore.adopt(updated.avatarPath);
     await isar.writeTxn(() async {
       final existing = await isar.profileIsars.get(updated.id) ?? ProfileIsar();
       existing
         ..id = updated.id
         ..name = updated.name
         ..dateOfBirth = updated.dateOfBirth
-        ..avatarPath = updated.avatarPath
+        ..avatarPath = avatar
         ..weatherTrackingEnabled = updated.weatherTrackingEnabled
         ..colorSeed = updated.colorSeed ?? existing.colorSeed
         ..cycleTrackingEnabled = updated.cycleTrackingEnabled
@@ -133,6 +137,8 @@ class ProfileListNotifier extends Notifier<List<Profile>> {
         ..disabledFeatureIds = List.of(updated.disabledFeatureIds);
       await isar.profileIsars.put(existing);
     });
+    // A replaced or removed picture goes (#105).
+    await PhotoStore.sweep(isar);
   }
 
   /// Remove a profile by id, with every row of health data that belongs to
@@ -147,6 +153,8 @@ class ProfileListNotifier extends Notifier<List<Profile>> {
       await deleteProfileData(isar, id);
       await isar.profileIsars.delete(id);
     });
+    // Their picture and meal photos go with them (#105).
+    await PhotoStore.sweep(isar);
 
     final currentActive = ref.read(activeProfileProvider);
     if (currentActive == id) {
