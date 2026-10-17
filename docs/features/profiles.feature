@@ -514,6 +514,12 @@ Feature: Profile Management
     Then the old picture is deleted from the phone
 
   @unverified
+  Scenario: Deleting a profile says its photos go too
+    Given the profiles "Sarah" and "Dad" exist
+    When I choose to delete the profile "Dad"
+    Then the confirmation says "All health data recorded for Dad, including photos, will be permanently removed from this device. Photos not saved anywhere else will be lost. This cannot be undone."
+
+  @unverified
   Scenario: A picture is previewed before the profile is saved
     When I pick a picture in the profile sheet
     Then the avatar shows it straight away
