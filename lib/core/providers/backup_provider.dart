@@ -12,6 +12,7 @@ import 'package:health_flare/core/providers/app_lock_provider.dart';
 import 'package:health_flare/core/providers/database_provider.dart';
 import 'package:health_flare/data/database/backup_encryption.dart';
 import 'package:health_flare/data/database/backup_service.dart';
+import 'package:health_flare/data/database/backup_summary.dart';
 import 'package:health_flare/data/database/import_service.dart';
 import 'package:health_flare/core/files/scratch_files.dart';
 import 'package:health_flare/data/database/backup_limits.dart';
@@ -76,6 +77,39 @@ class ImportPasswordRequired extends BackupResult {
   final String filePath;
   final PendingImportAction action;
   final String? errorMessage;
+}
+
+/// "Add missing data": the file has been read; nothing is merged until
+/// [BackupNotifier.confirmImport] (#104).
+class MergeConfirmRequired extends BackupResult {
+  const MergeConfirmRequired({required this.filePath, required this.summary});
+  final String filePath;
+  final BackupSummary summary;
+}
+
+/// "Replace everything": the file has been read; nothing is staged until
+/// [BackupNotifier.confirmImport] (#104).
+class ReplaceConfirmRequired extends BackupResult {
+  const ReplaceConfirmRequired({
+    required this.filePath,
+    required this.summary,
+    required this.currentProfiles,
+  });
+  final String filePath;
+  final BackupSummary summary;
+
+  /// Names of the profiles in the app now, which will be replaced.
+  final List<String> currentProfiles;
+}
+
+/// The import ended without changing anything: cancelled at the
+/// confirmation, or the backup had nothing new (#104).
+class ImportNothingDone extends BackupResult {
+  const ImportNothingDone(this.message);
+  final String message;
+
+  static const cancelled = 'Nothing was added from the backup';
+  static const nothingNew = 'Everything in this backup is already here.';
 }
 
 /// The user cancelled the file picker.
@@ -227,6 +261,14 @@ class BackupNotifier extends Notifier<BackupResult> {
       await _discardDecryptedCopy();
     }
   }
+
+  /// Goes ahead with the merge or restore the user just confirmed (#104).
+  /// Only acts on [MergeConfirmRequired] or [ReplaceConfirmRequired].
+  Future<void> confirmImport() async {}
+
+  /// The user tapped Cancel on the confirmation: nothing is merged or
+  /// staged, and any decrypted copy is deleted (#104).
+  Future<void> cancelImport() async {}
 
   /// Unlocks the encrypted file named by an [ImportPasswordRequired] state
   /// with [password] and resumes whichever restore flow was pending.

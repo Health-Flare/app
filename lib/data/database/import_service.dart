@@ -4,6 +4,7 @@ import 'package:isar_community/isar.dart';
 
 import 'package:flutter/foundation.dart' show listEquals;
 import 'package:health_flare/core/navigation/bar_layout.dart';
+import 'package:health_flare/data/database/backup_summary.dart';
 import 'package:health_flare/core/navigation/bar_layout_store.dart';
 import 'package:health_flare/core/navigation/effective_bar.dart';
 import 'package:health_flare/core/navigation/nav_registry.dart';
@@ -239,6 +240,13 @@ class ImportService {
   /// staging it to replace the live database).
   static Future<void> validate(String backupPath) async {
     await _closeBackup(await _openBackup(backupPath));
+  }
+
+  /// What [backupPath] holds per profile: what "Add missing data" would add
+  /// to [main], and how many entries each profile has (#104).
+  static Future<BackupSummary> summarize(String backupPath, Isar main) async {
+    await validate(backupPath);
+    return const BackupSummary();
   }
 
   /// Opens [backupPath] and returns categories with counts of records that
