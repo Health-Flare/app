@@ -39,6 +39,17 @@ val releaseKeyProblem: String? = when {
     else -> null
 }
 val allowDebugSigning = System.getenv("HEALTHFLARE_ALLOW_DEBUG_SIGNING") == "true"
+// F-Droid builds the release APK itself and signs it with its own key, so it
+// needs a release build with no signature at all (docs/deployment/fdroid/):
+//   HEALTHFLARE_UNSIGNED_RELEASE=true flutter build apk --release
+// Never the debug key: an unsigned APK can't be installed by mistake.
+val unsignedRelease = System.getenv("HEALTHFLARE_UNSIGNED_RELEASE") == "true"
+if (unsignedRelease && allowDebugSigning) {
+    throw GradleException(
+        "HEALTHFLARE_UNSIGNED_RELEASE and HEALTHFLARE_ALLOW_DEBUG_SIGNING " +
+            "contradict each other: set one or the other."
+    )
+}
 
 android {
     namespace = "org.healthflare.app.healthflare"
@@ -69,7 +80,9 @@ android {
 
     buildTypes {
         release {
-            signingConfig = if (releaseKeyProblem == null) {
+            signingConfig = if (unsignedRelease) {
+                null
+            } else if (releaseKeyProblem == null) {
                 signingConfigs.getByName("release")
             } else {
                 // Only reached by a release task if allowDebugSigning is set;
@@ -86,7 +99,7 @@ gradle.taskGraph.whenReady {
     val buildingRelease = allTasks.any {
         it.project == project && it.name.contains("Release")
     }
-    if (buildingRelease && releaseKeyProblem != null && !allowDebugSigning) {
+    if (buildingRelease && releaseKeyProblem != null && !allowDebugSigning && !unsignedRelease) {
         throw GradleException(
             "Refusing to build a release without the release signing key: " +
                 "$releaseKeyProblem. In CI, check the KEYSTORE_BASE64, " +
@@ -95,6 +108,21 @@ gradle.taskGraph.whenReady {
                 "(never publish that build)."
         )
     }
+}
+
+// HEALTHFLARE_ABI_FILTERS=arm64-v8a leaves out every other ABI's
+// native code, including plugin libraries (libisar), which
+// `flutter build apk --target-platform` alone leaves in. Used for the
+// single-ABI APK IzzyOnDroid takes (30 MB cap). Unlike
+// --split-per-abi it keeps the versionCode, so that APK and the
+// universal one are the same release.
+// Packaging excludes, not ndk.abiFilters: with abiFilters set in
+// defaultConfig the APK still carried every ABI's libsqlcipher.so.
+System.getenv("HEALTHFLARE_ABI_FILTERS")?.takeIf { it.isNotBlank() }?.let { keep ->
+    val kept = keep.split(",").map { it.trim() }
+    android.packaging.jniLibs.excludes += listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
+        .filterNot { it in kept }
+        .map { "lib/$it/**" }
 }
 
 flutter {

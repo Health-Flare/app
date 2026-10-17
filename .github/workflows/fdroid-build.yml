@@ -1,0 +1,66 @@
+name: F-Droid build
+
+# Builds the APK the way F-Droid's build server will, from the recipe in
+# docs/deployment/fdroid/, inside F-Droid's own buildserver image. Catches
+# the things a normal Flutter build doesn't: non-free or prebuilt binaries
+# the scanner rejects, a recipe step that needs network it won't have, a
+# release build that insists on our signing key. See
+# docs/deployment/fdroid/README.md.
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'android/**'
+      - 'pubspec.yaml'
+      - 'pubspec.lock'
+      - 'docs/deployment/fdroid/**'
+      - 'scripts/fdroid/**'
+      - 'third_party/**'
+      - '.gitmodules'
+      - '.github/workflows/fdroid-build.yml'
+      - '.github/workflows/ci.yml'
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: fdroid-build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  fdroid-build:
+    name: F-Droid build (fdroidserver)
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    container:
+      image: registry.gitlab.com/fdroid/fdroidserver:buildserver-trixie
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: app
+          persist-credentials: false
+
+      - name: fdroid build
+        env:
+          # The PR head, not the synthetic merge commit: fdroidserver clones
+          # the GitHub repo and needs a commit that exists on a branch.
+          SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: bash app/scripts/fdroid/ci_build.sh app "$SHA"
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: fdroid-build
+          path: |
+            /fdroiddata/tmp/*.apk
+            /fdroiddata/logs/
+            /fdroiddata/metadata/org.healthflare.app.healthflare.yml
+          retention-days: 14
+          if-no-files-found: warn
