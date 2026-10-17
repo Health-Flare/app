@@ -107,7 +107,8 @@ rm "$home_vagrant/fdroiddata" "$home_vagrant/.gitconfig"
 (unset CI; fdroid build --verbose --test --refresh-scanner --on-server --no-tarball "$build")
 popd >/dev/null
 
-# fdroid lint is what the merge request's "fdroid lint" job runs.
-(cd "$CI_PROJECT_DIR" && fdroid lint "$appid") || echo "::warning::fdroid lint reported problems"
+# The merge request's "fdroid lint" job. Runs as root: --on-server has
+# uninstalled sudo by now, and lint needs no build user.
+(cd "$CI_PROJECT_DIR" && "$fdroidserver/fdroid" lint "$appid")
 
 ls -la "$CI_PROJECT_DIR/tmp"
