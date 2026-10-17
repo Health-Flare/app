@@ -19,7 +19,7 @@ Builds:
     submodules: true
     sudo:
       - apt-get update
-      - apt-get install -y rustup libclang-dev
+      - apt-get install -y gcc libc-dev make libclang-dev rustup
     output: build/app/outputs/flutter-apk/app-release.apk
     srclibs:
       - flutter@stable
