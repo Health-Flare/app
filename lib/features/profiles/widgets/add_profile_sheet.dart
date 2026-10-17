@@ -184,8 +184,9 @@ class _AddProfileSheetState extends ConsumerState<AddProfileSheet> {
       builder: (dialogContext) => AlertDialog(
         title: Text('Remove ${profile.name}?'),
         content: Text(
-          'All health data recorded for ${profile.name} will be permanently '
-          'removed from this device. This cannot be undone.',
+          'All health data recorded for ${profile.name}, including photos, '
+          'will be permanently removed from this device. Photos not saved '
+          'anywhere else will be lost. This cannot be undone.',
         ),
         actions: [
           TextButton(

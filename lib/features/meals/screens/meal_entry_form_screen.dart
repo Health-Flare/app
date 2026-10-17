@@ -211,12 +211,54 @@ class _MealEntryFormScreenState extends ConsumerState<MealEntryFormScreen> {
     context.pop();
   }
 
+  /// A photo already saved with the entry is deleted on Save (#105), so
+  /// ask first. One just picked isn't ours yet: nothing is lost.
+  Future<void> _removePhoto() async {
+    if (!_photoPicked) {
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('Remove photo?'),
+          content: const Text(
+            'The photo is deleted when you save. '
+            "If it isn't saved anywhere else, it will be lost.",
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              style: FilledButton.styleFrom(
+                backgroundColor: Theme.of(ctx).colorScheme.error,
+                foregroundColor: Theme.of(ctx).colorScheme.onError,
+              ),
+              onPressed: () => Navigator.pop(ctx, true),
+              child: const Text('Remove'),
+            ),
+          ],
+        ),
+      );
+      if (confirmed != true || !mounted) return;
+    }
+    setState(() {
+      _photoPath = null;
+      _photoPicked = false;
+    });
+  }
+
   Future<void> _delete() async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Delete meal entry?'),
-        content: const Text('This will permanently remove this meal entry.'),
+        // Its photo goes with it (#105): the app's copy is the one deleted.
+        content: Text(
+          widget.entry?.photoPath != null
+              ? 'This will permanently remove this meal entry and its photo. '
+                    "If the photo isn't saved anywhere else, it will be lost."
+              : 'This will permanently remove this meal entry.',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
@@ -358,10 +400,7 @@ class _MealEntryFormScreenState extends ConsumerState<MealEntryFormScreen> {
                   ? File(_photoPath!)
                   : PhotoStore.resolve(_photoPath),
               onAddPhoto: _showPhotoOptions,
-              onRemove: () => setState(() {
-                _photoPath = null;
-                _photoPicked = false;
-              }),
+              onRemove: _removePhoto,
             ),
             const SizedBox(height: 16),
 
