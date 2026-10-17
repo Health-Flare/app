@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:isar_community/isar.dart';
 
 import 'package:flutter/foundation.dart' show listEquals;
+import 'package:health_flare/core/files/photo_store.dart';
 import 'package:health_flare/core/navigation/bar_layout.dart';
 import 'package:health_flare/data/database/backup_summary.dart';
 import 'package:health_flare/core/navigation/bar_layout_store.dart';
@@ -890,7 +891,11 @@ class _Ctx {
       final newProfile = ProfileIsar()
         ..name = bp.name
         ..dateOfBirth = bp.dateOfBirth
-        ..avatarPath = bp.avatarPath
+        // Photos aren't in backup files; a path from one is never used
+        // (#105). Kept only if it's ours and the file is here.
+        ..avatarPath = PhotoStore.resolve(bp.avatarPath) == null
+            ? null
+            : bp.avatarPath
         ..firstLogShown = bp.firstLogShown
         ..weatherTrackingEnabled = bp.weatherTrackingEnabled
         ..weatherOptInShown = bp.weatherOptInShown

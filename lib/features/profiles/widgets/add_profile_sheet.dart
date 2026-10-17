@@ -35,6 +35,10 @@ class _AddProfileSheetState extends ConsumerState<AddProfileSheet> {
 
   DateTime? _dateOfBirth;
   String? _avatarPath;
+
+  /// Picked in this sheet and not saved yet: previewed from the picker's
+  /// file (#105).
+  bool _avatarPicked = false;
   bool _isSaving = false;
   bool _weatherEnabled = false;
   bool _cycleEnabled = false;
@@ -114,7 +118,10 @@ class _AddProfileSheetState extends ConsumerState<AddProfileSheet> {
       path = file?.path;
     }
     if (path == null || !mounted) return;
-    setState(() => _avatarPath = path);
+    setState(() {
+      _avatarPath = path;
+      _avatarPicked = true;
+    });
   }
 
   Future<void> _save() async {
@@ -270,6 +277,10 @@ class _AddProfileSheetState extends ConsumerState<AddProfileSheet> {
                                   dateOfBirth: _dateOfBirth,
                                   avatarPath: previewProfile.avatarPath,
                                 ),
+                                previewFile:
+                                    _avatarPicked && _avatarPath != null
+                                    ? File(_avatarPath!)
+                                    : null,
                                 radius: 32,
                               ),
                             ),

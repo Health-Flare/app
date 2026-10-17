@@ -1,10 +1,9 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import 'package:health_flare/core/files/photo_store.dart';
 import 'package:health_flare/core/providers/meal_entry_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/core/router/app_router.dart';
@@ -59,13 +58,15 @@ class _MealTile extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
     final fmt = DateFormat('d MMM yyyy, HH:mm');
 
+    // Only the app's own photos are shown (#105).
+    final photo = PhotoStore.resolve(entry.photoPath);
     return ListTile(
       key: Key('meal_tile_${entry.id}'),
-      leading: entry.photoPath != null
+      leading: photo != null
           ? ClipRRect(
               borderRadius: BorderRadius.circular(8),
               child: Image.file(
-                File(entry.photoPath!),
+                photo,
                 width: 48,
                 height: 48,
                 fit: BoxFit.cover,

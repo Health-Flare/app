@@ -222,7 +222,7 @@ void main() {
       await MigrationRunner.run(isar);
 
       final s = (await isar.appSettings.get(1))!;
-      expect(s.schemaVersion, 23);
+      expect(s.schemaVersion, 24);
       expect(s.bottomBarIds, isNull);
       expect(s.bottomBarLayoutVersion, isNull);
       expect(s.lastSeenWhatsNewVersion, '1.9.1');

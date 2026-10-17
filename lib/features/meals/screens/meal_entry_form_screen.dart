@@ -1,3 +1,4 @@
+import 'package:health_flare/core/files/photo_store.dart';
 import 'package:health_flare/features/flare/widgets/flare_membership_row.dart';
 import 'dart:io';
 
@@ -46,6 +47,10 @@ class _MealEntryFormScreenState extends ConsumerState<MealEntryFormScreen> {
       widget.entry?.profileId ?? ref.watch(activeProfileProvider);
   late bool _hasReaction;
   String? _photoPath;
+
+  /// Picked on this screen and not saved yet: previewed from the picker's
+  /// file. A saved photo is shown only from the app's folder (#105).
+  bool _photoPicked = false;
   bool _submitting = false;
   bool _descriptionError = false;
   final _picker = ImagePicker();
@@ -112,10 +117,19 @@ class _MealEntryFormScreenState extends ConsumerState<MealEntryFormScreen> {
     // Camera or photo library: coming back must not lock the app.
     final file = await ref
         .read(appLockProvider.notifier)
-        .whileAway(() => _picker.pickImage(source: source, imageQuality: 85));
+        .whileAway(
+          () => _picker.pickImage(
+            source: source,
+            // Small enough that photos never crowd a phone backup (#105).
+            maxWidth: 1600,
+            maxHeight: 1600,
+            imageQuality: 85,
+          ),
+        );
     if (file == null || !mounted) return;
     setState(() {
       _photoPath = file.path;
+      _photoPicked = true;
     });
   }
 
@@ -338,9 +352,16 @@ class _MealEntryFormScreenState extends ConsumerState<MealEntryFormScreen> {
 
             // Photo
             _PhotoSection(
-              photoPath: _photoPath,
+              photo: _photoPath == null
+                  ? null
+                  : _photoPicked
+                  ? File(_photoPath!)
+                  : PhotoStore.resolve(_photoPath),
               onAddPhoto: _showPhotoOptions,
-              onRemove: () => setState(() => _photoPath = null),
+              onRemove: () => setState(() {
+                _photoPath = null;
+                _photoPicked = false;
+              }),
             ),
             const SizedBox(height: 16),
 
@@ -383,12 +404,12 @@ class _MealEntryFormScreenState extends ConsumerState<MealEntryFormScreen> {
 
 class _PhotoSection extends StatelessWidget {
   const _PhotoSection({
-    required this.photoPath,
+    required this.photo,
     required this.onAddPhoto,
     required this.onRemove,
   });
 
-  final String? photoPath;
+  final File? photo;
   final VoidCallback onAddPhoto;
   final VoidCallback onRemove;
 
@@ -396,14 +417,14 @@ class _PhotoSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
 
-    if (photoPath != null) {
+    if (photo != null) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(12),
             child: Image.file(
-              File(photoPath!),
+              photo!,
               height: 200,
               width: double.infinity,
               fit: BoxFit.cover,
