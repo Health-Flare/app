@@ -251,8 +251,6 @@ Feature: Persistent local datastore
     Then it gets an id no profile or entry has ever used
     And it shows none of the deleted profile's entries
 
-  # TODO(#112): agent-written wording; verify.
-  @unverified
   Scenario: The card says what happened and what to do
     Given the app stopped retrying a failed upgrade
     When I open the dashboard
@@ -261,8 +259,6 @@ Feature: Persistent local datastore
     And "Details" opens the update section in Settings > Data & backup
     And the card can't be dismissed
 
-  # TODO(#112): agent-written wording; verify.
-  @unverified
   Scenario: Settings explains the failed update
     Given the app stopped retrying a failed upgrade
     When I open Settings > Data & backup
@@ -349,12 +345,6 @@ Feature: Persistent local datastore
       | Add missing data      |
       | Choose what to import |
 
-  # Say what's in a backup before using it (#104). A backup file can come
-  # from anyone (sent by message, downloaded), and its contents were merged
-  # or staged without being shown first.
-  # UNVERIFIED (TODO #104): the scenarios below are agent-written.
-
-  @unverified
   Scenario: "Add missing data" says what it will add before adding it
     Given the user picks a backup with "Add missing data"
     And it has the profiles "Sarah" and "Leo"
@@ -365,21 +355,19 @@ Feature: Persistent local datastore
     And the buttons are "Add" and "Cancel"
     And nothing is merged until "Add" is tapped
 
-  @unverified
   Scenario: Cancelling leaves everything as it was
     Given the "Add missing data" confirmation is showing
     When the user taps "Cancel"
     Then nothing is merged
     And no decrypted copy of the backup is left on the phone
+    Then they are told "Nothing was added from the backup"
 
-  @unverified
   Scenario: A backup with nothing new says so
     Given the user picks a backup with "Add missing data"
     And everything in it is already in the app
     Then they are told "Everything in this backup is already here."
     And nothing is merged
 
-  @unverified
   Scenario: "Replace everything" says what will replace what
     Given the app has the profiles "Sarah" and "Leo"
     And the user picks a backup with "Replace everything"
