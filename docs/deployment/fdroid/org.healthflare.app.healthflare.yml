@@ -35,6 +35,7 @@ Builds:
       - $$flutter$$/bin/flutter config --no-analytics
       - $$flutter$$/bin/flutter pub get --enforce-lockfile
       - bash scripts/fdroid/strip_gms_location.sh
+      - cp scripts/fdroid/isar-Cargo.lock third_party/isar-community/Cargo.lock
     scandelete:
       - .pub-cache
     build:

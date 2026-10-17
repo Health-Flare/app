@@ -110,6 +110,21 @@ gradle.taskGraph.whenReady {
     }
 }
 
+// HEALTHFLARE_ABI_FILTERS=arm64-v8a leaves out every other ABI's
+// native code, including plugin libraries (libisar), which
+// `flutter build apk --target-platform` alone leaves in. Used for the
+// single-ABI APK IzzyOnDroid takes (30 MB cap). Unlike
+// --split-per-abi it keeps the versionCode, so that APK and the
+// universal one are the same release.
+// Packaging excludes, not ndk.abiFilters: with abiFilters set in
+// defaultConfig the APK still carried every ABI's libsqlcipher.so.
+System.getenv("HEALTHFLARE_ABI_FILTERS")?.takeIf { it.isNotBlank() }?.let { keep ->
+    val kept = keep.split(",").map { it.trim() }
+    android.packaging.jniLibs.excludes += listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
+        .filterNot { it in kept }
+        .map { "lib/$it/**" }
+}
+
 flutter {
     source = "../.."
 }

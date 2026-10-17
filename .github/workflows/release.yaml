@@ -40,7 +40,15 @@ jobs:
           echo "$HOME/flutter/bin" >> $GITHUB_PATH
 
       - name: Install dependencies
-        run: flutter pub get
+        run: flutter pub get --enforce-lockfile
+
+      # GitHub release APKs (and IzzyOnDroid, which takes them from here)
+      # carry no Google Play Services, same as the F-Droid build: geolocator
+      # uses Android's LocationManager, as it already does on phones without
+      # Play Services. The Play Store build (release-playstore.yaml) is
+      # unchanged. See docs/deployment/fdroid/README.md.
+      - name: Strip Play Services from geolocator
+        run: PUB_CACHE="${PUB_CACHE:-$HOME/.pub-cache}" bash scripts/fdroid/strip_gms_location.sh
 
       # ── Signing setup ────────────────────────────────────────────────────────
       # Add these secrets in your repository settings:
@@ -90,10 +98,22 @@ jobs:
           cp build/app/outputs/flutter-apk/app-release.apk \
             "build/app/outputs/flutter-apk/healthflare-${GITHUB_REF_NAME}.apk"
 
+      # arm64-only APK for IzzyOnDroid, which caps a file at about 30 MB
+      # (the universal APK is ~70 MB). Same versionCode as the universal APK:
+      # it is the same release, just one ABI, so either can update the other.
+      - name: Build arm64 APK
+        run: |
+          HEALTHFLARE_ABI_FILTERS=arm64-v8a flutter build apk --release --target-platform android-arm64
+          cp build/app/outputs/flutter-apk/app-release.apk \
+            "build/app/outputs/flutter-apk/healthflare-${GITHUB_REF_NAME}-arm64-v8a.apk"
+          ls -l build/app/outputs/flutter-apk/
+
       # Refuse to publish anything not signed with the release key (#106).
       # Expected fingerprint: android/release-signing.sha256.
       - name: Verify release signature
-        run: scripts/release/verify_android_signature.sh "build/app/outputs/flutter-apk/healthflare-${GITHUB_REF_NAME}.apk"
+        run: |
+          scripts/release/verify_android_signature.sh "build/app/outputs/flutter-apk/healthflare-${GITHUB_REF_NAME}.apk"
+          scripts/release/verify_android_signature.sh "build/app/outputs/flutter-apk/healthflare-${GITHUB_REF_NAME}-arm64-v8a.apk"
 
       # ── Publish ──────────────────────────────────────────────────────────────
       # github.api_url resolves to https://api.github.com; github.token is
@@ -127,9 +147,10 @@ jobs:
         run: |
           # Strip the URI template suffix {?name,label} before appending our params
           UPLOAD_URL=$(jq -r '.upload_url' release.json | sed 's/{?name,label}//')
-          APK="build/app/outputs/flutter-apk/healthflare-${GITHUB_REF_NAME}.apk"
-          curl -sf -X POST \
-            -H "Authorization: token ${{ github.token }}" \
-            -H "Content-Type: application/vnd.android.package-archive" \
-            "${UPLOAD_URL}?name=healthflare-${GITHUB_REF_NAME}.apk" \
-            --data-binary "@${APK}"
+          for NAME in "healthflare-${GITHUB_REF_NAME}.apk" "healthflare-${GITHUB_REF_NAME}-arm64-v8a.apk"; do
+            curl -sf -X POST \
+              -H "Authorization: token ${{ github.token }}" \
+              -H "Content-Type: application/vnd.android.package-archive" \
+              "${UPLOAD_URL}?name=${NAME}" \
+              --data-binary "@build/app/outputs/flutter-apk/${NAME}"
+          done
