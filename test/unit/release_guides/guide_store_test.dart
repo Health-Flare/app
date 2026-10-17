@@ -44,7 +44,7 @@ void main() {
       );
       await MigrationRunner.run(isar);
       final s = (await isar.appSettings.get(1))!;
-      expect(s.schemaVersion, 23);
+      expect(s.schemaVersion, 24);
       expect(await GuideStore.read(isar), const GuideRecord());
     },
   );
