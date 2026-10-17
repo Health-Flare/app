@@ -15,9 +15,13 @@ class ProfileAvatar extends StatelessWidget {
     required this.profile,
     this.radius = 24,
     this.showBorder = false,
+    this.previewFile,
   });
 
   final Profile profile;
+
+  /// A just-picked image to show before the profile is saved (#105).
+  final File? previewFile;
 
   /// Circle radius in logical pixels. Defaults to 24 (48px diameter).
   final double radius;
