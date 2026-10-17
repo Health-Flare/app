@@ -88,53 +88,39 @@ Feature: Flare Tracking
     Then all three entries are associated with the active flare
     And this association is visible in each entry's detail view
 
-  # Which flare an entry is part of (#173). Worked out from the entry's
-  # time, so it never goes stale: an entry is part of the flare whose dates
-  # cover it. Symptoms, vitals, meals, doses and activity; journal entries
-  # and check-ins aren't part of flares. The person can take an entry out
-  # of its flare; that choice is kept on the entry.
-  # UNVERIFIED (TODO #173): the scenarios below are agent-written.
-
-  @unverified
   Scenario: Entries during a flare are part of it, whenever they were logged
     Given "Sarah" had a flare from 3 to 10 March
     When I log a symptom dated 5 March
     Then it is part of that flare
     And the flare lists it under "Entries during this flare"
 
-  @unverified
   Scenario: Entries from before this update join their flares
     Given "Sarah" logged a vital on 5 March, during a flare, before this update
     When I open that flare
     Then it lists the vital
 
-  @unverified
   Scenario: Every kind of entry is listed on the flare
     Given "Sarah" logged a symptom, a vital, a meal, a dose and an activity during a flare
     When I open that flare
     Then it lists all five
 
-  @unverified
   Scenario: An entry dated outside the flare isn't part of it
     Given "Sarah" has an active flare that started today
     When I log a meal dated yesterday
     Then it is not part of the flare
 
-  @unverified
   Scenario: Changing a flare's dates changes which entries are part of it
     Given "Sarah" had a flare from 3 to 10 March
     And a symptom dated 2 March
     When I change the flare's start to 1 March
     Then the symptom is part of the flare
 
-  @unverified
   Scenario: The form says when an entry is part of a flare
     Given "Sarah" has an active flare for "Fibromyalgia"
     When I log a symptom
     Then the form says "Part of the Fibromyalgia flare"
     And offers "Remove"
 
-  @unverified
   Scenario: Taking an entry out of its flare
     Given a symptom that is part of Sarah's flare
     When I tap "Remove" on its form and save
@@ -142,13 +128,11 @@ Feature: Flare Tracking
     And the form says "Not part of the Fibromyalgia flare" and offers "Add back"
     And it stays out if the flare's dates change
 
-  @unverified
   Scenario: Taking an entry out of its flare survives a backup
     Given a symptom taken out of Sarah's flare
     When I restore a backup with "Add missing data"
     Then the symptom is still not part of the flare
 
-  @unverified
   Scenario: A deleted flare's entries are kept
     Given a symptom that is part of Sarah's flare
     When I delete the flare record
