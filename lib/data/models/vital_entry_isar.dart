@@ -28,6 +28,9 @@ class VitalEntryIsar {
 
   int? flareIsarId;
 
+  /// Taken out of its flare by hand (#173).
+  bool flareDetached = false;
+
   VitalEntry toDomain() => VitalEntry(
     id: id,
     profileId: profileId,
@@ -39,6 +42,7 @@ class VitalEntryIsar {
     loggedAt: loggedAt,
     createdAt: createdAt,
     flareIsarId: flareIsarId,
+    flareDetached: flareDetached,
   );
 
   static VitalEntryIsar fromDomain(VitalEntry e) => VitalEntryIsar()
@@ -51,5 +55,6 @@ class VitalEntryIsar {
     ..notes = e.notes
     ..loggedAt = e.loggedAt
     ..createdAt = e.createdAt
-    ..flareIsarId = e.flareIsarId;
+    ..flareIsarId = e.flareIsarId
+    ..flareDetached = e.flareDetached;
 }

@@ -52,6 +52,7 @@ class MealEntryListNotifier extends Notifier<List<MealEntry>> {
     required bool hasReaction,
     required DateTime loggedAt,
     int? flareIsarId,
+    bool flareDetached = false,
     WeatherSnapshot? weatherSnapshot,
   }) async {
     final isar = ref.read(isarProvider);
@@ -65,6 +66,7 @@ class MealEntryListNotifier extends Notifier<List<MealEntry>> {
       ..loggedAt = loggedAt
       ..createdAt = DateTime.now()
       ..flareIsarId = flareIsarId
+      ..flareDetached = flareDetached
       ..weatherSnapshot = weatherSnapshot != null
           ? WeatherSnapshotIsar.fromDomain(weatherSnapshot)
           : null;
@@ -99,6 +101,7 @@ class MealEntryListNotifier extends Notifier<List<MealEntry>> {
       if (row == null) return;
       row.profileId = newProfileId;
       row.flareIsarId = null;
+      row.flareDetached = false;
       await isar.mealEntryIsars.put(row);
     });
   }

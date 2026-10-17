@@ -1,8 +1,10 @@
+import '../helpers/no_flares.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:health_flare/models/flare.dart';
 import 'package:health_flare/core/providers/activity_entry_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/core/providers/sleep_provider.dart';
@@ -84,7 +86,7 @@ class _Profiles extends ProfileListNotifier {
 
 final _t = DateTime(2026, 7, 1, 8);
 
-Widget _app(Widget screen) {
+Widget _app(Widget screen, {List<Flare> flares = const []}) {
   final router = GoRouter(
     initialLocation: '/edit',
     routes: [
@@ -97,6 +99,7 @@ Widget _app(Widget screen) {
   );
   return ProviderScope(
     overrides: [
+      ...withFlares(flares),
       symptomEntryListProvider.overrideWith(_Symptoms.new),
       vitalEntryListProvider.overrideWith(_Vitals.new),
       sleepEntryListProvider.overrideWith(_Sleep.new),
@@ -245,9 +248,16 @@ void main() {
             severity: 5,
             loggedAt: _t,
             createdAt: _t,
-            flareIsarId: 3,
           ),
         ),
+        flares: [
+          Flare(
+            id: 3,
+            profileId: 1,
+            startedAt: _t.subtract(const Duration(days: 1)),
+            createdAt: _t,
+          ),
+        ],
       ),
     );
     await tester.pumpAndSettle();

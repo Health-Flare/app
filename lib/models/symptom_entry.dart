@@ -16,6 +16,7 @@ class SymptomEntry {
     required this.loggedAt,
     required this.createdAt,
     this.flareIsarId,
+    this.flareDetached = false,
     this.weatherSnapshot,
   });
 
@@ -33,6 +34,10 @@ class SymptomEntry {
   final DateTime loggedAt;
   final DateTime createdAt;
   final int? flareIsarId;
+
+  /// Taken out of its flare by hand (#173). Which flare an entry is part
+  /// of is worked out from its time ([flareFor]); this overrides it.
+  final bool flareDetached;
   final WeatherSnapshot? weatherSnapshot;
 
   SymptomEntry copyWith({
@@ -44,6 +49,8 @@ class SymptomEntry {
     String? notes,
     DateTime? loggedAt,
     WeatherSnapshot? weatherSnapshot,
+    bool? flareDetached,
+    bool clearFlareIsarId = false,
     bool clearNotes = false,
     bool clearUserSymptomIsarId = false,
   }) {
@@ -60,7 +67,8 @@ class SymptomEntry {
       notes: clearNotes ? null : (notes ?? this.notes),
       loggedAt: loggedAt ?? this.loggedAt,
       createdAt: createdAt,
-      flareIsarId: flareIsarId,
+      flareIsarId: clearFlareIsarId ? null : flareIsarId,
+      flareDetached: flareDetached ?? this.flareDetached,
       weatherSnapshot: weatherSnapshot ?? this.weatherSnapshot,
     );
   }

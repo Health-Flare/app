@@ -52,6 +52,7 @@ class ActivityEntry {
     this.updatedAt,
     this.notes,
     this.flareIsarId,
+    this.flareDetached = false,
     this.weatherSnapshot,
   });
 
@@ -73,6 +74,10 @@ class ActivityEntry {
   final DateTime? updatedAt;
   final String? notes;
   final int? flareIsarId;
+
+  /// Taken out of its flare by hand (#173). Which flare an entry is part
+  /// of is worked out from its time ([flareFor]); this overrides it.
+  final bool flareDetached;
   final WeatherSnapshot? weatherSnapshot;
 
   /// Human-readable effort label, e.g. "3 – Moderate".
@@ -90,6 +95,8 @@ class ActivityEntry {
     String? notes,
     int? flareIsarId,
     WeatherSnapshot? weatherSnapshot,
+    bool? flareDetached,
+    bool clearFlareIsarId = false,
     bool clearActivityType = false,
     bool clearEffortLevel = false,
     bool clearDurationMinutes = false,
@@ -110,7 +117,8 @@ class ActivityEntry {
       createdAt: createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       notes: clearNotes ? null : (notes ?? this.notes),
-      flareIsarId: flareIsarId ?? this.flareIsarId,
+      flareIsarId: clearFlareIsarId ? null : (flareIsarId ?? this.flareIsarId),
+      flareDetached: flareDetached ?? this.flareDetached,
       weatherSnapshot: weatherSnapshot ?? this.weatherSnapshot,
     );
   }

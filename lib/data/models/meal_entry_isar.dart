@@ -29,6 +29,9 @@ class MealEntryIsar {
 
   int? flareIsarId; // back-filled when FlareIsar lands in v9
 
+  /// Taken out of its flare by hand (#173).
+  bool flareDetached = false;
+
   WeatherSnapshotIsar? weatherSnapshot;
 
   MealEntry toDomain() => MealEntry(
@@ -42,6 +45,7 @@ class MealEntryIsar {
     createdAt: createdAt,
     updatedAt: updatedAt,
     flareIsarId: flareIsarId,
+    flareDetached: flareDetached,
     weatherSnapshot: weatherSnapshot?.toDomain(),
   );
 
@@ -56,6 +60,7 @@ class MealEntryIsar {
     ..createdAt = e.createdAt
     ..updatedAt = e.updatedAt
     ..flareIsarId = e.flareIsarId
+    ..flareDetached = e.flareDetached
     ..weatherSnapshot = e.weatherSnapshot != null
         ? WeatherSnapshotIsar.fromDomain(e.weatherSnapshot!)
         : null;

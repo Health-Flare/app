@@ -1,3 +1,4 @@
+import '../helpers/no_flares.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -76,6 +77,7 @@ MealEntry makeMeal({
 Widget _buildListScreen({List<MealEntry> entries = const []}) {
   return ProviderScope(
     overrides: [
+      noFlares,
       mealEntryListProvider.overrideWith(() => _FakeMealList(entries: entries)),
       activeProfileProvider.overrideWith(_FakeActiveProfile.new),
       profileListProvider.overrideWith(_FakeProfileList.new),
@@ -95,6 +97,7 @@ Widget _buildListScreen({List<MealEntry> entries = const []}) {
 Widget _buildFormScreen({MealEntry? entry}) {
   return ProviderScope(
     overrides: [
+      noFlares,
       mealEntryListProvider.overrideWith(_FakeMealList.new),
       activeProfileProvider.overrideWith(_FakeActiveProfile.new),
       profileListProvider.overrideWith(_FakeProfileList.new),
@@ -112,6 +115,7 @@ Widget _buildDetailScreen({
 }) {
   return ProviderScope(
     overrides: [
+      noFlares,
       mealEntryListProvider.overrideWith(() => _FakeMealList(entries: [entry])),
       symptomEntryListProvider.overrideWith(
         () => _FakeSymptomList(entries: symptoms),

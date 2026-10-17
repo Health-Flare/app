@@ -22,27 +22,32 @@ const VitalEntryIsarSchema = CollectionSchema(
       name: r'createdAt',
       type: IsarType.dateTime,
     ),
-    r'flareIsarId': PropertySchema(
+    r'flareDetached': PropertySchema(
       id: 1,
+      name: r'flareDetached',
+      type: IsarType.bool,
+    ),
+    r'flareIsarId': PropertySchema(
+      id: 2,
       name: r'flareIsarId',
       type: IsarType.long,
     ),
     r'loggedAt': PropertySchema(
-      id: 2,
+      id: 3,
       name: r'loggedAt',
       type: IsarType.dateTime,
     ),
-    r'notes': PropertySchema(id: 3, name: r'notes', type: IsarType.string),
+    r'notes': PropertySchema(id: 4, name: r'notes', type: IsarType.string),
     r'profileId': PropertySchema(
-      id: 4,
+      id: 5,
       name: r'profileId',
       type: IsarType.long,
     ),
-    r'unit': PropertySchema(id: 5, name: r'unit', type: IsarType.string),
-    r'value': PropertySchema(id: 6, name: r'value', type: IsarType.double),
-    r'value2': PropertySchema(id: 7, name: r'value2', type: IsarType.double),
+    r'unit': PropertySchema(id: 6, name: r'unit', type: IsarType.string),
+    r'value': PropertySchema(id: 7, name: r'value', type: IsarType.double),
+    r'value2': PropertySchema(id: 8, name: r'value2', type: IsarType.double),
     r'vitalType': PropertySchema(
-      id: 8,
+      id: 9,
       name: r'vitalType',
       type: IsarType.string,
     ),
@@ -112,14 +117,15 @@ void _vitalEntryIsarSerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeDateTime(offsets[0], object.createdAt);
-  writer.writeLong(offsets[1], object.flareIsarId);
-  writer.writeDateTime(offsets[2], object.loggedAt);
-  writer.writeString(offsets[3], object.notes);
-  writer.writeLong(offsets[4], object.profileId);
-  writer.writeString(offsets[5], object.unit);
-  writer.writeDouble(offsets[6], object.value);
-  writer.writeDouble(offsets[7], object.value2);
-  writer.writeString(offsets[8], object.vitalType);
+  writer.writeBool(offsets[1], object.flareDetached);
+  writer.writeLong(offsets[2], object.flareIsarId);
+  writer.writeDateTime(offsets[3], object.loggedAt);
+  writer.writeString(offsets[4], object.notes);
+  writer.writeLong(offsets[5], object.profileId);
+  writer.writeString(offsets[6], object.unit);
+  writer.writeDouble(offsets[7], object.value);
+  writer.writeDouble(offsets[8], object.value2);
+  writer.writeString(offsets[9], object.vitalType);
 }
 
 VitalEntryIsar _vitalEntryIsarDeserialize(
@@ -130,15 +136,16 @@ VitalEntryIsar _vitalEntryIsarDeserialize(
 ) {
   final object = VitalEntryIsar();
   object.createdAt = reader.readDateTime(offsets[0]);
-  object.flareIsarId = reader.readLongOrNull(offsets[1]);
+  object.flareDetached = reader.readBool(offsets[1]);
+  object.flareIsarId = reader.readLongOrNull(offsets[2]);
   object.id = id;
-  object.loggedAt = reader.readDateTime(offsets[2]);
-  object.notes = reader.readStringOrNull(offsets[3]);
-  object.profileId = reader.readLong(offsets[4]);
-  object.unit = reader.readString(offsets[5]);
-  object.value = reader.readDouble(offsets[6]);
-  object.value2 = reader.readDoubleOrNull(offsets[7]);
-  object.vitalType = reader.readString(offsets[8]);
+  object.loggedAt = reader.readDateTime(offsets[3]);
+  object.notes = reader.readStringOrNull(offsets[4]);
+  object.profileId = reader.readLong(offsets[5]);
+  object.unit = reader.readString(offsets[6]);
+  object.value = reader.readDouble(offsets[7]);
+  object.value2 = reader.readDoubleOrNull(offsets[8]);
+  object.vitalType = reader.readString(offsets[9]);
   return object;
 }
 
@@ -152,20 +159,22 @@ P _vitalEntryIsarDeserializeProp<P>(
     case 0:
       return (reader.readDateTime(offset)) as P;
     case 1:
-      return (reader.readLongOrNull(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 2:
-      return (reader.readDateTime(offset)) as P;
+      return (reader.readLongOrNull(offset)) as P;
     case 3:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readDateTime(offset)) as P;
     case 4:
-      return (reader.readLong(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 5:
-      return (reader.readString(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 6:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 7:
-      return (reader.readDoubleOrNull(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 8:
+      return (reader.readDoubleOrNull(offset)) as P;
+    case 9:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -541,6 +550,15 @@ extension VitalEntryIsarQueryFilter
           upper: upper,
           includeUpper: includeUpper,
         ),
+      );
+    });
+  }
+
+  QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterFilterCondition>
+  flareDetachedEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'flareDetached', value: value),
       );
     });
   }
@@ -1407,6 +1425,20 @@ extension VitalEntryIsarQuerySortBy
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterSortBy>
+  sortByFlareDetached() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'flareDetached', Sort.asc);
+    });
+  }
+
+  QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterSortBy>
+  sortByFlareDetachedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'flareDetached', Sort.desc);
+    });
+  }
+
+  QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterSortBy>
   sortByFlareIsarId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'flareIsarId', Sort.asc);
@@ -1521,6 +1553,20 @@ extension VitalEntryIsarQuerySortThenBy
   thenByCreatedAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'createdAt', Sort.desc);
+    });
+  }
+
+  QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterSortBy>
+  thenByFlareDetached() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'flareDetached', Sort.asc);
+    });
+  }
+
+  QueryBuilder<VitalEntryIsar, VitalEntryIsar, QAfterSortBy>
+  thenByFlareDetachedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'flareDetached', Sort.desc);
     });
   }
 
@@ -1649,6 +1695,13 @@ extension VitalEntryIsarQueryWhereDistinct
   }
 
   QueryBuilder<VitalEntryIsar, VitalEntryIsar, QDistinct>
+  distinctByFlareDetached() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'flareDetached');
+    });
+  }
+
+  QueryBuilder<VitalEntryIsar, VitalEntryIsar, QDistinct>
   distinctByFlareIsarId() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'flareIsarId');
@@ -1716,6 +1769,12 @@ extension VitalEntryIsarQueryProperty
   QueryBuilder<VitalEntryIsar, DateTime, QQueryOperations> createdAtProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'createdAt');
+    });
+  }
+
+  QueryBuilder<VitalEntryIsar, bool, QQueryOperations> flareDetachedProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'flareDetached');
     });
   }
 

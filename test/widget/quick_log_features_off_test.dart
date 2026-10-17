@@ -60,6 +60,7 @@ class _Meals extends MealEntryListNotifier {
     required bool hasReaction,
     required DateTime loggedAt,
     int? flareIsarId,
+    bool flareDetached = false,
     WeatherSnapshot? weatherSnapshot,
   }) async {
     _meals.add(description);

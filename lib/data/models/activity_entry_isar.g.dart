@@ -42,29 +42,34 @@ const ActivityEntryIsarSchema = CollectionSchema(
       name: r'effortLevel',
       type: IsarType.long,
     ),
-    r'flareIsarId': PropertySchema(
+    r'flareDetached': PropertySchema(
       id: 5,
+      name: r'flareDetached',
+      type: IsarType.bool,
+    ),
+    r'flareIsarId': PropertySchema(
+      id: 6,
       name: r'flareIsarId',
       type: IsarType.long,
     ),
     r'loggedAt': PropertySchema(
-      id: 6,
+      id: 7,
       name: r'loggedAt',
       type: IsarType.dateTime,
     ),
-    r'notes': PropertySchema(id: 7, name: r'notes', type: IsarType.string),
+    r'notes': PropertySchema(id: 8, name: r'notes', type: IsarType.string),
     r'profileId': PropertySchema(
-      id: 8,
+      id: 9,
       name: r'profileId',
       type: IsarType.long,
     ),
     r'updatedAt': PropertySchema(
-      id: 9,
+      id: 10,
       name: r'updatedAt',
       type: IsarType.dateTime,
     ),
     r'weatherSnapshot': PropertySchema(
-      id: 10,
+      id: 11,
       name: r'weatherSnapshot',
       type: IsarType.object,
       target: r'WeatherSnapshotIsar',
@@ -156,13 +161,14 @@ void _activityEntryIsarSerialize(
   writer.writeString(offsets[2], object.description);
   writer.writeLong(offsets[3], object.durationMinutes);
   writer.writeLong(offsets[4], object.effortLevel);
-  writer.writeLong(offsets[5], object.flareIsarId);
-  writer.writeDateTime(offsets[6], object.loggedAt);
-  writer.writeString(offsets[7], object.notes);
-  writer.writeLong(offsets[8], object.profileId);
-  writer.writeDateTime(offsets[9], object.updatedAt);
+  writer.writeBool(offsets[5], object.flareDetached);
+  writer.writeLong(offsets[6], object.flareIsarId);
+  writer.writeDateTime(offsets[7], object.loggedAt);
+  writer.writeString(offsets[8], object.notes);
+  writer.writeLong(offsets[9], object.profileId);
+  writer.writeDateTime(offsets[10], object.updatedAt);
   writer.writeObject<WeatherSnapshotIsar>(
-    offsets[10],
+    offsets[11],
     allOffsets,
     WeatherSnapshotIsarSchema.serialize,
     object.weatherSnapshot,
@@ -181,14 +187,15 @@ ActivityEntryIsar _activityEntryIsarDeserialize(
   object.description = reader.readString(offsets[2]);
   object.durationMinutes = reader.readLongOrNull(offsets[3]);
   object.effortLevel = reader.readLongOrNull(offsets[4]);
-  object.flareIsarId = reader.readLongOrNull(offsets[5]);
+  object.flareDetached = reader.readBool(offsets[5]);
+  object.flareIsarId = reader.readLongOrNull(offsets[6]);
   object.id = id;
-  object.loggedAt = reader.readDateTime(offsets[6]);
-  object.notes = reader.readStringOrNull(offsets[7]);
-  object.profileId = reader.readLong(offsets[8]);
-  object.updatedAt = reader.readDateTimeOrNull(offsets[9]);
+  object.loggedAt = reader.readDateTime(offsets[7]);
+  object.notes = reader.readStringOrNull(offsets[8]);
+  object.profileId = reader.readLong(offsets[9]);
+  object.updatedAt = reader.readDateTimeOrNull(offsets[10]);
   object.weatherSnapshot = reader.readObjectOrNull<WeatherSnapshotIsar>(
-    offsets[10],
+    offsets[11],
     WeatherSnapshotIsarSchema.deserialize,
     allOffsets,
   );
@@ -213,16 +220,18 @@ P _activityEntryIsarDeserializeProp<P>(
     case 4:
       return (reader.readLongOrNull(offset)) as P;
     case 5:
-      return (reader.readLongOrNull(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 6:
-      return (reader.readDateTime(offset)) as P;
+      return (reader.readLongOrNull(offset)) as P;
     case 7:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readDateTime(offset)) as P;
     case 8:
-      return (reader.readLong(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 9:
-      return (reader.readDateTimeOrNull(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 10:
+      return (reader.readDateTimeOrNull(offset)) as P;
+    case 11:
       return (reader.readObjectOrNull<WeatherSnapshotIsar>(
             offset,
             WeatherSnapshotIsarSchema.deserialize,
@@ -1053,6 +1062,15 @@ extension ActivityEntryIsarQueryFilter
   }
 
   QueryBuilder<ActivityEntryIsar, ActivityEntryIsar, QAfterFilterCondition>
+  flareDetachedEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'flareDetached', value: value),
+      );
+    });
+  }
+
+  QueryBuilder<ActivityEntryIsar, ActivityEntryIsar, QAfterFilterCondition>
   flareIsarIdIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
@@ -1627,6 +1645,20 @@ extension ActivityEntryIsarQuerySortBy
   }
 
   QueryBuilder<ActivityEntryIsar, ActivityEntryIsar, QAfterSortBy>
+  sortByFlareDetached() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'flareDetached', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ActivityEntryIsar, ActivityEntryIsar, QAfterSortBy>
+  sortByFlareDetachedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'flareDetached', Sort.desc);
+    });
+  }
+
+  QueryBuilder<ActivityEntryIsar, ActivityEntryIsar, QAfterSortBy>
   sortByFlareIsarId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'flareIsarId', Sort.asc);
@@ -1770,6 +1802,20 @@ extension ActivityEntryIsarQuerySortThenBy
   }
 
   QueryBuilder<ActivityEntryIsar, ActivityEntryIsar, QAfterSortBy>
+  thenByFlareDetached() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'flareDetached', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ActivityEntryIsar, ActivityEntryIsar, QAfterSortBy>
+  thenByFlareDetachedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'flareDetached', Sort.desc);
+    });
+  }
+
+  QueryBuilder<ActivityEntryIsar, ActivityEntryIsar, QAfterSortBy>
   thenByFlareIsarId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'flareIsarId', Sort.asc);
@@ -1891,6 +1937,13 @@ extension ActivityEntryIsarQueryWhereDistinct
   }
 
   QueryBuilder<ActivityEntryIsar, ActivityEntryIsar, QDistinct>
+  distinctByFlareDetached() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'flareDetached');
+    });
+  }
+
+  QueryBuilder<ActivityEntryIsar, ActivityEntryIsar, QDistinct>
   distinctByFlareIsarId() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'flareIsarId');
@@ -1966,6 +2019,13 @@ extension ActivityEntryIsarQueryProperty
   effortLevelProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'effortLevel');
+    });
+  }
+
+  QueryBuilder<ActivityEntryIsar, bool, QQueryOperations>
+  flareDetachedProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'flareDetached');
     });
   }
 

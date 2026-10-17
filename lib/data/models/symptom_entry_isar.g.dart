@@ -22,41 +22,46 @@ const SymptomEntryIsarSchema = CollectionSchema(
       name: r'createdAt',
       type: IsarType.dateTime,
     ),
-    r'flareIsarId': PropertySchema(
+    r'flareDetached': PropertySchema(
       id: 1,
+      name: r'flareDetached',
+      type: IsarType.bool,
+    ),
+    r'flareIsarId': PropertySchema(
+      id: 2,
       name: r'flareIsarId',
       type: IsarType.long,
     ),
     r'locations': PropertySchema(
-      id: 2,
+      id: 3,
       name: r'locations',
       type: IsarType.stringList,
     ),
     r'loggedAt': PropertySchema(
-      id: 3,
+      id: 4,
       name: r'loggedAt',
       type: IsarType.dateTime,
     ),
-    r'name': PropertySchema(id: 4, name: r'name', type: IsarType.string),
-    r'notes': PropertySchema(id: 5, name: r'notes', type: IsarType.string),
+    r'name': PropertySchema(id: 5, name: r'name', type: IsarType.string),
+    r'notes': PropertySchema(id: 6, name: r'notes', type: IsarType.string),
     r'profileId': PropertySchema(
-      id: 6,
+      id: 7,
       name: r'profileId',
       type: IsarType.long,
     ),
-    r'severity': PropertySchema(id: 7, name: r'severity', type: IsarType.long),
+    r'severity': PropertySchema(id: 8, name: r'severity', type: IsarType.long),
     r'userConditionIsarId': PropertySchema(
-      id: 8,
+      id: 9,
       name: r'userConditionIsarId',
       type: IsarType.long,
     ),
     r'userSymptomIsarId': PropertySchema(
-      id: 9,
+      id: 10,
       name: r'userSymptomIsarId',
       type: IsarType.long,
     ),
     r'weatherSnapshot': PropertySchema(
-      id: 10,
+      id: 11,
       name: r'weatherSnapshot',
       type: IsarType.object,
       target: r'WeatherSnapshotIsar',
@@ -145,17 +150,18 @@ void _symptomEntryIsarSerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeDateTime(offsets[0], object.createdAt);
-  writer.writeLong(offsets[1], object.flareIsarId);
-  writer.writeStringList(offsets[2], object.locations);
-  writer.writeDateTime(offsets[3], object.loggedAt);
-  writer.writeString(offsets[4], object.name);
-  writer.writeString(offsets[5], object.notes);
-  writer.writeLong(offsets[6], object.profileId);
-  writer.writeLong(offsets[7], object.severity);
-  writer.writeLong(offsets[8], object.userConditionIsarId);
-  writer.writeLong(offsets[9], object.userSymptomIsarId);
+  writer.writeBool(offsets[1], object.flareDetached);
+  writer.writeLong(offsets[2], object.flareIsarId);
+  writer.writeStringList(offsets[3], object.locations);
+  writer.writeDateTime(offsets[4], object.loggedAt);
+  writer.writeString(offsets[5], object.name);
+  writer.writeString(offsets[6], object.notes);
+  writer.writeLong(offsets[7], object.profileId);
+  writer.writeLong(offsets[8], object.severity);
+  writer.writeLong(offsets[9], object.userConditionIsarId);
+  writer.writeLong(offsets[10], object.userSymptomIsarId);
   writer.writeObject<WeatherSnapshotIsar>(
-    offsets[10],
+    offsets[11],
     allOffsets,
     WeatherSnapshotIsarSchema.serialize,
     object.weatherSnapshot,
@@ -170,18 +176,19 @@ SymptomEntryIsar _symptomEntryIsarDeserialize(
 ) {
   final object = SymptomEntryIsar();
   object.createdAt = reader.readDateTime(offsets[0]);
-  object.flareIsarId = reader.readLongOrNull(offsets[1]);
+  object.flareDetached = reader.readBool(offsets[1]);
+  object.flareIsarId = reader.readLongOrNull(offsets[2]);
   object.id = id;
-  object.locations = reader.readStringList(offsets[2]) ?? [];
-  object.loggedAt = reader.readDateTime(offsets[3]);
-  object.name = reader.readString(offsets[4]);
-  object.notes = reader.readStringOrNull(offsets[5]);
-  object.profileId = reader.readLong(offsets[6]);
-  object.severity = reader.readLong(offsets[7]);
-  object.userConditionIsarId = reader.readLongOrNull(offsets[8]);
-  object.userSymptomIsarId = reader.readLongOrNull(offsets[9]);
+  object.locations = reader.readStringList(offsets[3]) ?? [];
+  object.loggedAt = reader.readDateTime(offsets[4]);
+  object.name = reader.readString(offsets[5]);
+  object.notes = reader.readStringOrNull(offsets[6]);
+  object.profileId = reader.readLong(offsets[7]);
+  object.severity = reader.readLong(offsets[8]);
+  object.userConditionIsarId = reader.readLongOrNull(offsets[9]);
+  object.userSymptomIsarId = reader.readLongOrNull(offsets[10]);
   object.weatherSnapshot = reader.readObjectOrNull<WeatherSnapshotIsar>(
-    offsets[10],
+    offsets[11],
     WeatherSnapshotIsarSchema.deserialize,
     allOffsets,
   );
@@ -198,24 +205,26 @@ P _symptomEntryIsarDeserializeProp<P>(
     case 0:
       return (reader.readDateTime(offset)) as P;
     case 1:
-      return (reader.readLongOrNull(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 2:
-      return (reader.readStringList(offset) ?? []) as P;
+      return (reader.readLongOrNull(offset)) as P;
     case 3:
-      return (reader.readDateTime(offset)) as P;
+      return (reader.readStringList(offset) ?? []) as P;
     case 4:
-      return (reader.readString(offset)) as P;
+      return (reader.readDateTime(offset)) as P;
     case 5:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 6:
-      return (reader.readLong(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 7:
       return (reader.readLong(offset)) as P;
     case 8:
-      return (reader.readLongOrNull(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 9:
       return (reader.readLongOrNull(offset)) as P;
     case 10:
+      return (reader.readLongOrNull(offset)) as P;
+    case 11:
       return (reader.readObjectOrNull<WeatherSnapshotIsar>(
             offset,
             WeatherSnapshotIsarSchema.deserialize,
@@ -591,6 +600,15 @@ extension SymptomEntryIsarQueryFilter
           upper: upper,
           includeUpper: includeUpper,
         ),
+      );
+    });
+  }
+
+  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterFilterCondition>
+  flareDetachedEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'flareDetached', value: value),
       );
     });
   }
@@ -1577,6 +1595,20 @@ extension SymptomEntryIsarQuerySortBy
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
+  sortByFlareDetached() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'flareDetached', Sort.asc);
+    });
+  }
+
+  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
+  sortByFlareDetachedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'flareDetached', Sort.desc);
+    });
+  }
+
+  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
   sortByFlareIsarId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'flareIsarId', Sort.asc);
@@ -1700,6 +1732,20 @@ extension SymptomEntryIsarQuerySortThenBy
   thenByCreatedAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'createdAt', Sort.desc);
+    });
+  }
+
+  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
+  thenByFlareDetached() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'flareDetached', Sort.asc);
+    });
+  }
+
+  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QAfterSortBy>
+  thenByFlareDetachedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'flareDetached', Sort.desc);
     });
   }
 
@@ -1837,6 +1883,13 @@ extension SymptomEntryIsarQueryWhereDistinct
   }
 
   QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QDistinct>
+  distinctByFlareDetached() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'flareDetached');
+    });
+  }
+
+  QueryBuilder<SymptomEntryIsar, SymptomEntryIsar, QDistinct>
   distinctByFlareIsarId() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'flareIsarId');
@@ -1914,6 +1967,13 @@ extension SymptomEntryIsarQueryProperty
   createdAtProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'createdAt');
+    });
+  }
+
+  QueryBuilder<SymptomEntryIsar, bool, QQueryOperations>
+  flareDetachedProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'flareDetached');
     });
   }
 

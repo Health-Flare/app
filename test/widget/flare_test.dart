@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:health_flare/core/providers/activity_entry_provider.dart';
 import 'package:health_flare/core/providers/condition_provider.dart';
+import 'package:health_flare/core/providers/dose_log_provider.dart';
 import 'package:health_flare/core/providers/flare_provider.dart';
 import 'package:health_flare/models/user_condition.dart';
 import 'package:health_flare/core/providers/meal_entry_provider.dart';
+import 'package:health_flare/core/providers/medication_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
 import 'package:health_flare/core/providers/symptom_entry_provider.dart';
 import 'package:health_flare/core/providers/vital_entry_provider.dart';
@@ -13,8 +16,11 @@ import 'package:health_flare/features/flare/screens/flare_detail_screen.dart';
 import 'package:health_flare/features/flare/screens/flare_form_screen.dart';
 import 'package:health_flare/features/flare/screens/flare_history_screen.dart';
 import 'package:health_flare/features/flare/widgets/active_flare_banner.dart';
+import 'package:health_flare/models/activity_entry.dart';
+import 'package:health_flare/models/dose_log.dart';
 import 'package:health_flare/models/flare.dart';
 import 'package:health_flare/models/meal_entry.dart';
+import 'package:health_flare/models/medication.dart';
 import 'package:health_flare/models/profile.dart';
 import 'package:health_flare/models/symptom_entry.dart';
 import 'package:health_flare/models/vital_entry.dart';
@@ -40,6 +46,39 @@ class _FakeActiveProfile extends ActiveProfileNotifier {
 class _FakeProfileList extends ProfileListNotifier {
   @override
   List<Profile> build() => [Profile(id: 1, name: 'Sarah')];
+}
+
+class _FakeMedicationList extends MedicationListNotifier {
+  @override
+  List<Medication> build() => [
+    Medication(
+      id: 1,
+      profileId: 1,
+      name: 'Ibuprofen',
+      medicationType: 'medication',
+      doseAmount: 200,
+      doseUnit: 'mg',
+      frequency: 'as_needed',
+      startDate: DateTime(2026),
+      createdAt: DateTime(2026),
+    ),
+  ];
+}
+
+class _FakeDoseList extends DoseLogListNotifier {
+  _FakeDoseList({this.entries = const []});
+  final List<DoseLog> entries;
+
+  @override
+  List<DoseLog> build() => entries;
+}
+
+class _FakeActivityList extends ActivityEntryListNotifier {
+  _FakeActivityList({this.entries = const []});
+  final List<ActivityEntry> entries;
+
+  @override
+  List<ActivityEntry> build() => entries;
 }
 
 class _FakeSymptomList extends SymptomEntryListNotifier {
@@ -138,14 +177,24 @@ Widget _buildFormScreen({Flare? flare}) {
 
 Widget _buildDetailScreen({
   required Flare flare,
+  List<Flare> otherFlares = const [],
   List<SymptomEntry> symptoms = const [],
   List<VitalEntry> vitals = const [],
   List<MealEntry> meals = const [],
+  List<DoseLog> doses = const [],
+  List<ActivityEntry> activities = const [],
   String? temperatureUnit,
 }) {
   return ProviderScope(
     overrides: [
-      flareListProvider.overrideWith(() => _FakeFlareList(flares: [flare])),
+      flareListProvider.overrideWith(
+        () => _FakeFlareList(flares: [flare, ...otherFlares]),
+      ),
+      doseLogListProvider.overrideWith(() => _FakeDoseList(entries: doses)),
+      medicationListProvider.overrideWith(_FakeMedicationList.new),
+      activityEntryListProvider.overrideWith(
+        () => _FakeActivityList(entries: activities),
+      ),
       symptomEntryListProvider.overrideWith(
         () => _FakeSymptomList(entries: symptoms),
       ),
@@ -364,7 +413,9 @@ void main() {
       expect(find.text('Meals (1)'), findsOneWidget);
     });
 
-    testWidgets('does not show entries from other flares', (tester) async {
+    testWidgets('does not show entries pinned to another flare', (
+      tester,
+    ) async {
       final flare = makeFlare(id: 1, active: true);
       final otherSymptom = SymptomEntry(
         id: 2,
@@ -377,11 +428,99 @@ void main() {
       );
 
       await tester.pumpWidget(
-        _buildDetailScreen(flare: flare, symptoms: [otherSymptom]),
+        _buildDetailScreen(
+          flare: flare,
+          otherFlares: [
+            makeFlare(
+              id: 99,
+              active: false,
+              startedAt: DateTime(2025, 1, 1),
+              endedAt: DateTime(2025, 1, 5),
+            ),
+          ],
+          symptoms: [otherSymptom],
+        ),
       );
       await tester.pump();
 
       expect(find.text('Headache'), findsNothing);
+    });
+
+    // #173: worked out from the entry's time, not a stored link.
+    testWidgets('lists every kind of entry during it, linked or not', (
+      tester,
+    ) async {
+      final flare = makeFlare(id: 1, active: true);
+      await tester.pumpWidget(
+        _buildDetailScreen(
+          flare: flare,
+          symptoms: [
+            SymptomEntry(
+              id: 1,
+              profileId: 1,
+              name: 'Joint pain',
+              severity: 7,
+              loggedAt: _now,
+              createdAt: _now,
+            ),
+          ],
+          doses: [
+            DoseLog(
+              id: 1,
+              profileId: 1,
+              medicationIsarId: 1,
+              loggedAt: _now,
+              createdAt: _now,
+              amount: 200,
+              unit: 'mg',
+              status: 'taken',
+            ),
+          ],
+          activities: [
+            ActivityEntry(
+              id: 1,
+              profileId: 1,
+              description: 'Short walk',
+              loggedAt: _now,
+              createdAt: _now,
+            ),
+          ],
+        ),
+      );
+      await tester.pump();
+
+      expect(find.text('Joint pain'), findsOneWidget);
+      expect(find.text('Doses (1)'), findsOneWidget);
+      expect(find.text('Ibuprofen'), findsOneWidget);
+      expect(find.text('Activity (1)'), findsOneWidget);
+      expect(find.text('Short walk'), findsOneWidget);
+      expect(find.text('1 symptom, 1 dose, 1 activity'), findsOneWidget);
+    });
+
+    testWidgets('an entry taken out of the flare is not listed', (
+      tester,
+    ) async {
+      final flare = makeFlare(id: 1, active: true);
+      await tester.pumpWidget(
+        _buildDetailScreen(
+          flare: flare,
+          symptoms: [
+            SymptomEntry(
+              id: 1,
+              profileId: 1,
+              name: 'Joint pain',
+              severity: 7,
+              loggedAt: _now,
+              createdAt: _now,
+              flareDetached: true,
+            ),
+          ],
+        ),
+      );
+      await tester.pump();
+
+      expect(find.text('Joint pain'), findsNothing);
+      expect(find.text('No entries during this flare yet.'), findsOneWidget);
     });
 
     testWidgets('shows notes when present', (tester) async {

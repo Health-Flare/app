@@ -53,6 +53,7 @@ class ActivityEntryListNotifier extends Notifier<List<ActivityEntry>> {
     required DateTime loggedAt,
     String? notes,
     int? flareIsarId,
+    bool flareDetached = false,
     WeatherSnapshot? weatherSnapshot,
   }) async {
     final isar = ref.read(isarProvider);
@@ -67,6 +68,7 @@ class ActivityEntryListNotifier extends Notifier<List<ActivityEntry>> {
       ..createdAt = now
       ..notes = notes
       ..flareIsarId = flareIsarId
+      ..flareDetached = flareDetached
       ..weatherSnapshot = weatherSnapshot != null
           ? WeatherSnapshotIsar.fromDomain(weatherSnapshot)
           : null;
@@ -93,6 +95,7 @@ class ActivityEntryListNotifier extends Notifier<List<ActivityEntry>> {
       ..updatedAt = DateTime.now()
       ..notes = entry.notes
       ..flareIsarId = entry.flareIsarId
+      ..flareDetached = entry.flareDetached
       ..weatherSnapshot = entry.weatherSnapshot != null
           ? WeatherSnapshotIsar.fromDomain(entry.weatherSnapshot!)
           : null;
@@ -119,6 +122,7 @@ class ActivityEntryListNotifier extends Notifier<List<ActivityEntry>> {
       if (row == null) return;
       row.profileId = newProfileId;
       row.flareIsarId = null;
+      row.flareDetached = false;
       await isar.activityEntryIsars.put(row);
     });
   }

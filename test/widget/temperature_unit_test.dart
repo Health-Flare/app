@@ -1,6 +1,7 @@
 // Issue #83: per-profile temperature unit (display only).
 // Specs: docs/features/profiles.feature, symptoms_and_vitals.feature,
 // reports.feature ("Temperature unit" scenarios).
+import '../helpers/no_flares.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -71,6 +72,7 @@ VitalEntry _temp(double value, String unit) => VitalEntry(
 
 Widget _editSheet(Profile sarah, List<Profile> updates) => ProviderScope(
   overrides: [
+    noFlares,
     profileListProvider.overrideWith(
       () => _RecordingProfileList([sarah], updates),
     ),
@@ -83,6 +85,7 @@ Widget _editSheet(Profile sarah, List<Profile> updates) => ProviderScope(
 
 Widget _vitalForm(Profile sarah) => ProviderScope(
   overrides: [
+    noFlares,
     vitalEntryListProvider.overrideWith(_FakeVitalList.new),
     activeProfileProvider.overrideWith(() => _FakeActiveProfile(sarah.id)),
     profileListProvider.overrideWith(() => _RecordingProfileList([sarah], [])),
@@ -93,6 +96,7 @@ Widget _vitalForm(Profile sarah) => ProviderScope(
 
 Widget _vitalsList(Profile sarah, List<VitalEntry> vitals) => ProviderScope(
   overrides: [
+    noFlares,
     symptomEntryListProvider.overrideWith(_FakeSymptomList.new),
     vitalEntryListProvider.overrideWith(() => _FakeVitalList(entries: vitals)),
     activeProfileProvider.overrideWith(() => _FakeActiveProfile(sarah.id)),

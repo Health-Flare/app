@@ -5,10 +5,11 @@ import 'package:intl/intl.dart';
 
 import 'package:health_flare/core/providers/flare_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
-import 'package:health_flare/core/providers/meal_entry_provider.dart';
-import 'package:health_flare/core/providers/symptom_entry_provider.dart';
-import 'package:health_flare/core/providers/vital_entry_provider.dart';
+import 'package:health_flare/core/providers/flare_entries_provider.dart';
+import 'package:health_flare/core/providers/medication_provider.dart';
 import 'package:health_flare/core/router/app_router.dart';
+import 'package:health_flare/models/activity_entry.dart';
+import 'package:health_flare/models/dose_log.dart';
 import 'package:health_flare/models/flare.dart';
 import 'package:health_flare/models/meal_entry.dart';
 import 'package:health_flare/models/symptom_entry.dart';
@@ -41,29 +42,14 @@ class FlareDetailScreen extends ConsumerWidget {
       activeProfileDataProvider.select((p) => p?.temperatureUnit),
     );
 
-    // Entries tagged to this flare (flareIsarId == flare.id).
-    final symptoms =
-        ref
-            .watch(symptomEntryListProvider)
-            .where((e) => e.flareIsarId == flareId)
-            .toList()
-          ..sort((a, b) => b.loggedAt.compareTo(a.loggedAt));
-
-    final vitals =
-        ref
-            .watch(vitalEntryListProvider)
-            .where((e) => e.flareIsarId == flareId)
-            .toList()
-          ..sort((a, b) => b.loggedAt.compareTo(a.loggedAt));
-
-    final meals =
-        ref
-            .watch(mealEntryListProvider)
-            .where((e) => e.flareIsarId == flareId)
-            .toList()
-          ..sort((a, b) => b.loggedAt.compareTo(a.loggedAt));
-
-    final totalEntries = symptoms.length + vitals.length + meals.length;
+    // Entries during this flare, worked out from their time (#173).
+    final entries = ref.watch(flareEntriesProvider(flareId));
+    final symptoms = entries.symptoms;
+    final vitals = entries.vitals;
+    final meals = entries.meals;
+    final doses = entries.doses;
+    final activities = entries.activities;
+    final totalEntries = entries.total;
 
     return Scaffold(
       appBar: HFAppBar(
@@ -129,11 +115,7 @@ class FlareDetailScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      _entrySummary(
-                        symptoms.length,
-                        vitals.length,
-                        meals.length,
-                      ),
+                      _entrySummary(entries),
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
@@ -179,12 +161,34 @@ class FlareDetailScreen extends ConsumerWidget {
             ),
           ],
 
+          // Doses
+          if (doses.isNotEmpty) ...[
+            _SectionHeader(label: 'Doses (${doses.length})'),
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (ctx, i) => _DoseTile(entry: doses[i]),
+                childCount: doses.length,
+              ),
+            ),
+          ],
+
+          // Activity
+          if (activities.isNotEmpty) ...[
+            _SectionHeader(label: 'Activity (${activities.length})'),
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (ctx, i) => _ActivityTile(entry: activities[i]),
+                childCount: activities.length,
+              ),
+            ),
+          ],
+
           if (totalEntries == 0)
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(16, 24, 16, 0),
                 child: Text(
-                  'No entries tagged to this flare yet.',
+                  'No entries during this flare yet.',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
@@ -198,12 +202,17 @@ class FlareDetailScreen extends ConsumerWidget {
     );
   }
 
-  String _entrySummary(int symptoms, int vitals, int meals) {
-    final parts = <String>[];
-    if (symptoms > 0) parts.add('$symptoms symptom${symptoms == 1 ? '' : 's'}');
-    if (vitals > 0) parts.add('$vitals vital${vitals == 1 ? '' : 's'}');
-    if (meals > 0) parts.add('$meals meal${meals == 1 ? '' : 's'}');
-    return parts.join(', ');
+  String _entrySummary(FlareEntries e) {
+    String n(int count, String one, String many) =>
+        '$count ${count == 1 ? one : many}';
+    return [
+      if (e.symptoms.isNotEmpty) n(e.symptoms.length, 'symptom', 'symptoms'),
+      if (e.vitals.isNotEmpty) n(e.vitals.length, 'vital', 'vitals'),
+      if (e.meals.isNotEmpty) n(e.meals.length, 'meal', 'meals'),
+      if (e.doses.isNotEmpty) n(e.doses.length, 'dose', 'doses'),
+      if (e.activities.isNotEmpty)
+        n(e.activities.length, 'activity', 'activities'),
+    ].join(', ');
   }
 
   Future<void> _confirmEnd(
@@ -593,6 +602,65 @@ class _MealTile extends StatelessWidget {
       trailing: entry.hasReaction
           ? Icon(Icons.warning_amber_rounded, size: 16, color: cs.error)
           : null,
+      dense: true,
+    );
+  }
+}
+
+class _DoseTile extends ConsumerWidget {
+  const _DoseTile({required this.entry});
+  final DoseLog entry;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final cs = Theme.of(context).colorScheme;
+    final fmt = DateFormat('d MMM, HH:mm');
+    final name = ref
+        .watch(medicationListProvider)
+        .where((m) => m.id == entry.medicationIsarId)
+        .firstOrNull
+        ?.name;
+    return ListTile(
+      leading: CircleAvatar(
+        backgroundColor: cs.secondaryContainer,
+        child: Icon(
+          Icons.medication_outlined,
+          size: 18,
+          color: cs.onSecondaryContainer,
+        ),
+      ),
+      title: Text(name ?? 'Dose', maxLines: 1, overflow: TextOverflow.ellipsis),
+      subtitle: Text(
+        '${fmt.format(entry.loggedAt)} · ${entry.amount.toStringAsFixed(entry.amount % 1 == 0 ? 0 : 1)} ${entry.unit}',
+      ),
+      dense: true,
+    );
+  }
+}
+
+class _ActivityTile extends StatelessWidget {
+  const _ActivityTile({required this.entry});
+  final ActivityEntry entry;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final fmt = DateFormat('d MMM, HH:mm');
+    return ListTile(
+      leading: CircleAvatar(
+        backgroundColor: cs.primaryContainer,
+        child: Icon(
+          Icons.directions_walk,
+          size: 18,
+          color: cs.onPrimaryContainer,
+        ),
+      ),
+      title: Text(
+        entry.description,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+      subtitle: Text(fmt.format(entry.loggedAt)),
       dense: true,
     );
   }

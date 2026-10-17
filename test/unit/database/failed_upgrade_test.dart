@@ -11,6 +11,7 @@ import 'package:health_flare/data/database/app_settings.dart';
 import 'package:health_flare/data/database/backup_service.dart';
 import 'package:health_flare/data/database/failed_upgrade.dart';
 import 'package:health_flare/data/database/pre_migration_snapshot.dart';
+import 'package:health_flare/data/database/migration_runner.dart';
 import 'package:health_flare/data/models/journal_entry_isar.dart';
 import 'package:health_flare/data/models/profile_isar.dart';
 
@@ -245,7 +246,13 @@ void main() {
       final text = failedUpgradeDetails(f, platform: 'ios 26.0');
       expect(text, contains('Health Flare 1.10.0+42'));
       expect(text, contains('Platform: ios 26.0'));
-      expect(text, contains('Data version: 17 (updating from 16 to 22)'));
+      expect(
+        text,
+        contains(
+          'Data version: 17 '
+          '(updating from 16 to ${MigrationRunner.targetVersion})',
+        ),
+      );
       expect(text, contains('Failed step: 18'));
       expect(text, contains('Attempts: 3'));
       expect(text, contains('Safety copy: 2026-11-02 10:12 UTC'));

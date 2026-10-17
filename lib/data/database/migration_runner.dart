@@ -3,9 +3,16 @@ import 'package:isar_community/isar.dart';
 import 'package:health_flare/data/database/app_settings.dart';
 import 'package:health_flare/data/database/profile_deletion.dart';
 import 'package:health_flare/data/database/profile_ids.dart';
+import 'package:health_flare/data/models/activity_entry_isar.dart';
 import 'package:health_flare/data/models/condition_isar.dart';
+import 'package:health_flare/data/models/dose_log_isar.dart';
+import 'package:health_flare/data/models/flare_isar.dart';
+import 'package:health_flare/data/models/meal_entry_isar.dart';
+import 'package:health_flare/data/models/symptom_entry_isar.dart';
 import 'package:health_flare/data/models/symptom_isar.dart';
+import 'package:health_flare/data/models/vital_entry_isar.dart';
 import 'package:health_flare/data/seed_data.dart';
+import 'package:health_flare/models/flare_membership.dart';
 
 /// Runs any pending data migrations after the Isar database is opened.
 ///
@@ -41,6 +48,10 @@ import 'package:health_flare/data/seed_data.dart';
 ///              bar = default, null version = 1.9.1's bar, empty = all on.
 /// Schema v22 = AppSettings.guidePutOffOn and guideResumeStep (#145). No data
 ///              change: both read as null, nothing yet.
+/// Schema v23 = flareDetached on symptom, vital, meal, dose and activity
+///              entries (#173): which flare an entry is part of is worked out
+///              from its time. Clears stored flare links that only repeat
+///              that rule; any other link stays, as a pin.
 ///
 /// How to add a future migration:
 ///   1. Increment [_targetVersion].
@@ -54,7 +65,7 @@ import 'package:health_flare/data/seed_data.dart';
 class MigrationRunner {
   MigrationRunner._();
 
-  static const int _targetVersion = 22;
+  static const int _targetVersion = 23;
 
   /// The schema version a full upgrade reaches.
   static int get targetVersion => _targetVersion;
@@ -336,6 +347,59 @@ class MigrationRunner {
         await isar.appSettings.put(s);
       });
     }
+
+    // ── v22 → v23: which flare an entry is part of is worked out (#173) ──
+    // Entries gained flareDetached (reads false). A stored flare link now
+    // pins the entry to that flare, so clear the ones that only repeat
+    // what the rule gives: those entries then follow their flare's dates.
+    if (currentVersion < 23) {
+      await isar.writeTxn(() async {
+        await _clearRedundantFlareLinks(isar);
+        final s = await isar.appSettings.get(1) ?? (AppSettings()..id = 1);
+        s.schemaVersion = 23;
+        await isar.appSettings.put(s);
+      });
+    }
+  }
+
+  static Future<void> _clearRedundantFlareLinks(Isar isar) async {
+    final flares = [
+      for (final f in await isar.flareIsars.where().findAll()) f.toDomain(),
+    ];
+    bool redundant(int? link, int profileId, DateTime at) =>
+        link != null &&
+        flareFor(at: at, profileId: profileId, flares: flares) == link;
+
+    final symptoms = [
+      for (final r in await isar.symptomEntryIsars.where().findAll())
+        if (redundant(r.flareIsarId, r.profileId, r.loggedAt))
+          r..flareIsarId = null,
+    ];
+    await isar.symptomEntryIsars.putAll(symptoms);
+    final vitals = [
+      for (final r in await isar.vitalEntryIsars.where().findAll())
+        if (redundant(r.flareIsarId, r.profileId, r.loggedAt))
+          r..flareIsarId = null,
+    ];
+    await isar.vitalEntryIsars.putAll(vitals);
+    final meals = [
+      for (final r in await isar.mealEntryIsars.where().findAll())
+        if (redundant(r.flareIsarId, r.profileId, r.loggedAt))
+          r..flareIsarId = null,
+    ];
+    await isar.mealEntryIsars.putAll(meals);
+    final doses = [
+      for (final r in await isar.doseLogIsars.where().findAll())
+        if (redundant(r.flareIsarId, r.profileId, r.loggedAt))
+          r..flareIsarId = null,
+    ];
+    await isar.doseLogIsars.putAll(doses);
+    final activities = [
+      for (final r in await isar.activityEntryIsars.where().findAll())
+        if (redundant(r.flareIsarId, r.profileId, r.loggedAt))
+          r..flareIsarId = null,
+    ];
+    await isar.activityEntryIsars.putAll(activities);
   }
 
   /// Inserts all conditions and symptoms from [SeedData] in a single

@@ -34,6 +34,9 @@ class DoseLogIsar {
 
   int? flareIsarId; // nullable; back-filled when FlareIsar lands in v8
 
+  /// Taken out of its flare by hand (#173).
+  bool flareDetached = false;
+
   DoseLog toDomain() => DoseLog(
     id: id,
     profileId: profileId,
@@ -47,6 +50,7 @@ class DoseLogIsar {
     effectiveness: effectiveness,
     notes: notes,
     flareIsarId: flareIsarId,
+    flareDetached: flareDetached,
   );
 
   static DoseLogIsar fromDomain(DoseLog d) => DoseLogIsar()
@@ -61,5 +65,6 @@ class DoseLogIsar {
     ..reason = d.reason
     ..effectiveness = d.effectiveness
     ..notes = d.notes
-    ..flareIsarId = d.flareIsarId;
+    ..flareIsarId = d.flareIsarId
+    ..flareDetached = d.flareDetached;
 }
