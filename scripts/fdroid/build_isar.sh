@@ -25,6 +25,16 @@ if [[ "$locked" != "$pinned" ]]; then
   exit 1
 fi
 
+# mdbx-sys runs bindgen, which otherwise parses the build host's glibc
+# headers for an Android target and fails on the 32-bit ABI. Point it at the
+# NDK sysroot, found the same way upstream's tool/build_android.sh finds it.
+ndk=${ANDROID_NDK_HOME:-${ANDROID_NDK_ROOT:-${ANDROID_SDK_ROOT:-${ANDROID_HOME:-}}/ndk}}
+[[ -d "$ndk/toolchains" ]] || ndk=$(ls -d "$ndk"/* 2>/dev/null | sort -V | tail -n1)
+sysroot=$ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot
+[[ "$(uname -s)" == Darwin ]] && sysroot=$ndk/toolchains/llvm/prebuilt/darwin-x86_64/sysroot
+test -d "$sysroot" || { echo "No NDK sysroot at $sysroot" >&2; exit 1; }
+export BINDGEN_EXTRA_CLANG_ARGS="--sysroot=$sysroot"
+
 libs=$(ls -d "$PUB_CACHE"/hosted/pub.dev/isar_community_flutter_libs-"$locked"/android/src/main/jniLibs)
 cp "$root/scripts/fdroid/isar-Cargo.lock" "$src/Cargo.lock"
 

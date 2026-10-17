@@ -33,6 +33,9 @@ from ruamel.yaml import YAML
 src, dst, sha, vname, vcode = sys.argv[1:]
 yaml = YAML()
 yaml.preserve_quotes = True
+# fdroiddata style, which fdroid lint checks: lists indented under keys.
+yaml.indent(mapping=2, sequence=4, offset=2)
+yaml.width = 4096
 with open(src) as f:
     m = yaml.load(f)
 build = m['Builds'][0]

@@ -1,5 +1,6 @@
 Categories:
-  - Health
+  - Health Manager
+  - Medication
 License: GPL-3.0-or-later
 AuthorName: Health Flare
 WebSite: https://healthflare.org
@@ -19,7 +20,7 @@ Builds:
     submodules: true
     sudo:
       - apt-get update
-      - apt-get install -y gcc-multilib libc-dev make libclang-dev rustup
+      - apt-get install -y gcc libc-dev make libclang-dev rustup
     output: build/app/outputs/flutter-apk/app-release.apk
     srclibs:
       - flutter@stable
