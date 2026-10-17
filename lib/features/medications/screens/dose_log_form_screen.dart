@@ -1,3 +1,5 @@
+import 'package:health_flare/core/providers/flare_entries_provider.dart';
+import 'package:health_flare/features/flare/widgets/flare_membership_row.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -43,6 +45,26 @@ class _DoseLogFormScreenState extends ConsumerState<DoseLogFormScreen> {
   late String _status; // "taken" | "skipped" | "missed"
   String? _effectiveness;
   late DateTime _loggedAt;
+
+  // Which flare this entry is part of is worked out from [_loggedAt]
+  // (#173); these are the person's choices on top.
+  bool _flareDetached = false;
+  int? _pinnedFlareId;
+
+  int? get _flareProfileId =>
+      widget.doseLog?.profileId ?? ref.watch(activeProfileProvider);
+
+  bool get _partOfFlare =>
+      _flareProfileId != null &&
+      ref.read(
+            entryFlareProvider((
+              profileId: _flareProfileId!,
+              at: _loggedAt,
+              pinnedFlareId: _pinnedFlareId,
+              detached: _flareDetached,
+            )),
+          ) !=
+          null;
   bool _submitting = false;
 
   static const _statuses = [
@@ -75,6 +97,8 @@ class _DoseLogFormScreenState extends ConsumerState<DoseLogFormScreen> {
       _status = log.status;
       _effectiveness = log.effectiveness;
       _loggedAt = log.loggedAt;
+      _flareDetached = log.flareDetached;
+      _pinnedFlareId = log.flareIsarId;
     } else {
       _amountController = TextEditingController(
         text: med.doseAmount == med.doseAmount.truncateToDouble()
@@ -149,6 +173,7 @@ class _DoseLogFormScreenState extends ConsumerState<DoseLogFormScreen> {
             profileId: profileId,
             medicationIsarId: widget.medication.id,
             loggedAt: _loggedAt,
+            flareDetached: _flareDetached,
             amount: amount,
             unit: widget.medication.doseUnit,
             status: _status,
@@ -162,6 +187,8 @@ class _DoseLogFormScreenState extends ConsumerState<DoseLogFormScreen> {
           .update(
             widget.doseLog!.copyWith(
               loggedAt: _loggedAt,
+              flareDetached: _flareDetached,
+              clearFlareIsarId: _pinnedFlareId == null,
               amount: amount,
               status: _status,
               reason: reason,
@@ -228,7 +255,7 @@ class _DoseLogFormScreenState extends ConsumerState<DoseLogFormScreen> {
               // medication is added there first (#77). Nothing is dropped.
               beforeMove: _persist,
               notices: [
-                if (widget.doseLog!.flareIsarId != null)
+                if (_partOfFlare)
                   'It will no longer be part of '
                       "${activeProfile?.name ?? 'this profile'}'s flare.",
               ],
@@ -309,6 +336,18 @@ class _DoseLogFormScreenState extends ConsumerState<DoseLogFormScreen> {
             const _SectionLabel(label: 'Date and time'),
             const SizedBox(height: 8),
             _DateTimeField(value: fmt.format(_loggedAt), onTap: _pickLoggedAt),
+            // Which flare this is part of, from the time above (#173).
+            if (_flareProfileId case final pid?)
+              FlareMembershipRow(
+                profileId: pid,
+                at: _loggedAt,
+                pinnedFlareId: _pinnedFlareId,
+                detached: _flareDetached,
+                onChanged: (d) => setState(() {
+                  _flareDetached = d;
+                  if (d) _pinnedFlareId = null;
+                }),
+              ),
 
             const SizedBox(height: 24),
 

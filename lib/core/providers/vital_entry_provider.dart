@@ -53,6 +53,7 @@ class VitalEntryListNotifier extends Notifier<List<VitalEntry>> {
     required DateTime loggedAt,
     String? notes,
     int? flareIsarId,
+    bool flareDetached = false,
   }) async {
     final isar = ref.read(isarProvider);
     final row = VitalEntryIsar()
@@ -65,6 +66,7 @@ class VitalEntryListNotifier extends Notifier<List<VitalEntry>> {
       ..loggedAt = loggedAt
       ..notes = notes
       ..flareIsarId = flareIsarId
+      ..flareDetached = flareDetached
       ..createdAt = DateTime.now();
     await isar.writeTxn(() async {
       await isar.vitalEntryIsars.put(row);
@@ -97,6 +99,7 @@ class VitalEntryListNotifier extends Notifier<List<VitalEntry>> {
       if (row == null) return;
       row.profileId = newProfileId;
       row.flareIsarId = null;
+      row.flareDetached = false;
       await isar.vitalEntryIsars.put(row);
     });
   }

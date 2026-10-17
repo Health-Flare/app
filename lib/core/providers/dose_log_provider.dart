@@ -56,6 +56,7 @@ class DoseLogListNotifier extends Notifier<List<DoseLog>> {
     String? effectiveness,
     String? notes,
     int? flareIsarId,
+    bool flareDetached = false,
   }) async {
     final isar = ref.read(isarProvider);
     final row = DoseLogIsar()
@@ -70,7 +71,8 @@ class DoseLogListNotifier extends Notifier<List<DoseLog>> {
       ..reason = reason
       ..effectiveness = effectiveness
       ..notes = notes
-      ..flareIsarId = flareIsarId;
+      ..flareIsarId = flareIsarId
+      ..flareDetached = flareDetached;
     await isar.writeTxn(() async {
       await isar.doseLogIsars.put(row);
     });
@@ -120,6 +122,7 @@ class DoseLogListNotifier extends Notifier<List<DoseLog>> {
           await _medicationOnTarget(isar, row.medicationIsarId, newProfileId);
       row.profileId = newProfileId;
       row.flareIsarId = null;
+      row.flareDetached = false;
       await isar.doseLogIsars.put(row);
     });
   }

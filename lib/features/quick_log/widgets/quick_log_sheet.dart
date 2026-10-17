@@ -408,11 +408,7 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
     }
   }
 
-  Future<void> _saveSymptom(
-    int profileId, {
-    String? name,
-    int? flareIsarId,
-  }) async {
+  Future<void> _saveSymptom(int profileId, {String? name}) async {
     final matched = QuickLogParser.matchSymptom(
       _text,
       ref.read(symptomCatalogProvider),
@@ -429,7 +425,6 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
           locations: QuickLogParser.parseLocations(_text),
           loggedAt: _timestamp,
           notes: matched != null || name != null ? _text : null,
-          flareIsarId: flareIsarId,
           weatherSnapshot: _weather,
         );
   }
@@ -503,7 +498,8 @@ class _QuickLogSheetState extends ConsumerState<_QuickLogSheet> {
       return;
     }
     if (intent == FlareIntent.start && active != null) {
-      await _saveSymptom(profileId, flareIsarId: active.id);
+      // Part of the active flare by its time (#173): nothing to store.
+      await _saveSymptom(profileId);
       return;
     }
     final tracked = _trackedForMatchedCondition();

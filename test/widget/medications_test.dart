@@ -1,7 +1,9 @@
+import '../helpers/no_flares.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:health_flare/models/flare.dart';
 import 'package:health_flare/core/providers/dose_log_provider.dart';
 import 'package:health_flare/core/providers/medication_provider.dart';
 import 'package:health_flare/core/providers/profile_provider.dart';
@@ -84,6 +86,7 @@ Widget _buildListScreen({
 }) {
   return ProviderScope(
     overrides: [
+      noFlares,
       medicationListProvider.overrideWith(
         () => _FakeMedicationList(meds: meds),
       ),
@@ -124,6 +127,7 @@ Widget _buildListScreen({
 Widget _buildMedicationForm({Medication? medication}) {
   return ProviderScope(
     overrides: [
+      noFlares,
       medicationListProvider.overrideWith(_FakeMedicationList.new),
       activeProfileProvider.overrideWith(_FakeActiveProfile.new),
       profileListProvider.overrideWith(_FakeProfileList.new),
@@ -134,6 +138,7 @@ Widget _buildMedicationForm({Medication? medication}) {
 }
 
 Widget _buildDoseForm({
+  List<Flare> flares = const [],
   required Medication med,
   DoseLog? doseLog,
   List<Profile>? profiles,
@@ -141,6 +146,7 @@ Widget _buildDoseForm({
 }) {
   return ProviderScope(
     overrides: [
+      ...withFlares(flares),
       doseLogListProvider.overrideWith(_FakeDoseLogList.new),
       medicationListProvider.overrideWith(
         () => _FakeMedicationList(meds: allMeds ?? [med]),
@@ -606,8 +612,15 @@ void main() {
               amount: 500,
               unit: 'mg',
               status: 'taken',
-              flareIsarId: 7,
             ),
+            flares: [
+              Flare(
+                id: 7,
+                profileId: 1,
+                startedAt: _now.subtract(const Duration(days: 1)),
+                createdAt: _now,
+              ),
+            ],
             profiles: [_sarah, dad],
             allMeds: [_med(), dadsMetformin()],
           ),

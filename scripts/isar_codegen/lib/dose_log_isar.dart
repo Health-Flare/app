@@ -31,4 +31,7 @@ class DoseLogIsar {
   String? notes;
 
   int? flareIsarId; // nullable; back-filled when FlareIsar lands in v8
+
+  /// Taken out of its flare by hand (#173).
+  bool flareDetached = false;
 }

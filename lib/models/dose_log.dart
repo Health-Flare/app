@@ -15,6 +15,7 @@ class DoseLog {
     this.effectiveness,
     this.notes,
     this.flareIsarId,
+    this.flareDetached = false,
   });
 
   final int id;
@@ -30,6 +31,10 @@ class DoseLog {
   // "helped_a_lot" | "helped_a_little" | "no_effect" | "made_it_worse"
   final String? notes;
   final int? flareIsarId;
+
+  /// Taken out of its flare by hand (#173). Which flare an entry is part
+  /// of is worked out from its time ([flareFor]); this overrides it.
+  final bool flareDetached;
 
   String get statusDisplay => switch (status) {
     'taken' => 'Taken',
@@ -61,6 +66,8 @@ class DoseLog {
     String? reason,
     String? effectiveness,
     String? notes,
+    bool? flareDetached,
+    bool clearFlareIsarId = false,
     bool clearReason = false,
     bool clearEffectiveness = false,
     bool clearNotes = false,
@@ -79,7 +86,8 @@ class DoseLog {
           ? null
           : (effectiveness ?? this.effectiveness),
       notes: clearNotes ? null : (notes ?? this.notes),
-      flareIsarId: flareIsarId,
+      flareIsarId: clearFlareIsarId ? null : flareIsarId,
+      flareDetached: flareDetached ?? this.flareDetached,
     );
   }
 

@@ -88,6 +88,56 @@ Feature: Flare Tracking
     Then all three entries are associated with the active flare
     And this association is visible in each entry's detail view
 
+  Scenario: Entries during a flare are part of it, whenever they were logged
+    Given "Sarah" had a flare from 3 to 10 March
+    When I log a symptom dated 5 March
+    Then it is part of that flare
+    And the flare lists it under "Entries during this flare"
+
+  Scenario: Entries from before this update join their flares
+    Given "Sarah" logged a vital on 5 March, during a flare, before this update
+    When I open that flare
+    Then it lists the vital
+
+  Scenario: Every kind of entry is listed on the flare
+    Given "Sarah" logged a symptom, a vital, a meal, a dose and an activity during a flare
+    When I open that flare
+    Then it lists all five
+
+  Scenario: An entry dated outside the flare isn't part of it
+    Given "Sarah" has an active flare that started today
+    When I log a meal dated yesterday
+    Then it is not part of the flare
+
+  Scenario: Changing a flare's dates changes which entries are part of it
+    Given "Sarah" had a flare from 3 to 10 March
+    And a symptom dated 2 March
+    When I change the flare's start to 1 March
+    Then the symptom is part of the flare
+
+  Scenario: The form says when an entry is part of a flare
+    Given "Sarah" has an active flare for "Fibromyalgia"
+    When I log a symptom
+    Then the form says "Part of the Fibromyalgia flare"
+    And offers "Remove"
+
+  Scenario: Taking an entry out of its flare
+    Given a symptom that is part of Sarah's flare
+    When I tap "Remove" on its form and save
+    Then the symptom is not part of the flare
+    And the form says "Not part of the Fibromyalgia flare" and offers "Add back"
+    And it stays out if the flare's dates change
+
+  Scenario: Taking an entry out of its flare survives a backup
+    Given a symptom taken out of Sarah's flare
+    When I restore a backup with "Add missing data"
+    Then the symptom is still not part of the flare
+
+  Scenario: A deleted flare's entries are kept
+    Given a symptom that is part of Sarah's flare
+    When I delete the flare record
+    Then the symptom is kept, and isn't part of any flare
+
   # ---------------------------------------------------------------------------
   # Updating a flare in progress
   # ---------------------------------------------------------------------------

@@ -221,7 +221,7 @@ void main() {
       await MigrationRunner.run(isar);
 
       final s = (await isar.appSettings.get(1))!;
-      expect(s.schemaVersion, 22);
+      expect(s.schemaVersion, 23);
       expect(s.lastProfileId, greaterThanOrEqualTo(7));
       await isar.writeTxn(() async {
         expect(await nextProfileId(isar), greaterThan(7));

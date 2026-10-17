@@ -15,6 +15,7 @@ class MealEntry {
     required this.createdAt,
     this.updatedAt,
     this.flareIsarId,
+    this.flareDetached = false,
     this.weatherSnapshot,
   });
 
@@ -28,6 +29,9 @@ class MealEntry {
   final DateTime createdAt;
   final DateTime? updatedAt;
   final int? flareIsarId; // set when logged during an active flare
+  /// Taken out of its flare by hand (#173). Which flare an entry is part
+  /// of is worked out from its time ([flareFor]); this overrides it.
+  final bool flareDetached;
   final WeatherSnapshot? weatherSnapshot;
 
   MealEntry copyWith({
@@ -39,6 +43,8 @@ class MealEntry {
     DateTime? updatedAt,
     int? flareIsarId,
     WeatherSnapshot? weatherSnapshot,
+    bool? flareDetached,
+    bool clearFlareIsarId = false,
     bool clearNotes = false,
     bool clearPhotoPath = false,
   }) {
@@ -52,7 +58,8 @@ class MealEntry {
       loggedAt: loggedAt ?? this.loggedAt,
       createdAt: createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
-      flareIsarId: flareIsarId ?? this.flareIsarId,
+      flareIsarId: clearFlareIsarId ? null : (flareIsarId ?? this.flareIsarId),
+      flareDetached: flareDetached ?? this.flareDetached,
       weatherSnapshot: weatherSnapshot ?? this.weatherSnapshot,
     );
   }

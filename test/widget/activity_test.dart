@@ -1,3 +1,4 @@
+import '../helpers/no_flares.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -64,6 +65,7 @@ ActivityEntry makeActivity({
 Widget _buildListScreen({List<ActivityEntry> entries = const []}) {
   return ProviderScope(
     overrides: [
+      noFlares,
       activityEntryListProvider.overrideWith(
         () => _FakeActivityList(entries: entries),
       ),
@@ -85,6 +87,7 @@ Widget _buildListScreen({List<ActivityEntry> entries = const []}) {
 Widget _buildFormScreen({ActivityEntry? entry}) {
   return ProviderScope(
     overrides: [
+      noFlares,
       activityEntryListProvider.overrideWith(_FakeActivityList.new),
       activeProfileProvider.overrideWith(_FakeActiveProfile.new),
       profileListProvider.overrideWith(_FakeProfileList.new),

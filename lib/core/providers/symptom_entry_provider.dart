@@ -55,6 +55,7 @@ class SymptomEntryListNotifier extends Notifier<List<SymptomEntry>> {
     int? userSymptomIsarId,
     int? userConditionIsarId,
     int? flareIsarId,
+    bool flareDetached = false,
     WeatherSnapshot? weatherSnapshot,
   }) async {
     final isar = ref.read(isarProvider);
@@ -69,6 +70,7 @@ class SymptomEntryListNotifier extends Notifier<List<SymptomEntry>> {
       ..userSymptomIsarId = userSymptomIsarId
       ..userConditionIsarId = userConditionIsarId
       ..flareIsarId = flareIsarId
+      ..flareDetached = flareDetached
       ..weatherSnapshot = weatherSnapshot != null
           ? WeatherSnapshotIsar.fromDomain(weatherSnapshot)
           : null
@@ -104,6 +106,7 @@ class SymptomEntryListNotifier extends Notifier<List<SymptomEntry>> {
       if (row == null) return;
       row.profileId = newProfileId;
       row.flareIsarId = null;
+      row.flareDetached = false;
       await isar.symptomEntryIsars.put(row);
     });
   }

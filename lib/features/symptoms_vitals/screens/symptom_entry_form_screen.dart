@@ -1,3 +1,5 @@
+import 'package:health_flare/core/providers/flare_entries_provider.dart';
+import 'package:health_flare/features/flare/widgets/flare_membership_row.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -36,6 +38,26 @@ class _SymptomEntryFormScreenState
   int? _severity;
   late List<String> _locations;
   late DateTime _loggedAt;
+
+  // Which flare this entry is part of is worked out from [_loggedAt]
+  // (#173); these are the person's choices on top.
+  bool _flareDetached = false;
+  int? _pinnedFlareId;
+
+  int? get _flareProfileId =>
+      widget.entry?.profileId ?? ref.watch(activeProfileProvider);
+
+  bool get _partOfFlare =>
+      _flareProfileId != null &&
+      ref.read(
+            entryFlareProvider((
+              profileId: _flareProfileId!,
+              at: _loggedAt,
+              pinnedFlareId: _pinnedFlareId,
+              detached: _flareDetached,
+            )),
+          ) !=
+          null;
   bool _submitting = false;
   bool _nameError = false;
   bool _severityError = false;
@@ -54,6 +76,8 @@ class _SymptomEntryFormScreenState
       _severity = e.severity;
       _locations = List.of(e.locations);
       _loggedAt = e.loggedAt;
+      _flareDetached = e.flareDetached;
+      _pinnedFlareId = e.flareIsarId;
     } else {
       _nameController = TextEditingController(text: widget.prefillText ?? '');
       _notesController = TextEditingController();
@@ -130,6 +154,7 @@ class _SymptomEntryFormScreenState
             severity: _severity!,
             locations: _locations,
             loggedAt: _loggedAt,
+            flareDetached: _flareDetached,
             notes: notes,
             weatherSnapshot: _capturedWeather,
           );
@@ -142,6 +167,8 @@ class _SymptomEntryFormScreenState
               severity: _severity,
               locations: _locations,
               loggedAt: _loggedAt,
+              flareDetached: _flareDetached,
+              clearFlareIsarId: _pinnedFlareId == null,
               notes: notes,
               clearNotes: notes == null,
             ),
@@ -203,7 +230,7 @@ class _SymptomEntryFormScreenState
             MoveEntryAction(
               beforeMove: _persist,
               notices: [
-                if (widget.entry!.flareIsarId != null)
+                if (_partOfFlare)
                   'It will no longer be part of '
                       "${ref.read(activeProfileDataProvider)?.name ?? 'this profile'}'s flare.",
               ],
@@ -370,6 +397,18 @@ class _SymptomEntryFormScreenState
             const _SectionLabel(label: 'Date and time'),
             const SizedBox(height: 8),
             _DateTimeField(value: fmt.format(_loggedAt), onTap: _pickLoggedAt),
+            // Which flare this is part of, from the time above (#173).
+            if (_flareProfileId case final pid?)
+              FlareMembershipRow(
+                profileId: pid,
+                at: _loggedAt,
+                pinnedFlareId: _pinnedFlareId,
+                detached: _flareDetached,
+                onChanged: (d) => setState(() {
+                  _flareDetached = d;
+                  if (d) _pinnedFlareId = null;
+                }),
+              ),
 
             const SizedBox(height: 24),
 

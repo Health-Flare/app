@@ -15,6 +15,7 @@ class VitalEntry {
     required this.loggedAt,
     required this.createdAt,
     this.flareIsarId,
+    this.flareDetached = false,
   });
 
   final int id;
@@ -27,6 +28,10 @@ class VitalEntry {
   final DateTime loggedAt;
   final DateTime createdAt;
   final int? flareIsarId;
+
+  /// Taken out of its flare by hand (#173). Which flare an entry is part
+  /// of is worked out from its time ([flareFor]); this overrides it.
+  final bool flareDetached;
 
   /// Display string e.g. "72 BPM" or "120/80 mmHg"
   String get displayValue {
@@ -64,6 +69,8 @@ class VitalEntry {
     String? unit,
     String? notes,
     DateTime? loggedAt,
+    bool? flareDetached,
+    bool clearFlareIsarId = false,
     bool clearNotes = false,
     bool clearValue2 = false,
   }) {
@@ -77,7 +84,8 @@ class VitalEntry {
       notes: clearNotes ? null : (notes ?? this.notes),
       loggedAt: loggedAt ?? this.loggedAt,
       createdAt: createdAt,
-      flareIsarId: flareIsarId,
+      flareIsarId: clearFlareIsarId ? null : flareIsarId,
+      flareDetached: flareDetached ?? this.flareDetached,
     );
   }
 
