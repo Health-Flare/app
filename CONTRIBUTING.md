@@ -80,6 +80,10 @@ Check the new/updated package's license is GPL-3.0-compatible (a permissive lice
 MIT, BSD, or Apache-2.0, is fine; a copyleft-incompatible or non-free license is not) and update
 [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) in the same PR.
 
+## Getting credited
+
+Commits are credited automatically through GitHub. Work that isn't code (testing, bug reports, wording or medical review, design, translation) goes in [`CONTRIBUTORS.md`](CONTRIBUTORS.md). Add yourself in your PR, or ask and a maintainer will. See that file for the format and the naming rules.
+
 ## Questions
 
 Open an issue, or for anything sensitive (security, privacy, conduct), see the contacts listed in
