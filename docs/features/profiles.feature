@@ -499,27 +499,22 @@ Feature: Profile Management
   # Profile pictures (#105)
   # ---------------------------------------------------------------------------
   # Kept like meal photos (meals.feature, "Where photos are kept").
-  # UNVERIFIED (TODO #105): the scenarios below are agent-written.
 
-  @unverified
   Scenario: A profile picture stays after the app is updated
     Given "Sarah" has a profile picture
     When the app is updated
     Then Sarah's profile still shows her picture
 
-  @unverified
   Scenario: Changing or removing a profile picture deletes the old file
     Given "Sarah" has a profile picture
     When I choose a new picture, remove it, or delete Sarah's profile
     Then the old picture is deleted from the phone
 
-  @unverified
   Scenario: Deleting a profile says its photos go too
     Given the profiles "Sarah" and "Dad" exist
     When I choose to delete the profile "Dad"
     Then the confirmation says "All health data recorded for Dad, including photos, will be permanently removed from this device. Photos not saved anywhere else will be lost. This cannot be undone."
 
-  @unverified
   Scenario: A picture is previewed before the profile is saved
     When I pick a picture in the profile sheet
     Then the avatar shows it straight away
