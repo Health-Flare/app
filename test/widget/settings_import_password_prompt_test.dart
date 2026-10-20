@@ -9,6 +9,8 @@ import 'package:health_flare/data/database/app_settings.dart';
 import 'package:health_flare/data/models/profile_isar.dart';
 import 'package:health_flare/features/settings/screens/settings_screen.dart';
 
+import '../helpers/isar_core.dart';
+
 // ---------------------------------------------------------------------------
 // Widget-level tests for issue #30 / docs/features/encrypted-backup.feature
 // the password prompt shown when a picked backup file is encrypted.
@@ -48,7 +50,7 @@ void main() {
   late Isar isar;
 
   setUpAll(() async {
-    await Isar.initializeIsarCore(download: true);
+    await initializeIsarCoreForTests();
   });
 
   setUp(() async {

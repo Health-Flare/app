@@ -14,6 +14,8 @@ import 'package:health_flare/data/database/import_service.dart';
 import 'package:health_flare/data/models/profile_isar.dart';
 import 'package:health_flare/data/models/user_condition_isar.dart';
 
+import '../../helpers/isar_core.dart';
+
 class _FakePathProvider
     with MockPlatformInterfaceMixin
     implements PathProviderPlatform {
@@ -69,7 +71,7 @@ void main() {
   late Directory docs;
   late Directory tmp;
 
-  setUpAll(() async => Isar.initializeIsarCore(download: true));
+  setUpAll(() async => initializeIsarCoreForTests());
 
   setUp(() {
     root = Directory.systemTemp.createTempSync('hf_condition_status_');

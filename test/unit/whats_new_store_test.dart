@@ -29,6 +29,8 @@ import 'package:health_flare/features/whats_new/models/release_note.dart';
 import 'package:health_flare/features/whats_new/whats_new_provider.dart';
 import 'package:health_flare/features/whats_new/whats_new_rules.dart';
 
+import '../helpers/isar_core.dart';
+
 const _schemas = [
   ProfileIsarSchema,
   JournalEntryIsarSchema,
@@ -74,7 +76,7 @@ Future<void> _addProfile(Isar isar) => isar.writeTxn(
 void main() {
   late Isar isar;
 
-  setUpAll(() async => Isar.initializeIsarCore(download: true));
+  setUpAll(() async => initializeIsarCoreForTests());
   setUp(() async => isar = await _open());
   tearDown(() async => isar.close(deleteFromDisk: true));
 

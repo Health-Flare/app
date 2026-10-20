@@ -33,6 +33,8 @@ import 'package:health_flare/data/models/user_symptom_isar.dart';
 import 'package:health_flare/data/models/vital_entry_isar.dart';
 import 'package:health_flare/models/profile.dart';
 
+import '../../helpers/isar_core.dart';
+
 const _schemas = [
   ProfileIsarSchema,
   JournalEntryIsarSchema,
@@ -61,7 +63,7 @@ Future<Isar> _open({String directory = '', String? name}) =>
     Isar.open(_schemas, directory: directory, name: name ?? 'layout_${_uid()}');
 
 void main() {
-  setUpAll(() async => Isar.initializeIsarCore(download: true));
+  setUpAll(() async => initializeIsarCoreForTests());
 
   group('the bar on AppSettings', () {
     test(

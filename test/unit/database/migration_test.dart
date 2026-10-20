@@ -25,6 +25,8 @@ import 'package:health_flare/data/models/user_condition_isar.dart';
 import 'package:health_flare/data/models/user_symptom_isar.dart';
 import 'package:health_flare/data/models/vital_entry_isar.dart';
 
+import '../../helpers/isar_core.dart';
+
 // ---------------------------------------------------------------------------
 // Minimal path_provider stub so path_provider works in unit tests
 // ---------------------------------------------------------------------------
@@ -101,7 +103,7 @@ Future<Isar> _openIsar() async {
 void main() {
   setUpAll(() async {
     PathProviderPlatform.instance = _FakePathProvider();
-    await Isar.initializeIsarCore(download: true);
+    await initializeIsarCoreForTests();
   });
 
   tearDown(() async {
