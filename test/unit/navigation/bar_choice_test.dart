@@ -14,10 +14,12 @@ import 'package:health_flare/core/providers/database_provider.dart';
 import 'package:health_flare/data/database/app_schemas.dart';
 import 'package:health_flare/data/database/migration_runner.dart';
 
+import '../../helpers/isar_core.dart';
+
 const _default = ['dashboard', 'track', 'care', 'journal'];
 
 void main() {
-  setUpAll(() async => Isar.initializeIsarCore(download: true));
+  setUpAll(() async => initializeIsarCoreForTests());
 
   late Directory dir;
   late Isar isar;

@@ -10,6 +10,8 @@ import 'package:health_flare/data/database/app_settings.dart';
 import 'package:health_flare/data/database/backup_service.dart';
 import 'package:health_flare/data/models/profile_isar.dart';
 
+import '../helpers/isar_core.dart';
+
 // Issue #102: plain backups, PDF/CSV reports (named after the profile) and
 // decrypted copies of encrypted backups were left in the temp directory.
 // On a shared desktop account, or if the app died mid-import, anything that
@@ -48,7 +50,7 @@ void main() {
   late Directory tmp;
 
   setUpAll(() async {
-    await Isar.initializeIsarCore();
+    await initializeIsarCoreForTests();
   });
 
   setUp(() {

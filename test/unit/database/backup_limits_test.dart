@@ -1,11 +1,12 @@
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:isar_community/isar.dart';
 
 import 'package:health_flare/data/database/backup_encryption.dart';
 import 'package:health_flare/data/database/backup_limits.dart';
 import 'package:health_flare/data/database/import_service.dart';
+
+import '../../helpers/isar_core.dart';
 
 // Issue #104: import read whatever file the user picked. An encrypted
 // backup was read whole into memory and copied to an isolate, so a
@@ -16,7 +17,7 @@ void main() {
   late Directory dir;
 
   setUpAll(() async {
-    await Isar.initializeIsarCore();
+    await initializeIsarCoreForTests();
   });
 
   setUp(() => dir = Directory.systemTemp.createTempSync('hf_limit_test_'));

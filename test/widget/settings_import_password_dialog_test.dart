@@ -10,6 +10,8 @@ import 'package:health_flare/data/database/import_service.dart';
 import 'package:health_flare/data/models/profile_isar.dart';
 import 'package:health_flare/features/settings/screens/settings_screen.dart';
 
+import '../helpers/isar_core.dart';
+
 // ---------------------------------------------------------------------------
 // Import password dialog lifecycle (issue #30,
 // docs/features/encrypted-backup.feature): retrying after a wrong password,
@@ -52,7 +54,7 @@ void main() {
   late Isar isar;
 
   setUpAll(() async {
-    await Isar.initializeIsarCore(download: true);
+    await initializeIsarCoreForTests();
   });
 
   setUp(() async {
