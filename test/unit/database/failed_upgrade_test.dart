@@ -15,6 +15,8 @@ import 'package:health_flare/data/database/migration_runner.dart';
 import 'package:health_flare/data/models/journal_entry_isar.dart';
 import 'package:health_flare/data/models/profile_isar.dart';
 
+import '../../helpers/isar_core.dart';
+
 class _FakePathProvider
     with MockPlatformInterfaceMixin
     implements PathProviderPlatform {
@@ -86,7 +88,7 @@ void main() {
   late Isar isar;
   var now = DateTime.utc(2026, 11, 2, 9, 12);
 
-  setUpAll(() async => Isar.initializeIsarCore(download: true));
+  setUpAll(() async => initializeIsarCoreForTests());
 
   setUp(() async {
     root = Directory.systemTemp.createTempSync('hf_failed_upgrade_');

@@ -33,6 +33,8 @@ import 'package:health_flare/data/models/user_condition_isar.dart';
 import 'package:health_flare/data/models/vital_entry_isar.dart';
 import 'package:health_flare/models/flare_membership.dart';
 
+import '../../helpers/isar_core.dart';
+
 class _Docs with MockPlatformInterfaceMixin implements PathProviderPlatform {
   _Docs(this.path);
   final String path;
@@ -124,7 +126,7 @@ void main() {
           .toList()
         ..sort((a, b) => a.path.compareTo(b.path));
 
-  setUpAll(() async => Isar.initializeIsarCore(download: true));
+  setUpAll(() async => initializeIsarCoreForTests());
 
   test('there are fixtures to test', () {
     expect(fixtures, isNotEmpty);

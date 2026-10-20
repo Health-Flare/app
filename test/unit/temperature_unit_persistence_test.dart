@@ -36,6 +36,8 @@ import 'package:health_flare/models/profile.dart';
 import 'package:health_flare/models/vital_entry.dart';
 import 'package:health_flare/models/vital_type.dart';
 
+import '../helpers/isar_core.dart';
+
 String _uid() => '${DateTime.now().microsecondsSinceEpoch}';
 
 Future<Isar> _openIsar({String directory = '', String? name}) => Isar.open(
@@ -68,7 +70,7 @@ Future<Isar> _openIsar({String directory = '', String? name}) => Isar.open(
 
 void main() {
   setUpAll(() async {
-    await Isar.initializeIsarCore(download: true);
+    await initializeIsarCoreForTests();
   });
 
   group('ProfileIsar temperatureUnit', () {

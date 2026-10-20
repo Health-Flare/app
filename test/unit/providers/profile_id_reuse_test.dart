@@ -26,6 +26,8 @@ import 'package:health_flare/data/models/user_condition_isar.dart';
 import 'package:health_flare/data/models/user_symptom_isar.dart';
 import 'package:health_flare/data/models/vital_entry_isar.dart';
 
+import '../../helpers/isar_core.dart';
+
 // Issue #117: Isar works out the next auto-increment id from the highest id
 // still stored when the database opens. Deleting the newest profile and
 // restarting the app handed its id to the next new profile, along with any
@@ -84,7 +86,7 @@ ProviderContainer _container(Isar isar) {
 
 void main() {
   setUpAll(() async {
-    await Isar.initializeIsarCore();
+    await initializeIsarCoreForTests();
   });
 
   tearDown(() async {

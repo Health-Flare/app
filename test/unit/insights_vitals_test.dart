@@ -14,6 +14,8 @@ import 'package:health_flare/features/reports/services/insights_query_service.da
 import 'package:health_flare/models/vital_units.dart';
 import 'package:health_flare/models/vital_type.dart';
 
+import '../helpers/isar_core.dart';
+
 Future<Isar> _openIsar() => Isar.open(
   [
     SymptomEntryIsarSchema,
@@ -74,7 +76,7 @@ VitalTrend? _trend(InsightData data, VitalType type) {
 
 void main() {
   setUpAll(() async {
-    await Isar.initializeIsarCore(download: true);
+    await initializeIsarCoreForTests();
   });
 
   late Isar isar;

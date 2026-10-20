@@ -17,8 +17,10 @@ import 'package:health_flare/features/release_guides/debug/guide_preview.dart';
 import 'package:health_flare/features/release_guides/guide_rules.dart';
 import 'package:health_flare/features/release_guides/release_guide_provider.dart';
 
+import '../../helpers/isar_core.dart';
+
 void main() {
-  setUpAll(() async => Isar.initializeIsarCore(download: true));
+  setUpAll(() async => initializeIsarCoreForTests());
 
   late Directory dir;
   late Isar isar;

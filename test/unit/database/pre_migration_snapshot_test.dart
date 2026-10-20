@@ -28,6 +28,8 @@ import 'package:health_flare/data/models/user_condition_isar.dart';
 import 'package:health_flare/data/models/user_symptom_isar.dart';
 import 'package:health_flare/data/models/vital_entry_isar.dart';
 
+import '../../helpers/isar_core.dart';
+
 // docs/features/datastore.feature, "Safety copy before an upgrade" (#110).
 
 class _FakePathProvider
@@ -138,7 +140,7 @@ void main() {
   late Directory tmp;
 
   setUpAll(() async {
-    await Isar.initializeIsarCore(download: true);
+    await initializeIsarCoreForTests();
   });
 
   setUp(() {
