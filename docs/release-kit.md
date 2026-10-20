@@ -14,6 +14,7 @@ retroactive release-notes generation and preview video capture.
 | Release notes | `CHANGELOG.md`'s `[Unreleased]` section, hand-written as you merge: see its own "How to use this file" header | `scripts/release/generate_release_notes.sh` for retroactive/aggregate drafts |
 | Screenshots | Fresh capture per release | `scripts/take_screenshots.sh` (iOS), `scripts/take_screenshots_android.sh` (Android) |
 | Preview video | Fresh capture per release | `scripts/take_video.sh` (iOS), `scripts/take_video_android.sh` (Android) |
+| App Store creative (iOS 27 header + search) | The committed screenshots, after a re-shoot | `tool/store_creative/make_creative.py` |
 
 All three can be produced individually, or together via the orchestrator
 (`scripts/release/build_release_kit.sh`) described below.
@@ -133,6 +134,16 @@ Play doesn't accept an uploaded file directly.
 To change what the video shows, edit the scenes in
 `integration_test/video_walkthrough_test.dart`: the capture scripts just
 start/stop recording around whatever that file drives.
+
+## App Store creative assets
+
+iOS 27 shows a product page header and a search results asset: looping
+muted videos with a still, uploaded in App Store Connect apart from app
+versions. `tool/store_creative/make_creative.py` builds both from the
+committed iPhone screenshots, so re-run it after a screenshot re-shoot that
+changes the screens it uses. Setup, running, checks and how to change the
+copy: [`tool/store_creative/README.md`](../tool/store_creative/README.md).
+Output goes to `build/store_creative/` and isn't committed.
 
 ## Putting it together: the orchestrator
 
