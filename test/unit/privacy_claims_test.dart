@@ -36,6 +36,8 @@ List<File> _copyFiles() => [
   File('docs/privacy-policy.html'),
   File('SECURITY.md'),
   File('docs/store-listing.md'),
+  // App Store header and search assets: the copy drawn into them.
+  File('tool/store_creative/make_creative.py'),
   ...Directory(
     'docs/store-notes',
   ).listSync().whereType<File>().where((f) => f.path.endsWith('.md')),
