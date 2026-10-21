@@ -4,7 +4,9 @@
   android:dataExtractionRules in AndroidManifest.xml.
 
   Everything is backed up and transferred to a new phone except the
-  pre-upgrade safety copies in snapshots/ (#110). The database itself stays
+  pre-upgrade safety copies in snapshots/ (#110). Photos in photos/ (#105)
+  are transferred to a new phone but left out of cloud backup, for the
+  same quota reason. The database itself stays
   in both on purpose (#96, #97, #99). Up to 3 extra copies of it would count
   against Android's 25 MB per-app cloud backup quota, and an app over quota
   is not backed up at all. A new phone gets the current database, so old
@@ -17,6 +19,9 @@
 <data-extraction-rules>
     <cloud-backup>
         <exclude domain="root" path="app_flutter/snapshots" />
+        <!-- Photos (#105) would spend the 25 MB quota; they still move to a
+             new phone with device transfer below. -->
+        <exclude domain="root" path="app_flutter/photos" />
     </cloud-backup>
     <device-transfer>
         <exclude domain="root" path="app_flutter/snapshots" />

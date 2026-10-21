@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:isar_community/isar.dart';
 import 'package:path_provider/path_provider.dart';
 
+import 'package:health_flare/core/files/photo_store.dart';
 import 'package:health_flare/models/profile.dart';
 import 'package:health_flare/data/models/profile_isar.dart';
 import 'package:health_flare/data/database/app_schemas.dart';
@@ -45,6 +46,8 @@ class IsarService {
     } else {
       final dir = await getApplicationDocumentsDirectory();
       directory = dir.path;
+      // Before migrations: v24 moves photos into this folder (#105).
+      PhotoStore.init(directory);
       // Remove backups, reports and decrypted copies a previous run left in
       // temp (#102). Nothing can be using them yet.
       await ScratchFiles.sweep();
@@ -69,6 +72,13 @@ class IsarService {
         documentsDir: directory,
         appVersion: await _appVersion(),
       );
+      // Photos nothing points at any more (#105): a restore, a crash between
+      // copying a photo in and saving its entry. Never stops the app opening.
+      try {
+        await PhotoStore.sweep(isar);
+      } catch (e) {
+        debugPrint('Photos: sweep failed: $e');
+      }
     } else {
       await MigrationRunner.run(isar);
     }

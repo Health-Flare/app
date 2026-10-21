@@ -1,10 +1,9 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import 'package:health_flare/core/files/photo_store.dart';
 import 'package:health_flare/core/providers/meal_entry_provider.dart';
 import 'package:health_flare/core/providers/symptom_entry_provider.dart';
 import 'package:health_flare/core/router/app_router.dart';
@@ -70,10 +69,11 @@ class MealDetailScreen extends ConsumerWidget {
       body: CustomScrollView(
         slivers: [
           // Photo header
-          if (entry.photoPath != null)
+          // Only the app's own photos are shown (#105).
+          if (PhotoStore.resolve(entry.photoPath) case final photo?)
             SliverToBoxAdapter(
               child: Image.file(
-                File(entry.photoPath!),
+                photo,
                 height: 240,
                 width: double.infinity,
                 fit: BoxFit.cover,

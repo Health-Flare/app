@@ -147,25 +147,58 @@ Feature: Meal and Food Logging
     And I save the changes
     Then the meal entry no longer has a photo attached
 
-  Scenario: Delete a meal entry with confirmation
-    Given "Sarah" has a meal entry for "Prawn stir-fry"
-    When I navigate to the meal log
-    And I choose to delete the "Prawn stir-fry" entry
-    Then I am shown a confirmation dialog
-    When I confirm the deletion
-    Then the "Prawn stir-fry" meal entry is permanently removed from "Sarah"'s log
+  # Where photos are kept (#105). A picked photo is copied into the app's
+  # own photos folder, so the OS can't clear it and it goes when its entry
+  # does. Profile pictures work the same way (profiles.feature).
 
-  Scenario: Cancel deletion of a meal entry
-    Given "Sarah" has a meal entry for "Chicken salad"
-    When I choose to delete the "Chicken salad" entry
-    And I cancel the confirmation dialog
-    Then the "Chicken salad" entry still exists in the meal log
+  Scenario: A meal photo stays after the app is closed and updated
+    Given I log a meal with a photo
+    When the app is closed, the phone clears its temporary files, and the app is updated
+    Then the meal still shows its photo
 
-  # ---------------------------------------------------------------------------
-  # Empty state
-  # ---------------------------------------------------------------------------
+  Scenario: Removing a photo or deleting the meal deletes the photo file
+    Given "Sarah" has a meal entry with a photo
+    When I remove the photo, or delete the meal, or delete Sarah's profile
+    Then the photo is deleted from the phone
 
-  Scenario: Empty meal log shows a helpful prompt
-    Given "Sarah" has no meal entries
-    When I navigate to the meal log
-    Then I see an empty state message guiding me to log my first meal
+  Scenario: Deleting a meal with a photo says the photo goes too
+    Given "Sarah" has a meal entry with a photo
+    When I choose to delete the meal
+    Then the confirmation says "This will permanently remove this meal entry and its photo. If the photo isn't saved anywhere else, it will be lost."
+
+  Scenario: Removing a saved photo asks first
+    Given "Sarah" has a meal entry with a photo
+    When I tap "Remove" on the photo
+    Then I am asked "Remove photo?"
+    And told "The photo is deleted when you save. If it isn't saved anywhere else, it will be lost."
+    When I tap "Cancel"
+    Then the photo is still attached
+
+  Scenario: A photo picked but not saved yet is removed without asking
+    Given I picked a photo for a meal and haven't saved it
+    When I tap "Remove" on the photo
+    Then it is removed straight away
+    And the picked file itself is left where it was
+
+  Scenario: Photos are shrunk when saved
+    When I attach a photo to a meal
+    Then it is saved at most 1600 pixels on its longest side
+
+  Scenario: Photos are in the phone's backup, except Android cloud backup
+    Given "Sarah" has meals with photos
+    Then the photos are in the iPhone's iCloud backup
+    And they move to a new Android phone with its transfer tool
+    But they are left out of Android's cloud backup, so its 25 MB limit isn't spent on them
+
+  Scenario: Photos from before this update are kept where possible
+    Given a meal photo saved by an earlier version
+    When Health Flare is updated
+    Then the photo is moved into the app's photos folder and still shows
+    And a photo the phone had already cleared is removed from the meal instead of showing a broken image
+
+  Scenario: A backup can't make the app show other files
+    Given a backup file whose profile picture points at another file on the phone
+    When I import it with "Add missing data" or "Replace everything"
+    Then that profile shows its initials
+    And no file outside the app's photos folder is shown or read as a photo
+

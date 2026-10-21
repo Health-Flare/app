@@ -9,6 +9,7 @@ import 'package:health_flare/data/database/app_settings.dart';
 import 'package:health_flare/data/database/backup_encryption.dart';
 import 'package:health_flare/data/database/import_service.dart';
 import 'package:health_flare/data/database/pre_migration_snapshot.dart';
+import 'package:health_flare/core/files/photo_store.dart';
 import 'package:health_flare/core/files/scratch_files.dart';
 
 /// Handles hot-backup export and staged restore for the Isar database.
@@ -145,9 +146,7 @@ class BackupService {
       await lockFile.delete();
     }
     await pendingFile.rename(mainFile.path);
-    if (deviceSettings != null) {
-      await _writeDeviceSettings(docsDir, deviceSettings);
-    }
+    await _afterRestore(docsDir, deviceSettings);
     // The restored database is not the one any unfinished upgrade took its
     // safety copy of. Forget that copy so the next upgrade copies this one.
     await PreMigrationSnapshot.clearPendingMarker(docsDir);
@@ -172,16 +171,25 @@ class BackupService {
     }
   }
 
-  static Future<void> _writeDeviceSettings(
+  /// Puts this phone's lock settings back into the restored database, and
+  /// clears every photo path in it that isn't one of our names (#105).
+  /// Photos aren't in backup files: a path in one points at a file on
+  /// whichever phone made it, and an older backup's paths would otherwise
+  /// be copied in by the v24 upgrade. Our own names stay, so a backup from
+  /// this phone still shows the photos that are here.
+  static Future<void> _afterRestore(
     String docsDir,
-    _DeviceSettings settings,
+    _DeviceSettings? settings,
   ) async {
     final isar = await _openMain(docsDir);
     try {
       await isar.writeTxn(() async {
-        final row = await isar.appSettings.get(1) ?? (AppSettings()..id = 1);
-        settings.applyTo(row);
-        await isar.appSettings.put(row);
+        if (settings != null) {
+          final row = await isar.appSettings.get(1) ?? (AppSettings()..id = 1);
+          settings.applyTo(row);
+          await isar.appSettings.put(row);
+        }
+        await PhotoStore.clearForeignPaths(isar);
       });
     } finally {
       await isar.close();
