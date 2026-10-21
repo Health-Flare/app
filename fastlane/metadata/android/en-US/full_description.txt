@@ -1,0 +1,41 @@
+Health Flare is a private, offline-first health companion designed for people living with chronic illness.
+
+Track your health story (symptoms, vitals, medications, meals, sleep, flares, activity, and daily check-ins) all in one place, on your device. There are no accounts and no servers of ours. Your records are stored on your device and are included in your phone's own backup if you use one. Weather tracking is optional; if you turn it on, your approximate location is sent to a weather service to look up the conditions.
+
+WHAT YOU CAN TRACK
+
+• Symptoms: log severity and where it hurts, and see patterns over time
+• Vitals: blood pressure, heart rate, temperature, oxygen, weight, blood glucose
+• Medications & doses: what you take, when, and doses missed or skipped
+• Meals: note what you eat and flag reactions
+• Sleep: bedtime, wake time, quality, and naps
+• Flares: document flare start, severity, and triggers
+• Daily check-ins: wellbeing, stress, and optional cycle tracking
+• Activity & rest: log exertion with a PEM (post-exertional malaise) flag for ME/CFS
+• Appointments: questions to ask, and what the doctor said afterwards
+• Journal: long-form entries with mood and energy tagging
+• Insights: charts of your symptoms and vitals, with flares shaded in
+
+MADE TO FIT YOU
+
+Everything lives in four sections: Dashboard, Track, Care and Journal. Choose what's in your bottom bar, and turn off the features a profile doesn't use. Turning a feature off never deletes anything, and your layout is kept in backups.
+
+BUILT FOR CHRONIC ILLNESS
+
+Health Flare was designed with the chronic illness community in mind, not the casual wellness market. It supports the kinds of tracking that matter for conditions like ME/CFS, fibromyalgia, lupus, EDS, POTS, IBD, MS, and other complex long-term conditions, including a dedicated PEM flag for post-exertional activity logging.
+
+MULTI-PROFILE SUPPORT
+
+Manage health records for yourself and the people you care for. Add profiles for family members, switch between them in seconds, and keep each person's data completely separate.
+
+YOUR DATA, YOUR DEVICE
+
+• No account or login required, ever
+• No servers of ours: the app never sends your health records anywhere
+• No analytics, telemetry, or crash reporting
+• No advertising
+• Records stored in a private, sandboxed database on your device
+• Optional weather lookups send an approximate location (rounded to about 1 km) to Open-Meteo
+• Export a backup file whenever you like and keep it wherever you choose
+
+Health Flare is not a medical device and does not provide medical advice. Always consult your healthcare team for medical decisions.
