@@ -36,8 +36,10 @@ Feature: Shared profile sync between devices
   #  6. No sync path loses data. When two devices change the same field of
   #     the same entry, the later change is shown and the other is kept and
   #     can be viewed from a "Changed on another device" notice.
-  #  7. An edit beats a delete: an entry deleted on one device and edited on
-  #     another comes back with the edit, and the deleting device is told.
+  #  7. A delete on one device is never applied silently on another. Each
+  #     other device is told what was deleted and its person chooses to
+  #     delete it there too or keep it. A kept entry stays on that device
+  #     only and is never sent back to the device that deleted it.
   #  8. Weather capture, the profile photo and one-time hints stay per
   #     device. They are never synced.
   #  9. Sync is not a way to coordinate medication in real time. Dose
@@ -239,20 +241,50 @@ Feature: Shared profile sync between devices
     Then Mum's edit is the one shown on both phones
 
   @unverified
-  Scenario: An edit beats a delete
+  Scenario: Deleting an entry on a shared profile says what happens elsewhere
+    Given "Mia" is shared by "Dad's phone" and "Mum's phone"
+    When I delete a meal entry for "Mia" on "Dad's phone"
+    Then the confirmation says "Mum's phone will be asked whether to delete it too."
+    And I can cancel
+
+  @unverified
+  Scenario: A delete from another phone is raised, not applied
+    When Dad deletes a meal entry for "Mia"
+    And the phones sync
+    Then the meal entry is still on "Mum's phone"
+    And "Mum's phone" shows "Dad's phone deleted 1 entry for Mia" with "Review"
+    And each deleted entry can be deleted here too or kept
+
+  @unverified
+  Scenario: Deleting it here too removes it from this phone
+    Given "Mum's phone" is showing the entries Dad deleted
+    When Mum taps "Delete here too"
+    Then the meal entry is gone from "Mum's phone"
+    And it does not come back on any later sync
+
+  @unverified
+  Scenario: Keeping an entry the other phone deleted
+    Given "Mum's phone" is showing the entries Dad deleted
+    When Mum taps "Keep on this phone"
+    Then the meal entry stays on "Mum's phone" marked "Only on this phone"
+    And it is not sent back to "Dad's phone"
+    And later edits to it stay on "Mum's phone"
+
+  @unverified
+  Scenario: An entry edited on one phone and deleted on the other
     Given both phones are offline
     When Dad deletes a journal entry for "Mia"
     And Mum edits the same journal entry
     And the phones sync
-    Then the journal entry is on both phones with Mum's edit
-    And "Dad's phone" shows "An entry you deleted was edited on Mum's phone, so it was kept."
+    Then the journal entry stays on "Mum's phone" with Mum's edit
+    And "Mum's phone" asks whether to delete it too or keep it
+    And the entry does not come back on "Dad's phone"
 
   @unverified
-  Scenario: A delete with no competing edit is removed everywhere
-    When Dad deletes a meal entry for "Mia"
-    And the phones sync
-    Then the meal entry is gone from "Mum's phone"
-    And it does not come back on any later sync
+  Scenario: Deleted entries waiting for a choice are never removed on their own
+    Given "Mum's phone" has deleted entries from Dad waiting for review
+    When Mum ignores the notice for a month
+    Then every one of those entries is still on "Mum's phone"
 
   @unverified
   Scenario: Journal edits from both phones are kept as versions
