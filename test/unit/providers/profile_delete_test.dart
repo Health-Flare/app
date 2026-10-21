@@ -25,6 +25,8 @@ import 'package:health_flare/data/models/user_condition_isar.dart';
 import 'package:health_flare/data/models/user_symptom_isar.dart';
 import 'package:health_flare/data/models/vital_entry_isar.dart';
 
+import '../../helpers/isar_core.dart';
+
 // Regression tests: deleting a profile must remove every row that belongs
 // to it, not just journal entries. The confirm dialog promises "All health
 // data recorded for X will be permanently removed from this device".
@@ -249,7 +251,7 @@ Future<Map<String, int>> _counts(Isar isar, int profileId) async => {
 
 void main() {
   setUpAll(() async {
-    await Isar.initializeIsarCore(download: true);
+    await initializeIsarCoreForTests();
   });
 
   late Isar isar;

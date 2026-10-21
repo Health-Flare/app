@@ -30,6 +30,8 @@ import 'package:health_flare/data/models/user_condition_isar.dart';
 import 'package:health_flare/data/models/user_symptom_isar.dart';
 import 'package:health_flare/data/models/vital_entry_isar.dart';
 
+import '../../helpers/isar_core.dart';
+
 // ---------------------------------------------------------------------------
 // Tests for issue #30 / docs/features/encrypted-backup.feature
 //
@@ -168,7 +170,7 @@ const _password = 'correcthorsebattery';
 
 void main() {
   setUpAll(() async {
-    await Isar.initializeIsarCore(download: true);
+    await initializeIsarCoreForTests();
   });
 
   tearDown(() async {

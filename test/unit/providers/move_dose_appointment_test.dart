@@ -11,6 +11,8 @@ import 'package:health_flare/data/models/dose_log_isar.dart';
 import 'package:health_flare/data/models/medication_isar.dart';
 import 'package:health_flare/models/appointment.dart';
 
+import '../../helpers/isar_core.dart';
+
 // Regression tests for #77: doses and appointments could not be moved to
 // another profile.
 
@@ -34,7 +36,7 @@ Future<(Isar, ProviderContainer)> _setUp() async {
 
 void main() {
   setUpAll(() async {
-    await Isar.initializeIsarCore(download: true);
+    await initializeIsarCoreForTests();
   });
 
   group('DoseLogListNotifier.moveToProfile', () {

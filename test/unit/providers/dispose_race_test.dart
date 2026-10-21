@@ -40,6 +40,8 @@ import 'package:health_flare/data/models/user_condition_isar.dart';
 import 'package:health_flare/data/models/user_symptom_isar.dart';
 import 'package:health_flare/data/models/vital_entry_isar.dart';
 
+import '../../helpers/isar_core.dart';
+
 // Issue #87: notifiers that read Isar and then set `state` threw "Cannot use
 // the Ref ... after it has been disposed" when the provider was disposed
 // while the read was in flight. In the app that's a logged error; in tests
@@ -108,7 +110,7 @@ void main() {
   late Isar isar;
 
   setUpAll(() async {
-    await Isar.initializeIsarCore();
+    await initializeIsarCoreForTests();
   });
 
   setUp(() async {

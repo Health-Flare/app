@@ -9,6 +9,7 @@ import 'package:health_flare/data/models/profile_isar.dart';
 import 'package:health_flare/features/settings/screens/settings_screen.dart';
 
 import '../helpers/app_lock_fakes.dart';
+import '../helpers/isar_core.dart';
 
 // The release guide's "Set it up myself" opens Settings > Your layout
 // (release-guides.feature, #145): Settings opens scrolled to that section.
@@ -18,7 +19,7 @@ void main() {
   late Isar isar;
 
   setUpAll(() async {
-    await Isar.initializeIsarCore(download: true);
+    await initializeIsarCoreForTests();
   });
 
   setUp(() async {

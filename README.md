@@ -80,6 +80,10 @@ Built with Flutter, Riverpod, and Isar.
 
 [Inner Flare](https://github.com/Health-Flare/InnerFlare) is a cycle tracker built on the same privacy rules.
 
+## Contributors
+
+Not every contribution is code. People who test, report bugs, review wording, or design are credited by hand in [CONTRIBUTORS.md](CONTRIBUTORS.md). Code authors are in [GitHub's contributor list](https://github.com/Health-Flare/app/graphs/contributors).
+
 ## License
 
 Health Flare is free software under the [GNU GPL v3.0](LICENSE.md) or later. Third-party licenses are in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and in the app under **Settings → Open source licenses**.

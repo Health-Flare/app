@@ -9,6 +9,8 @@ import 'package:health_flare/data/models/journal_entry_isar.dart';
 import 'package:health_flare/data/models/symptom_entry_isar.dart';
 import 'package:health_flare/models/journal_entry.dart';
 
+import '../../helpers/isar_core.dart';
+
 Future<Isar> _openIsar() async {
   return Isar.open(
     [JournalEntryIsarSchema, SymptomEntryIsarSchema],
@@ -19,7 +21,7 @@ Future<Isar> _openIsar() async {
 
 void main() {
   setUpAll(() async {
-    await Isar.initializeIsarCore(download: true);
+    await initializeIsarCoreForTests();
   });
 
   test(

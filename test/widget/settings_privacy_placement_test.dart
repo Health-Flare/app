@@ -10,6 +10,7 @@ import 'package:health_flare/features/settings/screens/settings_screen.dart';
 import 'package:health_flare/features/settings/widgets/privacy_settings_section.dart';
 
 import '../helpers/app_lock_fakes.dart';
+import '../helpers/isar_core.dart';
 
 // docs/features/app-lock.feature: the lock lives in Settings > Privacy
 // (#100). One Isar-backed pump per file: see the note in
@@ -19,7 +20,7 @@ void main() {
   late Isar isar;
 
   setUpAll(() async {
-    await Isar.initializeIsarCore(download: true);
+    await initializeIsarCoreForTests();
   });
 
   setUp(() async {

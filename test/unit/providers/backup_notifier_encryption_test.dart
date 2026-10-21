@@ -37,6 +37,8 @@ import 'package:health_flare/data/models/user_condition_isar.dart';
 import 'package:health_flare/data/models/user_symptom_isar.dart';
 import 'package:health_flare/data/models/vital_entry_isar.dart';
 
+import '../../helpers/isar_core.dart';
+
 // ---------------------------------------------------------------------------
 // BackupNotifier flows for encrypted backups (issue #30,
 // docs/features/encrypted-backup.feature), end to end: real Isar, real
@@ -158,7 +160,7 @@ void main() {
   late ProviderContainer container;
 
   setUpAll(() async {
-    await Isar.initializeIsarCore(download: true);
+    await initializeIsarCoreForTests();
   });
 
   setUp(() async {

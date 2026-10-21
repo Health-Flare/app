@@ -15,6 +15,8 @@ import 'package:health_flare/data/models/profile_isar.dart';
 import 'package:health_flare/features/whats_new/models/release_note.dart';
 import 'package:health_flare/features/whats_new/whats_new_rules.dart';
 
+import '../../helpers/isar_core.dart';
+
 // Backups of layout settings (#144).
 // Spec: docs/features/navigation-customization.feature ("Backups") and
 // docs/features/whats-new.feature (backups).
@@ -98,7 +100,7 @@ void main() {
   late Directory docs;
   late Directory tmp;
 
-  setUpAll(() async => Isar.initializeIsarCore(download: true));
+  setUpAll(() async => initializeIsarCoreForTests());
 
   setUp(() {
     root = Directory.systemTemp.createTempSync('hf_layout_backup_test_');

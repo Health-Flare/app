@@ -35,6 +35,8 @@ import 'package:health_flare/data/models/vital_entry_isar.dart';
 import 'package:health_flare/features/reports/models/report_config.dart';
 import 'package:health_flare/features/reports/services/report_query_service.dart';
 
+import '../../helpers/isar_core.dart';
+
 final _day = DateTime(2026, 10, 1, 8);
 
 /// Row count of every health-data collection.
@@ -60,7 +62,7 @@ Future<Map<String, int>> _counts(Isar isar) async => {
 };
 
 void main() {
-  setUpAll(() async => Isar.initializeIsarCore(download: true));
+  setUpAll(() async => initializeIsarCoreForTests());
 
   test('turning every feature off deletes and changes nothing, and reports '
       'still include it', () async {

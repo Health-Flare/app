@@ -15,6 +15,8 @@ import 'package:health_flare/features/whats_new/models/release_note.dart';
 import 'package:health_flare/features/whats_new/whats_new_provider.dart';
 import 'package:health_flare/features/whats_new/whats_new_rules.dart';
 
+import '../helpers/isar_core.dart';
+
 Future<WhatsNewState> _launch(Isar isar, WhatsNewScenario s) async {
   await applyPreviewScenario(isar, s);
   final record = await WhatsNewStore.settle(
@@ -34,7 +36,7 @@ List<String> _v(Iterable<ReleaseNote> r) => [for (final n in r) n.version];
 void main() {
   late Isar isar;
 
-  setUpAll(() async => Isar.initializeIsarCore(download: true));
+  setUpAll(() async => initializeIsarCoreForTests());
   setUp(() async {
     isar = await Isar.open(
       appSchemas,
