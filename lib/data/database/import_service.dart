@@ -4,6 +4,7 @@ import 'package:isar_community/isar.dart';
 
 import 'package:flutter/foundation.dart' show listEquals;
 import 'package:health_flare/core/navigation/bar_layout.dart';
+import 'package:health_flare/data/database/backup_summary.dart';
 import 'package:health_flare/core/navigation/bar_layout_store.dart';
 import 'package:health_flare/core/navigation/effective_bar.dart';
 import 'package:health_flare/core/navigation/nav_registry.dart';
@@ -94,6 +95,11 @@ abstract final class ImportCategoryId {
 
   /// The bottom bar (#144). Not records: a setting.
   static const layout = 'layout';
+
+  /// Only in [BackupSummary] counts (#104): drinks are imported with
+  /// [meals], bowel and bladder entries with [symptomEntries].
+  static const fluids = 'fluids';
+  static const elimination = 'elimination';
 }
 
 /// What an import did besides adding records.
@@ -239,6 +245,20 @@ class ImportService {
   /// staging it to replace the live database).
   static Future<void> validate(String backupPath) async {
     await _closeBackup(await _openBackup(backupPath));
+  }
+
+  /// What [backupPath] holds per profile: what "Add missing data" would add
+  /// to [main], and how many entries each profile has (#104).
+  ///
+  /// Counted the way [mergeAll] matches records, so a profile with nothing
+  /// new here adds nothing there. Changes nothing in [main].
+  static Future<BackupSummary> summarize(String backupPath, Isar main) async {
+    final backup = await _openBackup(backupPath);
+    try {
+      return await _Ctx(main: main, backup: backup).summarize();
+    } finally {
+      await _closeBackup(backup);
+    }
   }
 
   /// Opens [backupPath] and returns categories with counts of records that
@@ -583,6 +603,162 @@ class _Ctx {
       if (pid == null) return false;
       return !mainSet.contains('${pid}_${e.loggedAt.millisecondsSinceEpoch}');
     }).length;
+  }
+
+  // ── Summary (#104) ──────────────────────────────────────────────────────
+
+  /// Per backup profile: what [importAll] would add, and every entry it has.
+  Future<BackupSummary> summarize() async {
+    await buildProfileMap();
+
+    // category -> backup profile id -> records that would be added.
+    final newCounts = <String, Map<int, int>>{};
+    // backup profile id -> entries in the backup.
+    final entries = <int, int>{};
+
+    // Same matching as the importers: a record is new unless its profile is
+    // in the app and a record with the same [fingerprint] is there too. A
+    // profile the app doesn't have brings all its records.
+    Future<void> count<T>(
+      String id,
+      Future<List<T>> Function(Isar) all,
+      int Function(T) profileOf,
+      String Function(T) fingerprint, {
+      bool isEntry = true,
+    }) async {
+      final mainSet = {
+        for (final m in await all(main)) '${profileOf(m)}_${fingerprint(m)}',
+      };
+      final perProfile = newCounts.putIfAbsent(id, () => {});
+      for (final b in await all(backup)) {
+        final bid = profileOf(b);
+        if (isEntry) entries[bid] = (entries[bid] ?? 0) + 1;
+        final pid = profileMap[bid];
+        if (pid != null && mainSet.contains('${pid}_${fingerprint(b)}')) {
+          continue;
+        }
+        perProfile[bid] = (perProfile[bid] ?? 0) + 1;
+      }
+    }
+
+    int ms(DateTime d) => d.millisecondsSinceEpoch;
+
+    // In the order the confirmation lists them.
+    await count(
+      ImportCategoryId.symptomEntries,
+      (db) => db.symptomEntryIsars.where().findAll(),
+      (e) => e.profileId,
+      (e) => '${ms(e.loggedAt)}',
+    );
+    await count(
+      ImportCategoryId.vitals,
+      (db) => db.vitalEntryIsars.where().findAll(),
+      (e) => e.profileId,
+      (e) => '${ms(e.loggedAt)}_${e.vitalType}',
+    );
+    await count(
+      ImportCategoryId.doseLogs,
+      (db) => db.doseLogIsars.where().findAll(),
+      (e) => e.profileId,
+      (e) => '${ms(e.loggedAt)}',
+    );
+    await count(
+      ImportCategoryId.medications,
+      (db) => db.medicationIsars.where().findAll(),
+      (m) => m.profileId,
+      (m) => m.name.toLowerCase().trim(),
+      isEntry: false,
+    );
+    await count(
+      ImportCategoryId.meals,
+      (db) => db.mealEntryIsars.where().findAll(),
+      (e) => e.profileId,
+      (e) => '${ms(e.loggedAt)}',
+    );
+    await count(
+      ImportCategoryId.fluids,
+      (db) => db.fluidIntakeIsars.where().findAll(),
+      (e) => e.profileId,
+      (e) => '${ms(e.loggedAt)}',
+    );
+    await count(
+      ImportCategoryId.elimination,
+      (db) => db.eliminationEntryIsars.where().findAll(),
+      (e) => e.profileId,
+      (e) => '${ms(e.loggedAt)}_${e.kind}',
+    );
+    await count(
+      ImportCategoryId.sleep,
+      (db) => db.sleepEntryIsars.where().findAll(),
+      (e) => e.profileId,
+      (e) => '${ms(e.bedtime)}',
+    );
+    await count(
+      ImportCategoryId.activity,
+      (db) => db.activityEntryIsars.where().findAll(),
+      (e) => e.profileId,
+      (e) => '${ms(e.loggedAt)}',
+    );
+    await count(
+      ImportCategoryId.journal,
+      (db) => db.journalEntryIsars.where().findAll(),
+      (e) => e.profileId,
+      (e) => '${ms(e.createdAt)}',
+    );
+    await count(
+      ImportCategoryId.checkins,
+      (db) => db.dailyCheckinIsars.where().findAll(),
+      (e) => e.profileId,
+      (e) => '${ms(e.checkinDate)}',
+    );
+    await count(
+      ImportCategoryId.flares,
+      (db) => db.flareIsars.where().findAll(),
+      (e) => e.profileId,
+      (e) => '${ms(e.startedAt)}',
+    );
+    await count(
+      ImportCategoryId.appointments,
+      (db) => db.appointmentIsars.where().findAll(),
+      (e) => e.profileId,
+      (e) => '${ms(e.scheduledAt)}_${e.title}',
+    );
+    await count(
+      ImportCategoryId.trackedConditions,
+      (db) => db.userConditionIsars.where().findAll(),
+      (u) => u.profileId,
+      (u) => '${u.conditionId}',
+      isEntry: false,
+    );
+    await count(
+      ImportCategoryId.trackedSymptoms,
+      (db) => db.userSymptomIsars.where().findAll(),
+      (u) => u.profileId,
+      (u) => '${u.symptomId}',
+      isEntry: false,
+    );
+
+    final profiles = [
+      for (final bp in await backup.profileIsars.where().findAll())
+        BackupProfileSummary(
+          name: bp.name,
+          isNew: !profileMap.containsKey(bp.id),
+          newCounts: {
+            for (final MapEntry(key: id, value: perProfile)
+                in newCounts.entries)
+              if ((perProfile[bp.id] ?? 0) > 0) id: perProfile[bp.id]!,
+          },
+          entryCount: entries[bp.id] ?? 0,
+        ),
+    ];
+
+    // "Add missing data" takes the backup's bar only onto a device that
+    // never changed its own (see [importAll]).
+    final layoutIsNew =
+        await _backupBar() != null &&
+        (await BarLayoutStore.read(main)).storedBar == null;
+
+    return BackupSummary(profiles: profiles, layoutIsNew: layoutIsNew);
   }
 
   // ── Import ───────────────────────────────────────────────────────────────
