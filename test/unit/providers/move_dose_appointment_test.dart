@@ -12,6 +12,7 @@ import 'package:health_flare/data/models/medication_isar.dart';
 import 'package:health_flare/models/appointment.dart';
 
 import '../../helpers/isar_core.dart';
+import '../../helpers/isar_test_dir.dart';
 
 // Regression tests for #77: doses and appointments could not be moved to
 // another profile.
@@ -19,7 +20,7 @@ import '../../helpers/isar_core.dart';
 Future<Isar> _openIsar() async {
   return Isar.open(
     [DoseLogIsarSchema, AppointmentIsarSchema, MedicationIsarSchema],
-    directory: '',
+    directory: isarTestDir,
     name: 'move_dose_appt_test_${DateTime.now().microsecondsSinceEpoch}',
   );
 }
@@ -35,6 +36,8 @@ Future<(Isar, ProviderContainer)> _setUp() async {
 }
 
 void main() {
+  useIsarTestDirectory();
+
   setUpAll(() async {
     await initializeIsarCoreForTests();
   });

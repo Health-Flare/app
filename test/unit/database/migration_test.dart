@@ -26,6 +26,7 @@ import 'package:health_flare/data/models/user_symptom_isar.dart';
 import 'package:health_flare/data/models/vital_entry_isar.dart';
 
 import '../../helpers/isar_core.dart';
+import '../../helpers/isar_test_dir.dart';
 
 // ---------------------------------------------------------------------------
 // Minimal path_provider stub so path_provider works in unit tests
@@ -91,7 +92,7 @@ Future<Isar> _openIsar() async {
       FluidIntakeIsarSchema,
       EliminationEntryIsarSchema,
     ],
-    directory: '',
+    directory: isarTestDir,
     name: 'migration_test_${DateTime.now().microsecondsSinceEpoch}',
   );
 }
@@ -101,6 +102,8 @@ Future<Isar> _openIsar() async {
 // ---------------------------------------------------------------------------
 
 void main() {
+  useIsarTestDirectory();
+
   setUpAll(() async {
     PathProviderPlatform.instance = _FakePathProvider();
     await initializeIsarCoreForTests();

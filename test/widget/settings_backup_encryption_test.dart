@@ -10,6 +10,7 @@ import 'package:health_flare/data/models/profile_isar.dart';
 import 'package:health_flare/features/settings/screens/settings_screen.dart';
 
 import '../helpers/isar_core.dart';
+import '../helpers/isar_test_dir.dart';
 
 // ---------------------------------------------------------------------------
 // Widget-level tests for issue #30 / docs/features/encrypted-backup.feature
@@ -32,7 +33,7 @@ import '../helpers/isar_core.dart';
 Future<Isar> _openIsar(String name) {
   return Isar.open(
     [ProfileIsarSchema, AppSettingsSchema],
-    directory: '',
+    directory: isarTestDir,
     name: name,
   );
 }
@@ -78,6 +79,8 @@ Future<void> _turnOnEncryption(WidgetTester tester) async {
 }
 
 void main() {
+  useIsarTestDirectory();
+
   late Isar isar;
 
   setUpAll(() async {

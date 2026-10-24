@@ -31,6 +31,7 @@ import 'package:health_flare/data/models/user_symptom_isar.dart';
 import 'package:health_flare/data/models/vital_entry_isar.dart';
 
 import '../../helpers/isar_core.dart';
+import '../../helpers/isar_test_dir.dart';
 
 // ---------------------------------------------------------------------------
 // Tests for issue #30 / docs/features/encrypted-backup.feature
@@ -133,10 +134,10 @@ const _schemas = [
 /// Opens a database shaped like a real app database: with the AppSettings
 /// singleton [MigrationRunner] writes on first launch, which import/restore
 /// validation requires.
-Future<Isar> _openIsar(String name, {String directory = ''}) async {
+Future<Isar> _openIsar(String name, {String? directory}) async {
   final isar = await Isar.open(
     _schemas,
-    directory: directory,
+    directory: directory ?? isarTestDir,
     name: name,
     inspector: false,
     maxSizeMiB: 64,
@@ -159,16 +160,15 @@ Future<void> _closeOpenIsars() async {
   }
 }
 
-/// A fresh suffix per call so instance names never collide with a
-/// leftover `.isar` file from a previous local test run: `directory: ''`
-/// resolves to the working directory, which isn't cleaned between runs the
-/// way a real CI checkout would be. Matches the pattern already used by
-/// migration_test.dart/move_to_profile_test.dart.
+/// A fresh suffix per call so instance names never collide within the
+/// file's [isarTestDir], which lasts for every test in this file.
 String _uid() => '${DateTime.now().microsecondsSinceEpoch}';
 
 const _password = 'correcthorsebattery';
 
 void main() {
+  useIsarTestDirectory();
+
   setUpAll(() async {
     await initializeIsarCoreForTests();
   });

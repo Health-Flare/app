@@ -41,6 +41,7 @@ import 'package:health_flare/data/models/user_symptom_isar.dart';
 import 'package:health_flare/data/models/vital_entry_isar.dart';
 
 import '../../helpers/isar_core.dart';
+import '../../helpers/isar_test_dir.dart';
 
 // Issue #87: notifiers that read Isar and then set `state` threw "Cannot use
 // the Ref ... after it has been disposed" when the provider was disposed
@@ -107,6 +108,8 @@ final _loadingProviders = <String, ProviderListenable<Object?>>{
 };
 
 void main() {
+  useIsarTestDirectory();
+
   late Isar isar;
 
   setUpAll(() async {
@@ -116,7 +119,7 @@ void main() {
   setUp(() async {
     isar = await Isar.open(
       _schemas,
-      directory: '',
+      directory: isarTestDir,
       name: 'dispose_race_${DateTime.now().microsecondsSinceEpoch}',
     );
     await isar.writeTxn(() async {

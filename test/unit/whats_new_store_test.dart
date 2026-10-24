@@ -30,6 +30,7 @@ import 'package:health_flare/features/whats_new/whats_new_provider.dart';
 import 'package:health_flare/features/whats_new/whats_new_rules.dart';
 
 import '../helpers/isar_core.dart';
+import '../helpers/isar_test_dir.dart';
 
 const _schemas = [
   ProfileIsarSchema,
@@ -61,7 +62,7 @@ final _releases = [
 
 Future<Isar> _open() => Isar.open(
   _schemas,
-  directory: '',
+  directory: isarTestDir,
   name: 'whats_new_${DateTime.now().microsecondsSinceEpoch}',
 );
 
@@ -74,6 +75,8 @@ Future<void> _addProfile(Isar isar) => isar.writeTxn(
 );
 
 void main() {
+  useIsarTestDirectory();
+
   late Isar isar;
 
   setUpAll(() async => initializeIsarCoreForTests());

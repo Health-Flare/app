@@ -10,12 +10,15 @@ import 'package:health_flare/features/settings/screens/settings_screen.dart';
 
 import '../helpers/app_lock_fakes.dart';
 import '../helpers/isar_core.dart';
+import '../helpers/isar_test_dir.dart';
 
 // The release guide's "Set it up myself" opens Settings > Your layout
 // (release-guides.feature, #145): Settings opens scrolled to that section.
 // One Isar-backed pump per file: see settings_backup_encryption_test.dart.
 
 void main() {
+  useIsarTestDirectory();
+
   late Isar isar;
 
   setUpAll(() async {
@@ -25,7 +28,7 @@ void main() {
   setUp(() async {
     isar = await Isar.open(
       [ProfileIsarSchema, AppSettingsSchema],
-      directory: '',
+      directory: isarTestDir,
       name: 'settings_layout_${DateTime.now().microsecondsSinceEpoch}',
     );
   });

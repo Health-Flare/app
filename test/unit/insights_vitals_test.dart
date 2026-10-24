@@ -15,6 +15,7 @@ import 'package:health_flare/models/vital_units.dart';
 import 'package:health_flare/models/vital_type.dart';
 
 import '../helpers/isar_core.dart';
+import '../helpers/isar_test_dir.dart';
 
 Future<Isar> _openIsar() => Isar.open(
   [
@@ -25,7 +26,7 @@ Future<Isar> _openIsar() => Isar.open(
     FlareIsarSchema,
     VitalEntryIsarSchema,
   ],
-  directory: '',
+  directory: isarTestDir,
   name: 'insights_vitals_${DateTime.now().microsecondsSinceEpoch}',
 );
 
@@ -75,6 +76,8 @@ VitalTrend? _trend(InsightData data, VitalType type) {
 }
 
 void main() {
+  useIsarTestDirectory();
+
   setUpAll(() async {
     await initializeIsarCoreForTests();
   });

@@ -16,6 +16,7 @@ import 'package:health_flare/features/whats_new/whats_new_provider.dart';
 import 'package:health_flare/features/whats_new/whats_new_rules.dart';
 
 import '../helpers/isar_core.dart';
+import '../helpers/isar_test_dir.dart';
 
 Future<WhatsNewState> _launch(Isar isar, WhatsNewScenario s) async {
   await applyPreviewScenario(isar, s);
@@ -34,13 +35,15 @@ Future<WhatsNewState> _launch(Isar isar, WhatsNewScenario s) async {
 List<String> _v(Iterable<ReleaseNote> r) => [for (final n in r) n.version];
 
 void main() {
+  useIsarTestDirectory();
+
   late Isar isar;
 
   setUpAll(() async => initializeIsarCoreForTests());
   setUp(() async {
     isar = await Isar.open(
       appSchemas,
-      directory: '',
+      directory: isarTestDir,
       name: 'preview_${DateTime.now().microsecondsSinceEpoch}',
     );
     await MigrationRunner.run(isar);

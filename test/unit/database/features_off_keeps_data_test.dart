@@ -36,6 +36,7 @@ import 'package:health_flare/features/reports/models/report_config.dart';
 import 'package:health_flare/features/reports/services/report_query_service.dart';
 
 import '../../helpers/isar_core.dart';
+import '../../helpers/isar_test_dir.dart';
 
 final _day = DateTime(2026, 10, 1, 8);
 
@@ -62,13 +63,15 @@ Future<Map<String, int>> _counts(Isar isar) async => {
 };
 
 void main() {
+  useIsarTestDirectory();
+
   setUpAll(() async => initializeIsarCoreForTests());
 
   test('turning every feature off deletes and changes nothing, and reports '
       'still include it', () async {
     final isar = await Isar.open(
       appSchemas,
-      directory: '',
+      directory: isarTestDir,
       name: 'features_off_${DateTime.now().microsecondsSinceEpoch}',
     );
     addTearDown(() => isar.close(deleteFromDisk: true));
@@ -137,7 +140,7 @@ void main() {
     test('a new profile starts with every feature on', () async {
       final isar = await Isar.open(
         appSchemas,
-        directory: '',
+        directory: isarTestDir,
         name: 'features_new_${DateTime.now().microsecondsSinceEpoch}',
       );
       addTearDown(() => isar.close(deleteFromDisk: true));

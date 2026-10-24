@@ -11,6 +11,8 @@ import 'package:health_flare/data/database/import_service.dart';
 import 'package:health_flare/data/models/profile_isar.dart';
 import 'package:health_flare/features/settings/screens/settings_screen.dart';
 
+import '../helpers/isar_test_dir.dart';
+
 // Settings shows the #104 confirmation and passes the answer to the
 // notifier (docs/features/datastore.feature: "Add missing data" says what
 // it will add, Cancelling leaves everything as it was, A backup with
@@ -30,6 +32,8 @@ const _summary = BackupSummary(
 );
 
 void main() {
+  useIsarTestDirectory();
+
   late Isar isar;
 
   setUpAll(() async => Isar.initializeIsarCore(download: true));
@@ -39,7 +43,7 @@ void main() {
   setUp(() async {
     isar = await Isar.open(
       [ProfileIsarSchema, AppSettingsSchema],
-      directory: '',
+      directory: isarTestDir,
       name: 'settings_import_confirm_${DateTime.now().microsecondsSinceEpoch}',
     );
   });

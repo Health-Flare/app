@@ -11,12 +11,15 @@ import 'package:health_flare/features/settings/widgets/privacy_settings_section.
 
 import '../helpers/app_lock_fakes.dart';
 import '../helpers/isar_core.dart';
+import '../helpers/isar_test_dir.dart';
 
 // docs/features/app-lock.feature: the lock lives in Settings > Privacy
 // (#100). One Isar-backed pump per file: see the note in
 // settings_backup_encryption_test.dart.
 
 void main() {
+  useIsarTestDirectory();
+
   late Isar isar;
 
   setUpAll(() async {
@@ -26,7 +29,7 @@ void main() {
   setUp(() async {
     isar = await Isar.open(
       [ProfileIsarSchema, AppSettingsSchema],
-      directory: '',
+      directory: isarTestDir,
       name: 'settings_privacy_${DateTime.now().microsecondsSinceEpoch}',
     );
   });

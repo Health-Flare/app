@@ -11,6 +11,7 @@ import 'package:health_flare/data/models/profile_isar.dart';
 import 'package:health_flare/features/settings/screens/settings_screen.dart';
 
 import '../helpers/isar_core.dart';
+import '../helpers/isar_test_dir.dart';
 
 // ---------------------------------------------------------------------------
 // Import password dialog lifecycle (issue #30,
@@ -51,6 +52,8 @@ const _pending = ImportPasswordRequired(
 );
 
 void main() {
+  useIsarTestDirectory();
+
   late Isar isar;
 
   setUpAll(() async {
@@ -60,7 +63,7 @@ void main() {
   setUp(() async {
     isar = await Isar.open(
       [ProfileIsarSchema, AppSettingsSchema],
-      directory: '',
+      directory: isarTestDir,
       name: 'settings_pw_dialog_${DateTime.now().microsecondsSinceEpoch}',
     );
   });

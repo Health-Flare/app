@@ -27,6 +27,7 @@ import 'package:health_flare/data/models/user_symptom_isar.dart';
 import 'package:health_flare/data/models/vital_entry_isar.dart';
 
 import '../../helpers/isar_core.dart';
+import '../../helpers/isar_test_dir.dart';
 
 // Issue #117: Isar works out the next auto-increment id from the highest id
 // still stored when the database opens. Deleting the newest profile and
@@ -59,7 +60,7 @@ Future<int> _idOf(Isar isar, String name) async =>
     (await isar.profileIsars.filter().nameEqualTo(name).findFirst())!.id;
 
 Future<Isar> _open(String name) =>
-    Isar.open(_schemas, directory: '', name: name);
+    Isar.open(_schemas, directory: isarTestDir, name: name);
 
 /// Simulates a profile deleted by v1.9.1 and earlier: the profile row goes,
 /// a tracked symptom linked to it stays behind.
@@ -85,6 +86,8 @@ ProviderContainer _container(Isar isar) {
 }
 
 void main() {
+  useIsarTestDirectory();
+
   setUpAll(() async {
     await initializeIsarCoreForTests();
   });
