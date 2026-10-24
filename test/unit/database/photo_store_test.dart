@@ -22,6 +22,7 @@ import 'package:health_flare/data/database/import_service.dart';
 import 'package:health_flare/data/database/migration_runner.dart';
 import 'package:health_flare/data/models/meal_entry_isar.dart';
 import 'package:health_flare/data/models/profile_isar.dart';
+import '../../helpers/isar_core.dart';
 
 class _FakePathProvider
     with MockPlatformInterfaceMixin
@@ -113,7 +114,7 @@ void main() {
     return c;
   }
 
-  setUpAll(() async => Isar.initializeIsarCore(download: true));
+  setUpAll(() async => initializeIsarCoreForTests());
 
   setUp(() {
     root = Directory.systemTemp.createTempSync('hf_photos_');

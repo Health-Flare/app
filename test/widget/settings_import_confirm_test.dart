@@ -11,6 +11,7 @@ import 'package:health_flare/data/database/import_service.dart';
 import 'package:health_flare/data/models/profile_isar.dart';
 import 'package:health_flare/features/settings/screens/settings_screen.dart';
 
+import '../helpers/isar_core.dart';
 import '../helpers/isar_test_dir.dart';
 
 // Settings shows the #104 confirmation and passes the answer to the
@@ -36,7 +37,7 @@ void main() {
 
   late Isar isar;
 
-  setUpAll(() async => Isar.initializeIsarCore(download: true));
+  setUpAll(() async => initializeIsarCoreForTests());
 
   // Opened here, not in the test body: real I/O never completes inside
   // testWidgets' fake-async zone, and the test hangs.
