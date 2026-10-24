@@ -126,7 +126,8 @@ Feature: Shared profile sync between devices
   Scenario: Combining keeps every entry from both phones
     Given "Mum's phone" chose to combine its "Mia" with the shared "Mia"
     Then every entry from both phones is in the shared "Mia" on both phones
-    And entries that exist on both phones appear once
+    And an entry appears once only when its type, time and every field match on both phones
+    And entries that differ in anything are both kept, even if that leaves near-duplicates
 
   Scenario: A profile can be shared by at most 4 devices
     Given "Mia" is shared by 4 devices
