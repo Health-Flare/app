@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 
+import 'package:health_flare/core/files/photo_store.dart';
 import 'package:health_flare/models/profile.dart';
 
 /// Reusable circular avatar for a [Profile].
@@ -15,9 +16,13 @@ class ProfileAvatar extends StatelessWidget {
     required this.profile,
     this.radius = 24,
     this.showBorder = false,
+    this.previewFile,
   });
 
   final Profile profile;
+
+  /// A just-picked image to show before the profile is saved (#105).
+  final File? previewFile;
 
   /// Circle radius in logical pixels. Defaults to 24 (48px diameter).
   final double radius;
@@ -30,14 +35,15 @@ class ProfileAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final bg = _avatarColor(profile.id);
+    // Only the app's own photos are shown (#105); a picked one is
+    // previewed before it's saved.
+    final photo = previewFile ?? PhotoStore.resolve(profile.avatarPath);
 
     final circle = CircleAvatar(
       radius: radius,
       backgroundColor: bg,
-      backgroundImage: profile.hasAvatar
-          ? FileImage(File(profile.avatarPath!))
-          : null,
-      child: profile.hasAvatar
+      backgroundImage: photo == null ? null : FileImage(photo),
+      child: photo != null
           ? null
           : Text(
               profile.initials,

@@ -93,7 +93,16 @@ void main() {
       );
     });
 
-    test('Android 11 and below: excludes only the snapshots folder', () {
+    // Photos (#105): left out of cloud backup (25 MB quota) but moved by
+    // device transfer. The old format can't tell the two apart, so it
+    // leaves them out.
+    const photosRule = '<exclude domain="root" path="app_flutter/photos" />';
+    const expected = {
+      'cloud-backup': [snapshotsRule, photosRule],
+      'device-transfer': [snapshotsRule],
+    };
+
+    test('Android 11 and below: excludes snapshots and photos', () {
       final rules = File(
         'android/app/src/main/res/xml/backup_rules.xml',
       ).readAsStringSync();
@@ -103,11 +112,11 @@ void main() {
       ).firstMatch(rules)?.group(1);
 
       expect(body, isNotNull);
-      expect(_rules(body!), [snapshotsRule]);
+      expect(_rules(body!), [snapshotsRule, photosRule]);
     });
 
-    for (final section in ['cloud-backup', 'device-transfer']) {
-      test('Android 12+ $section: excludes only the snapshots folder', () {
+    for (final section in expected.keys) {
+      test('Android 12+ $section: excludes ${expected[section]}', () {
         final rules = File(
           'android/app/src/main/res/xml/data_extraction_rules.xml',
         ).readAsStringSync();
@@ -117,7 +126,7 @@ void main() {
         ).firstMatch(rules)?.group(1);
 
         expect(body, isNotNull, reason: '$section section missing');
-        expect(_rules(body!), [snapshotsRule]);
+        expect(_rules(body!), expected[section]);
       });
     }
   });

@@ -251,8 +251,6 @@ Feature: Persistent local datastore
     Then it gets an id no profile or entry has ever used
     And it shows none of the deleted profile's entries
 
-  # TODO(#112): agent-written wording; verify.
-  @unverified
   Scenario: The card says what happened and what to do
     Given the app stopped retrying a failed upgrade
     When I open the dashboard
@@ -261,8 +259,6 @@ Feature: Persistent local datastore
     And "Details" opens the update section in Settings > Data & backup
     And the card can't be dismissed
 
-  # TODO(#112): agent-written wording; verify.
-  @unverified
   Scenario: Settings explains the failed update
     Given the app stopped retrying a failed upgrade
     When I open Settings > Data & backup
@@ -348,6 +344,38 @@ Feature: Persistent local datastore
       | Replace everything    |
       | Add missing data      |
       | Choose what to import |
+
+  Scenario: "Add missing data" says what it will add before adding it
+    Given the user picks a backup with "Add missing data"
+    And it has the profiles "Sarah" and "Leo"
+    When the file has been read (after its password, if it has one)
+    Then a confirmation lists each profile in the backup with what it would add,
+      for example "Sarah: 12 symptoms, 3 doses" and "Leo: nothing new"
+    And it says nothing in the app will be changed or deleted
+    And the buttons are "Add" and "Cancel"
+    And nothing is merged until "Add" is tapped
+
+  Scenario: Cancelling leaves everything as it was
+    Given the "Add missing data" confirmation is showing
+    When the user taps "Cancel"
+    Then nothing is merged
+    And no decrypted copy of the backup is left on the phone
+    And they are told "Nothing was added from the backup"
+
+  Scenario: A backup with nothing new says so
+    Given the user picks a backup with "Add missing data"
+    And everything in it is already in the app
+    Then they are told "Everything in this backup is already here."
+    And nothing is merged
+
+  Scenario: "Replace everything" says what will replace what
+    Given the app has the profiles "Sarah" and "Leo"
+    And the user picks a backup with "Replace everything"
+    When the file has been read (after its password, if it has one)
+    Then a confirmation lists the profiles in the backup with their entry counts
+    And it lists the profiles in the app now, which will be replaced
+    And the buttons are "Replace" and "Cancel"
+    And nothing is staged until "Replace" is tapped
 
   Scenario: A non-backup file staged by an older app version is discarded on launch
     Given an older app version (1.8.0 or earlier) staged a file that is not a Health Flare backup for "Replace everything"

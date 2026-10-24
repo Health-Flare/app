@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:isar_community/isar.dart';
 import 'package:share_plus/share_plus.dart';
 
 import 'package:health_flare/core/navigation/bar_choice.dart';
@@ -12,7 +13,9 @@ import 'package:health_flare/core/providers/app_lock_provider.dart';
 import 'package:health_flare/core/providers/database_provider.dart';
 import 'package:health_flare/data/database/backup_encryption.dart';
 import 'package:health_flare/data/database/backup_service.dart';
+import 'package:health_flare/data/database/backup_summary.dart';
 import 'package:health_flare/data/database/import_service.dart';
+import 'package:health_flare/data/models/profile_isar.dart';
 import 'package:health_flare/core/files/scratch_files.dart';
 import 'package:health_flare/data/database/backup_limits.dart';
 
@@ -76,6 +79,39 @@ class ImportPasswordRequired extends BackupResult {
   final String filePath;
   final PendingImportAction action;
   final String? errorMessage;
+}
+
+/// "Add missing data": the file has been read; nothing is merged until
+/// [BackupNotifier.confirmImport] (#104).
+class MergeConfirmRequired extends BackupResult {
+  const MergeConfirmRequired({required this.filePath, required this.summary});
+  final String filePath;
+  final BackupSummary summary;
+}
+
+/// "Replace everything": the file has been read; nothing is staged until
+/// [BackupNotifier.confirmImport] (#104).
+class ReplaceConfirmRequired extends BackupResult {
+  const ReplaceConfirmRequired({
+    required this.filePath,
+    required this.summary,
+    required this.currentProfiles,
+  });
+  final String filePath;
+  final BackupSummary summary;
+
+  /// Names of the profiles in the app now, which will be replaced.
+  final List<String> currentProfiles;
+}
+
+/// The import ended without changing anything: cancelled at the
+/// confirmation, or the backup had nothing new (#104).
+class ImportNothingDone extends BackupResult {
+  const ImportNothingDone(this.message);
+  final String message;
+
+  static const cancelled = 'Nothing was added from the backup';
+  static const nothingNew = 'Everything in this backup is already here.';
 }
 
 /// The user cancelled the file picker.
@@ -171,11 +207,6 @@ class BackupNotifier extends Notifier<BackupResult> {
     }
   }
 
-  /// Opens the file picker and stages the chosen backup for a full overwrite.
-  ///
-  /// The restore is applied on the next app launch. Returns true only if a
-  /// restore was staged right away; false if the user cancelled, it failed,
-  /// or the file is encrypted and is waiting on [submitImportPassword].
   /// Stages the safety copy from before a failed upgrade (#112). Same
   /// result as "Replace everything": the app finishes it on next launch.
   Future<void> restoreSafetyCopy(String snapshotPath) async {
@@ -189,6 +220,12 @@ class BackupNotifier extends Notifier<BackupResult> {
     }
   }
 
+  /// Opens the file picker for a full overwrite. Stops at
+  /// [ReplaceConfirmRequired] (after [submitImportPassword] for an encrypted
+  /// file); [confirmImport] stages it, applied on the next app launch.
+  ///
+  /// Returns true only if a restore is staged when this returns, which since
+  /// #104 is never: it waits on the confirmation.
   Future<bool> stageRestore() async {
     await _pickAndRun(PendingImportAction.overwrite);
     return state is BackupRestoreStaged;
@@ -226,6 +263,61 @@ class BackupNotifier extends Notifier<BackupResult> {
     } finally {
       await _discardDecryptedCopy();
     }
+  }
+
+  /// Goes ahead with the merge or restore the user just confirmed (#104).
+  /// Only acts on [MergeConfirmRequired] or [ReplaceConfirmRequired].
+  Future<void> confirmImport() async {
+    final current = state;
+    if (current is! MergeConfirmRequired &&
+        current is! ReplaceConfirmRequired) {
+      return;
+    }
+    state = const BackupInProgress();
+
+    try {
+      switch (current) {
+        case MergeConfirmRequired(:final filePath):
+          final report = ImportReport();
+          final added = await ImportService.mergeAll(
+            filePath,
+            ref.read(isarProvider),
+            report: report,
+          );
+          await _complete(added, report);
+        case ReplaceConfirmRequired(:final filePath):
+          await BackupService.stagePendingRestore(filePath);
+          _emit(const BackupRestoreStaged());
+        default:
+      }
+    } on InvalidBackupException catch (e) {
+      _emit(BackupError(e.message));
+    } catch (e) {
+      _emit(
+        BackupError(
+          '${_failurePrefix(current is ReplaceConfirmRequired ? PendingImportAction.overwrite : PendingImportAction.merge)}$e',
+        ),
+      );
+    } finally {
+      await _discardDecryptedCopy();
+    }
+  }
+
+  /// The user tapped Cancel on the confirmation: nothing is merged or
+  /// staged, and any decrypted copy is deleted (#104). "Add missing data"
+  /// says nothing was added; "Replace everything" just closes.
+  Future<void> cancelImport() async {
+    final current = state;
+    if (current is! MergeConfirmRequired &&
+        current is! ReplaceConfirmRequired) {
+      return;
+    }
+    await _discardDecryptedCopy();
+    _emit(
+      current is MergeConfirmRequired
+          ? const ImportNothingDone(ImportNothingDone.cancelled)
+          : const BackupIdle(),
+    );
   }
 
   /// Unlocks the encrypted file named by an [ImportPasswordRequired] state
@@ -310,8 +402,10 @@ class BackupNotifier extends Notifier<BackupResult> {
   }
 
   /// Path of a decrypted working copy that still exists on disk, if any.
-  /// Only a selective import keeps one past [submitImportPassword] (its
-  /// commit step still needs it); every other path deletes it immediately.
+  /// Kept past [submitImportPassword] while the user looks at a selective
+  /// import's categories or a merge/replace confirmation (#104), since the
+  /// next step still needs it; [reset], [cancelImport] and the commit steps
+  /// delete it.
   String? _heldDecryptedCopy;
 
   Future<void> _pickAndRun(PendingImportAction action) async {
@@ -358,17 +452,29 @@ class BackupNotifier extends Notifier<BackupResult> {
     try {
       final isar = ref.read(isarProvider);
       switch (action) {
+        // Both stop at a confirmation saying what the backup holds; nothing
+        // is staged or merged until [confirmImport] (#104).
         case PendingImportAction.overwrite:
-          await BackupService.stagePendingRestore(path);
-          _emit(const BackupRestoreStaged());
-        case PendingImportAction.merge:
-          final report = ImportReport();
-          final added = await ImportService.mergeAll(
-            path,
-            isar,
-            report: report,
+          final summary = await ImportService.summarize(path, isar);
+          final current = [
+            for (final p in await isar.profileIsars.where().findAll()) p.name,
+          ];
+          keepDecryptedCopy = true;
+          _emit(
+            ReplaceConfirmRequired(
+              filePath: path,
+              summary: summary,
+              currentProfiles: current,
+            ),
           );
-          await _complete(added, report);
+        case PendingImportAction.merge:
+          final summary = await ImportService.summarize(path, isar);
+          if (summary.hasNothingNew) {
+            _emit(const ImportNothingDone(ImportNothingDone.nothingNew));
+          } else {
+            keepDecryptedCopy = true;
+            _emit(MergeConfirmRequired(filePath: path, summary: summary));
+          }
         case PendingImportAction.selective:
           final categories = [
             for (final c in await ImportService.preview(path, isar)) c,

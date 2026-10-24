@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar_community/isar.dart';
 
+import 'package:health_flare/core/files/photo_store.dart';
 import 'package:health_flare/data/models/meal_entry_isar.dart';
 import 'package:health_flare/data/models/weather_snapshot_isar.dart';
 import 'package:health_flare/models/meal_entry.dart';
@@ -56,12 +57,14 @@ class MealEntryListNotifier extends Notifier<List<MealEntry>> {
     WeatherSnapshot? weatherSnapshot,
   }) async {
     final isar = ref.read(isarProvider);
+    // Kept in the app's photos folder under our own name (#105).
+    final photo = await PhotoStore.adopt(photoPath);
     final row = MealEntryIsar()
       ..id = Isar.autoIncrement
       ..profileId = profileId
       ..description = description
       ..notes = notes
-      ..photoPath = photoPath
+      ..photoPath = photo
       ..hasReaction = hasReaction
       ..loggedAt = loggedAt
       ..createdAt = DateTime.now()
@@ -79,9 +82,13 @@ class MealEntryListNotifier extends Notifier<List<MealEntry>> {
   /// Replace an existing entry by id.
   Future<void> update(MealEntry updated) async {
     final isar = ref.read(isarProvider);
+    final photo = await PhotoStore.adopt(updated.photoPath);
+    final row = MealEntryIsar.fromDomain(updated)..photoPath = photo;
     await isar.writeTxn(() async {
-      await isar.mealEntryIsars.put(MealEntryIsar.fromDomain(updated));
+      await isar.mealEntryIsars.put(row);
     });
+    // A replaced or removed photo goes (#105).
+    await PhotoStore.sweep(isar);
   }
 
   /// Remove an entry by id.
@@ -90,6 +97,7 @@ class MealEntryListNotifier extends Notifier<List<MealEntry>> {
     await isar.writeTxn(() async {
       await isar.mealEntryIsars.delete(id);
     });
+    await PhotoStore.sweep(isar);
   }
 
   /// Reassign an entry to a different profile (wrong-profile recovery).
