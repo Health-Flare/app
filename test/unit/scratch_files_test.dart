@@ -11,6 +11,7 @@ import 'package:health_flare/data/database/backup_service.dart';
 import 'package:health_flare/data/models/profile_isar.dart';
 
 import '../helpers/isar_core.dart';
+import '../helpers/isar_test_dir.dart';
 
 // Issue #102: plain backups, PDF/CSV reports (named after the profile) and
 // decrypted copies of encrypted backups were left in the temp directory.
@@ -46,6 +47,8 @@ class _FakePathProvider
 }
 
 void main() {
+  useIsarTestDirectory();
+
   late Directory root;
   late Directory tmp;
 
@@ -194,7 +197,7 @@ void main() {
     test('a plain backup export is written there', () async {
       final isar = await Isar.open(
         [ProfileIsarSchema, AppSettingsSchema],
-        directory: '',
+        directory: isarTestDir,
         name: 'scratch_export_${DateTime.now().microsecondsSinceEpoch}',
       );
       addTearDown(() => isar.close(deleteFromDisk: true));

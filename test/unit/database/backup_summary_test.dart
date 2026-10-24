@@ -13,6 +13,7 @@ import 'package:health_flare/data/database/import_service.dart';
 import 'package:health_flare/data/models/journal_entry_isar.dart';
 import 'package:health_flare/data/models/profile_isar.dart';
 import 'package:health_flare/data/models/sleep_entry_isar.dart';
+import '../../helpers/isar_core.dart';
 
 // docs/features/datastore.feature (#104):
 //   "Add missing data" says what it will add before adding it
@@ -96,7 +97,7 @@ void main() {
         }
       });
 
-  setUpAll(() async => Isar.initializeIsarCore(download: true));
+  setUpAll(() async => initializeIsarCoreForTests());
 
   setUp(() {
     root = Directory.systemTemp.createTempSync('hf_summary_');

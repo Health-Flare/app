@@ -34,6 +34,7 @@ import 'package:health_flare/data/models/vital_entry_isar.dart';
 import 'package:health_flare/models/profile.dart';
 
 import '../../helpers/isar_core.dart';
+import '../../helpers/isar_test_dir.dart';
 
 const _schemas = [
   ProfileIsarSchema,
@@ -59,10 +60,15 @@ const _schemas = [
 
 String _uid() => '${DateTime.now().microsecondsSinceEpoch}';
 
-Future<Isar> _open({String directory = '', String? name}) =>
-    Isar.open(_schemas, directory: directory, name: name ?? 'layout_${_uid()}');
+Future<Isar> _open({String? directory, String? name}) => Isar.open(
+  _schemas,
+  directory: directory ?? isarTestDir,
+  name: name ?? 'layout_${_uid()}',
+);
 
 void main() {
+  useIsarTestDirectory();
+
   setUpAll(() async => initializeIsarCoreForTests());
 
   group('the bar on AppSettings', () {

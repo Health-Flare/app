@@ -26,6 +26,7 @@ import 'package:health_flare/data/models/user_symptom_isar.dart';
 import 'package:health_flare/data/models/vital_entry_isar.dart';
 
 import '../../helpers/isar_core.dart';
+import '../../helpers/isar_test_dir.dart';
 
 // Regression tests: deleting a profile must remove every row that belongs
 // to it, not just journal entries. The confirm dialog promises "All health
@@ -56,7 +57,7 @@ Future<Isar> _openIsar() => Isar.open(
     FluidIntakeIsarSchema,
     EliminationEntryIsarSchema,
   ],
-  directory: '',
+  directory: isarTestDir,
   name: 'profile_delete_test_${DateTime.now().microsecondsSinceEpoch}',
 );
 
@@ -250,6 +251,8 @@ Future<Map<String, int>> _counts(Isar isar, int profileId) async => {
 };
 
 void main() {
+  useIsarTestDirectory();
+
   setUpAll(() async {
     await initializeIsarCoreForTests();
   });

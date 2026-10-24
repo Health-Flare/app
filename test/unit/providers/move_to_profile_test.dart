@@ -10,16 +10,19 @@ import 'package:health_flare/data/models/symptom_entry_isar.dart';
 import 'package:health_flare/models/journal_entry.dart';
 
 import '../../helpers/isar_core.dart';
+import '../../helpers/isar_test_dir.dart';
 
 Future<Isar> _openIsar() async {
   return Isar.open(
     [JournalEntryIsarSchema, SymptomEntryIsarSchema],
-    directory: '',
+    directory: isarTestDir,
     name: 'move_test_${DateTime.now().microsecondsSinceEpoch}',
   );
 }
 
 void main() {
+  useIsarTestDirectory();
+
   setUpAll(() async {
     await initializeIsarCoreForTests();
   });

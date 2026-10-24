@@ -29,6 +29,7 @@ import 'package:health_flare/data/models/symptom_isar.dart';
 import 'package:health_flare/data/models/user_condition_isar.dart';
 import 'package:health_flare/data/models/user_symptom_isar.dart';
 import 'package:health_flare/data/models/vital_entry_isar.dart';
+import '../../helpers/isar_core.dart';
 
 // BackupNotifier: "Add missing data" and "Replace everything" say what a
 // backup holds before merging or staging it (#104,
@@ -143,7 +144,7 @@ void main() {
   late ProviderContainer container;
 
   setUpAll(() async {
-    await Isar.initializeIsarCore(download: true);
+    await initializeIsarCoreForTests();
   });
 
   setUp(() async {

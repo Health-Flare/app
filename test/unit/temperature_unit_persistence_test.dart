@@ -37,10 +37,11 @@ import 'package:health_flare/models/vital_entry.dart';
 import 'package:health_flare/models/vital_type.dart';
 
 import '../helpers/isar_core.dart';
+import '../helpers/isar_test_dir.dart';
 
 String _uid() => '${DateTime.now().microsecondsSinceEpoch}';
 
-Future<Isar> _openIsar({String directory = '', String? name}) => Isar.open(
+Future<Isar> _openIsar({String? directory, String? name}) => Isar.open(
   [
     ProfileIsarSchema,
     AppSettingsSchema,
@@ -64,11 +65,13 @@ Future<Isar> _openIsar({String directory = '', String? name}) => Isar.open(
     FluidIntakeIsarSchema,
     EliminationEntryIsarSchema,
   ],
-  directory: directory,
+  directory: directory ?? isarTestDir,
   name: name ?? 'temp_unit_${_uid()}',
 );
 
 void main() {
+  useIsarTestDirectory();
+
   setUpAll(() async {
     await initializeIsarCoreForTests();
   });
