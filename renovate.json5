@@ -92,6 +92,13 @@
     // Spans pubspec.yaml, scripts/isar_codegen/ and tools/csv_import/ (the
     // latter pins an exact version and carries its own generated copies, so
     // a bump there also means regenerating them).
+    //
+    // The F-Droid build compiles libisar from the third_party/isar-community
+    // submodule, which must sit on the tag matching isar_community_flutter_libs
+    // (scripts/fdroid/build_isar.sh refuses otherwise). The submodule tracks
+    // that tag in .gitmodules (`branch = <tag>`), so the git-submodules
+    // manager moves it in the same PR. The pub pins are exact so lock file
+    // maintenance can't move Isar outside this group (#202 did).
     {
       groupName: 'isar',
       matchManagers: ['pub'],
@@ -99,5 +106,18 @@
       separateMajorMinor: false,
       automerge: false,
     },
+    {
+      groupName: 'isar',
+      matchManagers: ['git-submodules'],
+      matchDepNames: ['third_party/isar-community'],
+      versioning: 'semver',
+      separateMajorMinor: false,
+      automerge: false,
+    },
   ],
+
+  // Off by default (beta). Only submodule is third_party/isar-community.
+  'git-submodules': {
+    enabled: true,
+  },
 }

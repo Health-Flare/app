@@ -41,8 +41,14 @@ Two dependencies don't pass F-Droid's rules as shipped:
   is the one LocalMaterialNotes builds 3.3.2 with on F-Droid; 3.3.2 to
   3.4.1 changed no `Cargo.toml` or Rust source, so it carried over). The script
   refuses to run if the submodule and the lockfile disagree.
-  **When Renovate bumps Isar**, move the submodule to the new tag
-  (`git -C third_party/isar-community checkout <tag>`). If
+  **Isar bumps** come as one Renovate "isar" PR: the pub packages are pinned
+  exactly (so lock file maintenance can't move them), and `.gitmodules`
+  tracks the tag (`branch = <tag>`), so Renovate's git-submodules manager
+  moves the submodule in the same PR. CI's "Isar source pin" job
+  (`scripts/fdroid/check_isar_pin.sh`) fails any PR where the lock,
+  `.gitmodules` and the submodule commit disagree. By hand: move the
+  submodule (`git -C third_party/isar-community checkout <tag>`) and the
+  `branch` line together. If
   `git diff <old> <new> -- '*Cargo.toml' packages/isar_core*
   packages/mdbx_sys` is empty, keep the Cargo lock; otherwise regenerate it
   (`cargo generate-lockfile` in the submodule, copy it over). Let the F-Droid
