@@ -2,7 +2,7 @@
   "releases": [
     {
       "version": "1.11.0",
-      "date": null,
+      "date": "2026-10-26",
       "highlights": [
         {
           "title": "Flares include what you logged",
