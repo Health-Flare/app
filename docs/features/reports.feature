@@ -148,7 +148,9 @@ Feature: Reports and Data Export
 
   Scenario: CSV symptom export includes all symptom fields
     When I export a report as CSV including symptoms
-    Then the symptom CSV contains columns for: timestamp, symptom name, severity, and notes
+    Then the symptom CSV contains columns for: timestamp, symptom name, severity, notes, interference, and impact
+    # severity and notes keep their names and positions so existing spreadsheets
+    # still work; the new columns are appended at the end.
 
   Scenario: Text that looks like a spreadsheet formula is exported as text
     Given a symptom entry with the note "=HYPERLINK(""x"",""Click"")"
@@ -390,3 +392,53 @@ Feature: Reports and Data Export
   Scenario: CSV flare export includes all flare fields
     When I export a report as CSV including flares
     Then the flare CSV contains columns for: start date, end date, duration (days), attributed condition, peak severity, and notes
+
+  # ---------------------------------------------------------------------------
+  # Intensity, interference, and impact (PROMIS-informed inputs)
+  # ---------------------------------------------------------------------------
+
+  # Credit: Dr Cat Hicks / Informed Patient
+  # (https://github.com/DrCatHicks/informed-patient). See the matching section
+  # of symptoms_and_vitals.feature. The point of these fields is to give a
+  # clinician something legible in a short appointment, so reports must carry
+  # them, keep them separate, and quote impact statements as written.
+
+  Scenario: CSV symptom export writes interference as a label
+    Given "Sarah" logged "Fatigue" with interference "Quite a bit" and "Headache" with no interference
+    When I export a report as CSV including symptoms
+    Then the "Fatigue" row's interference column reads "Quite a bit"
+    And the "Headache" row's interference column is empty, not "0" or "Not at all"
+    And the "severity" column is unchanged: it still holds the 1 to 10 intensity value
+
+  Scenario: PDF report shows intensity and interference side by side
+    Given "Sarah" logged "Fatigue" with intensity 5 and interference "Quite a bit" on "2026-02-10"
+    When I generate a PDF report including symptoms
+    Then the "Fatigue" row shows intensity "5/10" and interference "Quite a bit" in separate columns
+
+  Scenario: PDF report lists impact statements in the person's own words
+    Given "Sarah" logged these impacts in the last 30 days:
+      | Date       | Symptom    | Impact                                        |
+      | 2026-02-03 | Joint pain | Couldn't open jars or grip the steering wheel |
+      | 2026-02-10 | Fatigue    | Missed work                                   |
+    When I generate a PDF report for "Last 30 days" including symptoms
+    Then the report has a section "What it stopped me doing"
+    And each impact is quoted exactly as written, with its date and symptom
+    And the impacts are not summarised, rephrased, or merged
+
+  Scenario: Impact section is left out when nothing was recorded
+    Given "Sarah" has symptom entries in the last 30 days with no impact recorded
+    When I generate a PDF report for "Last 30 days"
+    Then the report has no "What it stopped me doing" section
+
+  Scenario: Symptom trend charts keep intensity and interference apart
+    Given "Sarah" has "Fatigue" entries with intensity and interference over the last 30 days
+    When I view the "Fatigue" trend on the pattern insights screen
+    Then intensity is plotted on its 1 to 10 scale
+    And interference is shown as a separate series or toggle on its own five-step scale
+    And the two are never averaged or combined into one number
+
+  Scenario: Interference chart shows gaps where it was not recorded
+    Given "Sarah" recorded interference for "Fatigue" on 10 of 30 days
+    When I view the interference series for "Fatigue"
+    Then only those 10 days are plotted
+    And the other days are gaps, not zeros
