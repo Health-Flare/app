@@ -7,7 +7,8 @@
 # Source: the third_party/isar-community submodule, pinned to the same
 # version as isar_community_flutter_libs in pubspec.lock. Crate versions:
 # scripts/fdroid/isar-Cargo.lock (upstream doesn't commit one; this is the
-# lock LocalMaterialNotes builds 3.3.2 with on F-Droid).
+# lock LocalMaterialNotes builds 3.3.2 with on F-Droid; 3.4.1 changed no
+# Cargo.toml or Rust source, so it still applies).
 #
 # Usage (repo root, PUB_CACHE set): scripts/fdroid/build_isar.sh [abi...]
 #   abi: armv7 arm64 x64 (default: all three; Flutter has no 32-bit x86)

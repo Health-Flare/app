@@ -36,14 +36,17 @@ Two dependencies don't pass F-Droid's rules as shipped:
   binaries. The scanner deletes them, and `scripts/fdroid/build_isar.sh`
   builds them from source: the `third_party/isar-community` submodule, pinned
   to the same tag as `isar_community_flutter_libs` in `pubspec.lock`
-  (3.3.2), with Rust 1.88.0 (what upstream's `tool/build_android.sh` names)
+  (3.4.1), with Rust 1.88.0 (what upstream's `tool/build_android.sh` names)
   and `scripts/fdroid/isar-Cargo.lock` (upstream commits no lockfile; this
-  is the one LocalMaterialNotes builds 3.3.2 with on F-Droid). The script
+  is the one LocalMaterialNotes builds 3.3.2 with on F-Droid; 3.3.2 to
+  3.4.1 changed no `Cargo.toml` or Rust source, so it carried over). The script
   refuses to run if the submodule and the lockfile disagree.
   **When Renovate bumps Isar**, move the submodule to the new tag
-  (`git -C third_party/isar-community checkout <tag>`), regenerate the Cargo
-  lock (`cargo generate-lockfile` in the submodule, copy it over), and let the
-  F-Droid build job confirm it.
+  (`git -C third_party/isar-community checkout <tag>`). If
+  `git diff <old> <new> -- '*Cargo.toml' packages/isar_core*
+  packages/mdbx_sys` is empty, keep the Cargo lock; otherwise regenerate it
+  (`cargo generate-lockfile` in the submodule, copy it over). Let the F-Droid
+  build job confirm it.
 
 And one of ours:
 
