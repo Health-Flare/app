@@ -1,0 +1,53 @@
+Categories:
+  - Health Manager
+  - Medication
+License: GPL-3.0-or-later
+AuthorName: Health Flare
+WebSite: https://healthflare.org
+SourceCode: https://github.com/Health-Flare/app
+IssueTracker: https://github.com/Health-Flare/app/issues
+Changelog: https://github.com/Health-Flare/app/blob/HEAD/CHANGELOG.md
+
+AutoName: Health Flare
+
+RepoType: git
+Repo: https://github.com/Health-Flare/app.git
+
+Builds:
+  - versionName: 1.10.1
+    versionCode: 15
+    commit: 0000000000000000000000000000000000000000
+    submodules: true
+    sudo:
+      - apt-get update
+      - apt-get install -y gcc libc-dev make libclang-dev rustup
+    output: build/app/outputs/flutter-apk/app-release.apk
+    srclibs:
+      - flutter@stable
+    rm:
+      - ios
+      - macos
+      - windows
+    prebuild:
+      - flutterVersion=$(sed -n -E 's/^ *FLUTTER_VERSION:\ "(.*)"/\1/p' .github/workflows/ci.yml)
+      - '[[ $flutterVersion ]]'
+      - git -C $$flutter$$ checkout -f $flutterVersion
+      - export PUB_CACHE=$(pwd)/.pub-cache
+      - $$flutter$$/bin/flutter config --no-analytics
+      - $$flutter$$/bin/flutter pub get --enforce-lockfile
+      - bash scripts/fdroid/strip_gms_location.sh
+      - cp scripts/fdroid/isar-Cargo.lock third_party/isar-community/Cargo.lock
+    scandelete:
+      - .pub-cache
+    build:
+      - export PUB_CACHE=$(pwd)/.pub-cache
+      - rustup default 1.88.0
+      - bash scripts/fdroid/build_isar.sh
+      - HEALTHFLARE_UNSIGNED_RELEASE=true $$flutter$$/bin/flutter build apk --release
+    ndk: 28.2.13676358
+
+AutoUpdateMode: Version
+UpdateCheckMode: Tags ^v[\d.]+$
+UpdateCheckData: pubspec.yaml|version:\s.+\+(\d+)|.|version:\s(.+)\+
+CurrentVersion: 1.10.1
+CurrentVersionCode: 15

@@ -1,0 +1,6 @@
+[submodule "third_party/isar-community"]
+	path = third_party/isar-community
+	url = https://github.com/isar-community/isar-community.git
+	# Tag, not a branch: Renovate's git-submodules manager moves it (and the
+	# commit) to the next tag. Must equal the Isar version in pubspec.lock.
+	branch = 3.4.1

@@ -104,6 +104,20 @@ jobs:
             exit 1
           fi
 
+  # The F-Droid build compiles libisar from third_party/isar-community, which
+  # must match Isar in pubspec.lock. The F-Droid job is too slow for every
+  # PR, so check the pin here: #202 bumped Isar alone and only the next
+  # F-Droid run noticed. No submodule checkout; one ls-remote.
+  isar-pin:
+    name: Isar source pin
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Submodule tag matches pubspec.lock
+        run: bash scripts/fdroid/check_isar_pin.sh
+
   # ── 3. Formatting ──────────────────────────────────────────────────────────
   dart-format:
     name: Formatting
@@ -195,7 +209,7 @@ jobs:
   gates:
     name: CI gates
     runs-on: ubuntu-latest
-    needs: [flutter-pub-get, url-scan, dart-format, flutter-analyze, flutter-test, tool-packages]
+    needs: [flutter-pub-get, url-scan, isar-pin, dart-format, flutter-analyze, flutter-test, tool-packages]
     if: always() && github.event_name != 'schedule'
     steps:
       - name: All gates passed

@@ -21,9 +21,12 @@ dependencies:
   # Routing
   go_router: ^18.0.1
 
-  # Local database
-  isar_community: ^3.3.2
-  isar_community_flutter_libs: ^3.3.2
+  # Local database. Exact pins: Isar moves only in Renovate's "isar" group
+  # PR, together with scripts/isar_codegen, tools/csv_import and the
+  # third_party/isar-community submodule the F-Droid build compiles libisar
+  # from. A caret range let lock file maintenance bump it alone (#202).
+  isar_community: 3.4.1
+  isar_community_flutter_libs: 3.4.1
   path_provider: ^2.1.5
 
   # Image picker (avatar + meal photos)
