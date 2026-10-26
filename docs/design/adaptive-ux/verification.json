@@ -1,0 +1,61 @@
+{
+  "browser": "155.0.8059.84",
+  "scope": "Offline HTML review only; no Flutter, native lifecycle, VoiceOver or device tests",
+  "results": [
+    {
+      "name": "Bundled fonts load offline",
+      "result": "pass"
+    },
+    {
+      "name": "Recommended tablet uses contextual panes",
+      "result": "pass"
+    },
+    {
+      "name": "Select and edit retain draft, focus and caret on real resize",
+      "result": "pass"
+    },
+    {
+      "name": "Duo controls share layout and never save on transition",
+      "result": "pass"
+    },
+    {
+      "name": "Explicit save updates only selected record once",
+      "result": "pass"
+    },
+    {
+      "name": "Invalid input retains draft and original record",
+      "result": "pass"
+    },
+    {
+      "name": "Cancel can keep editing or discard without saving",
+      "result": "pass"
+    },
+    {
+      "name": "Selection guard and profile isolation",
+      "result": "pass"
+    },
+    {
+      "name": "Bounded direction changes composition, not record state",
+      "result": "pass"
+    },
+    {
+      "name": "200 percent text and narrow width have no page overflow",
+      "result": "pass"
+    },
+    {
+      "name": "Keyboard controls, visible focus and minimum targets",
+      "result": "pass"
+    },
+    {
+      "name": "Dark theme and empty fixture",
+      "result": "pass"
+    },
+    {
+      "name": "No script errors or HTTP requests",
+      "result": "pass"
+    }
+  ],
+  "count": 13,
+  "errors": [],
+  "network": []
+}
