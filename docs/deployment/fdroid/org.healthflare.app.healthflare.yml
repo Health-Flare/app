@@ -14,7 +14,7 @@ RepoType: git
 Repo: https://github.com/Health-Flare/app.git
 
 Builds:
-  - versionName: 1.10.1
+  - versionName: 1.11.0
     versionCode: 15
     commit: 0000000000000000000000000000000000000000
     submodules: true
@@ -49,5 +49,5 @@ Builds:
 AutoUpdateMode: Version
 UpdateCheckMode: Tags ^v[\d.]+$
 UpdateCheckData: pubspec.yaml|version:\s.+\+(\d+)|.|version:\s(.+)\+
-CurrentVersion: 1.10.1
+CurrentVersion: 1.11.0
 CurrentVersionCode: 15
