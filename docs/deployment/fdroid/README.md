@@ -84,13 +84,21 @@ to Open-Meteo, whose server software is open source (AGPL), so it isn't
    `versionCode` and `commit` (full hash of the tag's commit, never the tag
    name) and `CurrentVersion`/`CurrentVersionCode`. Add
    `fastlane/metadata/android/en-US/changelogs/<versionCode>.txt`.
-3. Fork https://gitlab.com/fdroid/fdroiddata, copy the file to
+3. Fork https://gitlab.com/fdroid/fdroiddata (the fork must be public),
+   branch `org.healthflare.app.healthflare`, copy the file to
    `metadata/org.healthflare.app.healthflare.yml`, run `fdroid rewritemeta`
-   and `fdroid lint` on it, and open the merge request with their "App
-   inclusion" template. Their CI runs the same build as ours.
+   and `fdroid lint` on it, check the fork's pipeline passes, and open the
+   merge request titled "New app: Health Flare" with the Default template.
+   Their CI runs the same build as ours. The template asks for reproducible
+   builds; we don't have them (our APKs use upstream's prebuilt libisar,
+   F-Droid's is built from source), so F-Droid signs with its own key and
+   people can't switch between F-Droid and the GitHub/Play/IzzyOnDroid APKs
+   without reinstalling (export a backup first).
 4. After that, `AutoUpdateMode: Version` + `UpdateCheckMode: Tags` means
    F-Droid picks up new `vX.Y.Z` tags itself. Per release: the changelog
    file, and the Isar steps above if Isar moved.
 
-IzzyOnDroid: open a request at https://codeberg.org/IzzyOnDroid/repo/issues
-naming the repo and the `-arm64-v8a.apk` asset.
+IzzyOnDroid: open an "App Inclusion Request" at
+https://codeberg.org/IzzyOnDroid/repodata/issues (Codeberg account),
+naming the repo and the `-arm64-v8a.apk` release asset. Izzy picks up new
+GitHub releases itself after that.
