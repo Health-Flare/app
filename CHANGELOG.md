@@ -61,6 +61,47 @@ Subsection meanings (from Keep a Changelog):
 ### Security
 - _Nothing yet._
 
+## [1.11.0] - 2026-10-26
+
+### Added
+- Entry forms say when an entry is part of a flare, for example "Part of
+  the Fibromyalgia flare". Remove takes it out; Add back puts it back.
+
+### Changed
+- _Nothing yet._
+
+### Deprecated
+- _Nothing yet._
+
+### Removed
+- _Nothing yet._
+
+### Fixed
+- "Add missing data" now says what a backup would add for each profile
+  before adding anything, with Add and Cancel. A backup with nothing new
+  says so and changes nothing.
+- "Replace everything" now lists what's in the backup and the profiles it
+  will replace before it's set up, with Replace and Cancel.
+- Meal photos and profile pictures are kept in the app's own folder, so the
+  phone can't clear them and they no longer go missing after an update.
+  Photos saved earlier are moved there; ones the phone had already cleared
+  are removed instead of showing as broken. New photos are saved at most
+  1600 pixels across.
+- Removing a photo, or deleting its meal or profile, now deletes the photo
+  file too. Before, it stayed on the phone. The app says so first: removing
+  a saved photo asks before it goes, and deleting a meal with a photo or a
+  profile says its photos are deleted with it and are lost if they aren't
+  saved anywhere else.
+- A backup file can no longer make the app show another file on the phone
+  as a profile picture or meal photo.
+- Entries logged during a flare are now part of it. Each flare lists the
+  symptoms, vitals, meals, doses and activity from its dates, including
+  ones logged before this update and ones logged later for a past day.
+  Changing a flare's dates updates the list.
+
+### Security
+- _Nothing yet._
+
 ## [1.10.0] - 2026-10-14
 
 ### Added
@@ -472,7 +513,8 @@ Subsection meanings (from Keep a Changelog):
 - Offline-first guarantee: zero outbound network requests at runtime, enforced
   by the `url-scan` CI check.
 
-[Unreleased]: https://github.com/Health-Flare/app/compare/v1.10.0...HEAD
+[Unreleased]: https://github.com/Health-Flare/app/compare/v1.11.0...HEAD
+[1.11.0]: https://github.com/Health-Flare/app/compare/v1.10.0...v1.11.0
 [1.10.0]: https://github.com/Health-Flare/app/compare/v1.9.1...v1.10.0
 [1.9.1]: https://github.com/Health-Flare/app/compare/v1.9.0...v1.9.1
 [1.9.0]: https://github.com/Health-Flare/app/compare/v1.8.0...v1.9.0

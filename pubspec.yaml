@@ -2,7 +2,7 @@ name: health_flare
 description: "Health Flare: a chronic illness tracking companion."
 publish_to: 'none'
 
-version: 1.10.0+14
+version: 1.11.0+15
 
 environment:
   sdk: ^3.11.0
