@@ -16,7 +16,7 @@ Repo: https://github.com/Health-Flare/app.git
 Builds:
   - versionName: 1.11.0
     versionCode: 15
-    commit: 0000000000000000000000000000000000000000
+    commit: fd7d96c42d1b87ff3dbc02d411114c7b2a152578
     submodules: true
     sudo:
       - apt-get update
