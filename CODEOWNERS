@@ -1,0 +1,5 @@
+# CODEOWNERS
+# One maintainer today. This exists mainly so PRs get an automatic review request
+# rather than relying on someone remembering to ask.
+
+* @ahosking

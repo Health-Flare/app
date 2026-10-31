@@ -1,0 +1,42 @@
+# Health Flare
+
+> A calm, private health journal for people living with chronic illness, and the people who
+> care for them. Offline-first Flutter/Dart app for iOS, Android, macOS, Windows, Linux, and
+> web. No accounts, no cloud sync, no server of ours.
+
+Log symptoms, vitals, medications, meals, and journal entries in one place, then export a PDF
+or CSV before a medical appointment. One install can track more than one person (self, a
+child, a parent), each with separate data. Built with Flutter, Riverpod for state management,
+and Isar Community for local storage.
+
+## Start here
+
+- [README.md](README.md): what the app does, screenshots, store links
+- [CLAUDE.md](CLAUDE.md): full architecture and developer/agent reference — read this before
+  making non-trivial changes
+- [CONTRIBUTING.md](CONTRIBUTING.md): how to contribute code, and the ground rules
+- [docs/README.md](docs/README.md): index of everything else under `docs/`
+
+## Rules that apply to any change, human or agent
+
+- **Offline-first.** No new network calls, analytics, or telemetry. The one documented
+  exception is opt-in weather capture (approximate location only, never stored — see
+  `CLAUDE.md`).
+- **Feature files are the spec.** Behavior lives in `docs/features/*.feature` (Gherkin) before
+  it's built. Update the relevant `.feature` file as part of a behavior change, not after.
+- **Privacy copy is precise.** Never say data "never leaves the device" — OS backups
+  (iCloud/Google) include it, by design. `test/unit/privacy_claims_test.dart` enforces this.
+
+## Key docs
+
+- [docs/development.md](docs/development.md): day-to-day build/test/ship workflow
+- [docs/design-system.md](docs/design-system.md): UI conventions
+- [docs/requirements.md](docs/requirements.md): product requirements
+- [docs/features/](docs/features/): Gherkin feature files, one per app area
+- [SECURITY.md](SECURITY.md): how to report a vulnerability (do not open a public issue)
+- [CHANGELOG.md](CHANGELOG.md): release history
+
+## Not the source of truth
+
+`docs/archive/` holds superseded planning docs, kept for history only. Don't treat anything
+there as current behavior or policy.
