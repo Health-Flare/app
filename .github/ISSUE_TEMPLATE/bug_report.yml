@@ -1,6 +1,6 @@
 name: Bug report
 description: Something in the app isn't working as expected
-labels: ["type:fix"]
+labels: ["bug"]
 body:
   - type: markdown
     attributes:
