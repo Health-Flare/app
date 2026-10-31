@@ -35,6 +35,13 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       native: ${{ steps.filter.outputs.native }}
+      # Anything that can affect analysis, formatting, or test/build output.
+      # A PR that only touches docs/metadata (README, docs/*.md, AGENTS.md,
+      # llms.txt, CODEOWNERS, issue templates, screenshots...) sets this
+      # false, which skips the Flutter toolchain jobs below entirely rather
+      # than running them for no reason. Keep this list as-broad-as-native
+      # plus the Dart/asset/tooling paths those jobs actually read.
+      code: ${{ steps.filter.outputs.code }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -54,11 +61,28 @@ jobs:
               - 'scripts/check_macos_icon.sh'
               - '.github/workflows/ci.yml'
               - '.github/workflows/build.yml'
+            code:
+              - 'lib/**'
+              - 'test/**'
+              - 'test_driver/**'
+              - 'integration_test/**'
+              - 'tool/**'
+              - 'tools/**'
+              - 'scripts/**'
+              - 'third_party/**'
+              - 'assets/**'
+              - 'pubspec.yaml'
+              - 'pubspec.lock'
+              - 'analysis_options.yaml'
+              - '.github/workflows/ci.yml'
+              - '.github/workflows/build.yml'
 
   # ── 1. Dependencies ───────────────────────────────────────────────────────
   flutter-pub-get:
     name: Dependencies
     runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -85,6 +109,8 @@ jobs:
   url-scan:
     name: Offline integrity scan
     runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -111,6 +137,8 @@ jobs:
   isar-pin:
     name: Isar source pin
     runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -122,7 +150,8 @@ jobs:
   dart-format:
     name: Formatting
     runs-on: ubuntu-latest
-    needs: flutter-pub-get
+    needs: [changes, flutter-pub-get]
+    if: needs.changes.outputs.code == 'true'
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -139,7 +168,8 @@ jobs:
   flutter-analyze:
     name: Static analysis
     runs-on: ubuntu-latest
-    needs: flutter-pub-get
+    needs: [changes, flutter-pub-get]
+    if: needs.changes.outputs.code == 'true'
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -156,7 +186,8 @@ jobs:
   flutter-test:
     name: Tests
     runs-on: ubuntu-latest
-    needs: flutter-pub-get
+    needs: [changes, flutter-pub-get]
+    if: needs.changes.outputs.code == 'true'
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -177,6 +208,8 @@ jobs:
   tool-packages:
     name: Tool packages
     runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -209,14 +242,19 @@ jobs:
   gates:
     name: CI gates
     runs-on: ubuntu-latest
-    needs: [flutter-pub-get, url-scan, isar-pin, dart-format, flutter-analyze, flutter-test, tool-packages]
+    needs: [changes, flutter-pub-get, url-scan, isar-pin, dart-format, flutter-analyze, flutter-test, tool-packages]
     if: always() && github.event_name != 'schedule'
     steps:
+      # 'skipped' is expected now, not a failure: every gate job below is
+      # conditional on `changes.outputs.code`, so a docs/metadata-only PR
+      # (README, docs/*.md, AGENTS.md, llms.txt, CODEOWNERS, issue
+      # templates...) skips all of them on purpose. Only treat a gate as
+      # not passed if it actually ran and failed, or was cancelled.
       - name: All gates passed
-        if: ${{ !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') && !contains(needs.*.result, 'skipped') }}
+        if: ${{ !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') }}
         run: echo "All gates passed."
       - name: A gate failed
-        if: ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') || contains(needs.*.result, 'skipped') }}
+        if: ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}
         run: |
           echo "One or more gates did not pass: ${{ join(needs.*.result, ', ') }}"
           exit 1
