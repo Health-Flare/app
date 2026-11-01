@@ -92,13 +92,16 @@ class _VitalEntryFormScreenState extends ConsumerState<VitalEntryFormScreen> {
     }
   }
 
-  /// New temperature entries start in the profile's temperature unit;
+  /// New temperature and height entries start in the profile's display unit;
   /// everything else (and "As logged") starts in the type's default.
   String _defaultUnitFor(VitalType t) {
-    final preferred = ref.read(activeProfileDataProvider)?.temperatureUnit;
-    if (t == VitalType.temperature &&
-        preferred != null &&
-        t.availableUnits.contains(preferred)) {
+    final profile = ref.read(activeProfileDataProvider);
+    final preferred = switch (t) {
+      VitalType.temperature => profile?.temperatureUnit,
+      VitalType.height => profile?.heightUnit,
+      _ => null,
+    };
+    if (preferred != null && t.availableUnits.contains(preferred)) {
       return preferred;
     }
     return t.defaultUnit;

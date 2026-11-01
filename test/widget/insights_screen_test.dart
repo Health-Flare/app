@@ -161,7 +161,11 @@ void main() {
       ],
     );
 
-    Widget build(Profile profile, List<String?> unitsAsked) => ProviderScope(
+    Widget build(
+      Profile profile,
+      List<String?> unitsAsked, [
+      List<String?>? heightUnitsAsked,
+    ]) => ProviderScope(
       overrides: [
         activeProfileProvider.overrideWith(_FakeActiveProfile.new),
         profileListProvider.overrideWith(_FakeProfileList.new),
@@ -172,8 +176,10 @@ void main() {
           required start,
           required end,
           temperatureUnit,
+          heightUnit,
         }) async {
           unitsAsked.add(temperatureUnit);
+          heightUnitsAsked?.add(heightUnit);
           return vitalsOnly(temperatureUnit ?? '°C');
         }),
       ],
@@ -202,6 +208,21 @@ void main() {
 
       expect(asked, ['°F']);
       expect(find.textContaining('Temperature in °F'), findsOneWidget);
+    });
+
+    testWidgets('passes the profile height unit to the query', (tester) async {
+      final temperaturesAsked = <String?>[];
+      final heightsAsked = <String?>[];
+      await tester.pumpWidget(
+        build(
+          Profile(id: 1, name: 'Ethan', heightUnit: 'in'),
+          temperaturesAsked,
+          heightsAsked,
+        ),
+      );
+      await tester.pump(const Duration(milliseconds: 100));
+
+      expect(heightsAsked, ['in']);
     });
 
     testWidgets('"As logged" passes no unit', (tester) async {

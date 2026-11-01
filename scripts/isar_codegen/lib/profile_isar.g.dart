@@ -52,23 +52,28 @@ const ProfileIsarSchema = CollectionSchema(
       name: r'firstLogShown',
       type: IsarType.bool,
     ),
-    r'name': PropertySchema(
+    r'heightUnit': PropertySchema(
       id: 7,
+      name: r'heightUnit',
+      type: IsarType.string,
+    ),
+    r'name': PropertySchema(
+      id: 8,
       name: r'name',
       type: IsarType.string,
     ),
     r'temperatureUnit': PropertySchema(
-      id: 8,
+      id: 9,
       name: r'temperatureUnit',
       type: IsarType.string,
     ),
     r'weatherOptInShown': PropertySchema(
-      id: 9,
+      id: 10,
       name: r'weatherOptInShown',
       type: IsarType.bool,
     ),
     r'weatherTrackingEnabled': PropertySchema(
-      id: 10,
+      id: 11,
       name: r'weatherTrackingEnabled',
       type: IsarType.bool,
     )
@@ -106,6 +111,12 @@ int _profileIsarEstimateSize(
       bytesCount += value.length * 3;
     }
   }
+  {
+    final value = object.heightUnit;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
   bytesCount += 3 + object.name.length * 3;
   {
     final value = object.temperatureUnit;
@@ -129,10 +140,11 @@ void _profileIsarSerialize(
   writer.writeDateTime(offsets[4], object.dateOfBirth);
   writer.writeStringList(offsets[5], object.disabledFeatureIds);
   writer.writeBool(offsets[6], object.firstLogShown);
-  writer.writeString(offsets[7], object.name);
-  writer.writeString(offsets[8], object.temperatureUnit);
-  writer.writeBool(offsets[9], object.weatherOptInShown);
-  writer.writeBool(offsets[10], object.weatherTrackingEnabled);
+  writer.writeString(offsets[7], object.heightUnit);
+  writer.writeString(offsets[8], object.name);
+  writer.writeString(offsets[9], object.temperatureUnit);
+  writer.writeBool(offsets[10], object.weatherOptInShown);
+  writer.writeBool(offsets[11], object.weatherTrackingEnabled);
 }
 
 ProfileIsar _profileIsarDeserialize(
@@ -149,11 +161,12 @@ ProfileIsar _profileIsarDeserialize(
   object.dateOfBirth = reader.readDateTimeOrNull(offsets[4]);
   object.disabledFeatureIds = reader.readStringList(offsets[5]) ?? [];
   object.firstLogShown = reader.readBool(offsets[6]);
+  object.heightUnit = reader.readStringOrNull(offsets[7]);
   object.id = id;
-  object.name = reader.readString(offsets[7]);
-  object.temperatureUnit = reader.readStringOrNull(offsets[8]);
-  object.weatherOptInShown = reader.readBool(offsets[9]);
-  object.weatherTrackingEnabled = reader.readBool(offsets[10]);
+  object.name = reader.readString(offsets[8]);
+  object.temperatureUnit = reader.readStringOrNull(offsets[9]);
+  object.weatherOptInShown = reader.readBool(offsets[10]);
+  object.weatherTrackingEnabled = reader.readBool(offsets[11]);
   return object;
 }
 
@@ -179,12 +192,14 @@ P _profileIsarDeserializeProp<P>(
     case 6:
       return (reader.readBool(offset)) as P;
     case 7:
-      return (reader.readString(offset)) as P;
-    case 8:
       return (reader.readStringOrNull(offset)) as P;
+    case 8:
+      return (reader.readString(offset)) as P;
     case 9:
-      return (reader.readBool(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 10:
+      return (reader.readBool(offset)) as P;
+    case 11:
       return (reader.readBool(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -843,6 +858,160 @@ extension ProfileIsarQueryFilter
     });
   }
 
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
+      heightUnitIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'heightUnit',
+      ));
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
+      heightUnitIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'heightUnit',
+      ));
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
+      heightUnitEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'heightUnit',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
+      heightUnitGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'heightUnit',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
+      heightUnitLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'heightUnit',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
+      heightUnitBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'heightUnit',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
+      heightUnitStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'heightUnit',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
+      heightUnitEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'heightUnit',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
+      heightUnitContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'heightUnit',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
+      heightUnitMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'heightUnit',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
+      heightUnitIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'heightUnit',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition>
+      heightUnitIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'heightUnit',
+        value: '',
+      ));
+    });
+  }
+
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterFilterCondition> idEqualTo(
       Id value) {
     return QueryBuilder.apply(this, (query) {
@@ -1287,6 +1456,18 @@ extension ProfileIsarQuerySortBy
     });
   }
 
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy> sortByHeightUnit() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'heightUnit', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy> sortByHeightUnitDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'heightUnit', Sort.desc);
+    });
+  }
+
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy> sortByName() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'name', Sort.asc);
@@ -1420,6 +1601,18 @@ extension ProfileIsarQuerySortThenBy
     });
   }
 
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy> thenByHeightUnit() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'heightUnit', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy> thenByHeightUnitDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'heightUnit', Sort.desc);
+    });
+  }
+
   QueryBuilder<ProfileIsar, ProfileIsar, QAfterSortBy> thenById() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.asc);
@@ -1534,6 +1727,13 @@ extension ProfileIsarQueryWhereDistinct
     });
   }
 
+  QueryBuilder<ProfileIsar, ProfileIsar, QDistinct> distinctByHeightUnit(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'heightUnit', caseSensitive: caseSensitive);
+    });
+  }
+
   QueryBuilder<ProfileIsar, ProfileIsar, QDistinct> distinctByName(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -1614,6 +1814,12 @@ extension ProfileIsarQueryProperty
   QueryBuilder<ProfileIsar, bool, QQueryOperations> firstLogShownProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'firstLogShown');
+    });
+  }
+
+  QueryBuilder<ProfileIsar, String?, QQueryOperations> heightUnitProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'heightUnit');
     });
   }
 

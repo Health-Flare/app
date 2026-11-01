@@ -150,7 +150,7 @@ void main() {
         (await isar.doseLogIsars.where().findFirst())!.flareIsarId,
         isNull,
       );
-      expect((await isar.appSettings.get(1))!.schemaVersion, 24);
+      expect((await isar.appSettings.get(1))!.schemaVersion, 25);
     });
 
     test('keeps a link the rule would not give, as a pin', () async {

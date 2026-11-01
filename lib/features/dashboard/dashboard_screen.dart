@@ -142,6 +142,9 @@ class _DashboardBody extends ConsumerWidget {
     final temperatureUnit = ref.watch(
       activeProfileDataProvider.select((p) => p?.temperatureUnit),
     );
+    final heightUnit = ref.watch(
+      activeProfileDataProvider.select((p) => p?.heightUnit),
+    );
 
     if (!hasActivity) {
       // Scrolls when the cards and large text don't fit (200% text filled
@@ -204,7 +207,11 @@ class _DashboardBody extends ConsumerWidget {
     return ListView(
       children: [
         ..._featureCards,
-        DashboardActivityFeed(items: items, temperatureUnit: temperatureUnit),
+        DashboardActivityFeed(
+          items: items,
+          temperatureUnit: temperatureUnit,
+          heightUnit: heightUnit,
+        ),
       ],
     );
   }

@@ -53,6 +53,7 @@ void main() {
       'cycleTrackingEnabled': sarah.copyWith(cycleTrackingEnabled: true),
       'bowelTrackingEnabled': sarah.copyWith(bowelTrackingEnabled: true),
       'temperatureUnit': sarah.copyWith(temperatureUnit: '°F'),
+      'heightUnit': sarah.copyWith(heightUnit: 'in'),
       'disabledFeatureIds': sarah.copyWith(disabledFeatureIds: const []),
     };
     for (final MapEntry(:key, :value) in changes.entries) {

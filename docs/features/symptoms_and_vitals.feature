@@ -154,6 +154,42 @@ Feature: Symptom and Vitals Logging
     When I view the vitals log
     Then the entry shows "100.4 °F"
 
+  # Height unit preference (issue #86) is display-only. Saved values retain
+  # the unit in which they were entered.
+
+  Scenario: New height entries start in the profile's unit
+    Given "Sarah"'s height unit is "in"
+    When I open the new vital entry screen
+    And I select "Height" as the vital type
+    Then the unit is "in"
+    And I can still change it to "cm" for this entry
+
+  Scenario: New height entries start in cm when the unit is "As logged"
+    Given "Sarah"'s height unit is "As logged"
+    When I open the new vital entry screen
+    And I select "Height" as the vital type
+    Then the unit is "cm"
+
+  Scenario: The vitals list shows heights in the profile's unit
+    Given "Sarah"'s height unit is "in"
+    And she logged a height of 170 cm
+    When I view the vitals log
+    Then the entry shows "66.9 in"
+
+  Scenario: The vitals list shows heights as logged when no unit is chosen
+    Given "Sarah"'s height unit is "As logged"
+    And she logged a height of 170 cm
+    When I view the vitals log
+    Then the entry shows "170 cm"
+
+  Scenario: Editing and exporting height keeps the reading as logged
+    Given "Sarah"'s height unit is "in"
+    And she logged a height of 170 cm
+    When I edit that entry
+    Then the value field shows "170" and the unit is "cm"
+    When I export a report as CSV including vitals
+    Then the height row shows 170 in cm
+
   Scenario: Editing a reading shows the value that was saved
     Given "Sarah"'s temperature unit is "°C"
     And she logged a temperature of 100.4 °F

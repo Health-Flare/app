@@ -903,6 +903,7 @@ class _Ctx {
         ..cycleTrackingEnabled = bp.cycleTrackingEnabled
         ..bowelTrackingEnabled = bp.bowelTrackingEnabled
         ..temperatureUnit = bp.temperatureUnit
+        ..heightUnit = bp.heightUnit
         ..disabledFeatureIds = List.of(bp.disabledFeatureIds);
       await main.writeTxn(() async {
         newProfile.id = await nextProfileId(main);

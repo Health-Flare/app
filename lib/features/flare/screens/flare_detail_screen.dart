@@ -41,6 +41,9 @@ class FlareDetailScreen extends ConsumerWidget {
     final temperatureUnit = ref.watch(
       activeProfileDataProvider.select((p) => p?.temperatureUnit),
     );
+    final heightUnit = ref.watch(
+      activeProfileDataProvider.select((p) => p?.heightUnit),
+    );
 
     // Entries during this flare, worked out from their time (#173).
     final entries = ref.watch(flareEntriesProvider(flareId));
@@ -144,6 +147,7 @@ class FlareDetailScreen extends ConsumerWidget {
                 (ctx, i) => _VitalTile(
                   entry: vitals[i],
                   temperatureUnit: temperatureUnit,
+                  heightUnit: heightUnit,
                 ),
                 childCount: vitals.length,
               ),
@@ -553,9 +557,14 @@ class _SymptomTile extends StatelessWidget {
 }
 
 class _VitalTile extends StatelessWidget {
-  const _VitalTile({required this.entry, this.temperatureUnit});
+  const _VitalTile({
+    required this.entry,
+    this.temperatureUnit,
+    this.heightUnit,
+  });
   final VitalEntry entry;
   final String? temperatureUnit;
+  final String? heightUnit;
 
   @override
   Widget build(BuildContext context) {
@@ -572,7 +581,7 @@ class _VitalTile extends StatelessWidget {
       ),
       title: Text(entry.vitalType.label),
       subtitle: Text(
-        '${entry.displayValueIn(temperatureUnit: temperatureUnit)} · '
+        '${entry.displayValueIn(temperatureUnit: temperatureUnit, heightUnit: heightUnit)} · '
         '${fmt.format(entry.loggedAt)}',
       ),
       dense: true,

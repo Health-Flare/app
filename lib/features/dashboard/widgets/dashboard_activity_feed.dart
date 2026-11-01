@@ -15,6 +15,7 @@ class DashboardActivityFeed extends StatelessWidget {
     super.key,
     required this.items,
     this.temperatureUnit,
+    this.heightUnit,
   });
 
   final List<ActivityItem> items;
@@ -22,6 +23,9 @@ class DashboardActivityFeed extends StatelessWidget {
   /// The active profile's temperature unit ('°C', '°F', or null for as
   /// logged). Display only.
   final String? temperatureUnit;
+
+  /// The active profile's height unit ('cm', 'in', or null for as logged).
+  final String? heightUnit;
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +92,7 @@ class DashboardActivityFeed extends StatelessWidget {
         title: Text(entry.vitalType.label),
         subtitle: Text(
           '${_formatDate(item.timestamp)} · '
-          '${entry.displayValueIn(temperatureUnit: temperatureUnit)}',
+          '${entry.displayValueIn(temperatureUnit: temperatureUnit, heightUnit: heightUnit)}',
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
