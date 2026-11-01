@@ -134,6 +134,7 @@ class ProfileListNotifier extends Notifier<List<Profile>> {
         ..cycleTrackingEnabled = updated.cycleTrackingEnabled
         ..bowelTrackingEnabled = updated.bowelTrackingEnabled
         ..temperatureUnit = updated.temperatureUnit
+        ..heightUnit = updated.heightUnit
         ..disabledFeatureIds = List.of(updated.disabledFeatureIds);
       await isar.profileIsars.put(existing);
     });

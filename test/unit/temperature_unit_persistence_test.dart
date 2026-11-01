@@ -86,7 +86,9 @@ void main() {
 
       final row = await isar.profileIsars.get(id);
       expect(row!.temperatureUnit, isNull);
+      expect(row.heightUnit, isNull);
       expect(row.toDomain().temperatureUnit, isNull);
+      expect(row.toDomain().heightUnit, isNull);
     });
 
     test('the unit is saved and read back', () async {
@@ -96,13 +98,34 @@ void main() {
         () => isar.profileIsars.put(
           ProfileIsar()
             ..name = 'Sarah'
-            ..temperatureUnit = '°F',
+            ..temperatureUnit = '°F'
+            ..heightUnit = 'in',
         ),
       );
 
       final row = await isar.profileIsars.get(id);
       expect(row!.temperatureUnit, '°F');
+      expect(row.heightUnit, 'in');
       expect(row.toDomain().temperatureUnit, '°F');
+      expect(row.toDomain().heightUnit, 'in');
+    });
+
+    test('height unit survives closing and reopening the database', () async {
+      final name = 'height_unit_reopen_${_uid()}';
+      final isar = await _openIsar(name: name);
+      await isar.writeTxn(
+        () => isar.profileIsars.put(
+          ProfileIsar()
+            ..name = 'Sarah'
+            ..heightUnit = 'in',
+        ),
+      );
+      await isar.close();
+
+      final reopened = await _openIsar(name: name);
+      addTearDown(() => reopened.close(deleteFromDisk: true));
+      final profile = (await reopened.profileIsars.where().findAll()).single;
+      expect(profile.toDomain().heightUnit, 'in');
     });
 
     test('ProfileListNotifier.update persists the unit', () async {
@@ -118,9 +141,17 @@ void main() {
 
       await container
           .read(profileListProvider.notifier)
-          .update(Profile(id: id, name: 'Sarah', temperatureUnit: '°C'));
+          .update(
+            Profile(
+              id: id,
+              name: 'Sarah',
+              temperatureUnit: '°C',
+              heightUnit: 'in',
+            ),
+          );
 
       expect((await isar.profileIsars.get(id))!.temperatureUnit, '°C');
+      expect((await isar.profileIsars.get(id))!.heightUnit, 'in');
     });
 
     test('a reload finishing after dispose does not throw', () async {
@@ -215,7 +246,7 @@ void main() {
 
       await MigrationRunner.run(isar);
 
-      expect((await isar.appSettings.get(1))!.schemaVersion, 24);
+      expect((await isar.appSettings.get(1))!.schemaVersion, 25);
     });
 
     test('v16 → v17 keeps existing profiles at "As logged"', () async {
@@ -235,6 +266,26 @@ void main() {
       final p = (await isar.profileIsars.where().findAll()).single;
       expect(p.name, 'Sarah');
       expect(p.temperatureUnit, isNull);
+      expect(p.heightUnit, isNull);
+    });
+
+    test('v24 → v25 keeps existing profiles at "As logged"', () async {
+      final isar = await _openIsar();
+      addTearDown(() => isar.close(deleteFromDisk: true));
+      await isar.writeTxn(() async {
+        await isar.appSettings.put(
+          AppSettings()
+            ..id = 1
+            ..schemaVersion = 24,
+        );
+        await isar.profileIsars.put(ProfileIsar()..name = 'Sarah');
+      });
+
+      await MigrationRunner.run(isar);
+
+      expect((await isar.appSettings.get(1))!.schemaVersion, 25);
+      final profile = (await isar.profileIsars.where().findAll()).single;
+      expect(profile.heightUnit, isNull);
     });
   });
 

@@ -44,22 +44,27 @@ class VitalEntry {
     return '$formatted $unit';
   }
 
-  /// [displayValue] with temperatures converted to [temperatureUnit]
-  /// ('°C' or '°F'). Null, or the reading's own unit, shows it as logged.
-  /// Other vital types are always shown as logged.
-  String displayValueIn({String? temperatureUnit}) {
-    if (vitalType != VitalType.temperature ||
-        temperatureUnit == null ||
-        temperatureUnit == unit ||
-        !vitalType.availableUnits.contains(temperatureUnit)) {
+  /// [displayValue] with temperature or height converted to the profile's
+  /// display unit. Null shows the reading as logged. Other vital types are
+  /// always shown as logged.
+  String displayValueIn({String? temperatureUnit, String? heightUnit}) {
+    final preferredUnit = switch (vitalType) {
+      VitalType.temperature => temperatureUnit,
+      VitalType.height => heightUnit,
+      _ => null,
+    };
+    if (preferredUnit == null ||
+        !vitalType.availableUnits.contains(preferredUnit) ||
+        (vitalType == VitalType.temperature && preferredUnit == unit)) {
       return displayValue;
     }
-    final converted = VitalUnits.convert(
-      value,
-      from: unit,
-      to: temperatureUnit,
-    );
-    return '${converted.toStringAsFixed(1)} $temperatureUnit';
+    final converted = VitalUnits.convert(value, from: unit, to: preferredUnit);
+    final decimals = switch ((vitalType, preferredUnit)) {
+      (VitalType.height, 'cm') => 0,
+      (VitalType.height, 'in') => 1,
+      _ => 1,
+    };
+    return '${converted.toStringAsFixed(decimals)} $preferredUnit';
   }
 
   VitalEntry copyWith({

@@ -21,6 +21,7 @@ class Profile {
     this.cycleTrackingEnabled = false,
     this.bowelTrackingEnabled = false,
     this.temperatureUnit,
+    this.heightUnit,
     this.disabledFeatureIds = const [],
   });
 
@@ -57,6 +58,10 @@ class Profile {
   /// Unit temperatures are shown in for this profile: '°C', '°F', or null
   /// for "As logged". Display only: readings keep the unit they were saved in.
   final String? temperatureUnit;
+
+  /// Unit heights are shown in for this profile: 'cm', 'in', or null for
+  /// "As logged". Display only: readings keep the unit they were saved in.
+  final String? heightUnit;
 
   /// Features in use (#137): ids from `navFeatures` turned off for this
   /// profile. Stores what's off, so a feature added later is on.
@@ -100,8 +105,10 @@ class Profile {
     bool? cycleTrackingEnabled,
     bool? bowelTrackingEnabled,
     String? temperatureUnit,
+    String? heightUnit,
     List<String>? disabledFeatureIds,
     bool clearTemperatureUnit = false,
+    bool clearHeightUnit = false,
     bool clearDateOfBirth = false,
     bool clearAvatar = false,
   }) {
@@ -118,6 +125,7 @@ class Profile {
       temperatureUnit: clearTemperatureUnit
           ? null
           : (temperatureUnit ?? this.temperatureUnit),
+      heightUnit: clearHeightUnit ? null : (heightUnit ?? this.heightUnit),
       disabledFeatureIds: disabledFeatureIds ?? this.disabledFeatureIds,
     );
   }
@@ -142,6 +150,7 @@ class Profile {
           other.cycleTrackingEnabled == cycleTrackingEnabled &&
           other.bowelTrackingEnabled == bowelTrackingEnabled &&
           other.temperatureUnit == temperatureUnit &&
+          other.heightUnit == heightUnit &&
           listEquals(other.disabledFeatureIds, disabledFeatureIds));
 
   @override

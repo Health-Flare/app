@@ -46,6 +46,10 @@ class ProfileIsar {
   /// Display only: vital readings keep the unit they were saved in.
   String? temperatureUnit;
 
+  /// Unit heights are shown in: 'cm', 'in', or null for "As logged".
+  /// Display only; vital readings keep the unit they were saved in.
+  String? heightUnit;
+
   /// Features in use (#137): ids from `navFeatures` turned off for this
   /// profile. Stores what's off, so a feature added later is on, and a row
   /// from before v21 reads as empty: everything on.
@@ -64,6 +68,7 @@ class ProfileIsar {
     cycleTrackingEnabled: cycleTrackingEnabled,
     bowelTrackingEnabled: bowelTrackingEnabled,
     temperatureUnit: temperatureUnit,
+    heightUnit: heightUnit,
     disabledFeatureIds: List.unmodifiable(disabledFeatureIds),
   );
 
@@ -83,5 +88,6 @@ class ProfileIsar {
     ..cycleTrackingEnabled = p.cycleTrackingEnabled
     ..bowelTrackingEnabled = p.bowelTrackingEnabled
     ..temperatureUnit = p.temperatureUnit
+    ..heightUnit = p.heightUnit
     ..disabledFeatureIds = List.of(p.disabledFeatureIds);
 }

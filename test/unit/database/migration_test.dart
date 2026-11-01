@@ -126,7 +126,7 @@ void main() {
 
       final settings = await isar.appSettings.get(1);
       expect(settings, isNotNull);
-      expect(settings!.schemaVersion, 24);
+      expect(settings!.schemaVersion, 25);
     });
 
     test('v2 migration seeds condition catalogue', () async {
@@ -178,7 +178,7 @@ void main() {
       expect(countAfter, countBefore);
 
       final settings = await isar.appSettings.get(1);
-      expect(settings!.schemaVersion, 24);
+      expect(settings!.schemaVersion, 25);
     });
 
     test('migration from v1 preserves existing profiles', () async {
@@ -208,7 +208,7 @@ void main() {
       expect(profiles.first.name, 'Test User');
 
       final settings = await isar.appSettings.get(1);
-      expect(settings!.schemaVersion, 24);
+      expect(settings!.schemaVersion, 25);
     });
 
     test(

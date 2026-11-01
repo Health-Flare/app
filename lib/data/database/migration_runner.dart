@@ -57,6 +57,7 @@ import 'package:health_flare/models/flare_membership.dart';
 /// Schema v24 = no schema change (#105): photo paths become names in
 ///              `<documents>/photos`. Older photos still there are copied in;
 ///              missing or non-image ones are dropped.
+/// Schema v25 = ProfileIsar.heightUnit (nullable, display preference).
 ///
 /// How to add a future migration:
 ///   1. Increment [_targetVersion].
@@ -70,7 +71,7 @@ import 'package:health_flare/models/flare_membership.dart';
 class MigrationRunner {
   MigrationRunner._();
 
-  static const int _targetVersion = 24;
+  static const int _targetVersion = 25;
 
   /// The schema version a full upgrade reaches.
   static int get targetVersion => _targetVersion;
@@ -395,6 +396,16 @@ class MigrationRunner {
         }
         final s = await isar.appSettings.get(1) ?? (AppSettings()..id = 1);
         s.schemaVersion = 24;
+        await isar.appSettings.put(s);
+      });
+    }
+
+    // ── v24 → v25: ProfileIsar gains heightUnit ──────────────────────────
+    // Nullable; null means "As logged". Existing height readings stay as saved.
+    if (currentVersion < 25) {
+      await isar.writeTxn(() async {
+        final s = await isar.appSettings.get(1) ?? (AppSettings()..id = 1);
+        s.schemaVersion = 25;
         await isar.appSettings.put(s);
       });
     }

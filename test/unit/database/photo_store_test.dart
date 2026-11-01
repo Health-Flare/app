@@ -22,6 +22,7 @@ import 'package:health_flare/data/database/import_service.dart';
 import 'package:health_flare/data/database/migration_runner.dart';
 import 'package:health_flare/data/models/meal_entry_isar.dart';
 import 'package:health_flare/data/models/profile_isar.dart';
+
 import '../../helpers/isar_core.dart';
 
 class _FakePathProvider
@@ -452,7 +453,7 @@ void main() {
       final stored = (await isar.profileIsars.get(1))!.avatarPath;
       expect(stored, matches(_managedName));
       expect(File('${docs.path}/photos/$stored').readAsBytesSync(), _jpeg);
-      expect((await isar.appSettings.get(1))!.schemaVersion, 24);
+      expect((await isar.appSettings.get(1))!.schemaVersion, 25);
     });
 
     test('a photo the OS already cleared is dropped', () async {

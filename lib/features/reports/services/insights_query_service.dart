@@ -23,6 +23,7 @@ typedef InsightsQuery =
       required DateTime start,
       required DateTime end,
       String? temperatureUnit,
+      String? heightUnit,
     });
 
 final insightsQueryProvider = Provider<InsightsQuery>(
@@ -32,12 +33,14 @@ final insightsQueryProvider = Provider<InsightsQuery>(
         required DateTime start,
         required DateTime end,
         String? temperatureUnit,
+        String? heightUnit,
       }) => InsightsQueryService.query(
         isar: ref.read(isarProvider),
         profileId: profileId,
         start: start,
         end: end,
         temperatureUnit: temperatureUnit,
+        heightUnit: heightUnit,
       ),
 );
 
@@ -49,6 +52,7 @@ abstract final class InsightsQueryService {
     required DateTime start,
     required DateTime end,
     String? temperatureUnit,
+    String? heightUnit,
   }) async {
     final windowStart = _startOfDay(start);
     final windowEnd = _endOfDay(end);
@@ -266,9 +270,13 @@ abstract final class InsightsQueryService {
       if (entries == null || entries.isEmpty) continue;
       entries.sort((a, b) => a.loggedAt.compareTo(b.loggedAt));
 
-      // Chart unit: the profile's preference for temperature, otherwise the
-      // unit of the most recent reading. Display only; rows are untouched.
-      final preferred = type == VitalType.temperature ? temperatureUnit : null;
+      // Chart unit: the profile's temperature or height preference, otherwise
+      // the unit of the most recent reading. Rows are never changed.
+      final preferred = switch (type) {
+        VitalType.temperature => temperatureUnit,
+        VitalType.height => heightUnit,
+        _ => null,
+      };
       final unit =
           (preferred != null && type.availableUnits.contains(preferred))
           ? preferred

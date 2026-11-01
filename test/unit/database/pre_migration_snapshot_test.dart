@@ -202,7 +202,7 @@ void main() {
 
       // The live database was migrated: the orphaned entry is gone.
       expect(await _bodies(isar), ['Rough morning']);
-      expect((await isar.appSettings.get(1))!.schemaVersion, 24);
+      expect((await isar.appSettings.get(1))!.schemaVersion, 25);
 
       // The snapshot still holds the data exactly as it was before.
       final copy = await Isar.open(
@@ -227,7 +227,7 @@ void main() {
       expect(result.outcome, MigrationOutcome.upToDate);
       expect(writes, 0);
       expect(_snapshotFiles(docs.path), isEmpty);
-      expect((await isar.appSettings.get(1))!.schemaVersion, 24);
+      expect((await isar.appSettings.get(1))!.schemaVersion, 25);
     });
 
     test('an up-to-date database takes no snapshot', () async {

@@ -659,15 +659,15 @@ void main() {
       },
     );
 
-    // Issue #83: the per-profile temperature unit must carry over when a
-    // profile is merged in from a backup ("Add missing data").
-    test('merge: a profile keeps its temperature unit', () async {
+    // Display preferences carry over when a profile is merged from a backup.
+    test('merge: a profile keeps its temperature and height units', () async {
       final source = await _openIsar('import_temp_unit_source_${_uid()}');
       await source.writeTxn(
         () => source.profileIsars.put(
           ProfileIsar()
             ..name = 'Sarah'
-            ..temperatureUnit = '°F',
+            ..temperatureUnit = '°F'
+            ..heightUnit = 'in',
         ),
       );
       final path = await BackupService.export(source);
@@ -679,6 +679,7 @@ void main() {
       expect(added, 1);
       final profiles = await main.profileIsars.where().findAll();
       expect(profiles.single.temperatureUnit, '°F');
+      expect(profiles.single.heightUnit, 'in');
     });
 
     // Issue #137: features turned off for a profile stay off when it's

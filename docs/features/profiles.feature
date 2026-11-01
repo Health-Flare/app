@@ -128,6 +128,31 @@ Feature: Profile Management
     When I export a backup and import it on another device
     Then "Sarah"'s temperature unit is "°F"
 
+  # Height unit (issue #86). This setting affects display only.
+
+  Scenario: A new profile shows heights as they were logged
+    Given I have created a profile named "Sarah"
+    When I edit the profile "Sarah"
+    Then the height unit is set to "As logged"
+
+  Scenario Outline: Choose a height unit for a profile
+    When I edit the profile "Sarah"
+    And I set the height unit to "<unit>"
+    And I save the changes
+    Then "Sarah"'s height unit is "<unit>"
+    And the setting is still "<unit>" after restarting the app
+
+    Examples:
+      | unit      |
+      | cm        |
+      | in        |
+      | As logged |
+
+  Scenario: The height unit carries over in a backup
+    Given "Sarah"'s height unit is "in"
+    When I export a backup and import it on another device
+    Then "Sarah"'s height unit is "in"
+
   Scenario: Change a profile avatar
     Given a profile named "Sarah" exists with no avatar
     When I open the profile settings for "Sarah"

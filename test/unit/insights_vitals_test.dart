@@ -60,13 +60,17 @@ Future<void> _addVital(
   });
 }
 
-Future<InsightData> _query(Isar isar, {int profileId = _sarah}) =>
-    InsightsQueryService.query(
-      isar: isar,
-      profileId: profileId,
-      start: _start,
-      end: _end,
-    );
+Future<InsightData> _query(
+  Isar isar, {
+  int profileId = _sarah,
+  String? heightUnit,
+}) => InsightsQueryService.query(
+  isar: isar,
+  profileId: profileId,
+  start: _start,
+  end: _end,
+  heightUnit: heightUnit,
+);
 
 VitalTrend? _trend(InsightData data, VitalType type) {
   for (final t in data.vitalTrends) {
@@ -118,6 +122,36 @@ void main() {
         VitalType.weight,
       });
     });
+
+    test(
+      'height readings use the profile unit without changing stored rows',
+      () async {
+        await _addVital(
+          isar,
+          type: VitalType.height,
+          value: 170,
+          unit: 'cm',
+          at: DateTime(2026, 9, 10),
+        );
+        await _addVital(
+          isar,
+          type: VitalType.height,
+          value: 68,
+          unit: 'in',
+          at: DateTime(2026, 9, 11),
+        );
+
+        final data = await _query(isar, heightUnit: 'in');
+
+        final height = _trend(data, VitalType.height)!;
+        expect(height.unit, 'in');
+        expect(height.points.first.value, closeTo(170 / 2.54, 1e-9));
+        expect(height.points.last.value, 68);
+        final saved = await isar.vitalEntryIsars.where().findAll();
+        expect(saved.map((e) => e.unit), ['cm', 'in']);
+        expect(saved.map((e) => e.value), [170, 68]);
+      },
+    );
 
     test('same-day readings stay separate, at their logged time', () async {
       final morning = DateTime(2026, 9, 15, 8);

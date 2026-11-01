@@ -37,6 +37,9 @@ class ProfileIsar {
   /// Unit temperatures are shown in: '°C', '°F', or null for "As logged".
   String? temperatureUnit;
 
+  /// Unit heights are shown in: 'cm', 'in', or null for "As logged".
+  String? heightUnit;
+
   /// Features in use (#137): ids turned off for this profile.
   List<String> disabledFeatureIds = [];
 }

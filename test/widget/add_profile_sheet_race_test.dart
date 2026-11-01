@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -24,10 +26,12 @@ class _RacingProfileList extends ProfileListNotifier {
     DateTime? dateOfBirth,
     String? avatarPath,
   }) async {
-    _navKey.currentState!.push(
-      MaterialPageRoute<void>(
-        fullscreenDialog: true,
-        builder: (_) => const Scaffold(body: Text('Post-setup flow')),
+    unawaited(
+      _navKey.currentState!.push(
+        MaterialPageRoute<void>(
+          fullscreenDialog: true,
+          builder: (_) => const Scaffold(body: Text('Post-setup flow')),
+        ),
       ),
     );
     await Future<void>.delayed(const Duration(milliseconds: 100));

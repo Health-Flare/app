@@ -212,7 +212,7 @@ class _VitalEntryTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final tempUnit = ref.watch(activeProfileDataProvider)?.temperatureUnit;
+    final profile = ref.watch(activeProfileDataProvider);
     final cs = Theme.of(context).colorScheme;
     final fmt = DateFormat('d MMM yyyy, HH:mm');
 
@@ -230,7 +230,12 @@ class _VitalEntryTile extends ConsumerWidget {
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(entry.displayValueIn(temperatureUnit: tempUnit)),
+          Text(
+            entry.displayValueIn(
+              temperatureUnit: profile?.temperatureUnit,
+              heightUnit: profile?.heightUnit,
+            ),
+          ),
           Text(fmt.format(entry.loggedAt)),
         ],
       ),

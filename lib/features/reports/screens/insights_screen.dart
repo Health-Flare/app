@@ -59,6 +59,7 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
         start: start,
         end: end,
         temperatureUnit: profile.temperatureUnit,
+        heightUnit: profile.heightUnit,
       );
 
       if (!mounted) return;

@@ -47,6 +47,9 @@ class _AddProfileSheetState extends ConsumerState<AddProfileSheet> {
   /// '°C', '°F', or null for "As logged".
   String? _temperatureUnit;
 
+  /// 'cm', 'in', or null for "As logged".
+  String? _heightUnit;
+
   final _picker = ImagePicker();
 
   bool get _isEditMode => widget.existing != null;
@@ -65,6 +68,7 @@ class _AddProfileSheetState extends ConsumerState<AddProfileSheet> {
     _cycleEnabled = existing?.cycleTrackingEnabled ?? false;
     _bowelEnabled = existing?.bowelTrackingEnabled ?? false;
     _temperatureUnit = existing?.temperatureUnit;
+    _heightUnit = existing?.heightUnit;
   }
 
   @override
@@ -146,6 +150,8 @@ class _AddProfileSheetState extends ConsumerState<AddProfileSheet> {
         bowelTrackingEnabled: _bowelEnabled,
         temperatureUnit: _temperatureUnit,
         clearTemperatureUnit: _temperatureUnit == null,
+        heightUnit: _heightUnit,
+        clearHeightUnit: _heightUnit == null,
       );
       await listNotifier.update(updated);
     } else {
@@ -415,6 +421,7 @@ class _AddProfileSheetState extends ConsumerState<AddProfileSheet> {
                     ),
                   ),
                   SegmentedButton<String>(
+                    key: const Key('temperature_unit_preference'),
                     segments: const [
                       ButtonSegment(value: '°C', label: Text('°C')),
                       ButtonSegment(value: '°F', label: Text('°F')),
@@ -424,6 +431,28 @@ class _AddProfileSheetState extends ConsumerState<AddProfileSheet> {
                     onSelectionChanged: (sel) => setState(() {
                       final v = sel.first;
                       _temperatureUnit = v == _asLogged ? null : v;
+                    }),
+                  ),
+                  const SizedBox(height: 16),
+                  const ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: Text('Height unit'),
+                    subtitle: Text(
+                      'How heights are shown. Readings are kept as '
+                      'you entered them.',
+                    ),
+                  ),
+                  SegmentedButton<String>(
+                    key: const Key('height_unit_preference'),
+                    segments: const [
+                      ButtonSegment(value: 'cm', label: Text('cm')),
+                      ButtonSegment(value: 'in', label: Text('in')),
+                      ButtonSegment(value: _asLogged, label: Text(_asLogged)),
+                    ],
+                    selected: {_heightUnit ?? _asLogged},
+                    onSelectionChanged: (sel) => setState(() {
+                      final v = sel.first;
+                      _heightUnit = v == _asLogged ? null : v;
                     }),
                   ),
                 ],

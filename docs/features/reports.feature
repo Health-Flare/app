@@ -248,6 +248,14 @@ Feature: Reports and Data Export
     And the 100.4 °F reading is plotted as 38.0 °C
     And her saved reading is still 100.4 °F
 
+  Scenario: The height chart uses the profile's height unit
+    Given "Sarah"'s height unit is set to "in"
+    And she logged a height of 170 cm yesterday
+    When I view the height chart
+    Then the chart is labelled in inches
+    And the 170 cm reading is plotted as 66.9 in
+    And her saved reading is still 170 cm
+
   Scenario: Blood pressure shows systolic and diastolic as two lines
     Given "Sarah" has blood pressure readings in the last 30 days
     When I view the blood pressure chart
