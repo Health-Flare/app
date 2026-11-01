@@ -55,7 +55,7 @@ class VitalEntry {
     };
     if (preferredUnit == null ||
         !vitalType.availableUnits.contains(preferredUnit) ||
-        (vitalType == VitalType.temperature && preferredUnit == unit)) {
+        preferredUnit == unit) {
       return displayValue;
     }
     final converted = VitalUnits.convert(value, from: unit, to: preferredUnit);

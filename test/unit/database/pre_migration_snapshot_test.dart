@@ -232,7 +232,7 @@ void main() {
 
     test('an up-to-date database takes no snapshot', () async {
       final isar = await _open(docs.path);
-      await _seedOldVersion(isar, version: 24);
+      await _seedOldVersion(isar, version: 25);
       var writes = 0;
 
       final result = await PreMigrationSnapshot.migrate(

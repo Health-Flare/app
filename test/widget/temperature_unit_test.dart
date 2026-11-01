@@ -245,8 +245,19 @@ void main() {
       expect(_height(170, 'cm').displayValueIn(heightUnit: 'in'), '66.9 in');
     });
 
-    test('height in cm is shown as a whole number', () {
-      expect(_height(170.8, 'cm').displayValueIn(heightUnit: 'cm'), '171 cm');
+    test('height converted to cm is shown as a whole number', () {
+      expect(_height(66.9, 'in').displayValueIn(heightUnit: 'cm'), '170 cm');
+    });
+
+    test('height already in cm keeps its logged precision, not rounded', () {
+      // Profile prefers cm and the reading was already logged in cm: no
+      // conversion happens, so this must show exactly as logged, not run
+      // through convert+round to a whole number.
+      expect(_height(170.8, 'cm').displayValueIn(heightUnit: 'cm'), '170.8 cm');
+    });
+
+    test('height already in the profile unit shows as logged (in)', () {
+      expect(_height(66.9, 'in').displayValueIn(heightUnit: 'in'), '66.9 in');
     });
 
     test('height stays as logged when no profile unit is chosen', () {
