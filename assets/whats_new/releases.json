@@ -1,6 +1,14 @@
 {
   "releases": [
     {
+      "version": "1.12.0",
+      "date": null,
+      "highlights": [],
+      "changes": [
+        "Profile settings now let you display height readings in centimeters or inches without changing saved readings."
+      ]
+    },
+    {
       "version": "1.11.0",
       "date": "2026-10-26",
       "highlights": [

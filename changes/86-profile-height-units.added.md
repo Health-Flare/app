@@ -1,1 +1,0 @@
-- Profile settings now let you display height readings in centimeters or inches without changing saved readings.

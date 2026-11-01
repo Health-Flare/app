@@ -44,7 +44,7 @@ Subsection meanings (from Keep a Changelog):
 ## [Unreleased]
 
 ### Added
-- _Nothing yet._
+- Profile settings now let you display height readings in centimeters or inches without changing saved readings.
 
 ### Changed
 - _Nothing yet._
