@@ -61,6 +61,26 @@ Subsection meanings (from Keep a Changelog):
 ### Security
 - _Nothing yet._
 
+## [1.12.0] - 2026-11-01
+
+### Added
+- Profile settings now let you display height readings in centimeters or inches without changing saved readings.
+
+### Changed
+- _Nothing yet._
+
+### Deprecated
+- _Nothing yet._
+
+### Removed
+- _Nothing yet._
+
+### Fixed
+- _Nothing yet._
+
+### Security
+- _Nothing yet._
+
 ## [1.11.0] - 2026-10-26
 
 ### Added
@@ -513,7 +533,8 @@ Subsection meanings (from Keep a Changelog):
 - Offline-first guarantee: zero outbound network requests at runtime, enforced
   by the `url-scan` CI check.
 
-[Unreleased]: https://github.com/Health-Flare/app/compare/v1.11.0...HEAD
+[Unreleased]: https://github.com/Health-Flare/app/compare/v1.12.0...HEAD
+[1.12.0]: https://github.com/Health-Flare/app/compare/v1.11.0...v1.12.0
 [1.11.0]: https://github.com/Health-Flare/app/compare/v1.10.0...v1.11.0
 [1.10.0]: https://github.com/Health-Flare/app/compare/v1.9.1...v1.10.0
 [1.9.1]: https://github.com/Health-Flare/app/compare/v1.9.0...v1.9.1
