@@ -45,7 +45,8 @@ Builds:
       - export PUB_CACHE=$(pwd)/.pub-cache
       - rustup default 1.88.0
       - bash scripts/fdroid/build_isar.sh armv7
-      - HEALTHFLARE_UNSIGNED_RELEASE=true $$flutter$$/bin/flutter build apk --release --split-per-abi --target-platform=android-arm
+      - HEALTHFLARE_UNSIGNED_RELEASE=true $$flutter$$/bin/flutter build apk --release
+        --split-per-abi --target-platform=android-arm
     ndk: 28.2.13676358
 
   - versionName: 1.12.0
@@ -79,7 +80,8 @@ Builds:
       - export PUB_CACHE=$(pwd)/.pub-cache
       - rustup default 1.88.0
       - bash scripts/fdroid/build_isar.sh arm64
-      - HEALTHFLARE_UNSIGNED_RELEASE=true $$flutter$$/bin/flutter build apk --release --split-per-abi --target-platform=android-arm64
+      - HEALTHFLARE_UNSIGNED_RELEASE=true $$flutter$$/bin/flutter build apk --release
+        --split-per-abi --target-platform=android-arm64
     ndk: 28.2.13676358
 
   - versionName: 1.12.0
@@ -113,7 +115,8 @@ Builds:
       - export PUB_CACHE=$(pwd)/.pub-cache
       - rustup default 1.88.0
       - bash scripts/fdroid/build_isar.sh x64
-      - HEALTHFLARE_UNSIGNED_RELEASE=true $$flutter$$/bin/flutter build apk --release --split-per-abi --target-platform=android-x64
+      - HEALTHFLARE_UNSIGNED_RELEASE=true $$flutter$$/bin/flutter build apk --release
+        --split-per-abi --target-platform=android-x64
     ndk: 28.2.13676358
 
 AutoUpdateMode: Version

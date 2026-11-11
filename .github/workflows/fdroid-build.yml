@@ -32,6 +32,24 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # fdroiddata's "fdroid rewritemeta" MR check, in the same image and with the
+  # same packages (its line wrapping depends on Debian's ruamel.yaml).
+  rewritemeta:
+    name: F-Droid recipe format (rewritemeta)
+    runs-on: ubuntu-latest
+    container:
+      image: debian:trixie-slim
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: app
+          persist-credentials: false
+      - name: fdroid rewritemeta leaves the recipe unchanged
+        run: bash app/scripts/fdroid/rewritemeta_check.sh app
+
   fdroid-build:
     name: F-Droid build (fdroidserver, ${{ matrix.abi }})
     runs-on: ubuntu-latest
