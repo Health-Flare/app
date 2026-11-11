@@ -14,19 +14,21 @@ RepoType: git
 Repo: https://github.com/Health-Flare/app.git
 
 Builds:
-  - versionName: 1.11.0
-    versionCode: 15
-    commit: fd7d96c42d1b87ff3dbc02d411114c7b2a152578
+  - versionName: 1.12.0
+    versionCode: 1016
+    commit: a58901cc066da55d2f71d98bd0d62a82395269f8
     submodules: true
     sudo:
       - apt-get update
       - apt-get install -y gcc libc-dev make libclang-dev rustup
-    output: build/app/outputs/flutter-apk/app-release.apk
+    output: build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk
     srclibs:
       - flutter@stable
     rm:
       - ios
+      - linux
       - macos
+      - web
       - windows
     prebuild:
       - flutterVersion=$(sed -n -E 's/^ *FLUTTER_VERSION:\ "(.*)"/\1/p' .github/workflows/ci.yml)
@@ -42,12 +44,84 @@ Builds:
     build:
       - export PUB_CACHE=$(pwd)/.pub-cache
       - rustup default 1.88.0
-      - bash scripts/fdroid/build_isar.sh
-      - HEALTHFLARE_UNSIGNED_RELEASE=true $$flutter$$/bin/flutter build apk --release
+      - bash scripts/fdroid/build_isar.sh armv7
+      - HEALTHFLARE_UNSIGNED_RELEASE=true $$flutter$$/bin/flutter build apk --release --split-per-abi --target-platform=android-arm
+    ndk: 28.2.13676358
+
+  - versionName: 1.12.0
+    versionCode: 2016
+    commit: a58901cc066da55d2f71d98bd0d62a82395269f8
+    submodules: true
+    sudo:
+      - apt-get update
+      - apt-get install -y gcc libc-dev make libclang-dev rustup
+    output: build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
+    srclibs:
+      - flutter@stable
+    rm:
+      - ios
+      - linux
+      - macos
+      - web
+      - windows
+    prebuild:
+      - flutterVersion=$(sed -n -E 's/^ *FLUTTER_VERSION:\ "(.*)"/\1/p' .github/workflows/ci.yml)
+      - '[[ $flutterVersion ]]'
+      - git -C $$flutter$$ checkout -f $flutterVersion
+      - export PUB_CACHE=$(pwd)/.pub-cache
+      - $$flutter$$/bin/flutter config --no-analytics
+      - $$flutter$$/bin/flutter pub get --enforce-lockfile
+      - bash scripts/fdroid/strip_gms_location.sh
+      - cp scripts/fdroid/isar-Cargo.lock third_party/isar-community/Cargo.lock
+    scandelete:
+      - .pub-cache
+    build:
+      - export PUB_CACHE=$(pwd)/.pub-cache
+      - rustup default 1.88.0
+      - bash scripts/fdroid/build_isar.sh arm64
+      - HEALTHFLARE_UNSIGNED_RELEASE=true $$flutter$$/bin/flutter build apk --release --split-per-abi --target-platform=android-arm64
+    ndk: 28.2.13676358
+
+  - versionName: 1.12.0
+    versionCode: 4016
+    commit: a58901cc066da55d2f71d98bd0d62a82395269f8
+    submodules: true
+    sudo:
+      - apt-get update
+      - apt-get install -y gcc libc-dev make libclang-dev rustup
+    output: build/app/outputs/flutter-apk/app-x86_64-release.apk
+    srclibs:
+      - flutter@stable
+    rm:
+      - ios
+      - linux
+      - macos
+      - web
+      - windows
+    prebuild:
+      - flutterVersion=$(sed -n -E 's/^ *FLUTTER_VERSION:\ "(.*)"/\1/p' .github/workflows/ci.yml)
+      - '[[ $flutterVersion ]]'
+      - git -C $$flutter$$ checkout -f $flutterVersion
+      - export PUB_CACHE=$(pwd)/.pub-cache
+      - $$flutter$$/bin/flutter config --no-analytics
+      - $$flutter$$/bin/flutter pub get --enforce-lockfile
+      - bash scripts/fdroid/strip_gms_location.sh
+      - cp scripts/fdroid/isar-Cargo.lock third_party/isar-community/Cargo.lock
+    scandelete:
+      - .pub-cache
+    build:
+      - export PUB_CACHE=$(pwd)/.pub-cache
+      - rustup default 1.88.0
+      - bash scripts/fdroid/build_isar.sh x64
+      - HEALTHFLARE_UNSIGNED_RELEASE=true $$flutter$$/bin/flutter build apk --release --split-per-abi --target-platform=android-x64
     ndk: 28.2.13676358
 
 AutoUpdateMode: Version
 UpdateCheckMode: Tags ^v[\d.]+$
+VercodeOperation:
+  - '%c + 1000'
+  - '%c + 2000'
+  - '%c + 4000'
 UpdateCheckData: pubspec.yaml|version:\s.+\+(\d+)|.|version:\s(.+)\+
-CurrentVersion: 1.11.0
-CurrentVersionCode: 15
+CurrentVersion: 1.12.0
+CurrentVersionCode: 4016

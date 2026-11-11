@@ -6,9 +6,11 @@
 # fdroiddata's .gitlab-ci.yml, which is what reviewers look at on the
 # merge request.
 #
-# Usage: scripts/fdroid/ci_build.sh <app checkout> <commit sha>
+# Usage: scripts/fdroid/ci_build.sh <app checkout> <commit sha> [entry]
+#   entry: index of the Builds entry (ABI) to build, default 0. All entries
+#   are kept in the metadata so fdroid lint checks the real file.
 #
-# The recipe comes from docs/deployment/fdroid/<appid>.yml. Its first Builds
+# The recipe comes from docs/deployment/fdroid/<appid>.yml. Every Builds
 # entry is rewritten to point at <commit sha>, with versionName/versionCode
 # read from pubspec.yaml at that commit, so every run tests the current tree
 # rather than the last tag.
@@ -16,6 +18,7 @@ set -euo pipefail
 
 app=$(cd "$1" && pwd)
 sha=$2
+entry=${3:-0}
 appid=org.healthflare.app.healthflare
 data=${FDROIDDATA:-/fdroiddata}
 
@@ -27,10 +30,10 @@ echo "Building $appid $vname ($vcode) at $sha"
 test -d "$data" || git clone --depth 1 https://gitlab.com/fdroid/fdroiddata.git "$data"
 cd "$data"
 
-python3 - "$app/docs/deployment/fdroid/$appid.yml" "metadata/$appid.yml" "$sha" "$vname" "$vcode" <<'PY'
+python3 - "$app/docs/deployment/fdroid/$appid.yml" "metadata/$appid.yml" "$sha" "$vname" "$vcode" "$entry" > /tmp/build_vcode <<'PY'
 import sys
 from ruamel.yaml import YAML
-src, dst, sha, vname, vcode = sys.argv[1:]
+src, dst, sha, vname, vcode, entry = sys.argv[1:]
 yaml = YAML()
 yaml.preserve_quotes = True
 # fdroiddata style, which fdroid lint checks: lists indented under keys.
@@ -38,15 +41,20 @@ yaml.indent(mapping=2, sequence=4, offset=2)
 yaml.width = 4096
 with open(src) as f:
     m = yaml.load(f)
-build = m['Builds'][0]
-build['versionName'] = vname
-build['versionCode'] = int(vcode)
-build['commit'] = sha
-m['Builds'] = [build]
+# One Builds entry per ABI; versionCode = pubspec build number + the ABI's
+# offset (Flutter's --split-per-abi scheme: 1000 arm32, 2000 arm64, 4000 x64).
+codes = []
+for b in m['Builds']:
+    offset = int(b['versionCode']) - int(b['versionCode']) % 1000
+    b['versionName'] = vname
+    b['versionCode'] = offset + int(vcode)
+    b['commit'] = sha
+    codes.append(b['versionCode'])
 m['CurrentVersion'] = vname
-m['CurrentVersionCode'] = int(vcode)
+m['CurrentVersionCode'] = max(codes)
 with open(dst, 'w') as f:
     yaml.dump(m, f)
+print(codes[int(entry)])
 PY
 cat "metadata/$appid.yml"
 
@@ -98,7 +106,7 @@ fdroid() {
 apt-get -qy install openjdk-21-jdk-headless >/dev/null
 update-alternatives --set java /usr/lib/jvm/java-21-openjdk-amd64/bin/java
 
-build="$appid:$vcode"
+build="$appid:$(cat /tmp/build_vcode)"
 cp -R "$CI_PROJECT_DIR/build" "$home_vagrant/build"
 cp "metadata/$appid.yml" "$home_vagrant/metadata/"
 chown -R vagrant "$home_vagrant" "$CI_PROJECT_DIR"

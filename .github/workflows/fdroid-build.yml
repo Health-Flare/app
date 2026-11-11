@@ -33,8 +33,16 @@ concurrency:
 
 jobs:
   fdroid-build:
-    name: F-Droid build (fdroidserver)
+    name: F-Droid build (fdroidserver, ${{ matrix.abi }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      # One job per Builds entry in the recipe (index = entry).
+      matrix:
+        include:
+          - { entry: 0, abi: armeabi-v7a }
+          - { entry: 1, abi: arm64-v8a }
+          - { entry: 2, abi: x86_64 }
     timeout-minutes: 120
     container:
       image: registry.gitlab.com/fdroid/fdroidserver:buildserver-trixie@sha256:1ea8bef1820bff06c2974e31b4fc4c79c364cd24231b86e71fa4b926797e0dac
@@ -52,12 +60,12 @@ jobs:
           # The PR head, not the synthetic merge commit: fdroidserver clones
           # the GitHub repo and needs a commit that exists on a branch.
           SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-        run: bash app/scripts/fdroid/ci_build.sh app "$SHA"
+        run: bash app/scripts/fdroid/ci_build.sh app "$SHA" "${{ matrix.entry }}"
 
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
-          name: fdroid-build
+          name: fdroid-build-${{ matrix.abi }}
           path: |
             /fdroiddata/tmp/*.apk
             /fdroiddata/logs/
