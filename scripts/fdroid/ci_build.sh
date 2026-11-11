@@ -55,7 +55,8 @@ m['CurrentVersionCode'] = max(codes)
 with open(dst, 'w') as f:
     yaml.dump(m, f)
 print(codes[int(entry)])
-PYcat "metadata/$appid.yml"
+PY
+cat "metadata/$appid.yml"
 
 # --- from here on, the fdroiddata "fdroid build" job, trimmed to one app ---
 CI_PROJECT_DIR=$data
