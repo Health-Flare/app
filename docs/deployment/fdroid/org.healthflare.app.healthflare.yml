@@ -14,9 +14,9 @@ RepoType: git
 Repo: https://github.com/Health-Flare/app.git
 
 Builds:
-  - versionName: 1.11.0
-    versionCode: 1015
-    commit: fd7d96c42d1b87ff3dbc02d411114c7b2a152578
+  - versionName: 1.12.0
+    versionCode: 1016
+    commit: a58901cc066da55d2f71d98bd0d62a82395269f8
     submodules: true
     sudo:
       - apt-get update
@@ -48,9 +48,9 @@ Builds:
       - HEALTHFLARE_UNSIGNED_RELEASE=true $$flutter$$/bin/flutter build apk --release --split-per-abi --target-platform=android-arm
     ndk: 28.2.13676358
 
-  - versionName: 1.11.0
-    versionCode: 2015
-    commit: fd7d96c42d1b87ff3dbc02d411114c7b2a152578
+  - versionName: 1.12.0
+    versionCode: 2016
+    commit: a58901cc066da55d2f71d98bd0d62a82395269f8
     submodules: true
     sudo:
       - apt-get update
@@ -82,9 +82,9 @@ Builds:
       - HEALTHFLARE_UNSIGNED_RELEASE=true $$flutter$$/bin/flutter build apk --release --split-per-abi --target-platform=android-arm64
     ndk: 28.2.13676358
 
-  - versionName: 1.11.0
-    versionCode: 4015
-    commit: fd7d96c42d1b87ff3dbc02d411114c7b2a152578
+  - versionName: 1.12.0
+    versionCode: 4016
+    commit: a58901cc066da55d2f71d98bd0d62a82395269f8
     submodules: true
     sudo:
       - apt-get update
@@ -123,5 +123,5 @@ VercodeOperation:
   - '%c + 2000'
   - '%c + 4000'
 UpdateCheckData: pubspec.yaml|version:\s.+\+(\d+)|.|version:\s(.+)\+
-CurrentVersion: 1.11.0
-CurrentVersionCode: 4015
+CurrentVersion: 1.12.0
+CurrentVersionCode: 4016
