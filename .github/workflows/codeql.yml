@@ -1,0 +1,64 @@
+name: CodeQL
+
+# Advanced setup, not default setup: GitHub's default-setup CodeQL explicitly
+# excludes pull requests from forks (see docs: "pull requests ... excluding
+# pull requests from forks"), but the branch ruleset on `main` requires a
+# CodeQL check on every PR. External contributors push from forks, so the
+# default-setup check could never be satisfied and every fork PR sat BLOCKED
+# forever (#218). This workflow uses the ordinary `pull_request` trigger, the
+# same one ci.yml already uses, so it gets the same fork-approval gate
+# (Settings -> Actions -> "require approval for first-time contributors") and
+# genuinely runs once approved, instead of silently never firing.
+#
+# NOTE: default setup must be switched off for this repo before merging this
+# (Settings -> Advanced Security -> Code scanning -> CodeQL analysis -> stop
+# using default setup / or via `gh api -X PATCH repos/Health-Flare/app/code-scanning/default-setup -f state=not-configured`),
+# otherwise the two configs conflict. Languages below match what default
+# setup had configured (actions, c-cpp, python); adjust if that was wrong.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Match default setup's weekly cadence: Monday 07:00 UTC.
+    - cron: "0 7 * * 1"
+
+concurrency:
+  group: codeql-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
+jobs:
+  analyze:
+    name: Analyze (${{ matrix.language }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - language: actions
+            build-mode: none
+          - language: c-cpp
+            build-mode: none
+          - language: python
+            build-mode: none
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: github/codeql-action/init@e4fba868fa4b1b91e1fdab776edc8cfbe6e9fb81 # v4.37.3
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: ${{ matrix.build-mode }}
+
+      - uses: github/codeql-action/analyze@e4fba868fa4b1b91e1fdab776edc8cfbe6e9fb81 # v4.37.3
+        with:
+          category: "/language:${{ matrix.language }}"
