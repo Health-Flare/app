@@ -47,7 +47,10 @@ Subsection meanings (from Keep a Changelog):
 - _Nothing yet._
 
 ### Changed
-- _Nothing yet._
+- Health Flare has a new look: the sun-meeting-water mark, a warmer
+  colour palette (Sunrise, Rose, Amber, Ink), and new Fraunces/DM Sans
+  type across the whole app.
+- The app icon is updated to match, on every platform.
 
 ### Deprecated
 - _Nothing yet._

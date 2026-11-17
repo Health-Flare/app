@@ -1,6 +1,24 @@
 {
   "releases": [
     {
+      "version": "1.13.0",
+      "date": null,
+      "highlights": [
+        {
+          "title": "A new look",
+          "body": "Health Flare has a new mark, a warmer colour palette, and new type across the whole app."
+        },
+        {
+          "title": "New app icon",
+          "body": "The app icon on your home screen is updated to match."
+        }
+      ],
+      "changes": [
+        "Health Flare has a new look: the sun-meeting-water mark, a warmer colour palette (Sunrise, Rose, Amber, Ink), and new Fraunces/DM Sans type across the whole app.",
+        "The app icon is updated to match, on every platform."
+      ]
+    },
+    {
       "version": "1.12.0",
       "date": "2026-11-01",
       "highlights": [],
