@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/images/HealthFlare%20Banner%20Light.png" alt="Health Flare" width="640">
+  <img src="assets/images/health-flare-banner.png" alt="Health Flare" width="640">
 </p>
 
 <p align="center">
