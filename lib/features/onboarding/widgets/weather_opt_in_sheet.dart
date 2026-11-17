@@ -34,8 +34,8 @@ class WeatherTrackingOptInSheet extends StatelessWidget {
             height: 52,
             margin: const EdgeInsets.only(bottom: 16),
             decoration: BoxDecoration(
-              // Theme-adaptive tertiaryContainer, not AppColors.paleSky:
-              // that constant is pinned light and looked like a stray
+              // Theme-adaptive tertiaryContainer, not a hardcoded light
+              // colour: a pinned light value would look like a stray
               // light-mode chip against an otherwise dark sheet.
               color: cs.tertiaryContainer,
               borderRadius: BorderRadius.circular(14),
