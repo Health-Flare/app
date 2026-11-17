@@ -80,13 +80,16 @@ dev_dependencies:
 flutter_launcher_icons:
   android: "ic_launcher"
   ios: true
-  image_path: "assets/images/HealthFlare Icon Light.png"
+  image_path: "assets/brand-icons/healthflare-icon-v2.png"
   remove_alpha_ios: true
   min_sdk_android: 21
   # Adaptive icon (Android 8.0+ / API 26+): foreground + background layer.
-  # Background uses softCloud (#F4F1EC) to match the app surface colour.
-  adaptive_icon_background: "#F4F1EC"
-  adaptive_icon_foreground: "assets/images/HealthFlare Icon Light.png"
+  # Background is brand Sunrise (#E0694E), matching the flattened iOS
+  # master so both platforms show the same mark-on-Sunrise composition.
+  adaptive_icon_background: "#E0694E"
+  adaptive_icon_foreground: "assets/brand-icons/healthflare-icon-v2-android-foreground.png"
+  # Android 13+ themed/monochrome icon layer.
+  adaptive_icon_monochrome: "assets/brand-icons/healthflare-icon-v2-android-monochrome.png"
 
 flutter:
   uses-material-design: true
