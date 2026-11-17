@@ -20,5 +20,7 @@ first and re-copy, don't hand-edit these.
 Adaptive icon background colour is set directly in `pubspec.yaml`
 (`#E0694E`, Sunrise) rather than as an image.
 
-Old v1 source (`assets/images/HealthFlare Icon Light*.png`) still exists
-for the README banner; that's a separate, smaller follow-up.
+Old v1 source (`assets/images/HealthFlare Icon Light*.png`) is gone:
+the README banner and the F-Droid/IzzyOnDroid listing icon
+(`fastlane/metadata/android/en-US/images/icon.png`) are both on brand
+v2.0 now too.
