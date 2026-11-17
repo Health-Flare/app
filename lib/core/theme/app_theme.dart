@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:health_flare/core/theme/app_colors.dart';
 import 'package:health_flare/core/theme/app_text_styles.dart';
 
-/// HealthFlare Design System: Theme v1.0
+/// HealthFlare Design System: Theme v2.0
 ///
 /// Usage:
 /// ```dart
@@ -63,29 +63,29 @@ abstract final class AppTheme {
   static const BoxShadow shadowSm = BoxShadow(
     offset: Offset(0, 1),
     blurRadius: 3,
-    color: Color(0x142C2825), // rgba(44,40,37,0.08)
+    color: Color(0x14221C18), // rgba(34,28,24,0.08)
   );
 
   /// Standard cards, buttons.
   static const BoxShadow shadowMd = BoxShadow(
     offset: Offset(0, 4),
     blurRadius: 12,
-    color: Color(0x1A2C2825), // rgba(44,40,37,0.10)
+    color: Color(0x1A221C18), // rgba(34,28,24,0.10)
   );
 
   /// Modals, bottom sheets.
   static const BoxShadow shadowLg = BoxShadow(
     offset: Offset(0, 8),
     blurRadius: 24,
-    color: Color(0x1F2C2825), // rgba(44,40,37,0.12)
+    color: Color(0x1F221C18), // rgba(34,28,24,0.12)
   );
 
-  /// Focus ring (amber).
+  /// Focus ring (Sunrise).
   static BoxShadow get shadowFocus => BoxShadow(
     offset: Offset.zero,
     blurRadius: 0,
     spreadRadius: 3,
-    color: AppColors.flareAmber.withAlpha(89), // ~35% opacity
+    color: AppColors.sunrise.withAlpha(89), // ~35% opacity
   );
 
   // ---------------------------------------------------------------------------
@@ -125,7 +125,7 @@ abstract final class AppTheme {
     useMaterial3: true,
     colorScheme: cs,
     textTheme: AppTextStyles.textTheme,
-    scaffoldBackgroundColor: AppColors.softCloud,
+    scaffoldBackgroundColor: AppColors.dawn,
     appBarTheme: _appBarTheme(cs),
     cardTheme: _cardTheme,
     inputDecorationTheme: _inputDecorationTheme(cs),
@@ -134,7 +134,7 @@ abstract final class AppTheme {
     textButtonTheme: _textButtonTheme(cs),
     navigationBarTheme: _navigationBarTheme(cs),
     dividerTheme: const DividerThemeData(
-      color: AppColors.warmLinen,
+      color: AppColors.sand,
       space: 1,
       thickness: 1,
     ),
@@ -158,7 +158,7 @@ abstract final class AppTheme {
     textButtonTheme: _textButtonTheme(_darkColorScheme),
     navigationBarTheme: _navigationBarTheme(_darkColorScheme),
     dividerTheme: const DividerThemeData(
-      color: AppColors.warmLinen,
+      color: AppColors.sand,
       space: 1,
       thickness: 1,
     ),
@@ -174,68 +174,69 @@ abstract final class AppTheme {
 
   static const ColorScheme _lightColorScheme = ColorScheme(
     brightness: Brightness.light,
-    // Primary: Flare Amber
-    primary: AppColors.flareAmber,
-    onPrimary: AppColors.deepDusk,
-    primaryContainer: AppColors.sunrisePeach,
-    onPrimaryContainer: AppColors.deepDusk,
-    // Secondary: Dawn Coral
-    secondary: AppColors.dawnCoral,
+    // Primary: Sunrise
+    primary: AppColors.sunrise,
+    onPrimary: AppColors.ink,
+    primaryContainer: AppColors.sunriseTint,
+    onPrimaryContainer: AppColors.ink,
+    // Secondary: Ember
+    secondary: AppColors.ember,
     onSecondary: Colors.white,
-    secondaryContainer: AppColors.sunrisePeach,
-    onSecondaryContainer: AppColors.deepDusk,
-    // Tertiary: Morning Sky
-    tertiary: AppColors.morningSky,
-    onTertiary: AppColors.deepDusk,
-    tertiaryContainer: AppColors.paleSky,
-    onTertiaryContainer: AppColors.deepDusk,
-    // Error/Destructive
+    secondaryContainer: AppColors.sunriseTint,
+    onSecondaryContainer: AppColors.ink,
+    // Tertiary / Info: no dedicated hue (brand-guidelines.md v2.1) — Slate
+    // on Sand, same neutral treatment as any other secondary surface.
+    tertiary: AppColors.slate,
+    onTertiary: Colors.white,
+    tertiaryContainer: AppColors.sand,
+    onTertiaryContainer: AppColors.ink,
+    // Error/Destructive (functional palette, v2.1 — not a brand colour)
     error: AppColors.destructive,
     onError: Colors.white,
-    errorContainer: Color(0xFFFFDAD6),
-    onErrorContainer: Color(0xFF6B2214),
+    errorContainer: Color(0xFFECE2E0),
+    onErrorContainer: AppColors.destructive,
     // Surface
     surface: Colors.white,
-    onSurface: AppColors.deepDusk,
-    surfaceContainerHighest: AppColors.softCloud,
-    onSurfaceVariant: Color(0xFF6B6560), // Deep Dusk at ~70%
+    onSurface: AppColors.ink,
+    surfaceContainerHighest: AppColors.dawn,
+    onSurfaceVariant: AppColors.slate, // matches AppColors.textSubtle
     // Outline
-    outline: AppColors.warmLinen,
-    outlineVariant: AppColors.warmLinen,
+    outline: AppColors.sand,
+    outlineVariant: AppColors.sand,
     // Shadow
-    shadow: AppColors.deepDusk,
-    scrim: AppColors.deepDusk,
+    shadow: AppColors.ink,
+    scrim: AppColors.ink,
     // Inverse
-    inverseSurface: AppColors.deepDusk,
-    onInverseSurface: AppColors.softCloud,
-    inversePrimary: AppColors.flareAmber,
+    inverseSurface: AppColors.ink,
+    onInverseSurface: AppColors.dawn,
+    inversePrimary: AppColors.sunrise,
   );
 
   static const ColorScheme _darkColorScheme = ColorScheme(
     brightness: Brightness.dark,
-    // Primary: Flare Amber (unchanged for dark)
-    primary: AppColors.flareAmber,
-    onPrimary: AppColors.deepDusk,
+    // Primary: Sunrise (unchanged for dark)
+    primary: AppColors.sunrise,
+    onPrimary: AppColors.ink,
     primaryContainer: Color(0xFF5C4210),
-    onPrimaryContainer: AppColors.sunrisePeach,
-    // Secondary: Dawn Coral
-    secondary: AppColors.dawnCoral,
-    onSecondary: AppColors.deepDusk,
+    onPrimaryContainer: AppColors.sunriseTint,
+    // Secondary: Ember
+    secondary: AppColors.ember,
+    onSecondary: AppColors.ink,
     secondaryContainer: Color(0xFF5C2E28),
-    onSecondaryContainer: AppColors.sunrisePeach,
-    // Tertiary: Morning Sky
-    tertiary: AppColors.morningSky,
-    onTertiary: AppColors.deepDusk,
+    onSecondaryContainer: AppColors.sunriseTint,
+    // Tertiary / Info: no dedicated hue (brand-guidelines.md v2.1).
+    tertiary: AppColors.slate,
+    onTertiary: AppColors.ink,
     tertiaryContainer: Color(0xFF1E4A5C),
-    onTertiaryContainer: AppColors.paleSky,
-    // Error/Destructive
-    error: Color(0xFFFF8A80),
-    onError: AppColors.deepDusk,
-    errorContainer: Color(0xFF5C2214),
-    onErrorContainer: Color(0xFFFFDAD6),
+    onTertiaryContainer: AppColors.sand,
+    // Error/Destructive (functional palette, v2.1 — not a brand colour)
+    error: Color(0xFFC3A19C),
+    onError: AppColors.ink,
+    errorContainer: Color(0xFF4F1E17),
+    onErrorContainer: Color(0xFFECE2E0),
     // Surface
     surface: AppColors.darkSurface,
-    onSurface: AppColors.softCloud,
+    onSurface: AppColors.dawn,
     surfaceContainerHighest: AppColors.darkBackground,
     onSurfaceVariant: Color(0xFFB0AAA5),
     // Outline
@@ -245,9 +246,9 @@ abstract final class AppTheme {
     shadow: Colors.black,
     scrim: Colors.black,
     // Inverse
-    inverseSurface: AppColors.softCloud,
-    onInverseSurface: AppColors.deepDusk,
-    inversePrimary: AppColors.flareAmber,
+    inverseSurface: AppColors.dawn,
+    onInverseSurface: AppColors.ink,
+    inversePrimary: AppColors.sunrise,
   );
 
   // ---------------------------------------------------------------------------
@@ -277,12 +278,13 @@ abstract final class AppTheme {
       InputDecorationTheme(
         filled: true,
         // Use brightness-adaptive fill so text is always readable.
-        // Light: ashWhite on softCloud scaffold (~legible).
-        // Dark: darkSurface as fill: onSurface (softCloud) text gives ~13:1.
+        // Light: surface (white) on Dawn scaffold — same contrast relationship
+        // as a card, so inputs read as a distinct field, not a flat void.
+        // Dark: darkSurface as fill: onSurface (Dawn) text gives ~13:1.
         // Never hardcode a light fill; in dark mode onSurface is light,
         // making light-text-on-light-fill effectively invisible.
         fillColor: cs.brightness == Brightness.light
-            ? AppColors.ashWhite
+            ? AppColors.surface
             : AppColors.darkSurface,
         contentPadding: const EdgeInsets.symmetric(
           horizontal: space4,
@@ -290,15 +292,15 @@ abstract final class AppTheme {
         ),
         border: const OutlineInputBorder(
           borderRadius: borderRadiusMd,
-          borderSide: BorderSide(color: AppColors.warmLinen, width: 1.5),
+          borderSide: BorderSide(color: AppColors.sand, width: 1.5),
         ),
         enabledBorder: const OutlineInputBorder(
           borderRadius: borderRadiusMd,
-          borderSide: BorderSide(color: AppColors.warmLinen, width: 1.5),
+          borderSide: BorderSide(color: AppColors.sand, width: 1.5),
         ),
         focusedBorder: const OutlineInputBorder(
           borderRadius: borderRadiusMd,
-          borderSide: BorderSide(color: AppColors.flareAmber, width: 1.5),
+          borderSide: BorderSide(color: AppColors.sunrise, width: 1.5),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: borderRadiusMd,
@@ -308,12 +310,12 @@ abstract final class AppTheme {
           borderRadius: borderRadiusMd,
           borderSide: BorderSide(color: cs.error, width: 2),
         ),
-        // Use onSurfaceVariant at full opacity: it achieves ~5.5:1 on ashWhite
-        // fill and ~5.1:1 on softCloud. Never apply withAlpha() to label/hint
-        // text: even a modest reduction (e.g. withAlpha(153) = 60%) can drop
-        // contrast below the WCAG AA minimum of 4.5:1.
+        // Use onSurfaceVariant at full opacity: it achieves ~5.5:1 on the
+        // input fill and ~5.1:1 on Dawn. Never apply withAlpha() to
+        // label/hint text: even a modest reduction (e.g. withAlpha(153) =
+        // 60%) can drop contrast below the WCAG AA minimum of 4.5:1.
         labelStyle: AppTextStyles.label.copyWith(color: cs.onSurfaceVariant),
-        floatingLabelStyle: const TextStyle(color: AppColors.flareAmber),
+        floatingLabelStyle: const TextStyle(color: AppColors.sunrise),
         hintStyle: AppTextStyles.bodyMd.copyWith(color: cs.onSurfaceVariant),
         helperStyle: AppTextStyles.caption.copyWith(color: cs.onSurfaceVariant),
         errorStyle: TextStyle(color: cs.error),
@@ -322,8 +324,8 @@ abstract final class AppTheme {
   static ElevatedButtonThemeData _elevatedButtonTheme(ColorScheme cs) =>
       ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.flareAmber,
-          foregroundColor: AppColors.deepDusk,
+          backgroundColor: AppColors.sunrise,
+          foregroundColor: AppColors.ink,
           disabledBackgroundColor: AppColors.disabledBackground,
           disabledForegroundColor: AppColors.disabledText,
           elevation: 0,
@@ -337,7 +339,7 @@ abstract final class AppTheme {
   static OutlinedButtonThemeData _outlinedButtonTheme(ColorScheme cs) =>
       OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          // Adaptive colors: hardcoded light values (deepDusk, sunrisePeach)
+          // Adaptive colors: hardcoded light values (ink, sunriseTint)
           // are unreadable in dark mode.
           foregroundColor: cs.onSurface,
           backgroundColor: cs.surfaceContainerHighest,
@@ -352,7 +354,7 @@ abstract final class AppTheme {
   static TextButtonThemeData _textButtonTheme(ColorScheme cs) =>
       TextButtonThemeData(
         style: TextButton.styleFrom(
-          // Use cs.onSurface: adapts to dark mode (was hardcoded deepDusk,
+          // Use cs.onSurface: adapts to dark mode (was hardcoded ink,
           // which is invisible dark-on-dark in dark mode).
           foregroundColor: cs.onSurface,
           padding: const EdgeInsets.symmetric(
@@ -367,10 +369,10 @@ abstract final class AppTheme {
   static NavigationBarThemeData _navigationBarTheme(ColorScheme cs) =>
       NavigationBarThemeData(
         backgroundColor: cs.surface,
-        indicatorColor: AppColors.flareAmber.withAlpha(30),
+        indicatorColor: AppColors.sunrise.withAlpha(30),
         iconTheme: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
-            return const IconThemeData(color: AppColors.flareAmber, size: 24);
+            return const IconThemeData(color: AppColors.sunrise, size: 24);
           }
           return IconThemeData(color: cs.onSurfaceVariant, size: 24);
         }),
@@ -378,7 +380,7 @@ abstract final class AppTheme {
           const base = AppTextStyles.caption;
           if (states.contains(WidgetState.selected)) {
             return base.copyWith(
-              color: AppColors.flareAmber,
+              color: AppColors.sunrise,
               fontWeight: FontWeight.w700,
             );
           }
@@ -392,7 +394,7 @@ abstract final class AppTheme {
 
   static ChipThemeData _chipTheme(ColorScheme cs) => ChipThemeData(
     backgroundColor: cs.surfaceContainerHighest,
-    selectedColor: AppColors.flareAmber.withAlpha(30),
+    selectedColor: AppColors.sunrise.withAlpha(30),
     // A colour, always: without one the label is painted with no colour,
     // which shows as near-white on a device (#171).
     labelStyle: AppTextStyles.label.copyWith(color: cs.onSurface),

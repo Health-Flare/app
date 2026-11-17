@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 
 import 'package:health_flare/core/files/photo_store.dart';
+import 'package:health_flare/core/theme/app_colors.dart';
 import 'package:health_flare/models/profile.dart';
 
 /// Reusable circular avatar for a [Profile].
@@ -67,18 +68,11 @@ class ProfileAvatar extends StatelessWidget {
     );
   }
 
-  /// Deterministic colour from a small, accessible palette.
+  /// Deterministic colour from the brand's profile tag palette
+  /// (brand-guidelines.md v2.2) — no semantic meaning, just tells profiles
+  /// apart at a glance.
   static Color _avatarColor(int id) {
-    const palette = [
-      Color(0xFF2A9D8F), // teal
-      Color(0xFF457B9D), // slate blue
-      Color(0xFFE76F51), // coral
-      Color(0xFF6A4C93), // purple
-      Color(0xFF1D7A45), // forest green
-      Color(0xFFD4A017), // amber
-      Color(0xFF264653), // deep teal
-      Color(0xFFC0392B), // crimson
-    ];
+    const palette = AppColors.profileTagPalette;
     return palette[id % palette.length];
   }
 }
