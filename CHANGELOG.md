@@ -47,6 +47,26 @@ Subsection meanings (from Keep a Changelog):
 - _Nothing yet._
 
 ### Changed
+- _Nothing yet._
+
+### Deprecated
+- _Nothing yet._
+
+### Removed
+- _Nothing yet._
+
+### Fixed
+- _Nothing yet._
+
+### Security
+- _Nothing yet._
+
+## [1.13.0] - 2026-11-17
+
+### Added
+- _Nothing yet._
+
+### Changed
 - Health Flare has a new look: the sun-meeting-water mark, a warmer
   colour palette (Sunrise, Rose, Amber, Ink), and new Fraunces/DM Sans
   type across the whole app.
@@ -536,7 +556,8 @@ Subsection meanings (from Keep a Changelog):
 - Offline-first guarantee: zero outbound network requests at runtime, enforced
   by the `url-scan` CI check.
 
-[Unreleased]: https://github.com/Health-Flare/app/compare/v1.12.0...HEAD
+[Unreleased]: https://github.com/Health-Flare/app/compare/v1.13.0...HEAD
+[1.13.0]: https://github.com/Health-Flare/app/compare/v1.12.0...v1.13.0
 [1.12.0]: https://github.com/Health-Flare/app/compare/v1.11.0...v1.12.0
 [1.11.0]: https://github.com/Health-Flare/app/compare/v1.10.0...v1.11.0
 [1.10.0]: https://github.com/Health-Flare/app/compare/v1.9.1...v1.10.0
