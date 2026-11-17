@@ -210,16 +210,26 @@ jobs:
       #
       # Per the Play Store workflow's equivalent comment: the very first
       # upload for a new app may need to go through Xcode/Transporter
-      # manually before App Store Connect accepts automated uploads for it: 
-      # unconfirmed for App Store Connect specifically, verify on the first
-      # real run rather than assuming this workflow works untested.
+      # manually before App Store Connect accepts automated uploads for it.
+      # The first real run (v1.13.0) got past that and failed later, at
+      # the altool upload step itself — see --use-old-altool below.
       - name: Upload to App Store Connect
         env:
           APPSTORE_API_KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
           APPSTORE_API_ISSUER_ID: ${{ secrets.APPSTORE_API_ISSUER_ID }}
         run: |
+          # --use-old-altool: recent Xcode 26.x altool builds added a new
+          # provider-lookup path that silently fails for accounts with
+          # more than one provider/team, surfacing as the unrelated-looking
+          # "Cannot determine the Apple ID from Bundle ID ... (19)" error
+          # instead of a real auth/lookup failure. This forces the older,
+          # working lookup path. Widely reported (e.g. fastlane/fastlane
+          # #30114, #29820); drop this flag if/when Apple fixes it upstream.
+          # Found and fixed in Health-Flare/InnerFlare#142 after v1.13.0's
+          # own upload hit this exact error.
           xcrun altool --upload-app \
             -f build/ios/ipa/*.ipa \
             -t ios \
             --apiKey "$APPSTORE_API_KEY_ID" \
-            --apiIssuer "$APPSTORE_API_ISSUER_ID"
+            --apiIssuer "$APPSTORE_API_ISSUER_ID" \
+            --use-old-altool
